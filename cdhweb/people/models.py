@@ -13,7 +13,7 @@ class Title(models.Model):
     # NOTE: defining relationship here because we can't add it to User
     # directly
     positions = models.ManyToManyField(User, through='Position',
-        related_name='positions')
+        related_name='titles')
 
     class Meta:
         ordering = ['sort_order']
@@ -38,7 +38,9 @@ class Person(User):
 
     @property
     def current_title(self):
-        return self.positions.first()
+        current_positions = self.positions.filter(end_date__isnull=True)
+        if current_positions.exists():
+            return current_positions.first().title
 
 
 class Profile(Displayable):
@@ -60,7 +62,8 @@ class Profile(Displayable):
 class Position(models.Model):
     '''Through model for many-to-many relation between people
     and titles.  Adds start and end dates to the join table.'''
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+        related_name='positions')
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)

@@ -11,7 +11,7 @@ install:
   - python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhWebsite/local_settings.py
 
 script:
-  - py.test --cov=./
+  - py.test --cov=cdhweb
 
 after_success:
 - codecov
