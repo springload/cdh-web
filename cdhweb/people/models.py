@@ -8,14 +8,24 @@ from mezzanine.core.models import Displayable
 class Title(models.Model):
     '''Job titles for people'''
     title = models.CharField(max_length=255)
-    sort_order = models.IntegerField()
+    sort_order = models.PositiveIntegerField(default=0, blank=False,
+        null=False)
     # NOTE: defining relationship here because we can't add it to User
     # directly
     positions = models.ManyToManyField(User, through='Position',
         related_name='positions')
 
+    class Meta:
+        ordering = ['sort_order']
+
     def __str__(self):
         return self.title
+
+    def num_people(self):
+        '''Number of people with this position title'''
+        # NOTE: maybe more meaningful if count restrict to _current_ titles?
+        return self.positions.distinct().count()
+    num_people.short_description = '# People'
 
 
 class Person(User):
