@@ -9,7 +9,6 @@ static/CACHE
 
 # Vim stuff
 *.swp
-
 # stock python git-ignores provided by github
 
 # Byte-compiled / optimized / DLL files
