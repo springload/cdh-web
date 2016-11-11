@@ -7,8 +7,8 @@ install:
   - pip install -r requirements.txt
   - pip install -r dev-requirements.txt
   - pip install codecov
-  - cp ci/testsettings.py cdhWebsite/local_settings.py
-  - python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhWebsite/local_settings.py
+  - cp ci/testsettings.py cdhweb/local_settings.py
+  - python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
 
 script:
   - py.test --cov=cdhweb
