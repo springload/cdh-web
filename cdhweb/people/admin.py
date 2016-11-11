@@ -1,24 +1,36 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from mezzanine.core.admin import DisplayableAdmin
 
-from .models import Title, Profile, Position, Person
+from .models import Title, Profile, Position, Person, UserResource, ResourceType
 
-class UserProfileAdmin(UserAdmin):
-    def __init__(self, *args, **kwargs):
-        super(UserAdmin,self).__init__(*args, **kwargs)
-        self.list_display = list(UserAdmin.list_display) + ['current_title']
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    max_num = 1
+    # NOTE: may not be able to use displayable admin with inline;
+    # could still use DisplayableAdminForm
 
-    # NOTE: may actually make more sense to extend mezzanine displayable
-    # admin rather than UserAdmin
-    # TODO: admin fields need to be updated to include displayable fields,
-    # profile fields, etc.
+
+class PositionInline(admin.TabularInline):
+    model = Position
+
+
+class UserResourceIinline(admin.TabularInline):
+    model = UserResource
+
+class PersonAdmin(admin.ModelAdmin):
+    list_display = ('username', 'first_name', 'last_name', 'current_title')
+    fields = ('first_name', 'last_name', 'email')
+    inlines = [ProfileInline, PositionInline, UserResourceIinline]
+
+
     # use inline fields for titles and resources
     # also: suppress management/auth fields like password, username, permissions,
     # last login and date joined
 
 
 admin.site.register(Title)
-admin.site.register(Person, UserProfileAdmin)
-# admin.site.register(Profile)
+admin.site.register(ResourceType)
+admin.site.register(Person, PersonAdmin)
 admin.site.register(Position)

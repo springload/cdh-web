@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from mezzanine.core.fields import RichTextField, FileField
+from mezzanine.core.managers import DisplayableManager
 from mezzanine.core.models import Displayable
 
 
@@ -38,6 +39,9 @@ class Profile(Displayable):
     # numbers? or django-phonenumber-field, but that's probably overkill
     phone_number = models.CharField(max_length=50, blank=True, null=True)
     office_location = models.CharField(max_length=255, blank=True, null=True)
+
+    # use displayable manager for access to published queryset filter, etc.
+    objects = DisplayableManager()
 
     def __str__(self):
         return ' '.join(self.user.first_name, self.user.last_name)
