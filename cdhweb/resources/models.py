@@ -12,6 +12,9 @@ class ResourceType(models.Model):
     users = models.ManyToManyField(User, through='UserResource',
         related_name='resources')
 
+    def __str__(self):
+        return self.resource_type
+
 
 class UserResource(models.Model):
     '''Through-model for associating users with resource types and
