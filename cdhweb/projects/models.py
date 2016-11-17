@@ -3,7 +3,7 @@ from django.db import models
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.models import Displayable
 
-from cdhweb.people.models import ResourceType
+from cdhweb.resources.models import ResourceType
 
 
 class Project(Displayable):

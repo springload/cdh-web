@@ -252,6 +252,7 @@ INSTALLED_APPS = [
     'adminsortable2',
     "cdhweb.projects",
     "cdhweb.people",
+    "cdhweb.resources",
 ]
 
 # List of middleware classes to use. Order is important; in the request phase,

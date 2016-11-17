@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from mezzanine.core.admin import DisplayableAdmin
 from adminsortable2.admin import SortableAdminMixin
 
-from .models import Title, Profile, Position, Person, UserResource, ResourceType
+from .models import Title, Profile, Position, Person
+from cdhweb.resources.models import UserResource
 
 
 class TitleAdmin(SortableAdminMixin, admin.ModelAdmin):
@@ -46,6 +47,5 @@ class PersonAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Title, TitleAdmin)
-admin.site.register(ResourceType)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Position)
