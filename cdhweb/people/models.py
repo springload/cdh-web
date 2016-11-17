@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.managers import DisplayableManager
-from mezzanine.core.models import Displayable
+from mezzanine.core.models import Displayable, Slugged
 
 
 class Title(models.Model):
@@ -56,7 +57,11 @@ class Profile(Displayable):
     objects = DisplayableManager()
 
     def __str__(self):
-        return ' '.join(self.user.first_name, self.user.last_name)
+        return ' '.join([self.user.first_name, self.user.last_name])
+
+    def get_absolute_url(self):
+        return reverse('people:profile', kwargs={'slug': self.slug})
+
 
 
 class Position(models.Model):

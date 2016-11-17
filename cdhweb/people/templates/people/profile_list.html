@@ -1,0 +1,5 @@
+<ul>
+{% for profile in profile_list %}
+    <li><a href="{{ profile.get_absolute_url }}">{{ profile }}</a></li>
+{% endfor %}
+</ul>

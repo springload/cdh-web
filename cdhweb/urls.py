@@ -30,6 +30,8 @@ urlpatterns += [
     # We don't want to presume how your homepage works, so here are a
     # few patterns you can use to set it up.
 
+    url("^people/", include("cdhweb.people.urls", namespace='people')),
+
     # HOMEPAGE AS STATIC TEMPLATE
     # ---------------------------
     # This pattern simply loads the index.html template. It isn't
