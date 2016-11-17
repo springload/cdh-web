@@ -243,7 +243,7 @@ INSTALLED_APPS = [
     "mezzanine.core",
     "mezzanine.generic",
     "mezzanine.pages",
-    "mezzanine.blog",
+    # "mezzanine.blog",
     "mezzanine.forms",
     "mezzanine.galleries",
     "mezzanine.twitter",
@@ -253,6 +253,10 @@ INSTALLED_APPS = [
     "cdhweb.projects",
     "cdhweb.people",
     "cdhweb.resources",
+    # NOTE: if we name this blog, we can't import or rely on anything from
+    # mezzanine.blog; there are good and bad aspects to this; we certainly
+    # don't want users to create the wrong kind of blog posts.
+    "cdhweb.blog",
 ]
 
 # List of middleware classes to use. Order is important; in the request phase,

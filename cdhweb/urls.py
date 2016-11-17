@@ -27,10 +27,9 @@ if settings.USE_MODELTRANSLATION:
     ]
 
 urlpatterns += [
-    # We don't want to presume how your homepage works, so here are a
-    # few patterns you can use to set it up.
-
     url("^people/", include("cdhweb.people.urls", namespace='people')),
+    # actual blog url still TBD
+    url("^blog/", include("cdhweb.blog.urls", namespace='blog')),
 
     # HOMEPAGE AS STATIC TEMPLATE
     # ---------------------------

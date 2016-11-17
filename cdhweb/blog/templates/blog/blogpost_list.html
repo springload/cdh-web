@@ -1,0 +1,5 @@
+<ul>
+{% for blogpost in blogpost_list %}
+    <li><a href="{{ blogpost.get_absolute_url }}">{{ blogpost.title }}</a></li>
+{% endfor %}
+</ul>

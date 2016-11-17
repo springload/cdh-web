@@ -1,0 +1,22 @@
+{% load mezzanine_tags comment_tags keyword_tags rating_tags i18n disqus_tags %}
+
+{# preliminary blog post page; adapted from mezzanine blog post template #}
+
+<h2>{{ blogpost.title }}</h2>
+
+{% editable blog_post.publish_date %}
+<h6 class="post-meta">
+    {% trans "By" %}:
+    {% for author in blogpost.users.all %}
+    <a href="{{ author.profile.get_absolute_url }}">{{ author.get_full_name|default:author.username }}</a>
+    {% endfor %}
+    {% blocktrans with sometime=blogpost.publish_date|timesince %}{{ sometime }} ago{% endblocktrans %}
+</h6>
+{% endeditable %}
+
+{% block blogpost_detail_content %}
+{% editable blogpost.content %}
+{{ blogpost.content|richtext_filters|safe }}
+{% endeditable %}
+{% endblock %}
+
