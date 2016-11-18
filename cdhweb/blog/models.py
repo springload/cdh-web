@@ -7,6 +7,8 @@ from mezzanine.core.fields import FileField
 from mezzanine.core.models import Displayable, Ownable, RichText, Slugged
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 
+from taggit.managers import TaggableManager
+
 
 class MultiOwnable(models.Model):
     """
@@ -30,7 +32,7 @@ class MultiOwnable(models.Model):
             self.users.filter(id=request.user.id).exists()
 
     def author_list(self):
-        return ', '.join(user for user in self.users.all())
+        return ', '.join(str(user) for user in self.users.all())
     author_list.short_description = 'Authors'
 
 
@@ -47,6 +49,7 @@ class BlogPost(Displayable, MultiOwnable, RichText, AdminThumbMixin):
         format="Image", max_length=255, null=True, blank=True)
     related_posts = models.ManyToManyField("self",
                                  verbose_name=_("Related posts"), blank=True)
+    tags = TaggableManager()
 
     admin_thumb_field = "featured_image"
 

@@ -1,3 +1,4 @@
 Mezzanine>=4.2.1
 mysqlclient
 django-admin-sortable2
+django-taggit

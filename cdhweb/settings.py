@@ -249,6 +249,7 @@ INSTALLED_APPS = [
     "mezzanine.twitter",
     # "mezzanine.accounts",
     # "mezzanine.mobile",
+    "taggit",
     'adminsortable2',
     "cdhweb.projects",
     "cdhweb.people",

@@ -15,11 +15,12 @@ from .models import  BlogPost
 blogpost_fieldsets = deepcopy(DisplayableAdmin.fieldsets)
 # blogpost_fieldsets[0][1]["fields"].insert(1, "categories")
 # blogpost_fieldsets[0][1]["fields"].extend(["content", "allow_comments"])
-blogpost_fieldsets[0][1]["fields"].extend(["content", "users"])
+blogpost_fieldsets[0][1]["fields"].extend(["content", "users", "tags"])
 blogpost_list_display = ["title", "author_list", "status", "admin_link"]
 # if settings.BLOG_USE_FEATURED_IMAGE:
 blogpost_fieldsets[0][1]["fields"].insert(-2, "featured_image")
 blogpost_list_display.insert(0, "admin_thumb")
+blogpost_list_display.append('tag_list')
 blogpost_fieldsets = list(blogpost_fieldsets)
 blogpost_fieldsets.insert(1, (_("Other posts"), {
     "classes": ("collapse-closed",),
@@ -46,6 +47,9 @@ class BlogPostAdmin(TweetableAdminMixin, DisplayableAdmin, OwnableAdmin):
         # NOTE: ownable automatically sets owner to current user, not
         # sure that behavior makes sense for us
         return DisplayableAdmin.save_form(self, request, form, change)
+
+    def tag_list(self, obj):
+        return u", ".join(o.name for o in obj.tags.all())
 
 
 admin.site.register(BlogPost, BlogPostAdmin)
