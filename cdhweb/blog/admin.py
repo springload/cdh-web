@@ -50,6 +50,7 @@ class BlogPostAdmin(TweetableAdminMixin, DisplayableAdmin, OwnableAdmin):
 
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.tags.all())
+    tag_list.short_description = 'Tags'
 
 
 admin.site.register(BlogPost, BlogPostAdmin)

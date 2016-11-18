@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.models import Displayable
+from taggit.managers import TaggableManager
 
 from cdhweb.resources.models import ResourceType
 
@@ -15,6 +16,7 @@ class Project(Displayable):
 
     members = models.ManyToManyField(User, through='Membership')
     resources = models.ManyToManyField(ResourceType, through='ProjectResource')
+    tags = TaggableManager()
 
     def __str__(self):
         return self.name

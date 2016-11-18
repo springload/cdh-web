@@ -21,6 +21,7 @@ class TitleAdmin(SortableAdminMixin, admin.ModelAdmin):
     # with a little bit of template customization.
 
 
+
 class ProfileInline(admin.StackedInline):
     model = Profile
     max_num = 1
@@ -35,11 +36,16 @@ class PositionInline(admin.TabularInline):
 class UserResourceIinline(admin.TabularInline):
     model = UserResource
 
+
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ('username', 'first_name', 'last_name', 'current_title')
+    list_display = ('username', 'first_name', 'last_name', 'current_title',
+        'tag_list')
     fields = ('first_name', 'last_name', 'email')
     inlines = [ProfileInline, PositionInline, UserResourceIinline]
 
+    def tag_list(self, obj):
+        return u", ".join(o.name for o in obj.profile.tags.all())
+    tag_list.short_description = 'Tags'
 
     # use inline fields for titles and resources
     # also: suppress management/auth fields like password, username, permissions,
