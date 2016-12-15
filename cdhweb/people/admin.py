@@ -33,7 +33,7 @@ class PositionInline(admin.TabularInline):
     model = Position
 
 
-class UserResourceIinline(admin.TabularInline):
+class UserResourceInline(admin.TabularInline):
     model = UserResource
 
 
@@ -41,7 +41,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ('username', 'first_name', 'last_name', 'current_title',
         'tag_list')
     fields = ('first_name', 'last_name', 'email')
-    inlines = [ProfileInline, PositionInline, UserResourceIinline]
+    inlines = [ProfileInline, PositionInline, UserResourceInline]
 
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.profile.tags.all())
