@@ -1,0 +1,13 @@
+{% load mezzanine_tags comment_tags keyword_tags rating_tags i18n disqus_tags %}
+
+{# preliminary blog post page; adapted from mezzanine blog post template #}
+
+<h2>{{ event.title }}</h2>
+
+{{ event.event_type }}
+
+{% editable blogpost.content %}
+{{ event.content|richtext_filters|safe }}
+{% endeditable %}
+
+
