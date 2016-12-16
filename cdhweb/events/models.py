@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 
@@ -34,6 +35,8 @@ class Event(Displayable, RichText, AdminThumbMixin):
     end_time = models.DateTimeField()
     location = models.ForeignKey(Location)
     event_type = models.ForeignKey(EventType)
+    speakers = models.ManyToManyField(User,
+        help_text='Guest lecturer(s) or Workshop leader(s)')
 
     tags = TaggableManager()
 
