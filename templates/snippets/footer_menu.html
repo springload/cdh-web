@@ -1,0 +1,14 @@
+{% load pages_tags i18n %}
+{# display full top-level and secondary navigation in the footer #}
+{# adapted from mezzanine pages/menus/primary.html template #}
+{% for page in page_branch %}
+    <ul>
+    {% if page.in_menu %}
+        <li class='menu-header'>
+            <a href="{{ page.get_absolute_url }}">{{ page.title }}</a>
+        </li>
+        {% page_menu page "snippets/footer_secondary_nav.html" %}
+    {% endif %}
+    </ul>
+{% endfor %}
+
