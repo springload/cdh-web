@@ -1,6 +1,6 @@
 {% load static pages_tags mezzanine_tags %}
 <!DOCTYPE html>
-<html lang='en'>
+<html lang='en' xmlns:schema="http://schema.org/">
 
 <head>
     <meta charset='UTF-8'>
@@ -89,11 +89,15 @@
 
             </ul>
 
-            <p class='contact-info'>
-                Center for Digital Humanities<br />
-                Firestone Library Floor B<br />
-                Princeton University<br />
-                Princeton, NJ 08544<br />
+            {# testing: RDFa markup for organization and address #}
+            <p class='contact-info' typeof="schema:Organization">
+               {# TODO: pass in site url <a href="" property="url"> #}
+                <span property="schema:name">Center for Digital Humanities</span><br />
+                <span property="schema:address" typeof="schema:PostalAddress">
+                <span property="schema:streetAddress">Firestone Library Floor B<br />
+                Princeton University</span><br />
+                <span property="schema:addressLocality">Princeton</span>, <span property="schema:addressRegion">NJ</span> <span property="schema:postalCode">08544</span><br />
+                </span>
                 <br />
                 ©2015 Trustees of Princeton University
             </p>
