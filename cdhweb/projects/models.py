@@ -1,10 +1,39 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
+
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.models import Displayable
+from mezzanine.core.managers import DisplayableManager
 from taggit.managers import TaggableManager
 
 from cdhweb.resources.models import ResourceType
+
+
+class ProjectQuerySet(models.QuerySet):
+
+    def active(self):
+        return self.filter(is_active=True)
+
+    def current(self):
+        today = timezone.now()
+        # current projects means an active grant
+        # filter for projects with grants where start and end date
+        # come before and after the current date
+        return self.filter(grant__start_date__lt=today) \
+            .filter(grant__end_date__gt=today)
+
+
+class ProjectManager(DisplayableManager):
+    # extend displayable manager to preserve access to published filter
+    def get_queryset(self):
+        return ProjectQuerySet(self.model, using=self._db)
+
+    def active(self):
+        return self.get_queryset().active()
+
+    def current(self):
+        return self.get_queryset().current()
 
 
 class Project(Displayable):
@@ -22,6 +51,9 @@ class Project(Displayable):
         return self.name
 
     # TODO: default sorting?
+
+    # custom manager and queryset
+    objects = ProjectManager()
 
 
 class GrantType(models.Model):
