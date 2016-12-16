@@ -199,6 +199,19 @@ MEDIA_URL = STATIC_URL + "media/"
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, *MEDIA_URL.strip("/").split("/"))
 
+COMPRESS_PRECOMPILERS = (
+    # TODO: still need to integrate auto-prefixer
+    # maybe https://github.com/dizballanze/django-compressor-autoprefixer ?
+    ('text/x-scss', 'sass --scss {infile} {outfile}'),
+)
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # other finders..
+    'compressor.finders.CompressorFinder',
+)
+
 # Package/module name to import the root urlpatterns from for the project.
 ROOT_URLCONF = "%s.urls" % PROJECT_APP
 
@@ -259,6 +272,8 @@ INSTALLED_APPS = [
     # "mezzanine.mobile",
     "taggit",
     'adminsortable2',
+    "compressor",
+    # local apps
     "cdhweb.projects",
     "cdhweb.people",
     "cdhweb.resources",

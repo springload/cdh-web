@@ -1,4 +1,5 @@
 Mezzanine>=4.2.1
+django-compressor
 mysqlclient
 django-admin-sortable2
 django-taggit
