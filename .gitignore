@@ -9,6 +9,7 @@ static/CACHE
 
 # Vim stuff
 *.swp
+
 # stock python git-ignores provided by github
 
 # Byte-compiled / optimized / DLL files
@@ -100,3 +101,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+static
+*.out
+.cache
+.sass-cache
+
