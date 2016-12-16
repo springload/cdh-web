@@ -67,10 +67,10 @@ header {
 			margin-top: 14px;
 			&.first-row {
 				margin-top: 0;
-			}
-			&.horizontal-rule {
-				border-top: solid 1px #d8d8d8;
-				margin: 0;
+				text-transform: uppercase;
+				padding-bottom: 14px;
+				border-bottom: solid 1px #d8d8d8;
+				height: auto;
 			}
 			li {
 				font-family: $font-stack-headline-bold;
@@ -134,6 +134,7 @@ footer {
 				font-size: 12px;
 				&.menu-header {
 					font-family: $font-stack-headline-bold;
+					text-transform: uppercase;
 				}
 				a {
 					color: #000000;
