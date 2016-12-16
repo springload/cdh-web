@@ -1,0 +1,134 @@
+{% load static pages_tags mezzanine_tags %}
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <title>{{ page.title|add:" | "|default:"" }}CDH @ Princeton</title>
+
+    <link rel='stylesheet' type='text/css' href='{% static "css/base-prefixed.css" %}'>
+    <script src="https://use.fontawesome.com/46070f4452.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+
+    <script>
+        var scroll = 0;
+        /*
+        	Check every time the window scrolls. If it's by 25px or more and
+          the scroll is below 90px, hide the navi. If the scroll down isn't
+          those, leave it as is.
+          If the scroll is up by 5 px, bring the menu back.
+        */
+        $(window).scroll(function()
+        {
+            scrolled = $(document).scrollTop();
+            if (scrolled - scroll > 25 && scrolled > scroll && scrolled >
+                90)
+            {
+                $('header').addClass('hidden');
+            }
+            else if (scrolled > scroll)
+            {
+                // Do nothing since the scroll was either
+                // too high or not 'enough'
+            }
+            else if (scrolled < scroll && scroll - scrolled > 5)
+            {
+                $('header').removeClass('hidden');
+            }
+
+            scroll = scrolled;
+
+        });
+    </script>
+
+</head>
+
+<body>
+    <a href='#mainmenu' aria-label='Main Menu'></a>
+    <a href='#maincontent' aria-label='Main Content'></a>
+    <a href='#footermenu' aria-label='Footer Menu'></a>
+
+    <header>
+        <nav id='mainmenu'>
+            <a href='{% url 'home' %}' class='home-page'>
+              <img
+              alt='CDH Logo'
+              src='{% static "img/CDH_logo_01.svg" %}' />
+            </a>
+            {% page_menu "snippets/primary_navigation.html" %}
+        </nav>
+    </header>
+    <div class='spacer'></div>
+    <div id='maincontent'>
+        {% block main %}{% endblock %}
+    </div>
+
+
+    <footer id='footermenu'>
+        <section>
+            <ul>
+                <li class='menu-header'><a href='#'>ABOUT</a></li>
+                <li><a href='#'>Staff</a></li>
+                <li><a href='#'>Sponsors</a></li>
+            </ul>
+            <ul>
+                <li class='menu-header'><a href='#'>RESEARCH</li>
+          <li><a href='#'>Projects</a></li>
+                <li><a href='#'>Publications</a></li>
+                <li><a href='#'>Presentations</a></li>
+            </ul>
+            <ul>
+                <li class='menu-header'><a href='#'>GRANTS</a></li>
+                <li><a href='#'>Sponsored Projects</a></li>
+                <li><a href='#'>Fellowships</a></li>
+                <li><a href='#'>Teaching Opportunities</a></li>
+            </ul>
+            <ul>
+                <li class='menu-header'><a href='#'>RESOURCES</a></li>
+                <li><a href='#'>New to DH</a></li>
+                <li><a href='#'>Certificates and Courses</a></li>
+                <li><a href='#'>Reading Group Zotero Feed</a></li>
+                <li><a href='#'>DH Events</a></li>
+            </ul>
+            <ul>
+                <li class='menu-header'><a href='#'>COMMUNITY</a></li>
+                <li><a href='#'>Reading Group</a></li>
+                <li><a href='#'>Grad Caucus and Collaboratory</a></li>
+            </ul>
+            <ul>
+                <li class='menu-header'><a href='#'>UPDATE</a></li>
+                <li class='menu-header'><a href='#'>EVENTS</a></li>
+                <li><br /></li>
+                <li><br /></li>
+                <li class='menu-header'><a href='#'>CONTACT AND DIRECTIONS</a></li>
+                <li class='menu-header'><a href='#'>FAQS</a></li>
+                <li class='menu-header'><a href='#'>SUBSCRIBE</a></li>
+                <li><a href='#'><span class='fa fa-facebook-square'
+                    aria-label='CDH Facebook Link'>
+              </span></a>
+                    <a href='#'><span class='fa fa-twitter'
+                    aria-label='CDH Twitter Link'>
+              </span></a>
+                </li>
+
+            </ul>
+
+            <p class='contact-info'>
+                Center for Digital Humanities<br />
+                Firestone Library Floor B<br />
+                Princeton University<br />
+                Princeton, NJ 08544<br />
+                <br />
+                ©2015 Trustees of Princeton University
+            </p>
+
+        </section>
+    </footer>
+
+</body>
+
+</html>
