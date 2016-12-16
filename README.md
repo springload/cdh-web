@@ -53,7 +53,8 @@ Initial setup and installation:
 - copy sample local settings and configure for your environment
     `cp cdhweb/local_settings.py.sample cdhweb/local_settings.py`
 
-- install & configure [git post-commit hook](https://gist.github.com/rlskoeser/ffa7bb517eeca54e63f3015a9f89d917) for Asana integration
+- install & configure [git post-commit hook](https://gist.github.com/rlskoeser/ffa7bb517eeca54e63f3015a9f89d917) for Asana integration, in order to link git commits to relevant Asana tasks
+and automatically update task assignment and status.
 
 
 ## Unit Testing
