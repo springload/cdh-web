@@ -1,9 +1,11 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 from mezzanine.core.fields import FileField
 from mezzanine.core.models import Displayable, RichText
+from mezzanine.core.managers import DisplayableManager
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
@@ -24,6 +26,21 @@ class Location(models.Model):
         return self.short_name or self.name
 
 
+class EventQuerySet(models.QuerySet):
+
+    def upcoming(self):
+        return self.filter(start_time__gt=timezone.now())
+
+
+class EventManager(DisplayableManager):
+    # extend displayable manager to preserve access to published filter
+    def get_queryset(self):
+        return EventQuerySet(self.model, using=self._db)
+
+    def upcoming(self):
+        return self.get_queryset().upcoming()
+
+
 class Event(Displayable, RichText, AdminThumbMixin):
     # description = rich text field
     # NOTE: do we want a sponsor field? or jest include in description?
@@ -39,6 +56,9 @@ class Event(Displayable, RichText, AdminThumbMixin):
         help_text='Guest lecturer(s) or Workshop leader(s)')
 
     tags = TaggableManager()
+
+    # override default manager with custom version
+    objects = EventManager()
 
     admin_thumb_field = "image"
     event_type.verbose_name = 'Type'
