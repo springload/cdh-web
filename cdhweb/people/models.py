@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.managers import DisplayableManager
@@ -90,4 +91,31 @@ class Position(models.Model):
     def __str__(self):
         return '%s %s (%s)' % (self.user, self.title, self.start_date.year)
 
+
+def init_profile_from_ldap(user, ldapinfo):
+    '''Extra user/profile init logic for auto-populating people
+    profile fields with data available in LDAP.'''
+    try:
+        profile = user.profile
+    except ObjectDoesNotExist:
+        profile = Profile.objects.create(user=user)
+
+    # populate profile with data we can pull from ldap
+    profile.title = str(ldapinfo.displayName)
+    profile.phone_number = str(ldapinfo.telephoneNumber)
+    # 'street' in ldap is office location
+    profile.office_location = str(ldapinfo.street)
+    profile.save()
+
+    # NOTE: job title is available in LDAP; attaching to a person
+    # currently requires at least a start date (which is not available
+    # in LDAP), but we can at least ensure the title is defined
+    # so it can easily be associated with the person
+
+    # only do if the person has a title set
+    if ldapinfo.title:
+        # job title in ldap is currently stored as
+        # job title, organizational unit
+        job_title = str(ldapinfo.title).split(',')[0]
+        Title.objects.get_or_create(title=job_title)
 

@@ -129,7 +129,10 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = False
 
-AUTHENTICATION_BACKENDS = ("mezzanine.core.auth_backends.MezzanineBackend",)
+AUTHENTICATION_BACKENDS = (
+    "mezzanine.core.auth_backends.MezzanineBackend",
+    'django_cas_ng.backends.CASBackend',
+)
 
 # The numeric mode to set newly-uploaded files to. The value should be
 # a mode you'd pass directly to os.chmod.
@@ -273,6 +276,8 @@ INSTALLED_APPS = [
     "taggit",
     'adminsortable2',
     "compressor",
+    "django_cas_ng",
+    "pucas",
     # local apps
     "cdhweb.projects",
     "cdhweb.people",
@@ -314,6 +319,25 @@ MIDDLEWARE_CLASSES = (
 # at the moment we are using custom forks of them.
 PACKAGE_NAME_FILEBROWSER = "filebrowser_safe"
 PACKAGE_NAME_GRAPPELLI = "grappelli_safe"
+
+
+# pucas configuration that is not expected to change across deploys
+# and does not reference local server configurations or fields
+PUCAS_LDAP = {
+    # attributes expected by init_profile_from_ldap method
+    'ATTRIBUTES': ['uid', 'universityid', 'pustatus', 'ou', 'givenName',
+        'sn', 'mail', 'telephoneNumber', 'street', 'title', 'displayName'],
+
+    'ATTRIBUTE_MAP': {
+        'first_name': 'givenName',
+        'last_name': 'sn',
+        'email': 'mail',
+    },
+    # local method to populate profile fields based on available
+    # ldap information
+    'EXTRA_USER_INIT': 'cdhweb.people.models.init_profile_from_ldap'
+}
+
 
 #########################
 # OPTIONAL APPLICATIONS #

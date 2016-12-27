@@ -34,8 +34,10 @@ urlpatterns += [
     url("^blog/", include("cdhweb.blog.urls", namespace='blog')),
     url("^events/", include("cdhweb.events.urls", namespace='event')),
 
-
     url("^$", resource_views.site_index, name="home"),
+
+    # CAS login urls
+    url(r'^accounts/', include('pucas.cas_urls')),
 
     # let mezzanine handle everything else
     url("^", include("mezzanine.urls")),
