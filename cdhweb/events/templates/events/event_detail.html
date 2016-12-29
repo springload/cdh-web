@@ -1,13 +1,43 @@
-{% load mezzanine_tags comment_tags keyword_tags rating_tags i18n disqus_tags %}
+{% extends 'base.html' %}
+{% load mezzanine_tags %}
 
-{# preliminary blog post page; adapted from mezzanine blog post template #}
+{% block page-subtitle %}{{ event.title }} | Events | {% endblock %}
 
-<h2>{{ event.title }}</h2>
+{% block main %}
+<div typeof="schema:Event">
 
-{{ event.event_type }}
+<img property="schema:image" src="{{ MEDIA_URL }}{{ event.image }}"/>
 
-{% editable blogpost.content %}
-{{ event.content|richtext_filters|safe }}
+    <h1 property="schema:name">{{ event.title }}</h1>
+
+<meta property="schema:url" content="{{ event.get_absolute_url }}"/>
+{# FIXME: do we need full url here? #}
+
+<p>{{ event.event_type }}</p>
+<div>
+{% for person in event.speakers.all %}
+    {# performer == presenter #}
+    <div property="schema:performer" typeof="schema:Person">
+        <span property="schema:name">{{ person.profile.title }}</span>
+        {# TODO: link to staff profile or guest speaker page when we have it  #}
+    </div>
+{% endfor %}
+</div>
+
+<meta property="schema:startDate" content="{{ event.start_time|date:'c' }}"/>
+<meta property="schema:endDate" content="{{ event.end_time|date:'c' }}"/>
+<div>{{ event.when }}</div>
+
+{% editable event.content %}
+<div property="schema:description">{{ event.content|richtext_filters|safe }}</div>
 {% endeditable %}
+
+<div property="schema:location" typeof="schema:Place">
+    <h2 property="schema:name">{{ event.location.name }}</h2>
+    <div property="schema:address">{{ event.location.address}}</div>
+</div>
+
+</div>
+{% endblock %}
 
 

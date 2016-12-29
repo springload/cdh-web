@@ -77,3 +77,27 @@ class Event(Displayable, RichText, AdminThumbMixin):
             'year': self.publish_date.year,
             'month': self.publish_date.month,
             'slug': self.slug})
+
+    def when(self):
+        # event start/end date and time, formatted for display
+        start = self.start_time.strftime('%B %d %I:%M')
+        start_ampm = self.start_time.strftime('%p')
+        # include start am/pm if *different* from end
+        if start_ampm != self.end_time.strftime('%p'):
+            start += ' %s' % start_ampm
+        timediff = self.end_time - self.start_time
+
+        # include end month and day if *different* from start
+        end_pieces = []
+        if self.start_time.month != self.end_time.month:
+            end_pieces.append(self.end_time.strfime('%B'))
+        if self.start_time.day != self.end_time.day:
+            end_pieces.append(self.end_time.strftime('%d'))
+        end_pieces.append(self.end_time.strftime('%I:%M %p'))
+        end = ' '.join(end_pieces)
+
+        # FIXME: strftime doesn't provide non-leading zero days
+        # and times - may want to clean these up. May also want to
+        # converte am/pm to lower case
+
+        return ' - '.join([start, end])
