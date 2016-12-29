@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.utils.text import slugify
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.managers import DisplayableManager
 from mezzanine.core.models import Displayable, Slugged
@@ -101,7 +102,10 @@ def init_profile_from_ldap(user, ldapinfo):
         profile = Profile.objects.create(user=user)
 
     # populate profile with data we can pull from ldap
+    # - set user's display name as page title
     profile.title = str(ldapinfo.displayName)
+    # - generate a slug based on display name
+    profile.slug = slugify(ldapinfo.displayName)
     profile.phone_number = str(ldapinfo.telephoneNumber)
     # 'street' in ldap is office location
     profile.office_location = str(ldapinfo.street)
