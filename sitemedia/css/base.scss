@@ -1,9 +1,10 @@
 @import "grid-settings";
 @import "neat/neat";
 @import "variables";
+
 body {
-	padding: 21px;
-	margin: 0;
+	@include outer-container;
+	background-color: $bg-gray;
 }
 div.bleed-image-placeholder {
 	width: 100%;
@@ -154,5 +155,55 @@ footer {
 				}
 			}
 		}
+	}
+}
+
+
+
+.card {
+	@include span-columns(4);
+	position: relative;
+	background-color: white;
+	height: 426px;
+
+	/* maybe set fallback background image here ? */
+	img {
+		width: 100%;
+		height: 240px;
+		z-index: 1;
+	}
+	.content {
+		position: absolute;
+		top: 282px;
+		margin: 18px;
+		font-family: $font-stack-headline;
+		font-size: 16px;
+	}
+	a {
+		text-decoration: none;
+		color: #646464;
+		display: block;  /* make the whole card clickable */
+		width: 100%;
+		height: 100%;
+	}
+
+	h2 {
+		font-family: $font-stack-headline-bold;
+		font-size: 18px;
+		color: black;
+	}
+
+	.event-type {
+		position: absolute;
+		width: 104px;
+		z-index: 5;
+		right: -10px;
+		top: 230px;
+		border: 2px solid $cdh-blue;
+		box-shadow: 5px 5px 0px $cdh-blue;
+		background-color: white;
+	}
+	.time {
+		padding-left: 20px;
 	}
 }

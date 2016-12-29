@@ -10,11 +10,10 @@
 {% endfor %}
 </ul>
 
-<ul>
 {% for event in events %}
-    <li>{{ event }}</li>
+    {% include 'events/snippets/event_card.html' %}
 {% endfor %}
-</ul>
+
 
 
 {% endblock %}

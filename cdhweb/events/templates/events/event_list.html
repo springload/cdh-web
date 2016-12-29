@@ -1,5 +1,10 @@
-<ul>
+{% extends 'base.html' %}
+
+
+{% block main %}
+
 {% for event in event_list %}
-    <li><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></li>
+    {% include 'events/snippets/event_card.html' %}
 {% endfor %}
-</ul>
+
+{% endblock %}

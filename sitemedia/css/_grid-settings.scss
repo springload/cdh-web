@@ -8,6 +8,9 @@ $gutter: 30px;
 $grid-columns: 12;
 $max-width: 990px;
 
+/* turn on visual grid for debugging */
+/*$visual-grid: true;*/
+
 //Breakpoint grid values
 $medium_val: 735px;
 $small_val: 84%;
@@ -18,7 +21,7 @@ $small: new-breakpoint(max-width 735px 1);
 
 @import "neat/neat";
 /* Create a mix-in with responsive container behavior to use in place of outer-container()
-Note that visual-grid must be written manually to follow this behavior since it's 
+Note that visual-grid must be written manually to follow this behavior since it's
 constructed using a background image */
 @mixin responsive-container {
   @include outer-container();
