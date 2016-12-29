@@ -6,7 +6,7 @@
     <meta charset='UTF-8'>
     <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
     <meta name="description" content="{% block meta_description %}{% endblock %}">
-    <title>{{ page.title|add:" | "|default:"" }}CDH @ Princeton</title>
+    <title>{% block page-subtitle %}{% if page.title %}{{ page.title|add:" | " }}{% endif %}{% endblock %}CDH @ Princeton</title>
 
     {% compress css %}
     <link type="text/x-scss" rel="stylesheet" href="/static/css/base.scss" charset="utf-8">
