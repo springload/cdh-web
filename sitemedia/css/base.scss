@@ -3,8 +3,9 @@
 @import "variables";
 
 body {
-	@include outer-container;
 	background-color: $bg-gray;
+	margin: 0;
+	padding: 0;
 }
 div.bleed-image-placeholder {
 	width: 100%;
@@ -37,6 +38,7 @@ header {
 		margin-top: -90px;
 	}
 	nav {
+		margin: 8px;
 		@include responsive-container;
 		display: flex;
 		flex-direction: row;
@@ -103,6 +105,7 @@ div.spacer {
 	height: 340px;
 }
 footer {
+	padding-top: 150px;
 	section {
 		@include responsive-container;
 		height: 261px;
@@ -158,7 +161,71 @@ footer {
 	}
 }
 
+article {
+	padding-top: 90px;
+	width: 100%;
+	header {
+		/* NOTE: styles currently for landing pages, may need adjustment */;
+		width: 100%;
+		max-width: none;
+		z-index: -1;
+		height: 679px;
+		position: relative;
 
+		font-family: $font-stack-headline;
+		font-size: 64px;
+		color: #ffffff;
+		text-align: left;
+		background-size: cover;
+		background-position: 50% 50%;
+		background-repeat: no-repeat;
+
+		div {
+			@include outer-container;
+			padding-top: 350px;
+		}
+		a.home {
+			color: $cdh-blue;
+			display: inline-block;
+			text-decoration: none;
+		}
+		h1 {
+			font-size: 100%;
+			display: inline-block;
+			margin-bottom: 10px;
+		}
+		p {
+			margin-top: 0;
+			font-size: 20px;
+			/* FIXME: according to design font should be brown-std-alt ? */
+		}
+		p::before {
+			content: "< ";
+			color: $cdh-blue;
+		}
+		p::after {
+			content: " >";
+			color: $cdh-blue;
+			display: inline;
+		}
+	}
+
+	div {
+		@include outer-container;
+	}
+
+	#maincontent {
+		margin-top: -116px;
+		background-color: white;
+		z-index: 4;
+		padding: 80px 170px 100px;
+
+	}
+}
+
+#maincontent {
+	@include outer-container;
+}
 
 .card {
 	@include span-columns(4);

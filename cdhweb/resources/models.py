@@ -4,6 +4,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 from mezzanine.core.fields import FileField
+from mezzanine.core.models import RichText
+from mezzanine.pages.models import Page
+from mezzanine.utils.models import upload_to
 
 
 class ResourceType(models.Model):
@@ -55,4 +58,11 @@ class Attachment(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class LandingPage(Page, RichText):
+    tagline = models.CharField(max_length=255)
+    image = FileField(verbose_name="Image",
+        upload_to=upload_to("resources.landing_pages.image", "resources"),
+        format="Image", max_length=255, null=True, blank=True)
 

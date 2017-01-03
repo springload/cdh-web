@@ -66,10 +66,14 @@
             {% page_menu "snippets/primary_navigation.html" %}
         </nav>
     </header>
+    {% block content %}
+    {% block content-header %}
     <div class='spacer'></div>
+    {% endblock %}
     <div id='maincontent'>
         {% block main %}{% endblock %}
     </div>
+    {% endblock content %}
 
     <footer id='footermenu'>
         <section>
