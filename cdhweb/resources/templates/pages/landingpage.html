@@ -1,0 +1,27 @@
+{% extends 'pages/page.html' %}
+{% load mezzanine_tags %}
+
+{% block content %} {# wrap content in an article tag #}
+<article>
+{{ block.super }}
+</article>
+{% endblock %}
+
+{% block content-header %}
+<header style="background-image:url('{{ MEDIA_URL }}{{ page.landingpage.image }}')">
+    <div>
+    <a href="{% url 'home' %}" class="home">/</a>
+    <h1>{{ page.title }}</h1>
+    <p>{{ page.landingpage.tagline }}</p>
+    </div>
+</header>
+{% endblock %}
+
+{% block main %}
+
+{# adapted from richtextpage template #}
+{% editable page.landingpage.content %}
+{{ page.landingpage.content|richtext_filters|safe }}
+{% endeditable %}
+
+{% endblock %}
