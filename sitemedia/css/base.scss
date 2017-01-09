@@ -34,6 +34,7 @@ header {
 	margin-right: auto;
 	transition: margin-top 0.25s;
 	transition-timing-function: ease-in-out;
+	z-index: 1;
 	&.hidden {
 		margin-top: -90px;
 	}
