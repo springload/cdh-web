@@ -164,12 +164,13 @@ footer {
 article {
 	padding-top: 90px;
 	width: 100%;
+	position: relative;
+
 	header {
 		/* NOTE: styles currently for landing pages, may need adjustment */;
 		width: 100%;
 		max-width: none;
-		z-index: -1;
-		height: 679px;
+		height: 680px;
 		position: relative;
 
 		font-family: $font-stack-headline;
@@ -180,14 +181,22 @@ article {
 		background-position: 50% 50%;
 		background-repeat: no-repeat;
 
+  	    @include media($small) {
+  	    	height: 320px;
+  	    }
+
 		div {
-			@include outer-container;
 			padding-top: 350px;
+	  	    @include media($small) {
+				padding: 30px;
+	  	    }
 		}
 		a.home {
 			color: $cdh-blue;
 			display: inline-block;
+			font-weight: bold;
 			text-decoration: none;
+			/* fixme: not clickable - because of x-index? */;
 		}
 		h1 {
 			font-size: 100%;
@@ -211,20 +220,30 @@ article {
 	}
 
 	div {
-		@include outer-container;
+		@include responsive-container();
 	}
 
 	#maincontent {
 		margin-top: -116px;
 		background-color: white;
-		z-index: 4;
+		z-index: 4;  /* overlap background image from header */
 		padding: 80px 170px 100px;
+		position: relative;
+
+  	    @include media($medium) {
+  	    	padding: 80px 85px 100px;
+  	    }
+
+  	    @include media($small) {
+  	    	margin-top: auto;
+  	    	padding: 30px 30px 100px;
+  	    }
 
 	}
 }
 
 #maincontent {
-	@include outer-container;
+	@include responsive-container();
 }
 
 .card {
