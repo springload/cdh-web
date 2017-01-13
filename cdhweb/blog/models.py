@@ -64,5 +64,6 @@ class BlogPost(Displayable, MultiOwnable, RichText, AdminThumbMixin):
         # want to use locally
         return reverse('blog:detail', kwargs={
             'year': self.publish_date.year,
-            'month': self.publish_date.month,
+            # force two-digit month
+            'month': '%02d' % self.publish_date.month,
             'slug': self.slug})
