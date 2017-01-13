@@ -45,7 +45,7 @@ class Project(Displayable):
 
     members = models.ManyToManyField(User, through='Membership')
     resources = models.ManyToManyField(ResourceType, through='ProjectResource')
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     def __str__(self):
         return self.name

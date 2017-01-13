@@ -53,9 +53,10 @@ class Event(Displayable, RichText, AdminThumbMixin):
     location = models.ForeignKey(Location)
     event_type = models.ForeignKey(EventType)
     speakers = models.ManyToManyField(User,
-        help_text='Guest lecturer(s) or Workshop leader(s)')
+        help_text='Guest lecturer(s) or Workshop leader(s)',
+        blank=True)
 
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     # override default manager with custom version
     objects = EventManager()

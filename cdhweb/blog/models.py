@@ -49,7 +49,7 @@ class BlogPost(Displayable, MultiOwnable, RichText, AdminThumbMixin):
         format="Image", max_length=255, null=True, blank=True)
     related_posts = models.ManyToManyField("self",
                                  verbose_name=_("Related posts"), blank=True)
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     admin_thumb_field = "featured_image"
 

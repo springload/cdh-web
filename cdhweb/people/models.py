@@ -56,7 +56,7 @@ class Profile(Displayable):
     phone_number = models.CharField(max_length=50, blank=True, null=True)
     office_location = models.CharField(max_length=255, blank=True, null=True)
 
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     # use displayable manager for access to published queryset filter, etc.
     objects = DisplayableManager()
