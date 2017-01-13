@@ -31,7 +31,7 @@ if settings.USE_MODELTRANSLATION:
 urlpatterns += [
     url("^people/", include("cdhweb.people.urls", namespace='people')),
     # actual blog url still TBD
-    url("^blog/", include("cdhweb.blog.urls", namespace='blog')),
+    url("^updates/", include("cdhweb.blog.urls", namespace='blog')),
     url("^events/", include("cdhweb.events.urls", namespace='event')),
 
     url("^$", resource_views.site_index, name="home"),

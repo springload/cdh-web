@@ -1,22 +1,35 @@
-{% load mezzanine_tags comment_tags keyword_tags rating_tags i18n disqus_tags %}
+{% extends 'base.html' %}
+{% load mezzanine_tags humanize %}
+
+{% block page-subtitle %}{{ blogpost.title }} | Updates | {% endblock %}
 
 {# preliminary blog post page; adapted from mezzanine blog post template #}
 
-<h2>{{ blogpost.title }}</h2>
+{% block main %}
+<article typeof="schema:BlogPosting">
 
-{% editable blog_post.publish_date %}
-<h6 class="post-meta">
-    {% trans "By" %}:
-    {% for author in blogpost.users.all %}
-    <a href="{{ author.profile.get_absolute_url }}">{{ author.get_full_name|default:author.username }}</a>
-    {% endfor %}
-    {% blocktrans with sometime=blogpost.publish_date|timesince %}{{ sometime }} ago{% endblocktrans %}
-</h6>
-{% endeditable %}
+<h2 property="schema:headline">{{ blogpost.title }}</h2>
+<meta property="schema:url" content="{{ blogpost.get_absolute_url }}"/>
+{# FIXME: do we need full url here? #}
+<meta property="schema:datePublished" content="{{ blogpost.publish_date|date:"c" }}"/>
+<meta property="schema:dateModified" content="{{ blogpost.updated|date:"c" }}"/>
 
-{% block blogpost_detail_content %}
+{% for author in blogpost.users.all %}
+    <div property="schema:author" typeof="schema:Person">
+        <a property="schema:url" href="{{ author.profile.get_absolute_url }}">
+        <span property="schema:name">{{ author.get_full_name|default:author.username }}</span></a>
+    </div>
+{% endfor %}
+<div>{{ blogpost.publish_date|naturalday }}</div>
+
 {% editable blogpost.content %}
-{{ blogpost.content|richtext_filters|safe }}
+    <div property="schema:articleBody">
+    {{ blogpost.content|richtext_filters|safe }}
+    </div>
 {% endeditable %}
-{% endblock %}
 
+{# basic (crude) tag display #}
+<div property="schema:keywords">{{ blogpost.tags.all|join:", "}}</div>
+
+</article>
+{% endblock %}
