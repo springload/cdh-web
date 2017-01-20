@@ -54,6 +54,14 @@ class Command(BaseCommand):
             email = person['fields']['email']
             try:
                 user = User.objects.get(email=email)
-                self.stdout.write(self.style.SUCCESS(email))
+                self.stdout.write(self.style.SUCCESS('Found username %s') % user.username)
+                
+                user.profile.education = person['fields']['education']
+                self.stdout.write('Education field: %s' % user.profile.education)
+
+                if not options['noop']:
+                    user.profile.save()
+                    self.stdout.write(self.style.SUCCESS('Wrote education for %s' % user.username))
+
             except:
                 self.stdout.write(self.style.NOTICE("No email found."))
