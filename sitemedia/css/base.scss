@@ -284,11 +284,14 @@ article {
 		position: absolute;
 		width: 104px;
 		z-index: 5;
-		right: -10px;
-		top: 230px;
+		top: -12px;
+		left: 15px;
 		border: 2px solid $cdh-blue;
 		box-shadow: 5px 5px 0px $cdh-blue;
 		background-color: white;
+		/* TODO:  font style not clear in zeplin
+		font-family: $font-stack-headline-bold;
+		*/
 	}
 	.time {
 		padding-left: 20px;
