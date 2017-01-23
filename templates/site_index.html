@@ -10,7 +10,7 @@
 {% block main %}
 
 <section class="events">
-<h2>Upcoming Events</h2>
+<h2><a href="{% url 'event:list' %}">Upcoming Events</a></h2>
 {% for event in events %}
     {% include 'events/snippets/event_card.html' %}
 {% endfor %}
