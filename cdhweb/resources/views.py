@@ -8,7 +8,11 @@ def site_index(request):
     # TODO: highlighted/featured item or news
 
     projects = Project.objects.published(for_user=request.user) \
-        .active().current()
+        .active()
+        # NOTE: temporarily suppress current filter
+        # (requires project / grant association)
+        # .current()
+
     # NOTE: could potentially also filter by type of grant ?
     # TODO: shuffle and pick first 3
     # (shouldn't be so many current, active projects that this is a problem)
