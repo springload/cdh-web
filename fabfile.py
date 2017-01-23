@@ -36,7 +36,7 @@ def deploy_qa(build=None, rebuild=False):
     kwargs:
     build -- git hash or overall branch name ('develop', 'master')
     rebuild -- Boolean, if True removes commit dir and rebuilds
-    
+
     syntax:
     fab deploy_qa:build=<hash>
     '''
@@ -56,7 +56,7 @@ def deploy_qa(build=None, rebuild=False):
     else:
         if exists(env.deploy_commit_dir):
             sudo('rm -rf %(deploy_commit_dir)s' % env)
-        
+
         with cd(env.deploy_dir):
             sudo('rm -f %(build)s.tar.gz' % env)
             sudo('wget %(gitbase)s%(repo)s/archive/%(build)s.tar.gz' % env)
@@ -90,9 +90,6 @@ def deploy_qa(build=None, rebuild=False):
                     sudo('rm static/robots.txt && ln -s ../../robots.txt static/robots.txt')
             else:
                 sudo('mkdir static/ && ln -s ../../robots.txt static/robots.txt')
-            # Copy pucas templates
-            sudo('cp -Rf /var/deploy/django-pucas/pucas/templates/pucas templates/')  
-            sudo('cp templates/pucas/sample-admin-login.html templates/admin/login.html')
         # Redo symlinks for apache
         with cd('/var/www/'):
             if exists('%(repo)s' % env):
@@ -103,7 +100,7 @@ def deploy_qa(build=None, rebuild=False):
         sudo('chown root:apache -R /var/deploy/ && chmod g+rwx -R /var/deploy')
 
         # Clean up deploy
-        sudo('rm -f %(deploy_dir)s*.tar.gz' % env) 
+        sudo('rm -f %(deploy_dir)s*.tar.gz' % env)
 
         # Restart apache
         sudo('systemctl restart httpd24-httpd')
