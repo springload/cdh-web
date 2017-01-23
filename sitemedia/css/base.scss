@@ -365,7 +365,8 @@ $event-card-img-height: 240px;
 		}
 
 		&:hover {
-		 	background: $cdh-blue;
+			/* using important to override background image set in template */
+		 	background: $cdh-blue !important;
 		}
 		a {
 			background-color: white;

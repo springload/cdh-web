@@ -5,6 +5,7 @@ from django.utils import timezone
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.models import Displayable
 from mezzanine.core.managers import DisplayableManager
+from mezzanine.utils.models import upload_to
 from taggit.managers import TaggableManager
 
 from cdhweb.resources.models import ResourceType
@@ -46,6 +47,17 @@ class Project(Displayable):
     members = models.ManyToManyField(User, through='Membership')
     resources = models.ManyToManyField(ResourceType, through='ProjectResource')
     tags = TaggableManager(blank=True)
+
+    # TODO: include help text to indicate images are optional, where they
+    # are used (size?); add language about putting large images in the
+    # body of the project description, when we have styles for that.
+    image = FileField(verbose_name="Image",
+        upload_to=upload_to("projects.image", "projects"),
+        format="Image", max_length=255, null=True, blank=True)
+
+    thumb = FileField(verbose_name="Thumbnail",
+        upload_to=upload_to("projects.image", "projects"),
+        format="Image", max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
