@@ -1,6 +1,6 @@
 {# display a single event in card format #}
 {# FIXME: significant overlap with event_detail, esp. for schema properties #}
-<div class="card" typeof="schema:Event">
+<div class="card event" typeof="schema:Event">
     <a property="schema:url" href="{{ event.get_absolute_url }}">
     {% if event.image %} {# TODO: fallback/placeholder image #}
     <img property="schema:image" src="{{ MEDIA_URL }}{{ event.image }}"/>
