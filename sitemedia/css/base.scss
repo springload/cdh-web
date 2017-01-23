@@ -181,7 +181,7 @@ article {
 	position: relative;
 
 	header {
-		/* NOTE: styles currently for landing pages, may need adjustment */;
+		/* NOTE: styles currently for landing pages, may need adjustment */
 		width: 100%;
 		max-width: none;
 		height: 680px;
@@ -210,7 +210,6 @@ article {
 			display: inline-block;
 			font-weight: bold;
 			text-decoration: none;
-			/* fixme: not clickable - because of x-index? */;
 		}
 		h1 {
 			font-size: 100%;
@@ -296,13 +295,10 @@ $event-card-img-height: 240px;
 	&.event {
 		@include span-columns(4);
 		height: $event-card-height;
-
-		img {
-			width: 100%;
-			height: $event-card-img-height;
-			z-index: 2;
-			position: absolute;
-		}
+		/* background options for when an image is added in the template */
+		background-size: cover;
+		/* background-position: 50% 50%;  maybe? */
+		background-repeat: no-repeat;
 
 		.content {
 			position: absolute;

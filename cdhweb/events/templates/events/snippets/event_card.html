@@ -1,10 +1,8 @@
 {# display a single event in card format #}
 {# FIXME: significant overlap with event_detail, esp. for schema properties #}
-<div class="card event" typeof="schema:Event">
+<div class="card event" typeof="schema:Event"
+{% if event.image %}style="background-image:url('{{ MEDIA_URL }}{{ event.image }}')"{% endif %}>
     <a property="schema:url" href="{{ event.get_absolute_url }}">
-    {% if event.image %} {# TODO: fallback/placeholder image #}
-    <img property="schema:image" src="{{ MEDIA_URL }}{{ event.image }}"/>
-    {% endif %}
     <div class="event-type">{{ event.event_type }}</div>
     <div class="content">
         <h2 property="schema:name">{{ event.title }}</h2>
