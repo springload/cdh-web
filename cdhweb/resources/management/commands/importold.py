@@ -12,8 +12,6 @@ User = get_user_model()
 # Helper functions for reading the JSON
 def load_db(path):
     '''Loads a JSON file and returns the parsed JSON'''
-    path = os.path.expanduser(path)
-    path = os.path.abspath(path)
     with open(path, 'r') as fp:
         return json.load(fp)
 
