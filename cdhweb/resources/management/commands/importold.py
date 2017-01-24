@@ -4,6 +4,9 @@ import os
 
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth import get_user_model
+from django.utils.text import slugify
+
+# Load models
 from cdhweb.people.models import Title, Position
 
 # Get the user model for use later
@@ -75,7 +78,7 @@ class Command(BaseCommand):
                 # Bio
                 for page in staff_pages:
                     name = person['fields']['name']
-                    slugged_name = name.lower().strip().replace(" ", "-")
+                    slugged_name = slugify(name)
                     if page['fields']['slug'] == slugged_name:
                         user.profile.bio = page['fields']['extra_content']
                         self.stdout.write('Bio: %s...' %
