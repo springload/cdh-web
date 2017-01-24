@@ -321,6 +321,12 @@ MIDDLEWARE_CLASSES = (
 PACKAGE_NAME_FILEBROWSER = "filebrowser_safe"
 PACKAGE_NAME_GRAPPELLI = "grappelli_safe"
 
+# configure local nav templates so that page.in_menu works properly
+PAGE_MENU_TEMPLATES = (
+    (1, "Top navigation bar", "snippets/primary_navigation.html"),
+    (2, "Left-hand tree", "pages/menus/tree.html"),  # mezzanine default
+    (3, "Footer", "snippets/footer_menu.html"),
+)
 
 # pucas configuration that is not expected to change across deploys
 # and does not reference local server configurations or fields
