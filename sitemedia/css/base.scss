@@ -7,7 +7,46 @@ body {
 	background-color: $bg-gray;
 	margin: 0;
 	padding: 0;
+	font-family: $font-stack-body-text;
+	font-size: 20px;
+	color: #000000;
+	line-height: 1.6;
 }
+
+h1, h2, h3, h4 {
+	font-family: $font-stack-headline-bold;
+	font-weight: bold;
+}
+
+h3 {
+	font-size: 28px;
+	line-height: 1.29;
+}
+
+h4 {
+	font-size: 20px;
+	font-stretch: normal;
+}
+
+/* NOTE: labeled as .quote in zeplin, used for blog excerpt/call out in design */
+q {
+	font-family: Georgia;
+	font-size: 21px;
+	font-style: italic;
+	line-height: 1.52;
+	color: $text-gray;
+}
+
+/* Caption in zeplin */
+figcaption {
+	font-family: $font-stack-body-text; /* redundant? body font */
+	font-size: 18px;
+	font-style: italic;
+	line-height: 1.33;
+	text-align: center;
+	color: $text-gray;
+}
+
 div.bleed-image-placeholder {
 	width: 100%;
 	height: 300px;
