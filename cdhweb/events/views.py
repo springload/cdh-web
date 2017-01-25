@@ -14,6 +14,8 @@ class EventListView(ListView):
     model = Event
 
     def get_queryset(self):
+        # TODO: label based on which events are displayed
+        # upcoming? year? (semester?)
         qs = Event.objects.published(for_user=self.request.user)
         if self.kwargs.get('year', None):
             qs = qs.filter(publish_date__year=self.kwargs['year'])

@@ -2,9 +2,11 @@
 
 
 {% block main %}
-
-{% for event in event_list %}
-    {% include 'events/snippets/event_card.html' %}
-{% endfor %}
+<section class="events">
+    <h2>Events</h2>
+    {% for event in event_list %}
+        {% include 'events/snippets/event_card.html' %}
+    {% endfor %}
+</section>
 
 {% endblock %}
