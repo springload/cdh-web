@@ -96,6 +96,10 @@ class Position(models.Model):
 def init_profile_from_ldap(user, ldapinfo):
     '''Extra user/profile init logic for auto-populating people
     profile fields with data available in LDAP.'''
+
+    user.email = user.email.lower()
+    user.save()
+
     try:
         profile = user.profile
     except ObjectDoesNotExist:
