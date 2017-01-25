@@ -74,7 +74,7 @@ header {
 	margin-right: auto;
 	transition: margin-top 0.25s;
 	transition-timing-function: ease-in-out;
-	z-index: 1;
+	z-index: 10;
 	&.hidden {
 		margin-top: -90px;
 	}
@@ -110,7 +110,7 @@ header {
 			margin-bottom: 14px;
 			margin-top: 14px;
 			&.first-row {
-				margin-top: 0;
+				margin: 0;
 				text-transform: uppercase;
 				padding-bottom: 14px;
 				border-bottom: solid 1px #d8d8d8;
@@ -125,7 +125,7 @@ header {
 				a {
 					color: #000000;
 					text-decoration: none;
-					padding-bottom: 13px;
+					padding-bottom: 14px;
 					&:focus,
 					&:hover,
 					&:visited {
@@ -359,7 +359,7 @@ $event-card-img-height: 240px;
 			/* TODO:  font style not clear in zeplin */
 			font-family: $font-stack-headline;
 			font-size: 12px;
-			padding: 5px;
+			padding: 2px 5px;
 		}
 		.time {
 			padding-left: 20px;
@@ -374,6 +374,10 @@ $event-card-img-height: 240px;
 		@include span-columns(3);
 		height: 170px;
 		padding: 0;
+
+		h2 {
+			margin-bottom: 0;
+		}
 
 		/* triangle top right */
 		&::after {
@@ -416,6 +420,7 @@ $event-card-img-height: 240px;
 			font-size: 15px;
 			color: $text-gray;
 			line-height: 1.33;
+			margin: 0;
 		}
 
 
@@ -430,7 +435,7 @@ $event-card-img-height: 240px;
 }
 
 
-.homepage section > h2 {
+@mixin header-with-icon {
 	/* font-family: BrownStd-Alt;    ?? */
 	font-family: $font-stack-headline;
 	font-size: 16px;
@@ -447,7 +452,10 @@ $event-card-img-height: 240px;
 	margin-bottom: 50px;
 
 	background-repeat: no-repeat;
+}
 
+.homepage section > h2 {
+	@include header-with-icon;
 	a {
 		text-decoration: none;
 		color: $text-gray;
@@ -456,10 +464,12 @@ $event-card-img-height: 240px;
 
 .events > h2 {
 	@include retina-image('../img/icons/icon-cal', 50px 54px);
+	@include header-with-icon;
 }
 
 .projects > h2 {
 	/* placeholder, until we get project icon image */
 	@include retina-image('../img/icons/icon-cal', 50px 54px);
+	@include header-with-icon;
 }
 
