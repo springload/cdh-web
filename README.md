@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/Princeton-CDH/cdh-web.svg?branch=develop)](https://travis-ci.org/Princeton-CDH/cdh-web)
 [![codecov](https://codecov.io/gh/Princeton-CDH/cdh-web/branch/develop/graph/badge.svg)](https://codecov.io/gh/Princeton-CDH/cdh-web)
 [![Code Health](https://landscape.io/github/Princeton-CDH/cdh-web/develop/landscape.svg?style=flat)](https://landscape.io/github/Princeton-CDH/cdh-web/develop)
+[![Requirements Status](https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=develop)](https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=develop)
 
 ## Overview
 The purpose of this repo is to house the development files for the current version of the CDH Website,
