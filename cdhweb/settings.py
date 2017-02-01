@@ -237,6 +237,8 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "mezzanine.conf.context_processors.settings",
                 "mezzanine.pages.context_processors.page",
+                'cdhweb.context_extras',
+                'cdhweb.context_processors.template_settings'
             ],
             "builtins": [
                 "mezzanine.template.loader_tags",

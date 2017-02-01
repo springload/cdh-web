@@ -225,6 +225,7 @@ article {
 		max-width: none;
 		height: 680px;
 		position: relative;
+		z-index: 1;
 
 		font-family: $font-stack-headline;
 		font-size: 64px;
@@ -471,5 +472,77 @@ $event-card-img-height: 240px;
 	/* placeholder, until we get project icon image */
 	@include retina-image('../img/icons/icon-cal', 50px 54px);
 	@include header-with-icon;
+}
+
+
+
+.ribbon-box {
+  @include size(350px);
+  position: fixed;
+  right: 0;
+  z-index: 11;
+  background: transparent;
+  font-size: 14px;
+
+  opacity: 0.95;
+  transition:opacity 0.2s;
+
+  &.fade {
+   opacity:0.3;
+   pointer-events: none;
+	  button {
+	  	display: none;
+	  }
+  }
+
+  h2 {
+  	font-family: $font-stack-body-text;
+  }
+
+  button {
+  	border: $bg-gray;
+  	border-radius: 5px;
+  	color: black;
+  	background-color: $bg-gray;
+  	padding: 5px;
+  	margin-bottom: 5px;
+  }
+}
+
+.ribbon-wrapper {
+  // $action-color: red !default;
+  $action-color: rgb(255, 69, 69) !default;
+  // $action-color: #477dca !default;
+  $ribbon-background: $action-color;
+  $ribbon-size: 375px;
+
+  @include size($ribbon-size);
+  overflow: hidden;
+  position: absolute;
+  right: -1px;
+  top: -1px;
+
+  .ribbon {
+    background-color: $ribbon-background;
+    // box-shadow: 0 0 3px rgba(#000, 0.3);
+    color: #fff;
+    font-size: 0.8em;
+    right: -75px;
+    line-height: 1.5em;
+    padding: 2px 7px;
+    position: relative;
+    text-align: center;
+    top: 55px;
+    transform: rotate(45deg);
+    width: 400px;
+  }
+}
+
+/* software version in footer (preliminary style/location) */
+#sw-version {
+	color: $text-gray;
+	font-size: small;
+	text-align: right;
+	margin-right: 15px;
 }
 

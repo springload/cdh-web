@@ -7,9 +7,12 @@
 
 DEBUG = True
 
+# Turn this on in test/QA site to show test banner
+# SHOW_TEST_WARNING = True
+
 # Make these unique, and don't share it with anybody.
-SECRET_KEY = "wc9yui#o3$g8(c$ju7e^lds)@)$!^x9()i#yhq*vf1$hd38p)p"
-NEVERCACHE_KEY = "ck_r5u*_x#h)du$qew_9#4i*u!g8*pi=t_1y1rwjnbx&jrrqeh"
+SECRET_KEY = ""
+NEVERCACHE_KEY = ""
 
 DATABASES = {
     "default": {

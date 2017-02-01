@@ -9,7 +9,7 @@
     <title>{% block page-subtitle %}{% if page.title %}{{ page.title|add:" | " }}{% endif %}{% endblock %}CDH @ Princeton</title>
 
     {% compress css %}
-    <link type="text/x-scss" rel="stylesheet" href="/static/css/base.scss" charset="utf-8">
+    <link type="text/x-scss" rel="stylesheet" href="{% static 'css/base.scss' %}" charset="utf-8">
     {# <link rel='stylesheet' type='text/css' href='{% static "css/base-prefixed.css" %}'> #}
     {% endcompress %}
 
@@ -17,6 +17,7 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
     crossorigin="anonymous"></script>
+    <script src="{% static 'js/local.js' %}"></script>
 
     <script>
         var scroll = 0;
@@ -66,6 +67,10 @@
             {% page_menu "snippets/primary_navigation.html" %}
         </nav>
     </header>
+    {% include 'snippets/test_banner.html' %}
+
+  </div>
+</div>
     {% block content %}
     {% block content-header %}
     <div class='spacer'></div>
@@ -105,8 +110,9 @@
                 <br />
                 ©2015 Trustees of Princeton University
             </p>
-
+        <div id="sw-version">v. {{ SW_VERSION }}</div>
         </section>
+
     </footer>
 
 
