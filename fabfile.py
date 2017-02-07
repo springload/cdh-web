@@ -1,4 +1,10 @@
 import os
+from fabric.api import env, run, sudo
+from fabric.context_managers import cd
+from fabric.contrib.files import exists, sed
+from fabric.network import ssh
+
+
 
 env.user = 'fabric-user'
 env.hosts = ['libservdhc7.princeton.edu']
@@ -73,7 +79,7 @@ def deploy_qa(build=None, rebuild=False):
             sudo('rm -rf %(deploy_commit_dir)s' % env)
 
         sudo('mkdir %(deploy_commit_dir)s' % env)
-        sudo('rsync -r %(repo_dir)s/* %(deploy_commit_dir)s/*' % env)
+        sudo('rsync -r %(repo_dir)s/ %(deploy_commit_dir)s/' % env)
 
         with cd(env.deploy_commit_dir):
 
@@ -88,23 +94,13 @@ def deploy_qa(build=None, rebuild=False):
             sudo('rm -f cdhweb/local_settings.py')
             sudo('ln -s /var/deploy/%(repo)s/local_settings.py cdhweb/local_settings.py' % env)
 
-            # Build venv in env/
-            sudo('mkdir env')
-            sudo('semanage fcontext -a -t httpd_sys_script_exec_t %(deploy_commit_dir)s/env' % env)
-            sudo('restorecon -R -v env/')
-            sudo('/var/deploy/build_env.sh')
-
             # Backup mySQL and migrate+collectstatic
             # Uses two scripts deployed server-side per application
             # Avaiable in server scripts repo
             sudo('../make_dump.sh')
             sudo('../migrate_collect.sh')
 
-            # Add wsgi virtualenv settings
-            with cd('cdhweb/'):
-                sudo('/var/deploy/prep_wsgi.py %(deploy_commit_dir)s %(deploy_commit_dir)s/env/lib/python3.5/site-packages' % env)
-
-            # Put up a denying robots.txt
+             # Put up a denying robots.txt
             if exists('static/'):
                 if exists('static/robots.txt'):
                     sudo('rm static/robots.txt && ln -s ../../robots.txt static/robots.txt')
@@ -118,11 +114,4 @@ def deploy_qa(build=None, rebuild=False):
 
         # Set permissions and SELinux
         sudo('chown root:apache -R /var/deploy/ && chmod g+rwx -R /var/deploy')
-
-        # Clean up deploy
-        sudo('rm -f %(deploy_dir)s*.tar.gz' % env)
-
-        # Restart apache
-        sudo('systemctl restart httpd24-httpd')
-
 
