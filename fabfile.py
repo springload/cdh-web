@@ -1,7 +1,4 @@
-from fabric.api import env, run, sudo
-from fabric.context_managers import cd
-from fabric.contrib.files import exists, sed
-from fabric.network import ssh
+import os
 
 env.user = 'fabric-user'
 env.hosts = ['libservdhc7.princeton.edu']
@@ -22,7 +19,7 @@ env.deploy_dir = '%(deploy_prefix)s%(repo)s/' % env
 # TODO: Break up the mile long command strings to something more legible.
 
 # Add a private key file here or load it in your ssh-agent
-user_key = None
+user_key = os.environ.get('FABRIC_KEY') 
 
 if user_key is not None:
     env.key_filename = user_key
@@ -40,11 +37,29 @@ def deploy_qa(build=None, rebuild=False):
     syntax:
     fab deploy_qa:build=<hash>
     '''
+    env.source_dir = '%(deploy_dir)ssource/' % env
 
-    if build is not None:
-        env.build = build
+    # Clone the git repo to a directory
+    if not exists(env.deploy_prefix):
+        sudo('mdkir %s' % env.deploy_prefix)
+    if not exists(env.source_dir):
+        sudo('mkdir %s' % env.source_dir)
 
-    env.deploy_commit_dir = '%(deploy_dir)s%(repo)s-%(build)s' % env
+    env.repo_dir = '%(source_dir)s%(repo)s' % env
+    if not exists(env.repo_dir):
+        with cd(env.source_dir):
+            sudo('git clone %(gitbase)s%(repo)s.git' % env)
+
+    with cd(env.repo_dir):
+        output = sudo('git fetch origin && git checkout %(build)s' % env)
+        # Check to make sure there are no untracked files
+        sudo('git ls-files --other --directory --exclude-standard | sed q1')
+        # Get the short hash and fast forward if we're on a branch 
+        # TODO: Better way for future deploys
+        if 'fast-forwarded' in output:
+            sudo('git pull origin %(build)s' % env)
+        env.hash = sudo('git rev-parse --short HEAD')
+    env.deploy_commit_dir = '%(deploy_dir)s%(repo)s-%(hash)s' % env
 
     if exists(env.deploy_commit_dir) and rebuild is False:
         # Reset symlinks for apache
@@ -57,14 +72,19 @@ def deploy_qa(build=None, rebuild=False):
         if exists(env.deploy_commit_dir):
             sudo('rm -rf %(deploy_commit_dir)s' % env)
 
-        with cd(env.deploy_dir):
-            sudo('rm -f %(build)s.tar.gz' % env)
-            sudo('wget %(gitbase)s%(repo)s/archive/%(build)s.tar.gz' % env)
-            sudo('tar xzvf %(build)s.tar.gz' % env)
+        sudo('mkdir %(deploy_commit_dir)s' % env)
+        sudo('rsync -r %(repo_dir)s/* %(deploy_commit_dir)s/*' % env)
 
         with cd(env.deploy_commit_dir):
 
-            # Link local_settings.py for cdhweb -- REPO SPECIFIC
+            # Build venv in env/
+            sudo('mkdir env')
+            sudo('semanage fcontext -a -t httpd_sys_script_exec_t %(deploy_commit_dir)s/env' % env)
+            sudo('restorecon -R -v env/')
+            sudo('/var/deploy/build_env.sh')
+
+
+    # Link local_settings.py for cdhweb -- REPO SPECIFIC
             sudo('rm -f cdhweb/local_settings.py')
             sudo('ln -s /var/deploy/%(repo)s/local_settings.py cdhweb/local_settings.py' % env)
 
