@@ -11,7 +11,7 @@ from taggit.managers import TaggableManager
 
 class Title(models.Model):
     '''Job titles for people'''
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, unique=True)
     sort_order = models.PositiveIntegerField(default=0, blank=False,
         null=False)
     # NOTE: defining relationship here because we can't add it to User
@@ -53,8 +53,8 @@ class Profile(Displayable):
     bio = RichTextField()
     # NOTE: could use regex here, but how standard are staff phone
     # numbers? or django-phonenumber-field, but that's probably overkill
-    phone_number = models.CharField(max_length=50, blank=True, null=True)
-    office_location = models.CharField(max_length=255, blank=True, null=True)
+    phone_number = models.CharField(max_length=50, blank=True)
+    office_location = models.CharField(max_length=255, blank=True)
 
     tags = TaggableManager(blank=True)
 
@@ -110,9 +110,11 @@ def init_profile_from_ldap(user, ldapinfo):
     profile.title = str(ldapinfo.displayName)
     # - generate a slug based on display name
     profile.slug = slugify(ldapinfo.displayName)
-    profile.phone_number = str(ldapinfo.telephoneNumber)
+    if ldapinfo.telephoneNumber:
+        profile.phone_number = str(ldapinfo.telephoneNumber)
     # 'street' in ldap is office location
-    profile.office_location = str(ldapinfo.street)
+    if ldapinfo.street:
+        profile.office_location = str(ldapinfo.street)
     profile.save()
 
     # NOTE: job title is available in LDAP; attaching to a person

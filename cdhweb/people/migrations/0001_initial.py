@@ -50,8 +50,8 @@ class Migration(migrations.Migration):
                 ('in_sitemap', models.BooleanField(default=True, verbose_name='Show in sitemap')),
                 ('education', mezzanine.core.fields.RichTextField()),
                 ('bio', mezzanine.core.fields.RichTextField()),
-                ('phone_number', models.CharField(blank=True, max_length=50, null=True)),
-                ('office_location', models.CharField(blank=True, max_length=255, null=True)),
+                ('phone_number', models.CharField(blank=True, max_length=50)),
+                ('office_location', models.CharField(blank=True, max_length=255)),
                 ('site', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, to='sites.Site')),
             ],
             options={
@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
             name='Title',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
+                ('title', models.CharField(max_length=255, unique=True)),
                 ('sort_order', models.PositiveIntegerField(default=0)),
             ],
             options={
