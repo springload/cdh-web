@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
             name='EventType',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                ('name', models.CharField(max_length=255, unique=True)),
             ],
         ),
         migrations.CreateModel(
@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='location',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='events.Location'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='events.Location'),
         ),
         migrations.AddField(
             model_name='event',

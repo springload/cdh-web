@@ -11,7 +11,7 @@ from taggit.managers import TaggableManager
 
 
 class EventType(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
@@ -31,7 +31,6 @@ class EventQuerySet(models.QuerySet):
     def upcoming(self):
         return self.filter(start_time__gt=timezone.now())
 
-
 class EventManager(DisplayableManager):
     # extend displayable manager to preserve access to published filter
     def get_queryset(self):
@@ -47,7 +46,7 @@ class Event(Displayable, RichText, AdminThumbMixin):
     sponsor = models.CharField(max_length=80, null=True, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    location = models.ForeignKey(Location)
+    location = models.ForeignKey(Location, null=True, blank=True)
     event_type = models.ForeignKey(EventType)
     speakers = models.ManyToManyField(User,
         help_text='Guest lecturer(s) or Workshop leader(s)',
@@ -73,7 +72,7 @@ class Event(Displayable, RichText, AdminThumbMixin):
     event_type.verbose_name = 'Type'
 
     def __str__(self):
-        return '%s - %s' % (self.title, self.start_time.strftime('%b %d, %Y'))
+        return ' - '.join([self.title, self.start_time.strftime('%b %d, %Y')])
 
     class Meta:
         ordering = ("start_time",)
