@@ -6,6 +6,8 @@ class EventAdmin(admin.ModelAdmin):
     list_display = ('title', 'event_type', 'start_time', 'admin_thumb',
         'tag_list')
 
+    # TODO: configure search fields, date hierarchy
+
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.tags.all())
     tag_list.short_description = 'Tags'
@@ -14,9 +16,11 @@ class EventAdmin(admin.ModelAdmin):
     # also: suppress management/auth fields like password, username, permissions,
     # last login and date joined
 
+class LocationAdmin(admin.ModelAdmin):
+    list_display = ('short_name', 'name', 'address')
 
 
 admin.site.register(EventType)
-admin.site.register(Location)
+admin.site.register(Location, LocationAdmin)
 admin.site.register(Event, EventAdmin)
 

@@ -45,9 +45,6 @@ class Event(Displayable, RichText, AdminThumbMixin):
     # description = rich text field
     # NOTE: do we want a sponsor field? or jest include in description?
     sponsor = models.CharField(max_length=80, null=True, blank=True)
-    image = FileField(verbose_name='Image',
-        upload_to=upload_to("events.Event.image", "event"),
-        format="Image", max_length=255, null=True, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     location = models.ForeignKey(Location)
@@ -55,6 +52,17 @@ class Event(Displayable, RichText, AdminThumbMixin):
     speakers = models.ManyToManyField(User,
         help_text='Guest lecturer(s) or Workshop leader(s)',
         blank=True)
+
+    # TODO: include expected size? (required size?)
+    image = FileField(verbose_name="Image",
+        upload_to=upload_to("events.image", "events"),
+        format="Image", max_length=255, null=True, blank=True,
+        help_text='Image for display on event detail page (optional)')
+
+    thumb = FileField(verbose_name="Thumbnail",
+        upload_to=upload_to("events.thumb", "events"),
+        format="Image", max_length=255, null=True, blank=True,
+        help_text='Image for display on event card (optional)')
 
     tags = TaggableManager(blank=True)
 
