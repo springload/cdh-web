@@ -94,7 +94,6 @@ class Event(Displayable, RichText, AdminThumbMixin):
         # include start am/pm if *different* from end
         if start_ampm != self.end_time.strftime('%p'):
             start += ' %s' % start_ampm
-        timediff = self.end_time - self.start_time
 
         # include end month and day if *different* from start
         end_pieces = []
@@ -107,6 +106,6 @@ class Event(Displayable, RichText, AdminThumbMixin):
 
         # FIXME: strftime doesn't provide non-leading zero days
         # and times - may want to clean these up. May also want to
-        # converte am/pm to lower case
+        # convert am/pm to lower case
 
         return ' - '.join([start, end])
