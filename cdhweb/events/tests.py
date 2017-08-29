@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-
 from django.test import TestCase
 from django.urls import resolve
+from django.utils import timezone
 
 from cdhweb.events.models import Event, EventType, Location
 
@@ -71,8 +71,9 @@ class TestEvent(TestCase):
 class TestEventQueryset(TestCase):
 
     def test_upcoming(self):
-        tomorrow = datetime.now() + timedelta(days=1)
-        yesterday = datetime.now() - timedelta(days=1)
+        # use django timezone util for timezone-aware datetime
+        tomorrow = timezone.now() + timedelta(days=1)
+        yesterday = timezone.now() - timedelta(days=1)
         event_type = EventType.objects.first()
         next_event = Event.objects.create(start_time=tomorrow, end_time=tomorrow,
             slug='some-workshop', event_type=event_type)
