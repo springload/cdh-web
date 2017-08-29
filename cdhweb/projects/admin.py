@@ -1,3 +1,4 @@
+from adminsortable2.admin import SortableAdminMixin
 from django.contrib import admin
 from mezzanine.core.admin import DisplayableAdmin
 
@@ -55,8 +56,15 @@ class MembershipAdmin(admin.ModelAdmin):
     list_display = ('project', 'user', 'grant', 'role')
 
 
+class RoleAdmin(admin.ModelAdmin):
+    # TODO: drag and drop to set sort order in future
+# class RoleAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ('title', 'sort_order')
+    list_editable = ('sort_order', )
+
+
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(GrantType)
 admin.site.register(Grant, GrantAdmin)
-admin.site.register(Role)
+admin.site.register(Role, RoleAdmin)
 admin.site.register(Membership, MembershipAdmin)
