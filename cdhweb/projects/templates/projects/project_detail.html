@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="project-detail">
+<header>
+    <h1>{{ project.title }}</h1>
+    <p class="short_description">{{ project.short_description }}</p>
+</header>
+
+<div class="contributors">
+    <ul>
+    {% for member in project.membership_set.current %}
+        <li>{% ifchanged %}<h3>{{ member.role }}</h3>{% endifchanged %}</li>
+        <li>{{ member.user.profile.title }}</li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div class="description">
+    <img src="{{ MEDIA_URL }}{{ project.image }}"/>
+    {{ project.long_description|safe }}
+</div>
+
+
+{% endblock %}

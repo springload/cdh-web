@@ -17,7 +17,7 @@
 </section>
 
 <section class="projects">
-<h2>Projects</h2>
+<h2><a href="{% url 'project:list' %}">Projects</a></h2>
 {% for project in projects %}
     {% include 'projects/snippets/project_card.html' %}
     {# project tile still todo #}

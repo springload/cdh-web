@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block main %}
+<section class="projects">
+<h2>Projects</h2>
+{% for project in object_list %}
+    {% include 'projects/snippets/project_card.html' %}
+    {# project tile still todo #}
+{% endfor %}
+</section>
+{% endblock %}

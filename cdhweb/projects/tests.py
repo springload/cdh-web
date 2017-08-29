@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -51,6 +51,7 @@ class TestGrant(TestCase):
 class TestMembership(TestCase):
 
     def test_str(self):
+        # create test objects needed for a membership
         proj = Project.objects.create(title="Derrida's Margins")
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
         grant = Grant.objects.create(project=proj, grant_type=grtype,
@@ -63,3 +64,26 @@ class TestMembership(TestCase):
 
         assert str(membership) == '%s - %s on %s' % (user, role, grant)
 
+
+class TestMembershipQuerySet(TestCase):
+
+    def test_current(self):
+        # create test objects needed for a membership
+        proj = Project.objects.create(title="Derrida's Margins")
+        grtype = GrantType.objects.create(grant_type='Sponsored Project')
+        today = datetime.today()
+        # asocciated grant has ended
+        grant = Grant.objects.create(project=proj, grant_type=grtype,
+            start_date=today - timedelta(days=2),
+            end_date=today - timedelta(days=1))
+        user = get_user_model().objects.create(username='contributor')
+        role = Role.objects.create(title='Data consultant', sort_order=1)
+        membership = Membership.objects.create(project=proj,
+            user=user, grant=grant, role=role)
+
+        # should be empty
+        assert not Membership.objects.current().exists()
+        # update grant
+        membership.grant.end_date = today + timedelta(days=1)
+        membership.grant.save()
+        assert Membership.objects.current().exists()

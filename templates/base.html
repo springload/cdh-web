@@ -58,7 +58,7 @@
     <a href='#maincontent' aria-label='Main Content'></a>
     <a href='#footermenu' aria-label='Footer Menu'></a>
 
-    <header>
+    <header class="nav">
         <nav id='mainmenu'>
             <a href='{% url 'home' %}' class='home-page'>
               <img
@@ -74,7 +74,7 @@
 </div>
     {% block content %}
     {% block content-header %}
-    <div class='spacer'></div>
+    <div class='spacer'></div>   {# TODO: what is this for? needs to be adjusted #}
     {% endblock %}
     <div id='maincontent'>
         {% block main %}{% endblock %}

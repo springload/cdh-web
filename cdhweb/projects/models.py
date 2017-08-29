@@ -107,11 +107,28 @@ class Role(models.Model):
         return self.title
 
 
+class MembershipQuerySet(models.QuerySet):
+
+    def current(self):
+        today = timezone.now()
+        # current projects means an active grant
+        # filter for projects with grants where start and end date
+        # come before and after the current date
+        return self.filter(grant__start_date__lt=today) \
+            .filter(grant__end_date__gt=today)
+
+
 class Membership(models.Model):
     project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
     grant = models.ForeignKey(Grant)
     role = models.ForeignKey(Role)
+
+    objects = MembershipQuerySet.as_manager()
+
+    class Meta:
+        ordering = ['role__sort_order']
+
 
     def __str__(self):
         return '%s - %s on %s' % (self.user, self.role, self.grant)
