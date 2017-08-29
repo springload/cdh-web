@@ -18,8 +18,10 @@
         <meta property="schema:startDate" content="{{ event.start_time|date:'c' }}"/>
         <meta property="schema:endDate" content="{{ event.end_time|date:'c' }}"/>
 
-        <span class="day">{{ event.start_time|date:"F j" }}</span>
-        <span class="time">{{ event.start_time|date:"g:i" }}-{{ event.end_time|date:"g:i A" }}</span>
+        <div class="when">
+            <span class="day">{{ event.start_time|date:"F j" }}</span>
+            <span class="time">{{ event.start_time|date:"g:i" }}-{{ event.end_time|date:"g:i A" }}</span>
+        </div>
     </div>
 </a>
 </div>
