@@ -1,11 +1,12 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.models import Displayable
 from mezzanine.core.managers import DisplayableManager
-from mezzanine.utils.models import upload_to
+from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
 from cdhweb.resources.models import ResourceType
@@ -37,15 +38,14 @@ class ProjectManager(DisplayableManager):
         return self.get_queryset().current()
 
 
-class Project(Displayable):
-    name = models.CharField(max_length=255)
-    # project_subtitle = models.CharField(max_length=80, blank=True, null=True)
+class Project(Displayable, AdminThumbMixin):
     short_description = models.CharField(max_length=255)
     long_description = RichTextField()
-    is_active = models.BooleanField()
+    is_active = models.BooleanField(default=False)
 
     members = models.ManyToManyField(User, through='Membership')
     resources = models.ManyToManyField(ResourceType, through='ProjectResource')
+
     tags = TaggableManager(blank=True)
 
     # TODO: include help text to indicate images are optional, where they
@@ -59,17 +59,24 @@ class Project(Displayable):
         upload_to=upload_to("projects.image", "projects"),
         format="Image", max_length=255, null=True, blank=True)
 
-    def __str__(self):
-        return self.name
-
-    # TODO: default sorting?
-
     # custom manager and queryset
     objects = ProjectManager()
 
+    admin_thumb_field = "thumb"
+
+    class Meta:
+        # sort by project title for now
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('project:detail', kwargs={'slug': self.slug})
+
 
 class GrantType(models.Model):
-    grant_type = models.CharField(max_length=255)
+    grant_type = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.grant_type
@@ -82,15 +89,18 @@ class Grant(models.Model):
     end_date = models.DateField()
 
     def __str__(self):
-        return '%s %s (%s)' % (self.project.name, self.grant_type.grant_type,
-            self.start_date.year)
+        return '%s: %s (%s-%s)' % (self.project.title, self.grant_type.grant_type,
+            self.start_date.year, self.end_date.year)
 
 
 # fixme: where does resource type go, for associated links?
 
 class Role(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, unique=True)
     sort_order = models.IntegerField()
+
+    class Meta:
+        ordering = ['sort_order']
 
     def __str__(self):
         return self.title

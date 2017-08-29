@@ -33,6 +33,7 @@ urlpatterns += [
     # actual blog url still TBD
     url("^updates/", include("cdhweb.blog.urls", namespace='blog')),
     url("^events/", include("cdhweb.events.urls", namespace='event')),
+    url("^projects/", include("cdhweb.projects.urls", namespace='project')),
 
     url("^$", resource_views.site_index, name="home"),
 
