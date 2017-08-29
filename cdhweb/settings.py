@@ -106,6 +106,9 @@ TIME_ZONE = 'UTC'
 # If you set this to True, Django will use timezone-aware datetimes.
 USE_TZ = True
 
+# turn off internationalization for now
+USE_I18N = False
+
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = "en"
