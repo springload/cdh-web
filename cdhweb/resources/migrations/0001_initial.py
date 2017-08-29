@@ -21,8 +21,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('resource_type', models.CharField(max_length=255)),
-                ('sort_order', models.IntegerField()),
+                ('sort_order', models.PositiveIntegerField(default=0)),
             ],
+            options={
+                'ordering': ['sort_order'],
+            },
         ),
         migrations.CreateModel(
             name='UserResource',

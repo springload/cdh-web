@@ -97,7 +97,8 @@ class Grant(models.Model):
 
 class Role(models.Model):
     title = models.CharField(max_length=255, unique=True)
-    sort_order = models.IntegerField()
+    sort_order = models.PositiveIntegerField(default=0, blank=False,
+        null=False)
 
     class Meta:
         ordering = ['sort_order']
