@@ -1,3 +1,4 @@
+django>=1.11
 Mezzanine>=4.2.1
 django-compressor
 mysqlclient
