@@ -1,7 +1,9 @@
-from django.test import TestCase
-
 from datetime import datetime, timedelta
-from .models import Event, EventType, Location
+
+from django.test import TestCase
+from django.urls import resolve
+
+from cdhweb.events.models import Event, EventType, Location
 
 
 class TestEventType(TestCase):
@@ -34,7 +36,13 @@ class TestEvent(TestCase):
         evt = Event(start_time=jan15, end_time=jan15,
             slug='some-workshop')
         # single-digit months should be converted to two-digit for url
-        assert evt.get_absolute_url() == '/events/2015/01/some-workshop/'
+        resolved_url = resolve(evt.get_absolute_url())
+        assert resolved_url.namespace == 'event'
+        assert resolved_url.url_name == 'detail'
+        assert resolved_url.kwargs['year'] == str(evt.start_time.year)
+        assert resolved_url.kwargs['month'] == '%02d' % evt.start_time.month
+        assert resolved_url.kwargs['slug'] == evt.slug
+
 
     def test_when(self):
             # same day, both pm

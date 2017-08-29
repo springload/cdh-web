@@ -1,7 +1,8 @@
 from django.test import TestCase
+from django.urls import resolve
 
 from datetime import datetime
-from .models import BlogPost
+from cdhweb.blog.models import BlogPost
 
 
 class TestBlog(TestCase):
@@ -10,5 +11,11 @@ class TestBlog(TestCase):
         jan15 = datetime(2016, 1, 15)
         post = BlogPost(publish_date=jan15, slug='news-and-updates')
         # single-digit months should be converted to two-digit for url
-        assert post.get_absolute_url().endswith('/2016/01/news-and-updates/')
+        resolved_url = resolve(post.get_absolute_url())
+        assert resolved_url.namespace == 'blog'
+        assert resolved_url.url_name == 'detail'
+        assert resolved_url.kwargs['year'] == str(post.publish_date.year)
+        assert resolved_url.kwargs['month'] == '%02d' % post.publish_date.month
+        assert resolved_url.kwargs['slug'] == post.slug
+
 
