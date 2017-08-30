@@ -115,7 +115,8 @@ class TestEventQueryset(TestCase):
 class TestViews(TestCase):
 
     def test_event_ical(self):
-        jan15 = datetime(2015, 1, 15, hour=16)
+        jan15 = datetime(2015, 1, 15, hour=16,
+            tzinfo=timezone.get_default_timezone()) # make timezone aware
         end = jan15 + timedelta(hours=1, minutes=30)
         loc = Location.objects.create(name='Center for Finger Studies')
         description = 'A revelatory experience'
