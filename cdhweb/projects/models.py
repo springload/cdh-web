@@ -74,6 +74,9 @@ class Project(Displayable, AdminThumbMixin):
     def get_absolute_url(self):
         return reverse('project:detail', kwargs={'slug': self.slug})
 
+    def website_url(self):
+        return self.projectresource_set.filter(resource_type__name='website').first()
+
 
 class GrantType(models.Model):
     grant_type = models.CharField(max_length=255, unique=True)

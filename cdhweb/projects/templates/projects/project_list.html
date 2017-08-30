@@ -4,8 +4,7 @@
 <section class="projects">
 <h2>Projects</h2>
 {% for project in object_list %}
-    {% include 'projects/snippets/project_card.html' %}
-    {# project tile still todo #}
+    {% include 'projects/snippets/project_card.html' with large=1 %}
 {% endfor %}
 </section>
 {% endblock %}

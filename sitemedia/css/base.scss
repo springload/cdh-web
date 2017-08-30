@@ -51,6 +51,9 @@ figcaption {
 
 /* container with max-width for large, medium, and small viewports */
 .responsive-container {
+	@include grid-container;
+	// can we use grid-collapse here to consume gutters or does it need to be on elements?
+
 	max-width: $large-content-width;
 	margin: auto;
 
@@ -458,7 +461,7 @@ $event-card-img-height: 240px;
 		}
 
 		@media (max-width: $small-max-width) {
-			width: 100%;
+			width: 225px;
 			margin-left: 0;
 			float: none;
 		}
@@ -480,9 +483,8 @@ $event-card-img-height: 240px;
 			// full width and height minus border and padding
 			width: calc(100% - 40px - 17px - 14px);
 			height: calc(100% - 40px - 12px);
-			padding: 12px 17px 0 14px;;
+			padding: 12px 17px 0 14px;
 			margin: 0;
-
 		}
 
 		p {
@@ -496,6 +498,68 @@ $event-card-img-height: 240px;
 		}
 
 	}
+
+	/* larger project card */
+	&.project-large {
+   	 	@include grid-column(4);
+		@include grid-media($large-grid){
+		    @include grid-column(4);
+		}
+
+		height: 233px;
+		@include cdhlogo-shadow(55px);
+
+		a {
+			// full width and height minus border and padding
+			width: calc(100% - 55px - 44px - 19px);
+			height: calc(100% - 55px - 16px);
+			padding: 16px 44px 0 19px;
+		}
+
+	}
+
+	/* profile cards */
+	&.profile {
+   	 	@include grid-column(4);
+		@include grid-media($large-grid){
+		    @include grid-column(4);
+		}
+		background: none; /* no blue stripes */
+		height: 255px;
+
+		.content {
+			margin-top: 176px;
+			background-color: 'white';
+			height: calc(100% - 176px);
+
+			> * {
+				padding-left: 15px;
+			}
+
+			.title {
+				padding-top: 19px;
+				margin: 0;
+				font-style: italic;
+			}
+			.name {
+				margin: 0;
+				font-weight: bold;
+
+			}
+		}
+
+		@media (max-width: $small-max-width) {
+			width: 100%;
+			margin-left: 0;
+			float: none;
+		}
+
+
+		h2 {
+			margin-bottom: 0;
+		}
+	}
+
 
 }
 
@@ -636,6 +700,7 @@ $event-card-img-height: 240px;
 		ul {
 			list-style-type: none;
 			color: $text-gray;
+			padding: 0;
 		}
 
 		h3 {

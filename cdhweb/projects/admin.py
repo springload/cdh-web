@@ -49,7 +49,7 @@ class ProjectAdmin(DisplayableAdmin):
 
 class GrantAdmin(admin.ModelAdmin):
     list_display = ('project', 'grant_type', 'start_date', 'end_date')
-    date_hierarchy = ('start_date')
+    date_hierarchy = 'start_date'
 
 
 class MembershipAdmin(admin.ModelAdmin):

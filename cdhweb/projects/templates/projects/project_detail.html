@@ -1,10 +1,15 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load mezzanine_tags %}
+
+{% block page-subtitle %}{{ project.title }} | Projects | {% endblock %}
 
 {% block main %}
 <div class="project-detail">
 <header>
     <h1>{{ project.title }}</h1>
+    {% if project.short_description %}
     <p class="short_description">{{ project.short_description }}</p>
+    {% endif %}
 </header>
 
 <div class="contributors">
@@ -14,10 +19,16 @@
         <li>{{ member.user.profile.title }}</li>
     {% endfor %}
     </ul>
+
+    {% if project.website_url %}
+    <a href="{{ project.website_url }}">Project Website</a>
+    {% endif %}
 </div>
 
 <div class="description">
+    {% if project.image %}
     <img src="{{ MEDIA_URL }}{{ project.image }}"/>
+    {% endif %}
     {{ project.long_description|safe }}
 </div>
 
