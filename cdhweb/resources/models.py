@@ -12,7 +12,7 @@ from mezzanine.utils.models import upload_to
 class ResourceType(models.Model):
     '''Resource type for associating particular kinds of URLs
     with people and projects (e.g., project url, GitHub, Twitter, etc)'''
-    resource_type = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     sort_order = models.PositiveIntegerField(default=0, blank=False,
         null=False)
     # NOTE: defining the relationship here since we can't add to it to
@@ -24,7 +24,7 @@ class ResourceType(models.Model):
         ordering = ['sort_order']
 
     def __str__(self):
-        return self.resource_type
+        return self.name
 
 
 class UserResource(models.Model):
