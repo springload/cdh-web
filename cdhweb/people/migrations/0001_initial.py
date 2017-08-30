@@ -83,7 +83,6 @@ class Migration(migrations.Migration):
             options={
                 'proxy': True,
                 'verbose_name_plural': 'People',
-                'indexes': [],
             },
             bases=('auth.user',),
             managers=[

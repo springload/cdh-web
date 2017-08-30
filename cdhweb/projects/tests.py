@@ -122,8 +122,6 @@ class TestMembershipQuerySet(TestCase):
         assert Membership.objects.current().exists()
 
 
-# FIXME: skipping for now because mezzanine page_menu causes an error in tests
-@pytest.mark.skip
 class TestViews(TestCase):
     fixtures = ['test-pages.json']
 
