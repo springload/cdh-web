@@ -6,6 +6,7 @@ from django.utils.text import slugify
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.managers import DisplayableManager
 from mezzanine.core.models import Displayable, Slugged
+from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
 
@@ -47,7 +48,9 @@ class Person(User):
             return current_positions.first().title
 
 
-class Profile(Displayable):
+
+
+class Profile(Displayable, AdminThumbMixin):
     user = models.OneToOneField(User)
     education = RichTextField()
     bio = RichTextField()
@@ -56,16 +59,34 @@ class Profile(Displayable):
     phone_number = models.CharField(max_length=50, blank=True)
     office_location = models.CharField(max_length=255, blank=True)
 
+    image = FileField(verbose_name="Image",
+        upload_to=upload_to("people.image", "projects"),
+        format="Image", max_length=255, null=True, blank=True)
+
+    thumb = FileField(verbose_name="Thumbnail",
+        upload_to=upload_to("people.image", "projects"),
+        format="Image", max_length=255, null=True, blank=True)
+
+    admin_thumb_field = "thumb"
+
     tags = TaggableManager(blank=True)
 
     # use displayable manager for access to published queryset filter, etc.
     objects = DisplayableManager()
 
     def __str__(self):
+        # FIXME: should this be self.title instead?
         return ' '.join([self.user.first_name, self.user.last_name])
 
     def get_absolute_url(self):
         return reverse('people:profile', kwargs={'slug': self.slug})
+
+    @property
+    def current_title(self):
+        current_positions = self.user.positions.filter(end_date__isnull=True)
+        if current_positions.exists():
+            return current_positions.first().title
+
 
 
 def workshops_taught(user):

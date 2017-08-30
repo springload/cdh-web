@@ -1,3 +1,9 @@
+{% extends 'base.html' %}
+{% load mezzanine_tags %}
+
+{# {% block page-subtitle %}{{ project.title }} | Projects | {% endblock %} #}
+
+{% block main %}
 {# bare-bones template for profile detail view #}
 <h1>{{ profile }}</h1>
 
@@ -5,3 +11,13 @@
 <p>{{ profile.user.email }}</p>
 
 {# displayable metadata attributes are on profile, e.g. description and title #}
+
+    {% if profile.image %}
+    <img src="{{ MEDIA_URL }}{{ profile.image }}"/>
+    {% endif %}
+
+
+<div class="description">
+{{ profile.description }}
+</div>
+{% endblock %}

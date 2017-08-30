@@ -52,6 +52,11 @@ class PersonAdmin(admin.ModelAdmin):
     # last login and date joined
 
 
+class PositionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'title', 'start_date', 'end_date')
+    date_hierarchy = 'start_date'
+
+
 admin.site.register(Title, TitleAdmin)
 admin.site.register(Person, PersonAdmin)
-admin.site.register(Position)
+admin.site.register(Position, PositionAdmin)
