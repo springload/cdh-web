@@ -14,6 +14,8 @@
 {# FIXME: do we need full url here? #}
 
 <p>{{ event.event_type }}</p>
+<p><a href="{{ event.get_ical_url}}">
+    <i class="fa fa-calendar" aria-hidden="true"></i></a>
 <div>
 {% for person in event.speakers.all %}
     {# performer == presenter #}

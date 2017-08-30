@@ -1,7 +1,9 @@
+from django.http import HttpResponse
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
+import icalendar
 
-from .models import Event
+from cdhweb.events.models import Event
 
 
 class EventListView(ListView):
@@ -27,4 +29,30 @@ class EventDetailView(DetailView):
 
     def get_queryset(self):
         return Event.objects.published(for_user=self.request.user)
+
+
+class EventIcalView(EventDetailView):
+    model = Event
+
+    def render_to_response(self, context, **response_kwargs):
+        cal = icalendar.Calendar()
+        cal.add_component(self.object.ical_event())
+        response = HttpResponse(cal.to_ical(), content_type="text/calendar")
+        response['Content-Disposition'] = 'attachment; filename="%s.ics"' \
+            % self.object.slug
+        return response
+
+
+class IcalCalendarView(EventListView):
+
+    def get_queryset(self):
+        return super(IcalCalendarView, self).get_queryset().upcoming()
+
+    def render_to_response(self, context, **response_kwargs):
+        cal = icalendar.Calendar()
+        for event in self.get_queryset():
+            cal.add_component(event.ical_event())
+        response = HttpResponse(cal.to_ical(), content_type="text/calendar")
+        response['Content-Disposition'] = 'attachment; filename="CDH-calendar.ics"'
+        return response
 

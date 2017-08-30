@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from django.test import TestCase
 from django.urls import resolve
 from django.utils import timezone
+import icalendar
 
 from cdhweb.events.models import Event, EventType, Location
 
@@ -20,6 +21,12 @@ class TestLocation(TestCase):
         assert str(loc) == loc.name
         loc.short_name = 'CFS'
         assert str(loc) == loc.short_name
+
+    def test_displayname(self):
+        loc = Location(name='Center for Finger Studies')
+        assert str(loc.display_name) == loc.name
+        loc.address = 'Waterstone Library, Floor 3'
+        assert str(loc.display_name) == '%s, %s' % (loc.name, loc.address)
 
 
 class TestEvent(TestCase):
@@ -45,7 +52,7 @@ class TestEvent(TestCase):
 
 
     def test_when(self):
-            # same day, both pm
+        # same day, both pm
         jan15 = datetime(2015, 1, 15, hour=16)
         end = jan15 + timedelta(hours=1, minutes=30)
         event = Event(start_time=jan15, end_time=end)
@@ -66,6 +73,26 @@ class TestEvent(TestCase):
             (event.start_time.strftime('%B %d %I:%M'),
              end.strftime('%d %I:%M %p'))
 
+    def test_ical_event(self):
+        jan15 = datetime(2015, 1, 15, hour=16)
+        end = jan15 + timedelta(hours=1, minutes=30)
+        loc = Location(name='Center for Finger Studies')
+        description = 'A revelatory experience'
+        event = Event(start_time=jan15, end_time=end,
+            title='DataViz Workshop', location=loc,
+            content='<p>%s</p>' % description, slug='dataviz-workshop')
+        ical = event.ical_event()
+        assert isinstance(ical, icalendar.Event)
+        assert ical['uid'] == event.get_absolute_url()
+        assert ical['summary'] == event.title
+        # Dates are in this format, as bytes: 20150115T160000
+        assert ical['dtstart'].to_ical() == \
+            event.start_time.strftime('%Y%m%dT%H%M%S').encode()
+        assert ical['dtend'].to_ical() == \
+            event.end_time.strftime('%Y%m%dT%H%M%S').encode()
+        assert ical['location'] == loc.display_name
+        # description should have tags stripped
+        assert ical['description'].to_ical() == description.encode()
 
 
 class TestEventQueryset(TestCase):
@@ -83,4 +110,28 @@ class TestEventQueryset(TestCase):
         upcoming = list(Event.objects.upcoming())
         assert next_event in upcoming
         assert last_event not in upcoming
+
+
+class TestViews(TestCase):
+
+    def test_event_ical(self):
+        jan15 = datetime(2015, 1, 15, hour=16)
+        end = jan15 + timedelta(hours=1, minutes=30)
+        loc = Location.objects.create(name='Center for Finger Studies')
+        description = 'A revelatory experience'
+        event_type = EventType.objects.first()
+        event = Event.objects.create(start_time=jan15, end_time=end,
+            title='DataViz Workshop', location=loc, event_type=event_type,
+            content='<p>%s</p>' % description, slug='dataviz-workshop')
+        response = self.client.get(event.get_ical_url())
+
+        assert response['content-type'] == 'text/calendar'
+        assert response['Content-Disposition'] == \
+            'attachment; filename="%s.ics"' % event.slug
+
+        # parsable as ical calendar
+        cal = icalendar.Calendar.from_ical(response.content)
+        # includes the requested event
+        assert cal.subcomponents[0]['uid'] == event.get_absolute_url()
+
 
