@@ -4,7 +4,7 @@ python:
   - "3.5"
 
 before_install:
-  - rvm install 2.x
+  - rvm install 2.0
   - gem install sass
 
 install:
