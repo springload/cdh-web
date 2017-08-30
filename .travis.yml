@@ -3,11 +3,14 @@ language: python
 python:
   - "3.5"
 
+before_install:
+  - rvm install 2.x
+  - gem install sass
+
 install:
   - pip install -r requirements.txt
   - pip install -r dev-requirements.txt
   - pip install codecov
-  - gem install sass
   - cp ci/testsettings.py cdhweb/local_settings.py
   - python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
 
