@@ -5,7 +5,6 @@ from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import resolve, reverse
 from django.utils.html import escape
-import pytest
 
 from cdhweb.people.models import Profile
 from cdhweb.projects.models import Grant, GrantType, Project, Role, \
