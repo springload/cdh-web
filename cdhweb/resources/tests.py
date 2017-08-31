@@ -19,12 +19,13 @@ class TestViews(TestCase):
         response = self.client.get(index_url)
         assert response.status_code == 200
 
-        # test how projects are displayed on the home page
+        ### test how projects are displayed on the home page
         today = timezone.now()
         site = Site.objects.first()
         projects = Project.objects.bulk_create(
-            [Project(title=n, slug=n, is_active=True, site=site)
-             for n in string.ascii_letters[:5]]
+            [Project(title='Meeting %s' % a, slug=a, is_active=True,
+                     site=site, short_description='This is project %s' % a)
+             for a in string.ascii_letters[:5]]
         )
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
         # add grant that covers the current date
@@ -55,3 +56,38 @@ class TestViews(TestCase):
         noncurrent_proj.grant_set.all().delete()
         response = self.client.get(index_url)
         assert noncurrent_proj not in response.context['projects']
+        # check that brief project details are displayed
+        projects = Project.objects.active().current()
+        for proj in projects:
+            self.assertContains(response, proj.get_absolute_url())
+            self.assertContains(response, proj.title)
+            self.assertContains(response, proj.short_description)
+            # NOTE: currently not testing thumbnail included
+
+        ### test how projects are displayed on the home page
+        event_type = EventType.objects.first()
+        yesterday = today - timedelta(days=1)
+        tomorrow = today + timedelta(days=1)
+        past_event = Event.objects.create(start_time=yesterday,
+            end_time=yesterday, event_type=event_type, title='Old News')
+        Event.objects.bulk_create(
+            [Event(start_time=tomorrow, end_time=tomorrow, title='event %s' % a,
+                   slug=a, event_type=event_type, site=site)
+             for a in string.ascii_letters[:5]]
+        )
+
+        response = self.client.get(index_url)
+        # only three events in context
+        assert len(response.context['events']) == 3
+        # past event not displayed
+        assert past_event not in response.context['events']
+        self.assertContains(response, event_type, count=3)
+        for event in Event.objects.published().upcoming()[:3]:
+            self.assertContains(response, event.get_absolute_url())
+            self.assertContains(response, event.title)
+            # TODO: date/time
+
+        # TODO: not yet testing speakers displayed
+
+        # not yet testing published/unpublished
+
