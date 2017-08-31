@@ -12,7 +12,7 @@ def site_index(request):
 
     # get current, active, published projects
     projects = list(Project.objects.published(for_user=request.user) \
-                                   .current().active())
+                                   .active().current())
     # randomize the project list
     shuffle(projects)
 
