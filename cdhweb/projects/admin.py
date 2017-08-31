@@ -25,6 +25,7 @@ class ProjectAdmin(DisplayableAdmin):
     list_filter = ("status", "grant", "keywords__keyword")
     # displayable date hierarchy is publish date, does that make sense here?
     date_hierarchy = "publish_date"
+    prepopulated_fields = {"slug": ("title",)}
 
     # fieldset based on displayaable admin with project fields added
     fieldsets = (

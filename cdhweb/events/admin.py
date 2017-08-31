@@ -5,6 +5,7 @@ from .models import EventType, Location, Event
 class EventAdmin(admin.ModelAdmin):
     list_display = ('title', 'event_type', 'start_time', 'admin_thumb',
         'tag_list')
+    prepopulated_fields = {"slug": ("title",)}
 
     # TODO: configure search fields, date hierarchy
 
