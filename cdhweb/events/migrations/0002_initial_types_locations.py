@@ -12,7 +12,7 @@ def create_initial_types_locations(apps, schema_editor):
                      'Panel', 'Deadline']:
         EventType.objects.create(name=evt_type)
 
-    Location.objects.create(name='Center for Digital Humaities',
+    Location.objects.create(name='Center for Digital Humanities',
         short_name='CDH', address='Firestone Library, Floor B')
 
 
