@@ -117,6 +117,15 @@ class TestEventQueryset(TestCase):
         assert next_event in upcoming
         assert last_event not in upcoming
 
+        today = timezone.now()
+        earlier_today = datetime(today.year, today.month, today.day,
+            tzinfo=timezone.get_default_timezone())
+        earlier_event = Event.objects.create(start_time=earlier_today,
+            end_time=earlier_today + timedelta(hours=1),
+            slug='another-workshop', event_type=event_type)
+
+        assert earlier_event in list(Event.objects.upcoming())
+
 
 class TestViews(TestCase):
 
