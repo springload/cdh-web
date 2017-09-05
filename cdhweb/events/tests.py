@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import resolve
 from django.utils import timezone
 import icalendar
+import pytz
 
 from cdhweb.events.models import Event, EventType, Location
 
@@ -32,14 +33,14 @@ class TestLocation(TestCase):
 class TestEvent(TestCase):
 
     def test_str(self):
-        jan15 = datetime(2015, 1, 15)
+        jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
         event = Event(title='Learning', start_time=jan15, end_time=jan15,
             slug='some-workshop')
         assert str(event) == '%s - %s' % (event.title, jan15.strftime('%b %d, %Y'))
 
 
     def test_get_absolute_url(self):
-        jan15 = datetime(2015, 1, 15)
+        jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
         evt = Event(start_time=jan15, end_time=jan15,
             slug='some-workshop')
         # single-digit months should be converted to two-digit for url
@@ -53,7 +54,7 @@ class TestEvent(TestCase):
 
     def test_when(self):
         # same day, both pm
-        jan15 = datetime(2015, 1, 15, hour=16)
+        jan15 = datetime(2015, 1, 15, hour=16, tzinfo=timezone.get_default_timezone())
         end = jan15 + timedelta(hours=1, minutes=30)
         event = Event(start_time=jan15, end_time=end)
         # start day month date time (no pm), end time (pm)
@@ -72,6 +73,11 @@ class TestEvent(TestCase):
         assert event.when() == '%s - %s' % \
             (event.start_time.strftime('%B %d %I:%M'),
              end.strftime('%d %I:%M %p'))
+
+        # different timezone should get localized to current timezone
+        event.start_time = datetime(2015, 1, 15, hour=20, tzinfo=pytz.UTC)
+        event.end_time = event.start_time + timedelta(hours=12)
+        assert '3:00 PM' in event.when()
 
     def test_ical_event(self):
         jan15 = datetime(2015, 1, 15, hour=16)
