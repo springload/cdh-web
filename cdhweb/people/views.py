@@ -11,7 +11,7 @@ class ProfileDetailView(DetailView):
     def get_queryset(self):
         # use displayable manager to find published profiles only
         # (or draft profiles for logged in users with permission to view)
-        return Profile.objects.published(for_user=self.request.user)
+        return Profile.objects.published() # TODO: published(for_user=self.request.user)
 
 
 class ProfileListView(ListView):
@@ -24,7 +24,7 @@ class ProfileListView(ListView):
     def get_queryset(self):
         # use displayable manager to find published profiles only
         # (or draft profiles for logged in users with permission to view)
-        return Profile.objects.published(for_user=self.request.user)
+        return Profile.objects.published() # TODO: published(for_user=self.request.user)
 
 
 

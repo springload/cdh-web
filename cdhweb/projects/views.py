@@ -8,12 +8,11 @@ class ProjectListView(ListView):
     model = Project
 
     def get_queryset(self):
-        qs = Project.objects.published(for_user=self.request.user)
-        return qs
+        return Project.objects.published() # TODO: published(for_user=self.request.user)
 
 
 class ProjectDetailView(DetailView):
     model = Project
 
     def get_queryset(self):
-        return Project.objects.published(for_user=self.request.user)
+        return Project.objects.published() # TODO: published(for_user=self.request.user)

@@ -14,7 +14,7 @@ class BlogListView(ListView):
     model = BlogPost
 
     def get_queryset(self):
-        qs = BlogPost.objects.published(for_user=self.request.user)
+        qs = BlogPost.objects.published() # TODO: published(for_user=self.request.user)
         if self.kwargs.get('year', None):
             qs = qs.filter(publish_date__year=self.kwargs['year'])
         return qs
@@ -25,4 +25,4 @@ class BlogDetailView(DetailView):
     model = BlogPost
 
     def get_queryset(self):
-        return BlogPost.objects.published(for_user=self.request.user)
+        return BlogPost.objects.published() # TODO: published(for_user=self.request.user)

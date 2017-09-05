@@ -11,13 +11,14 @@ def site_index(request):
     # TODO: highlighted/featured item or news
 
     # get highlighted, published projects
-    projects = list(Project.objects.published(for_user=request.user) \
-                                   .highlighted())
+    # TODO: (maybe) published(for_user=request.user)
+    projects = list(Project.objects.published().highlighted())
     # randomize the project list
     shuffle(projects)
 
     # find the next three upcoming, published events
-    upcoming_events = Event.objects.published(for_user=request.user) \
+    # TODO: (maybe) published(for_user=request.user) \
+    upcoming_events = Event.objects.published() \
         .upcoming()[:3]
 
     return render(request, 'site_index.html', {

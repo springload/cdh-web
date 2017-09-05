@@ -17,7 +17,7 @@ class EventListView(ListView):
     def get_queryset(self):
         # TODO: label based on which events are displayed
         # upcoming? year? (semester?)
-        qs = Event.objects.published(for_user=self.request.user)
+        qs = Event.objects.published() # TODO: published(for_user=self.request.user)
         if self.kwargs.get('year', None):
             qs = qs.filter(publish_date__year=self.kwargs['year'])
         return qs
@@ -28,7 +28,7 @@ class EventDetailView(DetailView):
     model = Event
 
     def get_queryset(self):
-        return Event.objects.published(for_user=self.request.user)
+        return Event.objects.published() # TODO: published(for_user=self.request.user)
 
 
 class EventIcalView(EventDetailView):
