@@ -8,7 +8,8 @@ from django.utils.html import escape
 
 from cdhweb.people.models import Profile
 from cdhweb.projects.models import Grant, GrantType, Project, Role, \
-    Membership
+    Membership, ProjectResource
+from cdhweb.resources.models import ResourceType
 
 
 class TestGrantType(TestCase):
@@ -37,6 +38,19 @@ class TestProject(TestCase):
         assert resolved_url.namespace == 'project'
         assert resolved_url.url_name == 'detail'
         assert resolved_url.kwargs['slug'] == proj.slug
+
+    def test_website_url(self):
+        proj = Project.objects.create(title="Mapping Expatriate Paris",
+                                      slug="mep")
+        # no website resource url
+        assert proj.website_url is None
+
+        # add a website url
+        website = ResourceType.objects.get(name='website')
+        mep_url = 'http://mep.princeton.edu'
+        ProjectResource.objects.create(project=proj, resource_type=website,
+                                       url=mep_url)
+        assert proj.website_url == mep_url
 
 
 class TestProjectQuerySet(TestCase):
@@ -158,6 +172,11 @@ class TestViews(TestCase):
             Membership(project=proj, user=contrib2, grant=grant, role=consult),
             Membership(project=proj, user=contrib3, grant=grant, role=pi)
         ])
+        # add a website url
+        website = ResourceType.objects.get(name='website')
+        project_url = 'http://something.princeton.edu'
+        ProjectResource.objects.create(project=proj, resource_type=website,
+                                       url=project_url)
 
         response = self.client.get(reverse('project:detail',
             kwargs={'slug':  proj.slug}))
@@ -172,4 +191,5 @@ class TestViews(TestCase):
             msg_prefix='contributor roles should only show up once')
         for contributor in [contrib1, contrib2, contrib3]:
             self.assertContains(response, contributor.profile.title)
+        self.assertContains(response, project_url)
         # TODO: test large image included

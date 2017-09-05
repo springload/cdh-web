@@ -74,8 +74,12 @@ class Project(Displayable, AdminThumbMixin):
     def get_absolute_url(self):
         return reverse('project:detail', kwargs={'slug': self.slug})
 
+    @property
     def website_url(self):
-        return self.projectresource_set.filter(resource_type__name='website').first()
+        website = self.projectresource_set \
+            .filter(resource_type__name='website').first()
+        if website:
+            return website.url
 
 
 class GrantType(models.Model):
@@ -142,4 +146,4 @@ class ProjectResource(models.Model):
     URLs'''
     resource_type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    URL = models.URLField()
+    url = models.URLField()

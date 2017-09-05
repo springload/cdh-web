@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
             name='ProjectResource',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('URL', models.URLField()),
+                ('url', models.URLField()),
                 ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='projects.Project')),
                 ('resource_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='resources.ResourceType')),
             ],
