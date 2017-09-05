@@ -14,8 +14,8 @@ from cdhweb.resources.models import ResourceType
 
 class ProjectQuerySet(models.QuerySet):
 
-    def active(self):
-        return self.filter(is_active=True)
+    def highlighted(self):
+        return self.filter(highlight=True)
 
     def current(self):
         today = timezone.now()
@@ -31,8 +31,8 @@ class ProjectManager(DisplayableManager):
     def get_queryset(self):
         return ProjectQuerySet(self.model, using=self._db)
 
-    def active(self):
-        return self.get_queryset().active()
+    def highlighted(self):
+        return self.get_queryset().highlighted()
 
     def current(self):
         return self.get_queryset().current()
@@ -41,7 +41,8 @@ class ProjectManager(DisplayableManager):
 class Project(Displayable, AdminThumbMixin):
     short_description = models.CharField(max_length=255)
     long_description = RichTextField()
-    is_active = models.BooleanField(default=False)
+    highlight = models.BooleanField(default=False,
+        help_text='Include in randomized project display on the home page.')
 
     members = models.ManyToManyField(User, through='Membership')
     resources = models.ManyToManyField(ResourceType, through='ProjectResource')

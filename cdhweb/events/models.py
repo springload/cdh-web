@@ -37,7 +37,7 @@ class Location(models.Model):
 class EventQuerySet(models.QuerySet):
 
     def upcoming(self):
-        return self.filter(start_time__gt=timezone.now())
+        return self.filter(start_time__gte=timezone.now())
 
 class EventManager(DisplayableManager):
     # extend displayable manager to preserve access to published filter

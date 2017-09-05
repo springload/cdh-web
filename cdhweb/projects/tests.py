@@ -55,14 +55,14 @@ class TestProject(TestCase):
 
 class TestProjectQuerySet(TestCase):
 
-    def test_active(self):
+    def test_highlighted(self):
         proj = Project.objects.create(title="Derrida's Margins")
 
-        assert not Project.objects.active().exists()
+        assert not Project.objects.highlighted().exists()
 
-        proj.is_active = True
+        proj.highlight = True
         proj.save()
-        assert Project.objects.active().exists()
+        assert Project.objects.highlighted().exists()
 
     def test_current(self):
         today = datetime.today()

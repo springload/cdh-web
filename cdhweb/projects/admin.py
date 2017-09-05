@@ -18,9 +18,9 @@ class GrantInline(admin.TabularInline):
 
 class ProjectAdmin(DisplayableAdmin):
     # extend displayable list to add is_active and make it editable
-    list_display = ("title", "status", "is_active", "admin_link", "admin_thumb",
+    list_display = ("title", "status", "highlight", "admin_link", "admin_thumb",
         "tag_list")
-    list_editable = ("status", "is_active")
+    list_editable = ("status", "highlight")
 
     list_filter = ("status", "grant", "keywords__keyword")
     # displayable date hierarchy is publish date, does that make sense here?

@@ -10,9 +10,9 @@ def site_index(request):
     '''Site home page.'''
     # TODO: highlighted/featured item or news
 
-    # get current, active, published projects
+    # get highlighted, published projects
     projects = list(Project.objects.published(for_user=request.user) \
-                                   .active().current())
+                                   .highlighted())
     # randomize the project list
     shuffle(projects)
 
