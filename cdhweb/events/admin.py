@@ -18,7 +18,7 @@ class EventAdmin(admin.ModelAdmin):
     # last login and date joined
 
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ('short_name', 'name', 'address')
+    list_display = ('name', 'short_name', 'address')
 
 
 admin.site.register(EventType)
