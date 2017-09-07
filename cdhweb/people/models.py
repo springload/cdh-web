@@ -47,6 +47,18 @@ class Person(User):
         if current_positions.exists():
             return current_positions.first().title
 
+    def __str__(self):
+        '''Custom person display to make it easier to choose people
+        in admin menus.  Uses profile title if available, otherwise combines
+        first and last names.  Returns username as last resort if no
+        names are set.'''
+        try:
+            return self.profile.title
+        except ObjectDoesNotExist:
+            if self.first_name or self.last_name:
+                return ' '.join([self.first_name, self.last_name]).strip()
+            return self.username
+
 
 
 

@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.utils.text import slugify
 import pytest
 
-from .models import Title, Person, Position, init_profile_from_ldap
+from .models import Title, Person, Position, init_profile_from_ldap, Profile
 
 
 @pytest.mark.django_db
@@ -32,6 +32,22 @@ class TestPerson(TestCase):
         Position.objects.create(user=staffer, title=staff_title,
             start_date='2016-06-01')
         assert staffer.current_title == staff_title
+
+    def test_str(self):
+        # username is used if that's all that's available only
+        pers = Person(username='foo')
+        assert str(pers) == pers.username
+        # one name only - no trailing whitespace
+        pers.first_name = 'Guinevere'
+        assert str(pers) == pers.first_name
+        # last and first name both present
+        pers.last_name = 'DuLac'
+        assert str(pers) == '%s %s' % (pers.first_name, pers.last_name)
+        # profile title takes precedence
+        pers.save()
+
+        Profile.objects.create(user=pers, title='Gwen of the Lake')
+        assert str(pers) == pers.profile.title
 
 
 @pytest.mark.django_db
