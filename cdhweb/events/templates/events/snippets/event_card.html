@@ -17,6 +17,14 @@
 
         <meta property="schema:startDate" content="{{ event.start_time|date:'c' }}"/>
         <meta property="schema:endDate" content="{{ event.end_time|date:'c' }}"/>
+        {# location is required for schema.org #}
+        <div property="schema:location" typeof="schema:Place">
+            <meta property="schema:name" content="{{ event.location.name }}"/>
+            <meta property="schema:address" content="{{ event.location.address}}"/>
+        </div>
+        {# description is recommended for schema.org #}
+        <div style="display:none" property="schema:description">{{ event.content|safe }}</div>
+
 
         <div class="when">
             <span class="day">{{ event.start_time|date:"F j" }}</span>
