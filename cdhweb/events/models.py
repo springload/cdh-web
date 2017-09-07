@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -13,6 +12,7 @@ from mezzanine.core.managers import DisplayableManager
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
+from cdhweb.people.models import Person
 from cdhweb.resources.utils import absolutize_url
 
 
@@ -68,7 +68,7 @@ class Event(Displayable, RichText, AdminThumbMixin):
     # all_day = models.BooleanField(default=False, blank=True)
     location = models.ForeignKey(Location, null=True, blank=True)
     event_type = models.ForeignKey(EventType)
-    speakers = models.ManyToManyField(User,
+    speakers = models.ManyToManyField(Person,
         help_text='Guest lecturer(s) or Workshop leader(s)',
         blank=True)
 
@@ -145,7 +145,7 @@ class Event(Displayable, RichText, AdminThumbMixin):
         '''Return the current event as a :class:`icalendar.Event` for
         inclusion in a :class:`icalendar.Calendar`'''
         event = icalendar.Event()
-        # use absolute url for event id and in content
+        # use absolute url for event id and in event content
         absurl = absolutize_url(self.get_absolute_url())
         event.add('uid', absurl)
         event.add('summary', self.title)

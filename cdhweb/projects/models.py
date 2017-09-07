@@ -9,6 +9,7 @@ from mezzanine.core.managers import DisplayableManager
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
+from cdhweb.people.models import Person
 from cdhweb.resources.models import ResourceType
 
 
@@ -44,7 +45,7 @@ class Project(Displayable, AdminThumbMixin):
     highlight = models.BooleanField(default=False,
         help_text='Include in randomized project display on the home page.')
 
-    members = models.ManyToManyField(User, through='Membership')
+    members = models.ManyToManyField(Person, through='Membership')
     resources = models.ManyToManyField(ResourceType, through='ProjectResource')
 
     tags = TaggableManager(blank=True)
@@ -128,7 +129,7 @@ class MembershipQuerySet(models.QuerySet):
 
 class Membership(models.Model):
     project = models.ForeignKey(Project)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(Person)
     grant = models.ForeignKey(Grant)
     role = models.ForeignKey(Role)
 

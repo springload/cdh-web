@@ -1,13 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from mezzanine.core.fields import FileField
-from mezzanine.core.models import Displayable, Ownable, RichText, Slugged
+from mezzanine.core.models import Displayable, RichText
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 
 from taggit.managers import TaggableManager
+
+from cdhweb.people.models import Person
 
 
 class MultiOwnable(models.Model):
@@ -17,12 +18,11 @@ class MultiOwnable(models.Model):
     multiple owners.
     """
 
-    users = models.ManyToManyField(User, verbose_name=_("Authors"),
+    users = models.ManyToManyField(Person, verbose_name=_("Authors"),
         related_name="%(class)ss")
 
     class Meta:
         abstract = True
-
 
     def is_editable(self, request):
         """
