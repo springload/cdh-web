@@ -60,8 +60,6 @@ class Person(User):
             return self.username
 
 
-
-
 class Profile(Displayable, AdminThumbMixin):
     user = models.OneToOneField(User)
     education = RichTextField()

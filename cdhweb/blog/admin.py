@@ -10,34 +10,38 @@ from mezzanine.twitter.admin import TweetableAdminMixin
 from .models import  BlogPost
 
 
-# adapted from mezzanine blogpost admin
-
-blogpost_fieldsets = deepcopy(DisplayableAdmin.fieldsets)
-# blogpost_fieldsets[0][1]["fields"].insert(1, "categories")
-# blogpost_fieldsets[0][1]["fields"].extend(["content", "allow_comments"])
-blogpost_fieldsets[0][1]["fields"].extend(["content", "users", "tags"])
-blogpost_list_display = ["title", "author_list", "status", "admin_link"]
-# if settings.BLOG_USE_FEATURED_IMAGE:
-blogpost_fieldsets[0][1]["fields"].insert(-2, "featured_image")
-blogpost_list_display.insert(0, "admin_thumb")
-blogpost_list_display.append('tag_list')
-blogpost_fieldsets = list(blogpost_fieldsets)
-blogpost_fieldsets.insert(1, (_("Other posts"), {
-    "classes": ("collapse-closed",),
-    "fields": ("related_posts",)}))
-# blogpost_list_filter = deepcopy(DisplayableAdmin.list_filter) + ("categories",)
-
-
 class BlogPostAdmin(TweetableAdminMixin, DisplayableAdmin, OwnableAdmin):
     """
     Admin class for blog posts.
     """
 
-    fieldsets = blogpost_fieldsets
-    list_display = blogpost_list_display
-    # list_filter = blogpost_list_filter
+    list_display = ["title", "author_list", "status", "admin_link", "tag_list",
+        "admin_thumb"]
+    list_editable = ("status",)
+    list_filter = ("status", )
+    date_hierarchy = "publish_date"
+    radio_fields = {"status": admin.HORIZONTAL}
     # filter_horizontal = ("categories", "related_posts",)
     filter_horizontal = ("related_posts",)
+
+    prepopulated_fields = {"slug": ("title",)}
+    # based on Displayable fieldset
+    fieldsets = (
+        (None, {
+            "fields": ["title", "status", ("publish_date", "expiry_date"),
+                       "content", "featured_image", "users", "tags"]
+        }),
+        (_("Meta data"), {
+            "fields": ["_meta_title", "slug",
+                       ("description", "gen_description"),
+                        "keywords", "in_sitemap"],
+            "classes": ("collapse-closed",)
+        }),
+        (_("Other posts"), {
+            "classes": ("collapse-closed",),
+            "fields": ("related_posts",),
+        }),
+    )
 
     def save_form(self, request, form, change):
         """
@@ -51,6 +55,10 @@ class BlogPostAdmin(TweetableAdminMixin, DisplayableAdmin, OwnableAdmin):
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.tags.all())
     tag_list.short_description = 'Tags'
+
+    def get_changeform_initial_data(self, request):
+        # default author to current user
+        return {'users': [request.user]}
 
 
 admin.site.register(BlogPost, BlogPostAdmin)
