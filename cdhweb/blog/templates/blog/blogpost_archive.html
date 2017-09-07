@@ -4,9 +4,18 @@
 {% block page-subtitle %}{{ blogpost.title }} | Updates | {% endblock %}
 
 
+
 {% block main %}
+<h3>Archives</h3>
 <ul>
-{% for blogpost in blogpost_list %}
+{% for archive_date in date_list %}
+    <li><a href="{% url 'blog:by-year' year=archive_date.year %}">{{ archive_date.year }}</a></li>
+{% endfor %}
+</ul>
+
+<ul>
+{% for blogpost in latest %}
+{# TODO: convert to snippet  #}
     <li>
     <a href="{{ blogpost.get_absolute_url }}">{{ blogpost.title }}</a>
     {% for author in blogpost.users.all %}
