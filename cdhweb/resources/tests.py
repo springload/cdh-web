@@ -5,9 +5,11 @@ from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+import pytest
 
 from cdhweb.events.models import Event, EventType
 from cdhweb.projects.models import Project, GrantType, Grant
+from cdhweb.resources.utils import absolutize_url
 
 
 class TestViews(TestCase):
@@ -91,4 +93,30 @@ class TestViews(TestCase):
         # TODO: not yet testing speakers displayed
 
         # not yet testing published/unpublished
+
+
+@pytest.mark.django_db
+def test_absolutize_url():
+    https_url = 'https://example.com/some/path/'
+    # https url is returned unchanged
+    assert absolutize_url(https_url) == https_url
+    # testing with default site domain
+    current_site = Site.objects.get_current()
+
+    # test site domain without https
+    current_site.domain = 'example.org'
+    current_site.save()
+    local_path = '/foo/bar/'
+    assert absolutize_url(local_path) == 'https://example.org/foo/bar/'
+    # trailing slash in domain doesn't result in double slash
+    current_site.domain = 'example.org/'
+    current_site.save()
+    assert absolutize_url(local_path) == 'https://example.org/foo/bar/'
+    # site at subdomain should work too
+    current_site.domain = 'example.org/sub/'
+    current_site.save()
+    assert absolutize_url(local_path) == 'https://example.org/sub/foo/bar/'
+    # site with https:// included
+    current_site.domain = 'https://example.org'
+    assert absolutize_url(local_path) == 'https://example.org/sub/foo/bar/'
 

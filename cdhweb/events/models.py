@@ -13,6 +13,8 @@ from mezzanine.core.managers import DisplayableManager
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
+from cdhweb.resources.utils import absolutize_url
+
 
 class EventType(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -143,12 +145,15 @@ class Event(Displayable, RichText, AdminThumbMixin):
         '''Return the current event as a :class:`icalendar.Event` for
         inclusion in a :class:`icalendar.Calendar`'''
         event = icalendar.Event()
-        event.add('uid', self.get_absolute_url())  # TODO: needs to be absolutized!
+        # use absolute url for event id and in content
+        absurl = absolutize_url(self.get_absolute_url())
+        event.add('uid', absurl)
         event.add('summary', self.title)
         event.add('dtstart', self.start_time)
         event.add('dtend', self.end_time)
         if self.location:
             event.add('location', self.location.display_name)
-        event.add('description', strip_tags(self.content))
+        event.add('description',
+            '\n'.join([strip_tags(self.content), '', absurl]))
         return event
 

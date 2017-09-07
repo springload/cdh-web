@@ -43,16 +43,22 @@ class EventIcalView(EventDetailView):
         return response
 
 
-class IcalCalendarView(EventListView):
+# ical calendar for all upcoming events
+# TODO when we can get to it
+# class IcalCalendarView(EventListView):
 
-    def get_queryset(self):
-        return super(IcalCalendarView, self).get_queryset().upcoming()
+#     def get_queryset(self):
+#         return super(IcalCalendarView, self).get_queryset().upcoming()
 
-    def render_to_response(self, context, **response_kwargs):
-        cal = icalendar.Calendar()
-        for event in self.get_queryset():
-            cal.add_component(event.ical_event())
-        response = HttpResponse(cal.to_ical(), content_type="text/calendar")
-        response['Content-Disposition'] = 'attachment; filename="CDH-calendar.ics"'
-        return response
+#     def render_to_response(self, context, **response_kwargs):
+#         cal = icalendar.Calendar()
+#         # TODO: required to be compliant
+#         # cal.add('prodid', '-//My calendar product//mxm.dk//')
+#         # cal.add('version', '2.0')
+#         for event in self.get_queryset():
+#             cal.add_component(event.ical_event())
+#         # TODO: should support cancelled events if possible
+#         response = HttpResponse(cal.to_ical(), content_type="text/calendar")
+#         response['Content-Disposition'] = 'attachment; filename="CDH-calendar.ics"'
+#         return response
 

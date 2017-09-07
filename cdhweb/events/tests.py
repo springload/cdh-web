@@ -6,6 +6,7 @@ import icalendar
 import pytz
 
 from cdhweb.events.models import Event, EventType, Location
+from cdhweb.resources.utils import absolutize_url
 
 
 class TestEventType(TestCase):
@@ -89,7 +90,7 @@ class TestEvent(TestCase):
             content='<p>%s</p>' % description, slug='dataviz-workshop')
         ical = event.ical_event()
         assert isinstance(ical, icalendar.Event)
-        assert ical['uid'] == event.get_absolute_url()
+        assert ical['uid'] == absolutize_url(event.get_absolute_url())
         assert ical['summary'] == event.title
         # Dates are in this format, as bytes: 20150115T160000
         assert ical['dtstart'].to_ical() == \
@@ -148,6 +149,6 @@ class TestViews(TestCase):
         # parsable as ical calendar
         cal = icalendar.Calendar.from_ical(response.content)
         # includes the requested event
-        assert cal.subcomponents[0]['uid'] == event.get_absolute_url()
+        assert cal.subcomponents[0]['uid'] == absolutize_url(event.get_absolute_url())
 
 
