@@ -90,7 +90,8 @@ class TestEvent(TestCase):
             content='<p>%s</p>' % description, slug='dataviz-workshop')
         ical = event.ical_event()
         assert isinstance(ical, icalendar.Event)
-        assert ical['uid'] == absolutize_url(event.get_absolute_url())
+        absurl = absolutize_url(event.get_absolute_url())
+        assert ical['uid'] == absurl
         assert ical['summary'] == event.title
         # Dates are in this format, as bytes: 20150115T160000
         assert ical['dtstart'].to_ical() == \
@@ -99,7 +100,8 @@ class TestEvent(TestCase):
             event.end_time.strftime('%Y%m%dT%H%M%S').encode()
         assert ical['location'] == loc.display_name
         # description should have tags stripped
-        assert ical['description'].to_ical() == description.encode()
+        assert description in ical['description'].to_ical().decode()
+        assert absurl in ical['description'].to_ical().decode()
 
 
 class TestEventQueryset(TestCase):
