@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='speakers',
-            field=models.ManyToManyField(blank=True, help_text='Guest lecturer(s) or Workshop leader(s)', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(blank=True, help_text='Guest lecturer(s) or Workshop leader(s)', to='people.Person'),
         ),
         migrations.AddField(
             model_name='event',
