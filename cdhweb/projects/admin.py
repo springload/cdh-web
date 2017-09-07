@@ -8,6 +8,14 @@ from .models import Project, GrantType, Grant, Membership, Role, \
 class MemberInline(admin.TabularInline):
     model = Membership
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        field = super(MemberInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        # restrict only to grants associated with the current project
+        if db_field.name == 'grant':
+            if request.object is not None:
+                field.queryset = field.queryset.filter(project=request.object)
+        return field
+
 
 class ResourceInline(admin.TabularInline):
     model = ProjectResource
@@ -17,7 +25,7 @@ class GrantInline(admin.TabularInline):
 
 
 class ProjectAdmin(DisplayableAdmin):
-    # extend displayable list to add is_active and make it editable
+    # extend displayable list to add highlight and make it editable
     list_display = ("title", "status", "highlight", "admin_link", "admin_thumb",
         "tag_list")
     list_editable = ("status", "highlight")
@@ -31,7 +39,7 @@ class ProjectAdmin(DisplayableAdmin):
     fieldsets = (
         (None, {
             "fields": ["title", "status", ("publish_date", "expiry_date"),
-                       "short_description", "long_description", "is_active",
+                       "short_description", "long_description", "highlight",
                        "image", "thumb", ],  # tags todo
         }),
         ("Meta data", {
@@ -47,6 +55,11 @@ class ProjectAdmin(DisplayableAdmin):
     tag_list.short_description = 'Tags'
 
     inlines = [GrantInline, MemberInline, ResourceInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        # save object reference for filtering grants in membership Inline
+        request.object = obj
+        return super(ProjectAdmin, self).get_form(request, obj, **kwargs)
 
 class GrantAdmin(admin.ModelAdmin):
     list_display = ('project', 'grant_type', 'start_date', 'end_date')
