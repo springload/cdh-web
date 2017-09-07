@@ -66,10 +66,10 @@ figcaption {
     }
 
     // NOTE: uncomment for visual debugging
-   //  @include grid-visual();
-   //  @include grid-media($large-grid){
+    // @include grid-visual();
+    // @include grid-media($large-grid){
 	  // @include grid-visual();
-   //  }
+    // }
 }
 
 
@@ -299,7 +299,7 @@ article {
 	}
 
 	div {
-		@extend .responsive-container;
+		// @extend .responsive-container;
 	}
 
 	#maincontent {
@@ -686,6 +686,7 @@ $event-card-img-height: 240px;
 	header {
 		@include grid-container;
         @include grid-collapse;
+
     	/* full width of container */
     	margin-left: 0;
     	margin-right: 0;
@@ -769,5 +770,24 @@ $event-card-img-height: 240px;
 		}
 	}
 
+
+}
+
+.blogpost {
+	// margin-top: 340px; // currently handled by spacer div
+	padding: 0;
+
+	@include grid-media($large-grid) {
+		@include grid-shift(2);
+		@include grid-column(8);
+	}
+
+	h1 {
+		margin-top: 0;
+		margin-bottom: 50px;
+	}
+	p {
+		margin-bottom: 50px;
+	}
 
 }
