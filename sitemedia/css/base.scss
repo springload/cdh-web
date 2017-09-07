@@ -684,12 +684,39 @@ $event-card-img-height: 240px;
 .project-detail {
 
 	header {
+		@include grid-container;
+        @include grid-collapse;
+    	/* full width of container */
+    	margin-left: 0;
+    	margin-right: 0;
+    	width: auto;
+
   		@include grid-push(3);
 		@include grid-media($large-grid) {
+			@include grid-container;
+	        @include grid-collapse($large-grid);
 	  		@include grid-push(3);
 	  	}
+	    @media (max-width: $small-max-width) {
+	    	@include grid-push(0);
+	    	/* full width of container */
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+
 	  	.short_description {
 	  		font-style: italic;
+
+			margin-left: 0;
+		    margin-right: 0;
+	    	width: auto;
+
+			@include grid-media($large-grid){
+			    @include grid-column(7);
+			    margin-left: 0;
+			}
+
 	  	}
 	}
 	.contributors {
@@ -697,6 +724,16 @@ $event-card-img-height: 240px;
 		@include grid-media($large-grid){
 		    @include grid-column(3);
 		}
+	    @media (max-width: $small-max-width) {
+	    	width: 100%;
+	    }
+
+	    @media (max-width: $small-max-width) {
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+
 		ul {
 			list-style-type: none;
 			color: $text-gray;
@@ -717,8 +754,20 @@ $event-card-img-height: 240px;
 		    @include grid-column(9);
 		}
 
+		@media (max-width: $small-max-width) {
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+
 		img {
 			max-width: 100%;
+			margin: 50px auto;
+		}
+		p {
+			margin-top: 0;
 		}
 	}
+
+
 }
