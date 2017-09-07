@@ -135,7 +135,7 @@ class Membership(models.Model):
     objects = MembershipQuerySet.as_manager()
 
     class Meta:
-        ordering = ['role__sort_order']
+        ordering = ('role__sort_order', 'user__last_name')
 
 
     def __str__(self):
