@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+<h3>Archives</h3>
+<ul>
+{% for archive_date in date_list %}
+    <li><a href="{% url 'event:by-year' year=archive_date.year %}">{{ archive_date.year }}</a></li>
+{% endfor %}
+</ul>
+
+<section class="events">
+    <h2>Upcoming Events</h2> {# FiXME: style currently tied to h2 #}
+    {% for event in latest %}
+        {% include 'events/snippets/event_card.html' %}
+    {% endfor %}
+</section>
+
+{% endblock %}

@@ -1,26 +1,32 @@
 from django.http import HttpResponse
 from django.views.generic.detail import DetailView
-from django.views.generic.list import ListView
+from django.views.generic.dates import ArchiveIndexView, YearArchiveView
 import icalendar
 
 from cdhweb.events.models import Event
 
+# TODO: event mixin for model/queryset
 
-class EventListView(ListView):
 
-    # same list view can power complete list or filtered version
-    # by year, month, whatever
-    # - pass year/month/etc filters in context data for display
-    #   in the template
+class UpcomingEventsView(ArchiveIndexView):
     model = Event
+    date_field = "start_time"
+    allow_future = True
 
     def get_queryset(self):
         # TODO: label based on which events are displayed
         # upcoming? year? (semester?)
-        qs = Event.objects.published() # TODO: published(for_user=self.request.user)
-        if self.kwargs.get('year', None):
-            qs = qs.filter(publish_date__year=self.kwargs['year'])
-        return qs
+        return Event.objects.published().upcoming() # TODO: published(for_user=self.request.user)
+
+
+class EventYearArchiveView(YearArchiveView):
+    date_field = "start_time"
+    make_object_list = True
+    allow_future = True
+    model = Event
+
+    def get_queryset(self):
+        return Event.objects.published() # TODO: published(for_user=self.request.user)
 
 
 class EventDetailView(DetailView):

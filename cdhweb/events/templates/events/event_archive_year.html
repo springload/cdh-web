@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+{# do we care about month display? #}
+<ul>
+    {% for date in date_list %}
+        <li>{{ date|date:"M" }}</li>
+    {% endfor %}
+</ul>
+
+<section class="events">
+    <h1>{{ year|date:"Y" }} Events</h1>
+    {% for event in object_list %}
+        {% include 'events/snippets/event_card.html' %}
+    {% endfor %}
+</section>
+
+{% endblock %}
