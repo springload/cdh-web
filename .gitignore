@@ -11,6 +11,9 @@ local_settings.py
 .sass-cache
 env/
 
+# Ansible key convention
+.vault_passwd
+
 ## Python .gitignore from Github ##
 # Byte-compiled / optimized / DLL files
 __pycache__/
