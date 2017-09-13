@@ -95,6 +95,7 @@ celerybeat-schedule
 # virtualenv
 venv/
 ENV/
+env/
 
 # Spyder project settings
 .spyderproject
@@ -106,4 +107,5 @@ static
 *.out
 .cache
 .sass-cache
+
 
