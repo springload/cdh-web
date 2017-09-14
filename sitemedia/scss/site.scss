@@ -603,6 +603,149 @@ $event-card-img-height: 240px;
 
 }
 
+
+.profile {
+	/* very similar to project detail;
+	  TODO: make mixins or includes for common layout */
+
+	header {
+		@include grid-container;
+        @include grid-collapse;
+
+    	/* full width of container */
+    	margin-left: 0;
+    	margin-right: 0;
+    	width: auto;
+
+  		@include grid-push(3);
+		@include grid-media($large-grid) {
+			@include grid-container;
+	        @include grid-collapse($large-grid);
+	  		@include grid-push(3);
+	  	}
+	    @media (max-width: $small-max-width) {
+	    	@include grid-push(0);
+	    	/* full width of container */
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+
+	  	.title {   /* equiv to project short_description */
+	  		font-style: italic;
+	  		font-family: $font-stack-body-text;
+	  		color: $dark-grey;
+	  		font-size: 21px;
+
+			margin-left: 0;
+		    margin-right: 0;
+	    	width: auto;
+
+			@include grid-media($large-grid){
+			    @include grid-column(7);
+			    margin-left: 0;
+			}
+
+	  	}
+	}
+	.links {
+		/* same sidebar layout as project contributors */
+		text-transform: capitalize;
+		margin-bottom: 35px;
+
+		@include grid-column(3);
+		@include grid-media($large-grid){
+		    @include grid-column(3);
+		}
+	    @media (max-width: $small-max-width) {
+	    	width: 100%;
+	    }
+
+	    @media (max-width: $small-max-width) {
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+
+		ul {
+			list-style-type: none;
+			color: $dark-grey;
+			padding: 0;
+		}
+
+		 a {
+	    	color: black;
+	    	text-decoration: none;
+	    	font-family: $font-stack-headline;
+	    	font-size: 18px;
+	    }
+	}
+
+	img {
+		margin: 0 0 50px 0;
+    	width: auto;
+
+		@include grid-column(5);
+		@include grid-media($large-grid){
+			@include grid-column(5);
+		}
+		@media (max-width: $small-max-width) {
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+	}
+
+	.education {
+		color: $dark-grey;
+		font-family: $font-stack-headline;
+		font-size: 18px;
+
+		@include grid-column(4);
+		@include grid-push(3);
+		@include grid-media($large-grid){
+			@include grid-column(4);
+		}
+		@media (max-width: $small-max-width) {
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+	    a {
+	    	color: $dark-grey ;
+	    	text-decoration: none;
+	    	// background-image: none !important;
+	    }
+	}
+	p {
+		margin-top: 0;
+		@media (max-width: $small-max-width) {
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+
+	}
+
+	.bio {
+		@include grid-column(6);
+		@include grid-push(3);
+		@include grid-media($large-grid){
+			@include grid-column(8);
+			@include grid-push(3);
+		}
+		@media (max-width: $small-max-width) {
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+
+	}
+
+
+}
+
+
 .blogpost {
 	// margin-top: 340px; // currently handled by spacer div
 	padding: 0;

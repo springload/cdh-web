@@ -32,7 +32,7 @@ class UserResource(models.Model):
     corresponding URLs for the specified resource type.'''
     resource_type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    URL = models.URLField()
+    url = models.URLField()
 
 
 class Attachment(models.Model):

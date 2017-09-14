@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
             name='UserResource',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('URL', models.URLField()),
+                ('url', models.URLField()),
                 ('resource_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='resources.ResourceType')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
