@@ -9,3 +9,4 @@ django-taggit
 git+https://github.com/Princeton-CDH/django-pucas.git@develop#egg=pucas
 python-dateutil
 icalendar
+attrdict
