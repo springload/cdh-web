@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block page-subtitle %}Upcoming Events | {% endblock %}
+
 
 {% block main %}
 <ul class="pull-right">
@@ -9,7 +11,7 @@
 </ul>
 
 <section class="events">
-    <h2>Upcoming Events</h2> {# FiXME: style currently tied to h2 #}
+    <h1>Upcoming Events</h1>
     {% for event in latest %}
         {% include 'events/snippets/event_card.html' %}
     {% endfor %}
