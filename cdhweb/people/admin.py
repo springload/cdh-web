@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from mezzanine.core.admin import DisplayableAdmin
+from mezzanine.core.admin import DisplayableAdmin, DisplayableAdminForm
 from adminsortable2.admin import SortableAdminMixin
 
 from .models import Title, Profile, Position, Person
@@ -25,8 +25,15 @@ class TitleAdmin(SortableAdminMixin, admin.ModelAdmin):
 class ProfileInline(admin.StackedInline):
     model = Profile
     max_num = 1
+    form = DisplayableAdminForm
     # NOTE: may not be able to use displayable admin with inline;
     # could still use DisplayableAdminForm
+    prepopulated_fields = {"slug": ("title",)}
+    # TODO: grapelli templates don't include a way to have the first profile
+    # default to open instead of collapsed; maybe use javascript
+    # classes = ("collapse-open",)
+    # inline_classes = ('collapse-open',)  # this is ignored
+    exclude = ('tags', )
 
 
 class PositionInline(admin.TabularInline):
@@ -46,6 +53,7 @@ class PersonAdmin(admin.ModelAdmin):
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.profile.tags.all())
     tag_list.short_description = 'Tags'
+
 
     # use inline fields for titles and resources
     # also: suppress management/auth fields like password, username, permissions,
