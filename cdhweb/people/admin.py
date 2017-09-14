@@ -8,18 +8,15 @@ from .models import Title, Profile, Position, Person
 from cdhweb.resources.models import UserResource
 
 
-class TitleAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('title', 'num_people')
-    # NOTE: could make title list-editable, but then we need something
-    # to be the edit link
-    # list_display = ('sort_order', 'title', )
-    # list_editable = ('title',)
+# class TitleAdmin(SortableAdminMixin, admin.ModelAdmin):
+class TitleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'sort_order', 'num_people')
+    list_editable = ('sort_order',)
 
     # FIXME: there is an incompatibility with SortableAdminMixin templates
     # and/or css/js includes and grappelli; sorting works fine when
     # grappelli is not installed.  We should be able to address this
     # with a little bit of template customization.
-
 
 
 class ProfileInline(admin.StackedInline):
