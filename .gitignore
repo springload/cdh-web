@@ -107,6 +107,8 @@ static
 *.out
 .cache
 .sass-cache
+env/
+sitemedia/fonts
 
 # Ansible key convention
 .vault_passwd
