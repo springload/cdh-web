@@ -1,11 +1,15 @@
 import json
-from attrdict import AttrDict
 
+from attrdict import AttrDict
+import dateutil.parser
+from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from pucas.ldap import user_info_from_ldap, LDAPSearchException
 
+
+from cdhweb.events.models import Event, Location, EventType
 from cdhweb.people.models import Person, Profile, Title, Position
 
 
@@ -21,8 +25,13 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('input',
             help='Path to a JSON file created using dumpdata')
+        parser.add_argument('--people', action='store_const', const='people',
+            dest='mode', help='Import people only')
+        parser.add_argument('--events', action='store_const', const='events',
+            dest='mode', help='Import events only')
 
     def handle(self, *args, **options):
+        mode = options.get('mode', 'all')
         try:
             with open(options['input'], 'r') as datafile:
                 v1data = json.load(datafile)
@@ -31,9 +40,13 @@ class Command(BaseCommand):
         except json.decoder.JSONDecodeError as err:
             raise CommandError('Error parsing json: %s' %err)
 
-        # print(v1data)
-        self.import_profiles(v1data)
+        self.current_site = Site.objects.get_current()
 
+        # TODO: summary. # created/update
+        if mode in ['all', 'people']:
+            self.import_profiles(v1data)
+        if mode in ['all', 'events']:
+            self.import_events(v1data)
 
     def import_profiles(self, data):
         # use current date for start date of positions created via import
@@ -65,6 +78,8 @@ class Command(BaseCommand):
 
                 # all people in old site are cdh staff
                 user.profile.is_staff = True
+                # associate with current site
+                user.profile.site = self.current_site
                 user.profile.save()
 
                 # TBD: do we want to preserve existing photos?
@@ -120,5 +135,88 @@ class Command(BaseCommand):
 
         return user
 
+    # known variants for CDH location
+    cdh_locations = [
+        "B Floor Firestone Library",
+        "B Floor",
+        "B Floor, Firestone Library",
+        "B Floor, Firestone",
+        "CDH",
+        "Firestone Library, Floor B, Center for Digital Humanities",
+    ]
+    # "245 East Pyne"
 
+    def import_events(self, data):
+        # preload cdh location for associating with events
+        cdh = Location.objects.get(short_name='CDH')
+        event_type_lookup = {event.name: event for event in EventType.objects.all()}
+        event_type_lookup['Lecture'] = event_type_lookup['Guest Lecture']
+
+        # loop through the data and process eventspages.event
+        for item_data in data:
+            item = AttrDict(item_data)
+            if item.model == 'eventspages.event':
+                # preserve event pk since it is used in old urls
+                try:
+                    # get event if has already been created
+                    event = Event.objects.get(pk=item.pk)
+                except ObjectDoesNotExist:
+                    event = Event(pk=item.pk)
+
+                self.set_event_type(event, item, event_type_lookup)
+
+                event.start_time = dateutil.parser.parse(item.fields.event_start_time)
+                event.end_time = dateutil.parser.parse(item.fields.event_end_time)
+
+                if item.fields.event_location in self.cdh_locations:
+                    event.location = cdh
+                else:
+                    # associate location?
+                    self.stderr.write('Not handling location %s for %s' % \
+                        (item.fields.event_location, item.fields.event_title))
+
+                # associate with current site
+                event.site = self.current_site
+
+                event.save()
+                # event_sponsor unused
+                # images will be handled manually
+                # is event_description redundant? use page version?
+
+        for item_data in data:
+            item = AttrDict(item_data)
+            if item.model == 'eventspages.eventpage':
+                # event_data is pk for foreignkey to eventspages.event
+                event = Event.objects.get(pk=item.fields.event_data)
+                # copy displayable fields unchanged
+                for field in self.displayable_fields:
+                    setattr(event, field, item.fields[field])
+                event.save()
+
+    def set_event_type(self, event, item, event_type_lookup):
+        if ':' in item.fields.event_title:
+            ev_type, title = item.fields.event_title.split(': ', 1)
+            if ev_type in event_type_lookup:
+                event.event_type = event_type_lookup[ev_type]
+                event.title = title
+                return
+
+        # in every other case, new event title is full title
+        event.title = item.fields.event_title
+        # repeating events: title is the type (e.g. reading group)
+        if item.fields.event_title in event_type_lookup:
+            event.event_type = event_type_lookup[item.fields.event_title]
+            return
+
+        if 'Open House' in item.fields.event_title:
+            event.event_type = event_type_lookup['Reception']
+            return
+
+        if 'Working Group' in item.fields.event_title:
+            event.event_type = event_type_lookup['Working Group']
+            return
+
+        self.stderr.write("Could not determine event type for %s; setting as lecture" % \
+            item.fields.event_title)
+        event.event_type = event_type_lookup['Guest Lecture']
 

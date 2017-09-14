@@ -9,7 +9,7 @@ def create_initial_types_locations(apps, schema_editor):
     Location = apps.get_model('events', 'Location')
 
     for evt_type in ['Workshop', 'Guest Lecture', 'Reception', 'Reading Group',
-                     'Panel', 'Deadline']:
+                     'Panel', 'Deadline', 'Working Group', 'Symposium']:
         EventType.objects.create(name=evt_type)
 
     Location.objects.create(name='Center for Digital Humanities',
