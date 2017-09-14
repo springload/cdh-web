@@ -70,11 +70,11 @@ class Profile(Displayable, AdminThumbMixin):
     office_location = models.CharField(max_length=255, blank=True)
 
     image = FileField(verbose_name="Image",
-        upload_to=upload_to("people.image", "projects"),
+        upload_to=upload_to("people.image", "people"),
         format="Image", max_length=255, null=True, blank=True)
 
     thumb = FileField(verbose_name="Thumbnail",
-        upload_to=upload_to("people.image", "projects"),
+        upload_to=upload_to("people.image", "people/thumbnails"),
         format="Image", max_length=255, null=True, blank=True)
 
     admin_thumb_field = "thumb"

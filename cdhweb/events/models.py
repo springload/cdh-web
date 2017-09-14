@@ -79,7 +79,7 @@ class Event(Displayable, RichText, AdminThumbMixin):
         help_text='Image for display on event detail page (optional)')
 
     thumb = FileField(verbose_name="Thumbnail",
-        upload_to=upload_to("events.thumb", "events"),
+        upload_to=upload_to("events.thumb", "events/thumbnails"),
         format="Image", max_length=255, null=True, blank=True,
         help_text='Image for display on event card (optional)')
 

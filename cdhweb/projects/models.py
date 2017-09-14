@@ -58,7 +58,7 @@ class Project(Displayable, AdminThumbMixin):
         format="Image", max_length=255, null=True, blank=True)
 
     thumb = FileField(verbose_name="Thumbnail",
-        upload_to=upload_to("projects.image", "projects"),
+        upload_to=upload_to("projects.image", "projects/thumbnails"),
         format="Image", max_length=255, null=True, blank=True)
 
     # custom manager and queryset
