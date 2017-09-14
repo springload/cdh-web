@@ -7,7 +7,7 @@
 <div class="profile">
 <header>
     <h1>{{ profile.title }}</h1>
-    <p class="title">{{ profile.current_title }}</p>
+    <p class="title">{{ profile.current_title|default:'' }}</p>
 </header>
 
 <div class="links">
