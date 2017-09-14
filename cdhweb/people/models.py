@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.managers import DisplayableManager
-from mezzanine.core.models import Displayable, Slugged
+from mezzanine.core.models import Displayable, CONTENT_STATUS_PUBLISHED
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
@@ -47,6 +47,21 @@ class Person(User):
         if current_positions.exists():
             return current_positions.first().title
 
+    def cdh_staff(self):
+        'is CDH staff'
+        return self.profile.is_staff
+    cdh_staff.boolean = True
+    cdh_staff.short_description = 'CDH Staff'
+
+    def published(self):
+        'page is published'
+        return self.profile.status == CONTENT_STATUS_PUBLISHED
+    published.boolean = True
+
+    def get_absolute_url(self):
+        'Display url for user profile'
+        return self.profile.get_absolute_url()
+
     def __str__(self):
         '''Custom person display to make it easier to choose people
         in admin menus.  Uses profile title if available, otherwise combines
@@ -62,6 +77,8 @@ class Person(User):
 
 class Profile(Displayable, AdminThumbMixin):
     user = models.OneToOneField(User)
+    is_staff = models.BooleanField(default=False,
+        help_text='If checked, this person will be listed on the CDH staff page.')
     education = RichTextField()
     bio = RichTextField()
     # NOTE: could use regex here, but how standard are staff phone

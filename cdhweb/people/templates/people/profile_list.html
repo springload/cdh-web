@@ -1,17 +1,18 @@
 {% extends "base.html" %}
 
+{% block page-subtitle %}{{ title|default:"People" }} | {% endblock %}
+
 {% block main %}
-<section class="projects">
-<h2>People</h2>
+<section class="people">
+<h2>{{ title|default:"People" }}</h2>
 {% for profile in object_list %}
     <div class="card profile"
-        {% if profile.image %}style="background-image:url('{{ MEDIA_URL }}{{ profile.image }}')"{% endif %}>
-{# {% if project.thumb %}style="background-image:url('{{ MEDIA_URL }}{{ project.thumb }}')"{% endif %}> #}
+        {% if profile.thumb %}style="background-image:url('{{ MEDIA_URL }}{{ profile.thumb }}')"{% endif %}>
     <a href="{{ profile.get_absolute_url }}">
-    <div class="content">
-        <p class="title">{{ profile.current_title }}</p>
+        <div class="content">
+        <p class="title">{{ profile.current_title|default:'' }}</p>
         <p class="name">{{ profile.title }}</p>
-    </div>
+        </div>
     </a>
 </div>
 {% endfor %}
