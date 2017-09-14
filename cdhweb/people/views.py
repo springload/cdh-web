@@ -31,7 +31,11 @@ class ProfileListView(ProfileMixinView, ListView):
 class StaffListView(ProfileMixinView, ListView):
 
     def get_queryset(self):
-        return super(StaffListView, self).get_queryset().filter(is_staff=True)
+        # order by job title sort order and then by last name
+        # (TODO: perhaps job start date for secondary?)
+        return super(StaffListView, self).get_queryset() \
+            .filter(is_staff=True) \
+            .order_by('user__positions__title__sort_order', 'user__last_name')
 
     def get_context_data(self):
         context = super(StaffListView, self).get_context_data()
