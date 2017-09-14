@@ -435,17 +435,17 @@ $event-card-img-height: 240px;
 }
 // TODO: mixin for icons, support h1 for individual pages
 
-.events > h2 {
+.events > h2, .events > h1 {
 	background-image: url('../img/icons/CDH_icon_cal.svg');
 	@include header-with-icon;
 }
 
-.projects > h2 {
+.projects > h2, .projects h1 {
 	background-image: url('../img/icons/CDH_icon_folder.svg');
 	@include header-with-icon;
 }
 
-.people > h2 {
+.people > h2, .people h1 {
 	background-image: url('../img/icons/CDH_icon_ppl.svg');
 	@include header-with-icon;
 }

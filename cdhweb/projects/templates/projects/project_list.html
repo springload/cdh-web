@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
+{% block page-subtitle %}Projects | {% endblock %}
+
 {% block main %}
 <section class="projects">
-<h2>Projects</h2>
+<h1>Projects</h1>
 {% for project in object_list %}
     {% include 'projects/snippets/project_card.html' with large=1 %}
 {% endfor %}
