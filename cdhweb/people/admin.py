@@ -44,9 +44,12 @@ class UserResourceInline(admin.TabularInline):
     model = UserResource
 
 
+
 class PersonAdmin(admin.ModelAdmin):
     list_display = ('username', 'first_name', 'last_name', 'current_title',
-        'tag_list')
+        'cdh_staff', 'published')
+    # NOTE: if we switched to profile instead of person here, is_staff
+    # and published could be made list editable
     fields = ('first_name', 'last_name', 'email')
     inlines = [ProfileInline, PositionInline, UserResourceInline]
 
