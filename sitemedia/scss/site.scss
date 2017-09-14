@@ -22,8 +22,8 @@
         max-width: $small-content-width;
     }
 
-	/* uncomment for visual debugging */
-/*    @include grid-visual();
+	/* uncomment for visual debugging
+    @include grid-visual();
     @include grid-media($large-grid){
       @include grid-visual();
     } */
@@ -423,6 +423,7 @@ $event-card-img-height: 240px;
 	margin-bottom: 50px;
 
 	background-repeat: no-repeat;
+	background-size: 50px 54px;
 }
 
 .homepage section > h2 {
@@ -436,7 +437,6 @@ $event-card-img-height: 240px;
 
 .events > h2 {
 	background-image: url('../img/icons/CDH_icon_cal.svg');
-	background-size: 50px 54px;
 	@include header-with-icon;
 }
 
@@ -755,6 +755,142 @@ $event-card-img-height: 240px;
 
 	}
 
+
+}
+
+.event-detail {
+	/* very similar to project detail and profile;
+	  TODO: make mixins or includes for common layout */
+	@include grid-container;
+
+	header {
+		@include grid-container;
+        @include grid-collapse;
+
+    	/* full width of container */
+    	margin-left: 0;
+    	margin-right: 0;
+    	width: auto;
+
+  		@include grid-push(3);
+		@include grid-media($large-grid) {
+			@include grid-container;
+	        @include grid-collapse($large-grid);
+	  		@include grid-push(3);
+	  	}
+	    @media (max-width: $small-max-width) {
+	    	@include grid-push(0);
+	    	/* full width of container */
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+
+	  	.short_description {   /* equiv to project short_description */
+	  		font-style: italic;
+	  		font-family: $font-stack-body-text;
+	  		color: $dark-grey;
+	  		font-size: 21px;
+
+			margin-left: 0;
+		    margin-right: 0;
+	    	width: auto;
+
+			@include grid-media($large-grid){
+			    @include grid-column(7);
+			    margin-left: 0;
+			}
+
+	  	}
+	}
+	.details {
+		/* same sidebar layout as project contributors */
+		margin-bottom: 35px;
+		font-family: $font-stack-headline;
+		color: $dark-grey;
+		font-size: 18px;
+
+		@include grid-column(3);
+		@include grid-media($large-grid){
+		    @include grid-column(3);
+		}
+	    @media (max-width: $small-max-width) {
+	    	width: 100%;
+	    }
+
+	    @media (max-width: $small-max-width) {
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+
+		ul {
+			list-style-type: none;
+			color: $dark-grey;
+			padding: 0;
+		}
+
+		 a {
+	    	color: $dark-grey;
+	    	text-decoration: none;
+	    	font-family: $font-stack-headline;
+	    	font-size: 18px;
+
+	    	&.ical {
+	    		margin-top: 37px;
+	    		padding-top: 75px;
+	    		display: block;
+				background-image: url('../img/icons/CDH_icon_cal.svg');
+				background-size: 50px 54px;
+				background-repeat: no-repeat;
+
+	    	}
+	    }
+
+	    .location {
+	    	margin-top: 16px;
+	    }
+	}
+
+	img {
+		margin: 0 0 50px 0;
+    	width: auto;
+
+		@include grid-column(6);
+		@include grid-media($large-grid){
+			@include grid-column(9);
+		}
+		@media (max-width: $small-max-width) {
+			margin: 0 0 50px 0;
+	    	width: auto;
+	    }
+	}
+
+	.description {
+		clear: both;
+		@include grid-column(6);
+		@include grid-shift(3);
+
+		@include grid-media($large-grid){
+		    @include grid-column(9);
+			@include grid-shift(3);
+		}
+
+		@media (max-width: $small-max-width) {
+			@include grid-shift(0);
+	    	margin-left: 0;
+	    	margin-right: 0;
+	    	width: auto;
+	    }
+
+		img {
+			max-width: 100%;
+			margin: 50px auto;
+		}
+		p {
+			margin-top: 0;
+		}
+	}
 
 }
 

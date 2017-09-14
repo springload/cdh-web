@@ -107,6 +107,10 @@ class Event(Displayable, RichText, AdminThumbMixin):
             'month': '%02d' % self.start_time.month,
             'slug': self.slug})
 
+    def full_url(self):
+        '''Absolute url, including site address'''
+        return absolutize_url(self.get_absolute_url())
+
     def get_ical_url(self):
         return reverse('event:ical', kwargs={
             'year': self.start_time.year,
@@ -146,7 +150,7 @@ class Event(Displayable, RichText, AdminThumbMixin):
         inclusion in a :class:`icalendar.Calendar`'''
         event = icalendar.Event()
         # use absolute url for event id and in event content
-        absurl = absolutize_url(self.get_absolute_url())
+        absurl = self.full_url
         event.add('uid', absurl)
         event.add('summary', self.title)
         event.add('dtstart', self.start_time)
