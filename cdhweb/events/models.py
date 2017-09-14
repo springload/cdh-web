@@ -150,7 +150,7 @@ class Event(Displayable, RichText, AdminThumbMixin):
         inclusion in a :class:`icalendar.Calendar`'''
         event = icalendar.Event()
         # use absolute url for event id and in event content
-        absurl = self.full_url
+        absurl = self.full_url()
         event.add('uid', absurl)
         event.add('summary', self.title)
         event.add('dtstart', self.start_time)
