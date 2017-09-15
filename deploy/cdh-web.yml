@@ -1,5 +1,6 @@
 - hosts: '{{ group | default("qa") }}'
   remote_user: deploy
+  conn: '{{ conn | default("local") }}'
   # Set environment to use scl rh-python35
   environment:
     PATH: '/opt/rh/rh-python35/root/usr/bin/:{{ lookup("env","PATH") }}'
