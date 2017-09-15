@@ -1,6 +1,6 @@
 - hosts: '{{ group | default("qa") }}'
+  connection: '{{ conn | default("local") }}'
   remote_user: deploy
-  ansible_connection: '{{ conn | default("local") }}'
   # Set environment to use scl rh-python35
   environment:
     PATH: '/opt/rh/rh-python35/root/usr/bin/:{{ lookup("env","PATH") }}'
