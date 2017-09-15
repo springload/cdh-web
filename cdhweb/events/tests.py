@@ -191,3 +191,36 @@ class TestViews(TestCase):
         event.save()
         response = self.client.get(event.get_absolute_url())
         assert response.status_code == 404
+
+    def test_upcoming(self):
+        # use django timezone util for timezone-aware datetime
+        tomorrow = timezone.now() + timedelta(days=1)
+        event_type = EventType.objects.first()
+        next_event = Event.objects.create(start_time=tomorrow, end_time=tomorrow,
+            slug='some-workshop', event_type=event_type,
+            title='A workshop')
+        today = timezone.now()
+        earlier_today = datetime(today.year, today.month, today.day,
+            tzinfo=timezone.get_default_timezone())
+        earlier_event = Event.objects.create(start_time=earlier_today,
+            end_time=earlier_today + timedelta(hours=1),
+            slug='another-workshop', event_type=event_type,
+            title='Earlier workshop')
+
+        response = self.client.get(reverse('event:upcoming'))
+        assert next_event in response.context['events']
+        assert earlier_event in response.context['events']
+        # summary fields that should be in list view
+        self.assertContains(response, next_event.title)
+        self.assertContains(response, next_event.get_absolute_url())
+        # (not testing all fields)
+
+        # should not include past events
+        past_event = Event.objects.filter(end_time__lte=today).first()
+        assert past_event not in response.context['events']
+
+        # should include all years represented in events
+        years = [date.year for date in response.context['date_list']]
+        assert 2017 in years
+        assert 2016 in years
+
