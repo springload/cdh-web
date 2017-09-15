@@ -22,9 +22,15 @@ class EventMixinView(object):
 class UpcomingEventsView(EventMixinView, ArchiveIndexView):
     date_field = "start_time"
     allow_future = True
+    context_object_name = 'events'
 
-    def get_queryset(self):
-        return super(UpcomingEventsView, self).get_queryset().upcoming()
+    # NOTE: can't use get_queryset to restrict to upcoming because
+    # that affects the archive date list as well; restricting to upcoming
+    # events in get_context_data instaed
+    def get_context_data(self, *args, **kwargs):
+        context = super(UpcomingEventsView, self).get_context_data(*args, **kwargs)
+        context['events'] = context['events'].upcoming()
+        return context
 
 
 class EventYearArchiveView(EventMixinView, YearArchiveView):
