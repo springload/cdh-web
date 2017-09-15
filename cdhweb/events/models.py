@@ -51,13 +51,14 @@ class Location(models.Model):
 class EventQuerySet(models.QuerySet):
 
     def upcoming(self):
-        '''Find upcoming events. Includes events that start on the current
+        '''Find upcoming events. Includes events that end on the current
         day even if the start time is past.'''
         now = timezone.now()
         # construct a datetime based on now but with zero hour/minute/second
         today = datetime(now.year, now.month, now.day,
             tzinfo=timezone.get_default_timezone())
-        return self.filter(start_time__gte=today)
+        return self.filter(end_time__gte=today)
+
 
 class EventManager(DisplayableManager):
     # extend displayable manager to preserve access to published filter

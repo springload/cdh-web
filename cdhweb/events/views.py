@@ -7,36 +7,34 @@ import icalendar
 
 from cdhweb.events.models import Event
 
-# TODO: event mixin for model/queryset
 
-
-class UpcomingEventsView(ArchiveIndexView):
+class EventMixinView(object):
+    '''View mixin that sets model to Event and returns a
+    published Event queryset.'''
     model = Event
+
+    def get_queryset(self):
+        # use displayable manager to find published events only
+        # (or draft profiles for logged in users with permission to view)
+        return Event.objects.published() # TODO: published(for_user=self.request.user)
+
+
+class UpcomingEventsView(EventMixinView, ArchiveIndexView):
     date_field = "start_time"
     allow_future = True
 
     def get_queryset(self):
-        # TODO: label based on which events are displayed
-        # upcoming? year? (semester?)
-        return Event.objects.published().upcoming() # TODO: published(for_user=self.request.user)
+        return super(UpcomingEventsView, self).get_queryset().upcoming()
 
 
-class EventYearArchiveView(YearArchiveView):
+class EventYearArchiveView(EventMixinView, YearArchiveView):
     date_field = "start_time"
     make_object_list = True
     allow_future = True
-    model = Event
-
-    def get_queryset(self):
-        return Event.objects.published() # TODO: published(for_user=self.request.user)
 
 
-class EventDetailView(DetailView):
-
-    model = Event
-
-    def get_queryset(self):
-        return Event.objects.published() # TODO: published(for_user=self.request.user)
+class EventDetailView(EventMixinView, DetailView):
+    pass
 
 
 class EventRedirectView(RedirectView):
@@ -50,7 +48,6 @@ class EventRedirectView(RedirectView):
 
 
 class EventIcalView(EventDetailView):
-    model = Event
 
     def render_to_response(self, context, **response_kwargs):
         cal = icalendar.Calendar()
