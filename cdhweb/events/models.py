@@ -16,11 +16,21 @@ from cdhweb.people.models import Person
 from cdhweb.resources.utils import absolutize_url
 
 
+class EventTypeManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
 class EventType(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
+    objects = EventTypeManager()
+
     def __str__(self):
         return self.name
+
+    def natural_key(self):
+        return (self.name, )
 
 
 class Location(models.Model):
@@ -106,6 +116,14 @@ class Event(Displayable, RichText, AdminThumbMixin):
             # force two-digit month
             'month': '%02d' % self.start_time.month,
             'slug': self.slug})
+
+    @property
+    def excerpt(self):
+        '''Content excerpt.  Returns description only if it is not
+        auto-generated, since generated description will be redundant
+        when displayed on the page.'''
+        if not self.gen_description:
+            return self.description
 
     def full_url(self):
         '''Absolute url, including site address'''
