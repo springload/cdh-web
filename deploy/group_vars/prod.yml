@@ -1,5 +1,5 @@
 # Connection plugin to use, required
-conn: "ssh"
+conn: ssh
 # Allowed host
 allowed_host: cdh.princeton.edu
 # Git refspec to use, either default or passed by '-e ref=<refspec>'
