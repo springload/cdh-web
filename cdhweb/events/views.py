@@ -1,6 +1,8 @@
 from django.http import HttpResponse
-from django.views.generic.detail import DetailView
+from django.views.generic.base import RedirectView
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView
+from django.views.generic.detail import DetailView
+from django.shortcuts import get_object_or_404
 import icalendar
 
 from cdhweb.events.models import Event
@@ -35,6 +37,16 @@ class EventDetailView(DetailView):
 
     def get_queryset(self):
         return Event.objects.published() # TODO: published(for_user=self.request.user)
+
+
+class EventRedirectView(RedirectView):
+    '''Redirect from CDH website v1.0 pk-based urls to new date + slug urls'''
+    permanent = True
+    query_string = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        event = get_object_or_404(Event, pk=kwargs['pk'])
+        return event.get_absolute_url()
 
 
 class EventIcalView(EventDetailView):

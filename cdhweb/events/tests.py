@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from django.test import TestCase
-from django.urls import resolve
+from django.urls import resolve, reverse
 from django.utils import timezone
 import icalendar
 import pytz
@@ -52,7 +52,8 @@ class TestEvent(TestCase):
         assert resolved_url.kwargs['slug'] == evt.slug
 
     def test_excerpt(self):
-        evt = Event(description='excerpt about the event', gen_description=False)
+        evt = Event(description='excerpt about the event',
+            gen_description=False)
         assert evt.excerpt == evt.description
         evt.gen_description = True
         assert evt.excerpt != evt.description
@@ -135,6 +136,7 @@ class TestEventQueryset(TestCase):
 
 
 class TestViews(TestCase):
+    fixtures = ['test_events.json']
 
     def test_event_ical(self):
         jan15 = datetime(2015, 1, 15, hour=16,
@@ -156,5 +158,18 @@ class TestViews(TestCase):
         cal = icalendar.Calendar.from_ical(response.content)
         # includes the requested event
         assert cal.subcomponents[0]['uid'] == absolutize_url(event.get_absolute_url())
+
+    def test_redirect(self):
+        # valid id gives permanent redirect to slug url
+        event = Event.objects.first()
+        url = reverse('event:by-id', kwargs={'pk': event.pk})
+        response = self.client.get(url)
+        assert response.status_code == 301
+        assert response.url == event.get_absolute_url()
+
+        # bogus id returns a 404
+        url = reverse('event:by-id', kwargs={'pk': 45})
+        response = self.client.get(url)
+        assert response.status_code == 404
 
 
