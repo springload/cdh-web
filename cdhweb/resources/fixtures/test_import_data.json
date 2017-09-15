@@ -1,0 +1,38 @@
+[
+{
+    "model": "staffprofiles.staffer",
+    "pk": 1,
+    "fields": {
+        "name": "Claus the Chicken",
+        "photo": "ClausTheChicken.png",
+        "profile_photo": "uploads/claus-1.jpg",
+        "title": "Mascot and Publicity fiend",
+        "full_title": "",
+        "email": "claus@chickenmail.org",
+        "education": "B.A. Agriculture",
+        "sortorder": 1
+    }
+},
+{
+    "model": "staffprofiles.stafferpage",
+    "pk": 1,
+    "fields": {
+        "keywords_string": "",
+        "site": 1,
+        "title": "Claus the Chicken",
+        "slug": "claus-the-chicken",
+        "_meta_title": "",
+        "description": "Specializations: legos, deploys, photobombing",
+        "gen_description": false,
+        "created": "2016-09-22T20:08:37Z",
+        "updated": "2016-10-23T16:20:09Z",
+        "status": 2,
+        "publish_date": "2016-09-22T20:08:37Z",
+        "expiry_date": null,
+        "short_url": "",
+        "in_sitemap": true,
+        "staffer_data": 1,
+        "extra_content": "<p><span>Specializations: legos, deploys, photobombing</span></p>\n<p>Claus sits with the legos in CDH.</p>"
+    }
+}
+]

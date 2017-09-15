@@ -8,7 +8,6 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from pucas.ldap import user_info_from_ldap, LDAPSearchException
 
-
 from cdhweb.events.models import Event, Location, EventType
 from cdhweb.people.models import Person, Profile, Title, Position
 
@@ -19,7 +18,7 @@ class Command(BaseCommand):
     help = __doc__
 
     displayable_fields = ('slug', '_meta_title', 'description',
-        'gen_description', 'created', 'updated', 'status', 'publish_date',
+        'gen_description', 'created', 'status', 'publish_date',
         'expiry_date', 'short_url', 'in_sitemap')
 
     def add_arguments(self, parser):
@@ -31,14 +30,14 @@ class Command(BaseCommand):
             dest='mode', help='Import events only')
 
     def handle(self, *args, **options):
-        mode = options.get('mode', 'all')
+        mode = options['mode'] or 'all'
         try:
             with open(options['input'], 'r') as datafile:
                 v1data = json.load(datafile)
         except OSError as err:
             raise CommandError(err)
         except json.decoder.JSONDecodeError as err:
-            raise CommandError('Error parsing json: %s' %err)
+            raise CommandError('Error parsing JSON: %s' %err)
 
         self.current_site = Site.objects.get_current()
 
@@ -63,7 +62,7 @@ class Command(BaseCommand):
                     # get user by email if possible
                     user = Person.objects.get(email=item.fields.email)
                 except ObjectDoesNotExist:
-                    user = self.init_ldap_user(item.fields.email, item)
+                    user = self.init_user(item.fields.email, item)
 
                # create profile if it does not yet exist
                 try:
@@ -71,6 +70,7 @@ class Command(BaseCommand):
                 except ObjectDoesNotExist:
                     user.profile = Profile.objects.create(user=user)
 
+                # store by pk to match up with staff page content
                 orig_pk[item.pk] = user
                 # convert education from plain text to html list
                 education = ['<li>%s</li>' % line.strip() for line in item.fields.education.split(';')]
@@ -82,7 +82,7 @@ class Command(BaseCommand):
                 user.profile.site = self.current_site
                 user.profile.save()
 
-                # TBD: do we want to preserve existing photos?
+                # TBD: is there any useful way to preserve existing photos?
 
                 # map previous display title to current position
                 # (skip if user already has a current title)
@@ -112,7 +112,9 @@ class Command(BaseCommand):
         'nbenedict': 'nfrye'
     }
 
-    def init_ldap_user(self, email, staffdata):
+    def init_user(self, email, staffdata):
+        '''Create new user and initialize from LDAP if possible; otherwise,
+        initialize from import data'''
         netid = email.split('@')[0]
         # convert email to alias if necessary
         netid = self.email_aliases.get(netid, netid)
@@ -165,6 +167,7 @@ class Command(BaseCommand):
 
                 self.set_event_type(event, item, event_type_lookup)
 
+                event.content = item.fields.event_description
                 event.start_time = dateutil.parser.parse(item.fields.event_start_time)
                 event.end_time = dateutil.parser.parse(item.fields.event_end_time)
 
@@ -177,11 +180,9 @@ class Command(BaseCommand):
 
                 # associate with current site
                 event.site = self.current_site
-
-                event.save()
                 # event_sponsor unused
+                event.save()
                 # images will be handled manually
-                # is event_description redundant? use page version?
 
         for item_data in data:
             item = AttrDict(item_data)
