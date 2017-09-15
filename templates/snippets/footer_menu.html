@@ -5,7 +5,9 @@
 {% for page in page_branch %}
     {% if page.in_menu %}
         <li class='menu-header'>
-            {% if page_branch %}  {# page hs sub pages #}
+            {# set page_branch for submenu if there is one #}
+            {% page_menu page "snippets/footer_check_nav.html" %}
+            {% if page_branch %}
             <a class="toggle">+</a> {# toggle for mobile menu #}
             {% endif %}
             <a href="{{ page.get_absolute_url }}">{{ page.title }}</a>
@@ -16,10 +18,4 @@
             {% endif %}
     {% endif %}
 {% endfor %}
-{# social links #}
-<li><a href='#'><span class='fa fa-facebook-square'
-    aria-label='CDH Facebook Link'></span></a>
-    <a href='#'><span class='fa fa-twitter'
-     aria-label='CDH Twitter Link'></span></a>
-</li>
 </ul>

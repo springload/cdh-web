@@ -30,8 +30,6 @@
 
 }
 
-
-
 #maincontent {
 	@extend .responsive-container;
 }
@@ -512,14 +510,6 @@ $event-card-img-height: 240px;
     transform: rotate(45deg);
     width: 400px;
   }
-}
-
-/* software version in footer (preliminary style/location) */
-#sw-version {
-	color: $dark-grey;
-	font-size: small;
-	text-align: right;
-	margin-right: 15px;
 }
 
 
