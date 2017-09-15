@@ -6,8 +6,9 @@ class EventAdmin(admin.ModelAdmin):
     list_display = ('title', 'event_type', 'start_time', 'admin_thumb',
         'tag_list')
     prepopulated_fields = {"slug": ("title",)}
-
-    # TODO: configure search fields, date hierarchy
+    date_hierarchy = 'start_time'
+    search_fields = ('title',)
+    list_filter = ('event_type',)
 
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.tags.all())
