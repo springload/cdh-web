@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import resolve, reverse
 from django.utils import timezone
 import icalendar
+from mezzanine.core.models import CONTENT_STATUS_DRAFT
 import pytz
 
 from cdhweb.events.models import Event, EventType, Location
@@ -172,4 +173,21 @@ class TestViews(TestCase):
         response = self.client.get(url)
         assert response.status_code == 404
 
+    def test_event_detail(self):
+        event = Event.objects.first()
+        response = self.client.get(event.get_absolute_url())
+        # content that should appear somewhere
+        self.assertContains(response, event.title)
+        self.assertContains(response, event.event_type)
+        self.assertContains(response, event.location.name)
+        self.assertContains(response, event.location.address)
+        self.assertContains(response, event.when())
+        self.assertContains(response, event.get_ical_url())
+        self.assertContains(response, event.full_url())
+        self.assertContains(response, event.content)
 
+        # set status to draft
+        event.status = CONTENT_STATUS_DRAFT
+        event.save()
+        response = self.client.get(event.get_absolute_url())
+        assert response.status_code == 404
