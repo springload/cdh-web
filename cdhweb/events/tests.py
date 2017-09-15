@@ -39,7 +39,6 @@ class TestEvent(TestCase):
             slug='some-workshop')
         assert str(event) == '%s - %s' % (event.title, jan15.strftime('%b %d, %Y'))
 
-
     def test_get_absolute_url(self):
         jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
         evt = Event(start_time=jan15, end_time=jan15,
@@ -52,6 +51,11 @@ class TestEvent(TestCase):
         assert resolved_url.kwargs['month'] == '%02d' % evt.start_time.month
         assert resolved_url.kwargs['slug'] == evt.slug
 
+    def test_excerpt(self):
+        evt = Event(description='excerpt about the event', gen_description=False)
+        assert evt.excerpt == evt.description
+        evt.gen_description = True
+        assert evt.excerpt != evt.description
 
     def test_when(self):
         # same day, both pm
