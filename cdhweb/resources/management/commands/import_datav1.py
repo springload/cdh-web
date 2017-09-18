@@ -24,13 +24,14 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('input',
             help='Path to a JSON file created using dumpdata')
-        parser.add_argument('--people', action='store_const', const='people',
-            dest='mode', help='Import people only')
-        parser.add_argument('--events', action='store_const', const='events',
-            dest='mode', help='Import events only')
+        parser.add_argument('--people', action='store_true',
+            help='Import people only')
+        parser.add_argument('--events', action='store_true',
+            help='Import events only')
 
     def handle(self, *args, **options):
-        mode = options['mode'] or 'all'
+        import_all = not any([options['people'], options['events'], options['projects']])
+
         try:
             with open(options['input'], 'r') as datafile:
                 v1data = json.load(datafile)
@@ -42,9 +43,9 @@ class Command(BaseCommand):
         self.current_site = Site.objects.get_current()
 
         # TODO: summary. # created/update
-        if mode in ['all', 'people']:
+        if import_all or options['people']:
             self.import_profiles(v1data)
-        if mode in ['all', 'events']:
+        if import_all or options['events']:
             self.import_events(v1data)
 
     def import_profiles(self, data):
