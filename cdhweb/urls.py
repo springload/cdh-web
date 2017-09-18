@@ -35,7 +35,7 @@ urlpatterns += [
     url("^events/", include("cdhweb.events.urls", namespace='event')),
     url("^projects/", include("cdhweb.projects.urls", namespace='project')),
 
-    url("^$", resource_views.site_index, name="home"),
+    url("^$", resource_views.Homepage.as_view(), name="home"),
 
     # CAS login urls
     url(r'^accounts/', include('pucas.cas_urls')),

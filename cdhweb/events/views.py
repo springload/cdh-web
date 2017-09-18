@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+
 from django.views.generic.base import RedirectView
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView
 from django.views.generic.detail import DetailView
@@ -6,6 +7,7 @@ from django.shortcuts import get_object_or_404
 import icalendar
 
 from cdhweb.events.models import Event
+from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
 
 
 class EventMixinView(object):
@@ -19,7 +21,8 @@ class EventMixinView(object):
         return Event.objects.published() # TODO: published(for_user=self.request.user)
 
 
-class UpcomingEventsView(EventMixinView, ArchiveIndexView):
+class UpcomingEventsView(EventMixinView, ArchiveIndexView,
+                         LastModifiedListMixin):
     date_field = "start_time"
     allow_future = True
     context_object_name = 'events'
@@ -32,14 +35,18 @@ class UpcomingEventsView(EventMixinView, ArchiveIndexView):
         context['events'] = context['events'].upcoming()
         return context
 
+    def last_modified(self):
+        return self.get_queryset().upcoming() \
+            .order_by('updated').first().updated
 
-class EventYearArchiveView(EventMixinView, YearArchiveView):
+
+class EventYearArchiveView(EventMixinView, YearArchiveView, LastModifiedListMixin):
     date_field = "start_time"
     make_object_list = True
     allow_future = True
 
 
-class EventDetailView(EventMixinView, DetailView):
+class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
     pass
 
 
