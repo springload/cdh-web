@@ -38,9 +38,10 @@ class UserResource(models.Model):
 class Attachment(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255, blank=True)
-    file = FileField('Document', blank=True)
+    file = FileField('Document', blank=True,
+        upload_to=upload_to("resources.documents", "documents"))
     url = models.URLField(blank=True)
-    # TODO: needs validation (in admin?) to ensure one and only one of
+    # TODO: needs validation to ensure one and only one of
     # file and url is set
     PDF = 'PDF'
     MSWORD = 'DOC'
@@ -53,15 +54,15 @@ class Attachment(models.Model):
         (URL, 'URL'),
     )
     attachment_type = models.CharField(max_length=255, choices=type_choices)
-    # NOTE: possibly also validation on types? url/video for url,
-    # pdf/word for file?
 
-    # NOTE: could do a generic many-to-many with django-gm2m, but it seems
-    # like it may be cleaner and simpler to just add many-to-many
-    # relationships on the models where we want to allow attachments
+    pages = models.ManyToManyField(Page)
 
     def __str__(self):
-        return self.title
+        parts = [self.title]
+        if self.author:
+            parts.append(', %s' % self.author)
+        parts.append(self.attachment_type)
+        return ' '.join(parts)
 
 
 class LandingPage(Page, RichText):
