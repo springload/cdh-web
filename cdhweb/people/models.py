@@ -9,6 +9,8 @@ from mezzanine.core.models import Displayable, CONTENT_STATUS_PUBLISHED
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
+from cdhweb.resources.models import Attachment
+
 
 class Title(models.Model):
     '''Job titles for people'''
@@ -95,6 +97,8 @@ class Profile(Displayable, AdminThumbMixin):
         format="Image", max_length=255, null=True, blank=True)
 
     admin_thumb_field = "thumb"
+
+    attachments = models.ManyToManyField(Attachment)
 
     tags = TaggableManager(blank=True)
 

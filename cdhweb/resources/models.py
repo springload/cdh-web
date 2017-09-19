@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 
 from mezzanine.core.fields import FileField
 from mezzanine.core.models import RichText
@@ -55,7 +53,7 @@ class Attachment(models.Model):
     )
     attachment_type = models.CharField(max_length=255, choices=type_choices)
 
-    pages = models.ManyToManyField(Page)
+    pages = models.ManyToManyField(Page, related_name='attachments')
 
     def __str__(self):
         parts = [self.title]

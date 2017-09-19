@@ -10,7 +10,7 @@ from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
 from cdhweb.people.models import Person
-from cdhweb.resources.models import ResourceType
+from cdhweb.resources.models import ResourceType, Attachment
 
 
 class ProjectQuerySet(models.QuerySet):
@@ -60,6 +60,8 @@ class Project(Displayable, AdminThumbMixin):
     thumb = FileField(verbose_name="Thumbnail",
         upload_to=upload_to("projects.image", "projects/thumbnails"),
         format="Image", max_length=255, null=True, blank=True)
+
+    attachments = models.ManyToManyField(Attachment)
 
     # custom manager and queryset
     objects = ProjectManager()
