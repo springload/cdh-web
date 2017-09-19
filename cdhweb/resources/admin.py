@@ -1,12 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from mezzanine.pages.models import Page, RichTextPage
 from mezzanine.pages.admin import PageAdmin
 
-
-from cdhweb.events.models import Event
-from cdhweb.people.models import Profile
-from cdhweb.projects.models import Project
 from cdhweb.resources.models import ResourceType, Attachment, LandingPage
 
 
@@ -43,10 +40,20 @@ class AttachmentAdmin(admin.ModelAdmin):
         'pages')
     inlines = [EventInline, ProfileInline, ProjectInline]
 
+class PageAttachmentInline(admin.TabularInline):
+    model = Page.attachments.through
+    extra = 1
+
+class LocalPageAdmin(PageAdmin):
+    inlines = [PageAttachmentInline]
+
 
 admin.site.register(ResourceType, ResourceTypeAdmin)
 admin.site.register(Attachment, AttachmentAdmin)
-admin.site.register(LandingPage, PageAdmin)
+admin.site.register(LandingPage, LocalPageAdmin)
+# unregister and re-register mezzzanine page
+admin.site.unregister(RichTextPage)
+admin.site.register(RichTextPage, LocalPageAdmin)
 # unregister and re-register User
 admin.site.unregister(User)
 admin.site.register(User, LocalUserAdmin)
