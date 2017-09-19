@@ -34,4 +34,8 @@
 </div>
 
 
+{% if project.attachments.exists %}
+    {% include 'snippets/attachments.html' with attachments=project.attachments.all %}
+{% endif %}
+
 {% endblock %}

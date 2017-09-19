@@ -36,4 +36,10 @@
     {# <div property="schema:keywords">{{ blogpost.tags.all|join:", "}}</div> #}
 
 </article>
+
+{% if blogpost.attachments.exists %}
+    {% include 'snippets/attachments.html' with attachments=blogpost.attachments.all %}
+{% endif %}
+
+
 {% endblock %}
