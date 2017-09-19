@@ -13,6 +13,7 @@ from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
 from cdhweb.people.models import Person
+from cdhweb.resources.models import Attachment
 from cdhweb.resources.utils import absolutize_url
 
 
@@ -93,6 +94,8 @@ class Event(Displayable, RichText, AdminThumbMixin):
         upload_to=upload_to("events.thumb", "events/thumbnails"),
         format="Image", max_length=255, null=True, blank=True,
         help_text='Image for display on event card (optional)')
+
+    attachments = models.ManyToManyField(Attachment)
 
     tags = TaggableManager(blank=True)
 

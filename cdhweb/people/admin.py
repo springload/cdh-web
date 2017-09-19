@@ -31,6 +31,7 @@ class ProfileInline(admin.StackedInline):
     # classes = ("collapse-open",)
     # inline_classes = ('collapse-open',)  # this is ignored
     exclude = ('tags', )
+    filter_horizontal = ('attachments', )
 
 
 class PositionInline(admin.TabularInline):

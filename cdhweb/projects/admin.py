@@ -34,13 +34,14 @@ class ProjectAdmin(DisplayableAdmin):
     # displayable date hierarchy is publish date, does that make sense here?
     date_hierarchy = "publish_date"
     prepopulated_fields = {"slug": ("title",)}
+    filter_horizontal = ('attachments', )
 
     # fieldset based on displayaable admin with project fields added
     fieldsets = (
         (None, {
             "fields": ["title", "status", ("publish_date", "expiry_date"),
                        "short_description", "long_description", "highlight",
-                       "image", "thumb", ],  # tags todo
+                       "image", "thumb", 'attachments'],  # tags todo
         }),
         ("Meta data", {
             "fields": ["_meta_title", "slug",

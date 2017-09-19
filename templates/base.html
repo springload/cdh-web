@@ -92,6 +92,11 @@
     <div id='maincontent'>
         {% block main %}{% endblock %}
     </div>
+
+    {% if page.attachments.exists %}
+        {% include 'snippets/attachments.html' with attachments=page.attachments.all %}
+    {% endif %}
+
     {% endblock content %}
 
     <footer id='footermenu'>

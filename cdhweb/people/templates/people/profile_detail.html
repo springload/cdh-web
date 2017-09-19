@@ -19,7 +19,6 @@
     </ul>
 </div>
 
-
 {% if profile.image %}
 <img src="{{ MEDIA_URL }}{{ profile.image }}"/>
 {% endif %}
@@ -32,5 +31,10 @@
 <div class="bio">
 {{ profile.bio|safe }}
 </div>
+
+{% if profile.attachments.exists %}
+    {% include 'snippets/attachments.html' with attachments=profile.attachments.all %}
+{% endif %}
+
 
 {% endblock %}

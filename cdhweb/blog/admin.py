@@ -22,14 +22,14 @@ class BlogPostAdmin(TweetableAdminMixin, DisplayableAdmin, OwnableAdmin):
     date_hierarchy = "publish_date"
     radio_fields = {"status": admin.HORIZONTAL}
     # filter_horizontal = ("categories", "related_posts",)
-    filter_horizontal = ("related_posts",)
+    filter_horizontal = ("related_posts", 'attachments', 'users')
 
     prepopulated_fields = {"slug": ("title",)}
     # based on Displayable fieldset
     fieldsets = (
         (None, {
             "fields": ["title", "status", ("publish_date", "expiry_date"),
-                       "content", "featured_image", "users", "tags"]
+                       "content", "featured_image", "users", "attachments"] #, "tags"]
         }),
         (_("Meta data"), {
             "fields": ["_meta_title", "slug",
