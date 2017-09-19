@@ -58,9 +58,9 @@ class Attachment(models.Model):
     def __str__(self):
         parts = [self.title]
         if self.author:
-            parts.append(', %s' % self.author)
-        parts.append(self.attachment_type)
-        return ' '.join(parts)
+            parts.append(', %s ' % self.author)
+        parts.append(' (%s)' % self.attachment_type)
+        return ''.join(parts)
 
 
 class LandingPage(Page, RichText):

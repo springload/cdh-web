@@ -21,24 +21,30 @@ class LocalUserAdmin(UserAdmin):
 # this is clunky, but at least makes the relationships visible
 # when looking at the attachment file
 
-class EventInline(admin.TabularInline):
+class EventAttachmentInline(admin.TabularInline):
     model = Attachment.event_set.through
     extra = 1
 
-class ProfileInline(admin.TabularInline):
+class ProfileAttachmentInline(admin.TabularInline):
     model = Attachment.profile_set.through
     extra = 1
 
-class ProjectInline(admin.TabularInline):
+class ProjectAttachmentInline(admin.TabularInline):
     model = Attachment.project_set.through
     extra = 1
+
+class BlogpostAttachmentInline(admin.TabularInline):
+    model = Attachment.blogpost_set.through
+    extra = 1
+
 
 class AttachmentAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'attachment_type')
     filter_horizontal = ('pages', )
     fields = ('title', 'author', 'file', 'url', 'attachment_type',
         'pages')
-    inlines = [EventInline, ProfileInline, ProjectInline]
+    inlines = [EventAttachmentInline, ProfileAttachmentInline,
+        ProjectAttachmentInline, BlogpostAttachmentInline]
 
 class PageAttachmentInline(admin.TabularInline):
     model = Page.attachments.through
