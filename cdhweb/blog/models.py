@@ -9,6 +9,7 @@ from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
 from cdhweb.people.models import Person
+from cdhweb.resources.models import Attachment
 
 
 class MultiOwnable(models.Model):
@@ -50,6 +51,7 @@ class BlogPost(Displayable, MultiOwnable, RichText, AdminThumbMixin):
     related_posts = models.ManyToManyField("self",
                                  verbose_name=_("Related posts"), blank=True)
     tags = TaggableManager(blank=True)
+    attachments = models.ManyToManyField(Attachment)
 
     admin_thumb_field = "featured_image"
 
