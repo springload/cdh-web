@@ -8,14 +8,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pages', '0003_auto_20150527_1555'),
         ('resources', '0002_initial_tags_resource_types'),
+        ('people', '0002_profile_is_staff'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='attachment',
-            name='pages',
-            field=models.ManyToManyField(related_name='attachments', to='pages.Page'),
+            model_name='profile',
+            name='attachments',
+            field=models.ManyToManyField(to='resources.Attachment'),
         ),
     ]
