@@ -14,6 +14,7 @@
 
 <div class="contributors">
     <ul>
+        {# TODO: display current *or* latest grant #}
     {% for member in project.membership_set.current %}
         <li>{% ifchanged %}<h3>{{ member.role }}</h3>{% endifchanged %}</li>
         <li>{{ member.user.profile.title }}</li>
