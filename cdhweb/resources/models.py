@@ -58,8 +58,9 @@ class Attachment(models.Model):
     def __str__(self):
         parts = [self.title]
         if self.author:
-            parts.append(', %s ' % self.author)
-        parts.append(' (%s)' % self.attachment_type)
+            parts.append(', %s' % self.author)
+        if self.attachment_type:
+            parts.append(' (%s)' % self.attachment_type)
         return ''.join(parts)
 
 
