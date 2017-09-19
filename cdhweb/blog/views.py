@@ -13,6 +13,7 @@ class BlogIndexView(ArchiveIndexView):
     #   in the template
     model = BlogPost
     date_field = 'publish_date'
+    paginate_by = 7
 
     def get_queryset(self):
         qs = BlogPost.objects.published() # TODO: published(for_user=self.request.user)
