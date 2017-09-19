@@ -191,10 +191,15 @@ article.landing-page {
 	    }
 	}
 
+	.attachments {
+		background-color: white;
+	}
+
 }
 
 .attachments {
 	@extend .responsive-container;
+	clear: both;
 }
 
 
