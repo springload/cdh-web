@@ -40,7 +40,7 @@ class ProjectManager(DisplayableManager):
 
 
 class Project(Displayable, AdminThumbMixin):
-    short_description = models.CharField(max_length=255)
+    short_description = models.CharField(max_length=255, blank=True)
     long_description = RichTextField()
     highlight = models.BooleanField(default=False,
         help_text='Include in randomized project display on the home page.')
@@ -125,6 +125,8 @@ class MembershipQuerySet(models.QuerySet):
         # come before and after the current date
         return self.filter(grant__start_date__lt=today) \
             .filter(grant__end_date__gt=today)
+
+    # TODO: find members from the *last* grant
 
 
 class Membership(models.Model):

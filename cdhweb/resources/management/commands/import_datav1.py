@@ -1,15 +1,21 @@
+import datetime
 import json
 
-from attrdict import AttrDict
+from attrdict import AttrDict, AttrMap
 import dateutil.parser
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
+from django.utils.text import slugify
 from pucas.ldap import user_info_from_ldap, LDAPSearchException
 
+from cdhweb.blog.models import BlogPost
 from cdhweb.events.models import Event, Location, EventType
 from cdhweb.people.models import Person, Profile, Title, Position
+from cdhweb.projects.models import Project, ProjectResource, Grant, \
+    Role, Membership, GrantType
+from cdhweb.resources.models import ResourceType
 
 
 class Command(BaseCommand):
@@ -19,7 +25,7 @@ class Command(BaseCommand):
 
     displayable_fields = ('slug', '_meta_title', 'description',
         'gen_description', 'created', 'status', 'publish_date',
-        'expiry_date', 'short_url', 'in_sitemap')
+        'expiry_date', 'short_url', 'in_sitemap', 'keywords_string')
 
     def add_arguments(self, parser):
         parser.add_argument('input',
@@ -28,9 +34,14 @@ class Command(BaseCommand):
             help='Import people only')
         parser.add_argument('--events', action='store_true',
             help='Import events only')
+        parser.add_argument('--projects', action='store_true',
+            help='Import projects only')
+        parser.add_argument('--blog', action='store_true',
+            help='Import blog posts only')
 
     def handle(self, *args, **options):
-        import_all = not any([options['people'], options['events'], options['projects']])
+        import_all = not any([options['people'], options['events'],
+            options['projects'], options['blog']])
 
         try:
             with open(options['input'], 'r') as datafile:
@@ -47,6 +58,10 @@ class Command(BaseCommand):
             self.import_profiles(v1data)
         if import_all or options['events']:
             self.import_events(v1data)
+        if import_all or options['projects']:
+            self.import_projects(v1data)
+        if import_all or options['blog']:
+            self.import_blogposts(v1data)
 
     def import_profiles(self, data):
         # use current date for start date of positions created via import
@@ -221,4 +236,146 @@ class Command(BaseCommand):
         self.stderr.write("Could not determine event type for %s; setting as lecture" % \
             item.fields.event_title)
         event.event_type = event_type_lookup['Guest Lecture']
+
+    def import_projects(self, data):
+
+        # track original project pk for associating project page content
+        proj_orig_pk = {}
+        website_resource_type = ResourceType.objects.get(name='website')
+        # for import purposes, all grants will be considered
+        # current-year sponsored projects (manual cleanup required)
+        sponsored_proj = GrantType.objects.get_or_create(grant_type='Sponsored Project')[0]
+        grant_start = datetime.date(year=2016, month=9, day=1)
+        grant_end = datetime.date(year=2017, month=9, day=30)
+
+        # loop through the data and process projectpages.page
+        for item_data in data:
+            item = AttrDict(item_data)
+            if item.model == 'projectpages.project':
+                try:
+                    # get event if has already been created
+                    proj = Project.objects.get(title=item.fields.project_title)
+                except ObjectDoesNotExist:
+                    proj = Project(title=item.fields.project_title)
+
+                proj.short_description = item.fields.project_subtitle or ''
+                proj.long_description = item.fields.project_summary
+                proj.content = item.fields.project_description
+
+                # associate with current site
+                proj.site = self.current_site
+                proj.save()
+
+                # store by original pk to match up with page content
+                proj_orig_pk[item.pk] = proj
+
+        # next loop through the data and process projectpages.projectpage
+        for item_data in data:
+            item = AttrMap(item_data)
+            if item.model == 'projectpages.projectpage':
+                # get associated proj based on v1 pk
+                proj = proj_orig_pk[item.fields.project_data]
+
+                # special case: two projects have a project website
+                # in the slug field
+                print(proj.title)
+                print('slug is %s' % item.fields['slug'])
+                if item.fields['slug'].startswith('http:'):
+                    # create as website link
+                    print('creating website resource')
+                    ProjectResource.objects.create(project=proj,
+                        resource_type=website_resource_type,
+                        url=item.fields['slug'])
+                    # regenerate slug from title
+                    item.fields['slug'] = slugify(proj.title)
+                    print('slug is %s' % item.fields['slug'])
+
+                # FIXME: should slug *always* be regenerated from title?
+
+                # displayable fields map unchanged
+                for field in self.displayable_fields:
+                    setattr(proj, field, item.fields[field])
+                proj.save()
+
+        # handle project roles and members
+        role_orig_pk = {}
+        for item_data in data:
+            item = AttrMap(item_data)
+            if item.model == 'projectpages.projectrole':
+                try:
+                    # get role if it has already been created
+                    role = Role.objects.get(title=item.fields.title)
+                except ObjectDoesNotExist:
+                    role = Role(title=item.fields.title)
+
+                role.sort_order = item.fields.rank
+                role.save()
+                # store reference by original pk for member lookup
+                role_orig_pk[item.pk] = role
+
+        for item_data in data:
+            item = AttrDict(item_data)
+            if item.model == 'projectpages.projectmember':
+
+                proj = proj_orig_pk[item.fields.project[0]]
+                role = role_orig_pk[item.fields.project_role]
+                user = self.get_user_for_project_member(item.fields.name)
+
+                if user:
+                    # if user has already been associated, skip
+                    if user in proj.members.all():
+                        next
+
+                    if proj.grant_set.count():
+                        grant = proj.grant_set.first()
+                    else:
+                        grant = Grant.objects.create(project=proj,
+                            grant_type=sponsored_proj,
+                            start_date=grant_start,
+                            end_date=grant_end)
+
+                    Membership.objects.get_or_create(project=proj, user=user,
+                        grant=grant,
+                        role=role_orig_pk[item.fields.project_role])
+
+    def get_user_for_project_member(self, name):
+        # NOTE: use createcasuser to create users manually before running import
+        first_name, last_name = name.rsplit(' ', 1)
+        user = Person.objects.filter(last_name=last_name)
+        if user.count() == 1:
+            return user.first()
+
+        self.stderr.write('User %s not found; creating stub user record' % \
+            name)
+        user = Person.objects.create(last_name=last_name,
+            first_name=first_name, username=''.join([last_name, first_name]),
+            is_active=False)
+        return user
+
+    def import_blogposts(self, data):
+        for item_data in data:
+            item = AttrDict(item_data)
+            if item.model == 'blog.blogpost':
+                try:
+                    # get post if it has already been created
+                    post = BlogPost.objects.get(slug=item.fields.slug)
+                except ObjectDoesNotExist:
+                    post = BlogPost(slug=item.fields.slug)
+
+                # associate with current site
+                post.site = self.current_site
+                # set blog post title & content
+                post.title = item.fields.title
+                post.content = item.fields.content
+
+                # NOTE: not maintaining associated author; needs to be handled
+                # manually after import
+
+                # displayable fields map unchanged
+                for field in self.displayable_fields:
+                    setattr(post, field, item.fields[field])
+                post.save()
+
+
+
 
