@@ -41,6 +41,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('resources', '0001_initial'),
+        ('taggit', '0001_initial'),
     ]
 
     operations = [
