@@ -1,31 +1,46 @@
 {% extends 'base.html' %}
 {% load humanize %}
 
-{% block page-subtitle %}{{ blogpost.title }} | Updates | {% endblock %}
+{% block page-subtitle %}Updates | {% endblock %}
 
 
 
 {% block main %}
-<h3>Archives</h3>
-<ul>
+<ul class="pull-right">
+    <li>Latest</li>
 {% for archive_date in date_list %}
     <li><a href="{% url 'blog:by-year' year=archive_date.year %}">{{ archive_date.year }}</a></li>
 {% endfor %}
 </ul>
 
-<ul>
+<section class="blogposts">
 {% for blogpost in latest %}
-{# TODO: convert to snippet  #}
-    <li>
-    <a href="{{ blogpost.get_absolute_url }}">{{ blogpost.title }}</a>
+{# TODO: convert to snippet ?  some overlap with blogpost detail #}
+<div class="blogpost">
+    <header>
+    <a href="{{ blogpost.get_absolute_url }}"><h2>{{ blogpost.title }}</h2></a>
+
+    <div class="byline">
     {% for author in blogpost.users.all %}
-    <div property="schema:author" typeof="schema:Person">
-        <a property="schema:url" href="{{ author.profile.get_absolute_url }}">
-        <span property="schema:name">{{ author.get_full_name|default:author.username }}</span></a>
+        <div class="authors">
+        <span property="schema:author" typeof="schema:Person">
+            <a {% if author.profile %}property="schema:url" href="{{ author.profile.get_absolute_url }}"{% endif %}>
+            <span property="schema:name">{{ author }}</span></a>{% if not forloop.last %}, {% endif %}
+        </span>
     </div>
     {% endfor %}
-    <div>{{ blogpost.publish_date|naturalday }}</div>
-    </li>
+    <span class="date-published">{{ blogpost.publish_date|date:"F j, Y" }}</span>
+    </div>
+    </header>
+
+    <div>{{ blogpost.description }}</div>
+</div>
 {% endfor %}
-</ul>
+</section>
+
+{% if is_paginated %}
+  {% include "snippets/pagination.html" %}
+{% endif %}
+
+
 {% endblock %}

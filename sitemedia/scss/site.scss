@@ -1,3 +1,4 @@
+@import "normalize";
 @import "bourbon/bourbon";
 @import "base/base";
 @import "grid-settings";
@@ -810,6 +811,10 @@ $event-card-img-height: 240px;
 	    	text-decoration: none;
 	    	// background-image: none !important;
 	    }
+
+	    ul {
+	    	@include list-style-reset;
+	    }
 	}
 	p {
 		margin-top: 0;
@@ -975,22 +980,74 @@ $event-card-img-height: 240px;
 
 }
 
+section.blogposts {
+	@include grid-container;
+}
 
 .blogpost {
 	// margin-top: 340px; // currently handled by spacer div
 	padding: 0;
+	margin-bottom: 50px;
 
 	@include grid-media($large-grid) {
 		@include grid-shift(2);
 		@include grid-column(8);
 	}
+	header {
+		h1 {
+			margin-top: 250px;
+			margin-bottom: 50px;
+		}
 
-	h1 {
-		margin-top: 0;
-		margin-bottom: 50px;
+		.byline {
+			font-family: $font-stack-headline;
+			font-size: 16px;
+			color: $dark-grey;
+			margin-bottom: 50px;
+
+			.authors {
+				padding-right: 37px;
+				display: inline-block;
+
+			}
+		}
+
+		a {
+			color: $dark-grey;
+			text-decoration: none;
+		}
 	}
+
 	p {
 		margin-bottom: 50px;
 	}
 
+
+	/* TODO: move to text and not just blog posts? */
+	blockquote {
+		color: $dark-grey;
+		font-style: italic;
+		line-height: 1.52;
+		border-left: solid 3px #979797;
+		padding-left: 30px;
+	}
+
+}
+
+
+.pagination {
+	text-align: center;
+	color: $dark-grey;
+	a {
+		text-decoration: none;
+		color: $dark-grey;
+
+		&.current {
+		  /* use background to do a colored underline */
+		  background-image: linear-gradient(to right, $cdh-blue 100%, transparent 0%);
+		  background-position: 0 0.85em;
+		  background-repeat: repeat-x;
+		  background-size: 8px 2px;
+		}
+	}
 }
