@@ -95,14 +95,14 @@ class Event(Displayable, RichText, AdminThumbMixin):
         format="Image", max_length=255, null=True, blank=True,
         help_text='Image for display on event card (optional)')
 
-    attachments = models.ManyToManyField(Attachment)
+    attachments = models.ManyToManyField(Attachment, blank=True)
 
     tags = TaggableManager(blank=True)
 
     # override default manager with custom version
     objects = EventManager()
 
-    admin_thumb_field = "image"
+    admin_thumb_field = "thumb"
     event_type.verbose_name = 'Type'
 
     def __str__(self):

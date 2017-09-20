@@ -98,7 +98,7 @@ class Profile(Displayable, AdminThumbMixin):
 
     admin_thumb_field = "thumb"
 
-    attachments = models.ManyToManyField(Attachment)
+    attachments = models.ManyToManyField(Attachment, blank=True)
 
     tags = TaggableManager(blank=True)
 

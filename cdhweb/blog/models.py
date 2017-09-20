@@ -51,7 +51,7 @@ class BlogPost(Displayable, MultiOwnable, RichText, AdminThumbMixin):
     related_posts = models.ManyToManyField("self",
                                  verbose_name=_("Related posts"), blank=True)
     tags = TaggableManager(blank=True)
-    attachments = models.ManyToManyField(Attachment)
+    attachments = models.ManyToManyField(Attachment, blank=True)
 
     admin_thumb_field = "featured_image"
 
