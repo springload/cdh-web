@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 
+from django.urls import reverse
 from django.test import TestCase
 from django.utils.text import slugify
 import pytest
@@ -87,3 +88,12 @@ def test_init_profile_from_ldap():
     # title should not be duplicated
     assert Title.objects.filter(title='Freeloader').count() == 1
 
+
+class TestViews(TestCase):
+
+    def test_staff_redirect(self):
+        # valid id gives permanent redirect to slug url
+        slug = 'claus-the-chicken'
+        response = self.client.get('/about/staff/%s/' % slug)
+        assert response.status_code == 301   # moved permanently
+        assert response.url == reverse('people:profile', kwargs={'slug': slug})

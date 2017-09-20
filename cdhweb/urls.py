@@ -5,8 +5,8 @@ from django.conf.urls.i18n import i18n_patterns
 # from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.i18n import set_language
+from django.views.generic.base import RedirectView
 
-from mezzanine.core.views import direct_to_template
 from mezzanine.conf import settings
 
 from cdhweb.resources import views as resource_views
@@ -39,6 +39,11 @@ urlpatterns += [
 
     # CAS login urls
     url(r'^accounts/', include('pucas.cas_urls')),
+
+    # programmatic redirects from v1 site
+    url(r'^about/staff/(?P<slug>[\w-]+)/$',
+        RedirectView.as_view(pattern_name='people:profile', permanent=True),
+        name='old-profile'),
 
     # let mezzanine handle everything else
     url("^", include("mezzanine.urls")),
