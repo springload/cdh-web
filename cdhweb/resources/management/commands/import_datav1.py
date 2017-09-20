@@ -307,6 +307,10 @@ class Command(BaseCommand):
 
                 # displayable fields map unchanged
                 for field in self.displayable_fields:
+                    # skip description/gen_description since they
+                    # are handled above (set from project summary)
+                    if field in ['description', 'gen_description']:
+                        continue
                     setattr(proj, field, item.fields[field])
                 proj.save()
 
@@ -328,6 +332,7 @@ class Command(BaseCommand):
                 role.save()
                 # store reference by original pk for member lookup
                 role_orig_pk[item.pk] = role
+
 
         for item_data in data:
             item = AttrDict(item_data)
@@ -446,12 +451,14 @@ class Command(BaseCommand):
                     setattr(page, field, item.fields[field])
                 # page fields
                 # for field in ['_order', 'parent', 'in_menus']:
-                # TODO: update parent pks
+                # TODO: update parent pks. ?
                 for field in ['title', '_order', 'in_menus']:
                     setattr(page, field, item.fields[field])
                 if item.fields.parent:
                     page.parent = orig_pks[item.fields.parent]
                 page.save()
+
+                self.import_keywords(page, item)
 
         # create placeholder pages
         placeholders = {
@@ -477,8 +484,6 @@ class Command(BaseCommand):
                     self.stderr.write('Could not find %s parent page %s' % \
                         (page.title, info['parent_slug']))
             page.save()
-
-            self.import_keywords(page, item)
 
     def import_keywords(self, content_object, item):
         # convert keyword string into assigned keyword fields

@@ -83,8 +83,8 @@
         "title": "So Long, and Thanks for All the Muffins",
         "slug": "so-long-and-thanks-for-all-the-muffins",
         "_meta_title": "",
-        "description": "Every conference needs a strategy. As a species they are overwhelming, packed end-to-end with intellectually appealing events and social occasions. Try to do too much and you\u2019ll end up too exhausted for later events. Try to do too little and you\u2019ll be victim of some intense FOMO. Your humble blogger has made both these mistakes at other conferences and, as a first-time attendee of DH, was determined not to make them again. I stayed in the McGill \u201cdorms\u201d (think 3-star hotel complete with free breakfast) for maximum proximity so that, between events, I could rest, hydrate, and change shoes so that I was never in heels for more than 3 hours at a time. (I broke this last rule the night of the closing banquet.)",
-        "gen_description": true,
+        "description": "Every conference needs a strategy.",
+        "gen_description": false,
         "created": "2017-09-08T17:32:22Z",
         "updated": "2017-09-08T18:05:36Z",
         "status": 2,
@@ -92,13 +92,105 @@
         "expiry_date": null,
         "short_url": "unset",
         "in_sitemap": true,
-        "content": "<p><span>Every conference needs a strategy. As a species they are overwhelming, packed end-to-end with intellectually appealing events and social occasions. Try to do too much and you\u2019ll end up too exhausted for later events. Try to do too little and you\u2019ll be victim of some intense FOMO. Your humble blogger has made both these mistakes at other conferences and, as a first-time attendee of DH, was determined not to make them again. I stayed in the McGill \u201cdorms\u201d (think 3-star hotel complete with free breakfast) for maximum proximity so that, between events, I could rest, hydrate, and change shoes so that I was never in heels for more than 3 hours at a time. (I broke this last rule the night of the closing banquet.)</span></p>\n<p></p>\n<p><span>Compared to the literary studies conferences I was used, I found DHers to be united less by a common research interest and more by common methodologies. The panels and workshops were consequently many and varied, offering perspective and expertise in particular tools and programs, practical advice about project infrastructure, reflections on the place of DH in the structure of the university, provocations to be part of social justice movements and activism, and advice on pedagogical practices (to name just a few). It was new. It was exciting. It was hard to choose. </span></p>\n<p></p>\n<p><span>Happily, one of the things that surprised this newcomer was the incredible activity on the #dh2017 Twitter tag. I ended up feeling a close sense of community with my fellow tweeters even though we hadn\u2019t met IRL. I also came to the conference on the lookout for Twitter friends, scoping the crowd for anyone who looked like their avatar (a dubious practice). In both cases, I found myself musing on the value of the face-to-face in a digital world. As a scholar, I love the mutual support and interdependence of old and new media. I ended up feeling the same way about social interactions--I needed the digital and the analog. And despite the wealth of tools available I came away with the firm belief that the best social networking still happens in bars.</span></p>\n<p></p>\n<p><span>Because so much of DH2017 took place in the immediate, interactive realm of Twitter I felt that the best way for me to capture my conference experience was with a Storify, which you can read here: </span><a href=\"https://storify.com/Shxperienced/my-first-dh\"><span>https://storify.com/Shxperienced/my-first-dh</span></a></p>\n<p></p>\n<p><span>Finally, I want to reflect that it\u2019s wonderful that Storify gives you the ability to freeze moments in time and collect them into a meaningful arrangement...because that is what I believe annotations do and what we, as scholars who study them, are always hoping to recreate. So I bequeath this mini-archive to the historians of the future, though they will have to provide the footnotes explaining all the GIFs.</span></p>",
+        "content": "<p><span>Every conference needs a strategy. As a species they are overwhelming, packed end-to-end with intellectually ...",
         "user": 12,
         "allow_comments": true,
         "featured_image": "",
         "categories": [],
         "related_posts": [
             21
+        ]
+    }
+},
+{
+    "model": "projectpages.project",
+    "pk": 1,
+    "fields": {
+        "project_title": "Princeton Prosody Archive",
+        "project_subtitle": "Full-text searchable database of prosody and versification texts",
+        "project_summary": "The Princeton Prosody Archive (PPA) is an incomplete, yet full-text searchable database of thousands of digitized prosodic works published between 1569 and 1923.",
+        "project_description": "<p>In its most general sense, \u201cprosody\u201d refers to the study of both versification in poetry and pronunciation. Versification includes a poem\u2019s rhythm, ...",
+        "project_create_update": "2016-09-20"
+    }
+},
+{
+    "model": "projectpages.projectpage",
+    "pk": 1,
+    "fields": {
+        "keywords_string": "prosody archive database versification",
+        "site": 1,
+        "title": "Princeton Prosody Archive",
+        "slug": "princeton-prosody-archive",
+        "_meta_title": "",
+        "description": "Princeton Prosody Archive",
+        "gen_description": true,
+        "created": "2016-09-20T15:47:24Z",
+        "updated": "2016-09-20T15:47:24Z",
+        "status": 2,
+        "publish_date": "2016-09-20T15:47:24Z",
+        "expiry_date": null,
+        "short_url": "",
+        "in_sitemap": true,
+        "project_data": 1,
+        "project_content": "",
+        "project_image": "PPA-300x232_WhjIy7C.png",
+        "override_image": "PPA-300x232_97wud1D.png"
+    }
+},
+{
+    "model": "projectpages.projectrole",
+    "pk": 1,
+    "fields": {
+        "title": "Project Director",
+        "rank": 100
+    }
+},
+{
+    "model": "projectpages.projectrole",
+    "pk": 2,
+    "fields": {
+        "title": "Project Manager",
+        "rank": 90
+    }
+},
+{
+    "model": "projectpages.projectrole",
+    "pk": 3,
+    "fields": {
+        "title": "Technical Lead",
+        "rank": 80
+    }
+},
+{
+    "model": "projectpages.projectmember",
+    "pk": 1,
+    "fields": {
+        "name": "Jean Bauer",
+        "project_role": 3,
+        "project": [
+            1
+        ]
+    }
+},
+{
+    "model": "projectpages.projectmember",
+    "pk": 2,
+    "fields": {
+        "name": "Meredith Martin",
+        "project_role": 1,
+        "project": [
+            1
+        ]
+    }
+},
+{
+    "model": "projectpages.projectmember",
+    "pk": 4,
+    "fields": {
+        "name": "Meagan Wilson",
+        "project_role": 2,
+        "project": [
+            1
         ]
     }
 }

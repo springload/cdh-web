@@ -15,6 +15,7 @@ import pytest
 from cdhweb.blog.models import BlogPost
 from cdhweb.events.models import Event, EventType
 from cdhweb.people.models import Person, Title, Position
+from cdhweb.projects.models import Project, Role, Membership
 from cdhweb.resources.management.commands import import_datav1
 
 
@@ -217,6 +218,45 @@ class TestImportCommand(TestCase):
         for term in blogdata['fields']['keywords_string'].split(' '):
             assert term in keywords
 
+    def test_import_project(self):
+        with open(self.test_data) as datafile:
+            data = json.load(datafile)
+
+        projdata = data[5]
+        pagedata = data[6]
+        self.cmd.import_projects(data)
+        proj = Project.objects.first()
+        assert proj.title == projdata['fields']['project_title']
+        assert proj.short_description == projdata['fields']['project_subtitle']
+        assert proj.long_description == projdata['fields']['project_description']
+        assert proj.description == projdata['fields']['project_summary']
+        assert proj.gen_description is False
+
+        copied_fields = ['slug', 'title', 'status', 'in_sitemap']
+        for field in copied_fields:
+            assert getattr(proj, field) == pagedata['fields'][field]
+        assert proj.publish_date == \
+            dateutil.parser.parse(pagedata['fields']['publish_date'])
+
+        # keywords converted to assigned keywords
+        keywords = [kw.keyword.title for kw in proj.keywords.all()]
+        for term in pagedata['fields']['keywords_string'].split(' '):
+            assert term in keywords
+
+        # check project member import
+        member_names = [str(person) for person in proj.members.all()]
+        for name in ['Meredith Martin', 'Meagan Wilson', 'Jean Bauer']:
+            assert name in member_names
+
+        # placeholder grant created to associate members
+        assert proj.grant_set.count() == 1
+
+        assert proj.membership_set.get(user__last_name='Martin').role.title \
+            == 'Project Director'
+        assert proj.membership_set.get(user__last_name='Bauer').role.title \
+            == 'Technical Lead'
+        assert proj.membership_set.get(user__last_name='Wilson').role.title \
+            == 'Project Manager'
 
 
 
