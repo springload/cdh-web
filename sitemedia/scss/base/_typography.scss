@@ -49,11 +49,16 @@ p {
 }
 
 body {
-  background-color: $light-grey;
+  background-color: white;
   font-family: $font-stack-body-text;
   font-size: 20px;
   color: #000000;
   line-height: 1.6;
+
+  &.with-cards {
+      background-color: $light-grey;
+  }
+
 }
 
 h1, h2, h3, h4 {
