@@ -5,6 +5,7 @@ from attrdict import AttrDict, AttrMap
 from bs4 import BeautifulSoup
 import dateutil.parser
 from django.contrib.sites.models import Site
+from django.contrib.redirects.models import Redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
@@ -72,6 +73,10 @@ class Command(BaseCommand):
     def import_profiles(self, data):
         # use current date for start date of positions created via import
         today = timezone.now()
+
+        # create permanent redirect from old about/staff to new people/staff
+        Redirect.objects.get_or_create(site=self.current_site,
+            old_path='/about/staff/', new_path='/people/staff/')
 
         # track original staffer pk for associating staffer page content
         orig_pk = {}
