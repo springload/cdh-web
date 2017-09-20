@@ -12,6 +12,7 @@ from django.test import TestCase
 from pucas.ldap import LDAPSearchException
 import pytest
 
+from cdhweb.blog.models import BlogPost
 from cdhweb.events.models import Event, EventType
 from cdhweb.people.models import Person, Title, Position
 from cdhweb.resources.management.commands import import_datav1
@@ -196,6 +197,29 @@ class TestImportCommand(TestCase):
             dateutil.parser.parse(pagedata['publish_date'])
         assert event.created == \
             dateutil.parser.parse(pagedata['created'])
+
+    def test_import_blog(self):
+        with open(self.test_data) as datafile:
+            data = json.load(datafile)
+
+        blogdata = data[4]
+        self.cmd.import_blogposts(data)
+        post = BlogPost.objects.first()
+        copied_fields = ['slug', 'title', 'description', 'gen_description',
+            'status', 'in_sitemap', 'content']
+        for field in copied_fields:
+            assert getattr(post, field) == blogdata['fields'][field]
+        assert post.publish_date == \
+            dateutil.parser.parse(blogdata['fields']['publish_date'])
+
+        # keywords converted to assigned keywords
+        keywords = [kw.keyword.title for kw in post.keywords.all()]
+        for term in blogdata['fields']['keywords_string'].split(' '):
+            assert term in keywords
+
+
+
+
 
 
 

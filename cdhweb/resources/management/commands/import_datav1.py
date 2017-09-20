@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from django.utils.text import slugify
+from mezzanine.generic.models import AssignedKeyword, Keyword
 from mezzanine.pages.models import Page, RichTextPage
 from pucas.ldap import user_info_from_ldap, LDAPSearchException
 
@@ -28,7 +29,7 @@ class Command(BaseCommand):
 
     displayable_fields = ('slug', '_meta_title', 'description',
         'gen_description', 'created', 'status', 'publish_date',
-        'expiry_date', 'short_url', 'in_sitemap', 'keywords_string')
+        'expiry_date', 'short_url', 'in_sitemap')
 
     def add_arguments(self, parser):
         parser.add_argument('input',
@@ -221,6 +222,9 @@ class Command(BaseCommand):
                     setattr(event, field, item.fields[field])
                 event.save()
 
+                # handle keywords
+                self.import_keywords(event, item)
+
     def set_event_type(self, event, item, event_type_lookup):
         if ':' in item.fields.event_title:
             ev_type, title = item.fields.event_title.split(': ', 1)
@@ -306,6 +310,9 @@ class Command(BaseCommand):
                     setattr(proj, field, item.fields[field])
                 proj.save()
 
+                # handle keywords
+                self.import_keywords(proj, item)
+
         # handle project roles and members
         role_orig_pk = {}
         for item_data in data:
@@ -384,6 +391,9 @@ class Command(BaseCommand):
                 for field in self.displayable_fields:
                     setattr(post, field, item.fields[field])
                 post.save()
+
+                # handle keywords
+                self.import_keywords(post, item)
 
     landing_pages = ['about', 'research', 'grants', 'resources', 'community']
 
@@ -467,5 +477,16 @@ class Command(BaseCommand):
                     self.stderr.write('Could not find %s parent page %s' % \
                         (page.title, info['parent_slug']))
             page.save()
+
+            self.import_keywords(page, item)
+
+    def import_keywords(self, content_object, item):
+        # convert keyword string into assigned keyword fields
+        for keywd in item.fields['keywords_string'].split(' '):
+            keywd = keywd.strip()
+            db_keyword = Keyword.objects.get_or_create(title=keywd,
+                slug=slugify(keywd))[0]
+            AssignedKeyword.objects.create(keyword_id=db_keyword.id,
+                content_object=content_object)
 
 
