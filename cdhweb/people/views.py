@@ -22,11 +22,12 @@ class ProfileDetailView(ProfileMixinView, DetailView):
     pass
 
 
-class ProfileListView(ProfileMixinView, ListView):
-    # NOTE: we probably don't need a full list of all profiles;
-    # instead we'll probably want a few filtered lists, e.g. current
-    # staff, guest speakers, alumni, etc.
-    pass
+# class ProfileListView(ProfileMixinView, ListView):
+#     # NOTE: we probably don't need a full list of all profiles;
+#     # instead we'll probably want a few filtered lists, e.g. current
+#     # staff, guest speakers, alumni, etc.
+#     pass
+
 
 class StaffListView(ProfileMixinView, ListView):
 
