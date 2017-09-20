@@ -75,6 +75,7 @@ div.spacer {
 	@media (max-width: $small-max-width) {
 		width: 100%;
 		float: none;
+		margin-left: 0;
 	}
 }
 
@@ -757,9 +758,6 @@ $event-card-img-height: 240px;
 		@include grid-media($large-grid){
 		    @include grid-column(3);
 		}
-	    @media (max-width: $small-max-width) {
-	    	width: 100%;
-	    }
 
 	    @media (max-width: $small-max-width) {
 	    	margin-left: 0;
