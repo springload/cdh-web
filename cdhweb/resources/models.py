@@ -25,6 +25,17 @@ class ResourceType(models.Model):
         return self.name
 
 
+class ExcerptMixin(object):
+
+    def excerpt(self):
+        '''Content excerpt. Returns description only if it is not
+        auto-generated, since generated description will be redundant
+        when displayed on the page.'''
+        if not self.gen_description:
+            return self.description
+
+
+
 class UserResource(models.Model):
     '''Through-model for associating users with resource types and
     corresponding URLs for the specified resource type.'''
