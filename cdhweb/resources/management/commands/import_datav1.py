@@ -2,12 +2,14 @@ import datetime
 import json
 
 from attrdict import AttrDict, AttrMap
+from bs4 import BeautifulSoup
 import dateutil.parser
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from django.utils.text import slugify
+from mezzanine.pages.models import Page, RichTextPage
 from pucas.ldap import user_info_from_ldap, LDAPSearchException
 
 from cdhweb.blog.models import BlogPost
@@ -15,7 +17,7 @@ from cdhweb.events.models import Event, Location, EventType
 from cdhweb.people.models import Person, Profile, Title, Position
 from cdhweb.projects.models import Project, ProjectResource, Grant, \
     Role, Membership, GrantType
-from cdhweb.resources.models import ResourceType
+from cdhweb.resources.models import ResourceType, LandingPage
 
 
 class Command(BaseCommand):
@@ -38,10 +40,12 @@ class Command(BaseCommand):
             help='Import projects only')
         parser.add_argument('--blog', action='store_true',
             help='Import blog posts only')
+        parser.add_argument('--pages', action='store_true',
+            help='Import content pages only')
 
     def handle(self, *args, **options):
         import_all = not any([options['people'], options['events'],
-            options['projects'], options['blog']])
+            options['projects'], options['blog'], options['pages']])
 
         try:
             with open(options['input'], 'r') as datafile:
@@ -62,6 +66,8 @@ class Command(BaseCommand):
             self.import_projects(v1data)
         if import_all or options['blog']:
             self.import_blogposts(v1data)
+        if import_all or options['pages']:
+            self.import_pages(v1data)
 
     def import_profiles(self, data):
         # use current date for start date of positions created via import
@@ -238,7 +244,6 @@ class Command(BaseCommand):
         event.event_type = event_type_lookup['Guest Lecture']
 
     def import_projects(self, data):
-
         # track original project pk for associating project page content
         proj_orig_pk = {}
         website_resource_type = ResourceType.objects.get(name='website')
@@ -259,8 +264,11 @@ class Command(BaseCommand):
                     proj = Project(title=item.fields.project_title)
 
                 proj.short_description = item.fields.project_subtitle or ''
-                proj.long_description = item.fields.project_summary
-                proj.content = item.fields.project_description
+                proj.long_description = item.fields.project_description
+                if item.fields.project_summary:
+                    # FIXME: why isn't this sticking?
+                    proj.description = item.fields.project_summary
+                    proj.gen_description = False
 
                 # associate with current site
                 proj.site = self.current_site
@@ -278,19 +286,15 @@ class Command(BaseCommand):
 
                 # special case: two projects have a project website
                 # in the slug field
-                print(proj.title)
-                print('slug is %s' % item.fields['slug'])
                 if item.fields['slug'].startswith('http:'):
                     # create as website link
-                    print('creating website resource')
                     ProjectResource.objects.create(project=proj,
                         resource_type=website_resource_type,
                         url=item.fields['slug'])
-                    # regenerate slug from title
-                    item.fields['slug'] = slugify(proj.title)
-                    print('slug is %s' % item.fields['slug'])
 
-                # FIXME: should slug *always* be regenerated from title?
+                # For historical reasons, slug should be regenerated
+                # from project title for all projects
+                item.fields['slug'] = slugify(proj.title)
 
                 # displayable fields map unchanged
                 for field in self.displayable_fields:
@@ -376,6 +380,83 @@ class Command(BaseCommand):
                     setattr(post, field, item.fields[field])
                 post.save()
 
+    landing_pages = ['about', 'research', 'grants', 'resources', 'community']
 
+    def import_pages(self, data):
+        # loop through and store stocklandingpage content by pk
+        orig_landingpages = {}
+        for item_data in data:
+            item = AttrDict(item_data)
+            if item.model == 'stocktemplate.stocklandingpage':
+                orig_landingpages[item.pk] = item.fields
+
+        orig_pks = {}
+        for item_data in data:
+            item = AttrDict(item_data)
+            if item.model == 'pages.page' and \
+               item.fields.content_model == "stocklandingpage":
+
+                # use slug to determine if page should be a landing page
+
+                if item.fields.slug in self.landing_pages:
+                    page_model = LandingPage
+                else:
+                    # otherwise, use generic rich text page
+                    page_model = RichTextPage
+
+                try:
+                    # get page if it has already been created
+                    page = page_model.objects.get(slug=item.fields.slug)
+                except ObjectDoesNotExist:
+                    page = page_model(slug=item.fields.slug)
+
+                # store for parent handling
+                orig_pks[item.pk] = page
+
+                # grab content from stocklandingpage
+                # (page/stocklandingpage pks match because of table inheritance)
+
+                soup = BeautifulSoup(orig_landingpages[item.pk].content,
+                    'html.parser')
+                if page_model is LandingPage:
+                    # convert first heading to tagline and remove from content
+                    heading = soup.find('h3')
+                    if heading:
+                        page.tagline = heading.get_text()
+                        heading.extract()
+
+                page.content = soup.prettify()
+                # displayable fields map unchanged
+                for field in self.displayable_fields:
+                    setattr(page, field, item.fields[field])
+                # page fields
+                # for field in ['_order', 'parent', 'in_menus']:
+                # TODO: update parent pks
+                for field in ['title', '_order', 'in_menus']:
+                    setattr(page, field, item.fields[field])
+                if item.fields.parent:
+                    page.parent = orig_pks[item.fields.parent]
+                page.save()
+
+        # create placeholder pages
+        placeholders = {
+            'Staff': {'slug': 'people/staff', 'parent_slug': 'about'},
+            'Updates': {},
+            'Events': {},
+            'Projects': {'parent_slug': 'research'}
+        }
+        for title, info in placeholders.items():
+            # use configured slug or slugify the title
+            slug = info.get('slug', slugify(title))
+            try:
+                page = Page.objects.get(slug=slug)
+            except ObjectDoesNotExist:
+                page = Page(slug=slug)
+
+            page.title = title
+            page.description = "[placeholder for dynamic page in menus]"
+            if 'parent_slug' in info:
+                page.parent = Page.objects.get(slug=info['parent_slug'])
+            page.save()
 
 
