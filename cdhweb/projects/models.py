@@ -62,7 +62,7 @@ class Project(Displayable, AdminThumbMixin):
         upload_to=upload_to("projects.image", "projects/thumbnails"),
         format="Image", max_length=255, null=True, blank=True)
 
-    attachments = models.ManyToManyField(Attachment)
+    attachments = models.ManyToManyField(Attachment, blank=True)
 
     # custom manager and queryset
     objects = ProjectManager()
