@@ -3,6 +3,10 @@ html {
   font-family: $base-font-family;
   font-size: 100%;
   line-height: $base-line-height;
+
+  @media (max-width: $small-max-width) {
+    font-size: 16px;
+  }
 }
 
 h1,
