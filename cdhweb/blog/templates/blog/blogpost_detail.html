@@ -15,14 +15,14 @@
         <meta property="schema:dateModified" content="{{ blogpost.updated|date:"c" }}"/>
 
         <div class="byline">
+        <div class="authors">
         {% for author in blogpost.users.all %}
-            <div class="authors">
-            <span property="schema:author" typeof="schema:Person">
+            <span property="schema:author" typeywords
                 <a {% if author.profile %}property="schema:url" href="{{ author.profile.get_absolute_url }}"{% endif %}>
                 <span property="schema:name">{{ author }}</span></a>{% if not forloop.last %}, {% endif %}
             </span>
-        </div>
         {% endfor %}
+        </div>
         <span class="date-published">{{ blogpost.publish_date|date:"F j, Y" }}</span>
         {# NOTE: google structured data testing tool claims publisher & image are required #}
         </div>
@@ -32,8 +32,10 @@
     {{ blogpost.content|richtext_filters|safe }}
     </div>
 
-    <meta property="schema:keywords" content="{{ blogpost.keywords_string}}"/>
-    {# <div property="schema:keywords">{{ blogpost.tags.all|join:", "}}</div> #}
+    {% if blogpost.keywords.exists %}
+    <meta property="schema:keywords" content="{{ blogpost.keywords.all|join:', ' }}"/>
+    <div class="keywords">Keywords: {{ blogpost.keywords.all|join:', ' }}</div>
+    {% endif %}
 
 </article>
 

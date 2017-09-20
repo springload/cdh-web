@@ -1025,16 +1025,10 @@ section.blogposts {
 		margin-bottom: 50px;
 	}
 
-
-	/* TODO: move to text and not just blog posts? */
-	blockquote {
+	.keywords {
+		font-size: 90%;
 		color: $dark-grey;
-		font-style: italic;
-		line-height: 1.52;
-		border-left: solid 3px #979797;
-		padding-left: 30px;
 	}
-
 }
 
 

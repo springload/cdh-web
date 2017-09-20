@@ -99,3 +99,11 @@ hr {
   border-top: 0;
   margin: $base-spacing 0;
 }
+
+blockquote {
+    color: $dark-grey;
+    font-style: italic;
+    line-height: 1.52;
+    border-left: solid 3px #979797;
+    padding-left: 30px;
+}
