@@ -461,7 +461,11 @@ class Command(BaseCommand):
             page.title = title
             page.description = "[placeholder for dynamic page in menus]"
             if 'parent_slug' in info:
-                page.parent = Page.objects.get(slug=info['parent_slug'])
+                try:
+                    page.parent = Page.objects.get(slug=info['parent_slug'])
+                except ObjectDoesNotExist:
+                    self.stderr.write('Could not find %s parent page %s' % \
+                        (page.title, info['parent_slug']))
             page.save()
 
 
