@@ -68,4 +68,5 @@ class BlogPost(Displayable, MultiOwnable, RichText, AdminThumbMixin):
             'year': self.publish_date.year,
             # force two-digit month
             'month': '%02d' % self.publish_date.month,
+            'day': '%02d' % self.publish_date.day,
             'slug': self.slug})
