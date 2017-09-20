@@ -40,7 +40,8 @@ class ProjectManager(DisplayableManager):
 
 
 class Project(Displayable, AdminThumbMixin):
-    short_description = models.CharField(max_length=255, blank=True)
+    short_description = models.CharField(max_length=255, blank=True,
+        help_text='Brief tagline for display on project card in browse view')
     long_description = RichTextField()
     highlight = models.BooleanField(default=False,
         help_text='Include in randomized project display on the home page.')
