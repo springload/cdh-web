@@ -110,13 +110,11 @@ header.nav {
                 flex: none;
             }
 
-            &.first-row {
+            &.primary-nav {
                 margin: 0;
                 text-transform: uppercase;
                 padding-bottom: 14px;
-                border-bottom: solid 1px #d8d8d8;
                 height: auto;
-
                 li {
                     flex: auto;
                 }
@@ -132,6 +130,12 @@ header.nav {
                     display: block;
                 }
 
+            }
+
+            &.secondary-nav {
+                border-top: solid 1px #d8d8d8;
+                margin-top: 0;
+                padding-top: 14px;
             }
         }
     }
@@ -155,10 +159,12 @@ footer {
 
         .contact-info {
             flex-grow: 5;
+            flex-basis: 83.5%;
         }
 
         .social {
             flex-grow: 1;
+            flex-basis: 16.5%;
             padding-bottom: 15px;
         }
 
@@ -185,7 +191,7 @@ footer {
 
     section {
         @extend .responsive-container;
-        height: 145px;
+        height: 175px;
         width: 100%;
         overflow: hidden;
         border-top: 1px;
@@ -219,6 +225,7 @@ footer {
             display: flex;
             flex-direction: column;
             flex-wrap: wrap;
+            justify-content: space-evenly;
             height: 125px;
             padding: 0;
 
@@ -230,6 +237,8 @@ footer {
             &> li {
                 display: inline;
                 flex: auto;
+                flex-grow: 1;
+                max-width: 135px;
                 color: #000000;
                 margin-top: 6px;
                 // margin-bottom: 6px;
@@ -256,6 +265,7 @@ footer {
                         border-bottom: 1px solid #d8d8d8;
 
                         width: 100%;
+                        max-width: none;
 
                         .toggle {
                             opacity: 1;

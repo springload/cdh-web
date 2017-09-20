@@ -1,5 +1,6 @@
 {# secondary navigation for the top-level of the site #}
-<ul>
+{% if page.has_children_in_menu %}
+<ul class="secondary-nav">
     {% for page in page_branch %}
         {% if page.in_menu %}
         {# TODO: do we need ids or current tag here? #}
@@ -10,3 +11,4 @@
         {% endif %}
     {% endfor %}
 </ul>
+{% endif %}
