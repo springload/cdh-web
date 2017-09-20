@@ -48,7 +48,7 @@ class PersonAdmin(admin.ModelAdmin):
         'cdh_staff', 'published')
     # NOTE: if we switched to profile instead of person here, is_staff
     # and published could be made list editable
-    fields = ('first_name', 'last_name', 'email')
+    fields = ('username', 'first_name', 'last_name', 'email')
     inlines = [ProfileInline, PositionInline, UserResourceInline]
 
     def tag_list(self, obj):
