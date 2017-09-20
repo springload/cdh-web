@@ -13,7 +13,7 @@ from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
 from cdhweb.people.models import Person
-from cdhweb.resources.models import Attachment
+from cdhweb.resources.models import Attachment, ExcerptMixin
 from cdhweb.resources.utils import absolutize_url
 
 
@@ -70,7 +70,7 @@ class EventManager(DisplayableManager):
         return self.get_queryset().upcoming()
 
 
-class Event(Displayable, RichText, AdminThumbMixin):
+class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
     # description = rich text field
     # NOTE: do we want a sponsor field? or jest include in description?
     sponsor = models.CharField(max_length=80, null=True, blank=True)
@@ -121,13 +121,6 @@ class Event(Displayable, RichText, AdminThumbMixin):
             'month': '%02d' % self.start_time.month,
             'slug': self.slug})
 
-    @property
-    def excerpt(self):
-        '''Content excerpt.  Returns description only if it is not
-        auto-generated, since generated description will be redundant
-        when displayed on the page.'''
-        if not self.gen_description:
-            return self.description
 
     def full_url(self):
         '''Absolute url, including site address'''

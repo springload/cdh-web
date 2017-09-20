@@ -55,9 +55,9 @@ class TestEvent(TestCase):
     def test_excerpt(self):
         evt = Event(description='excerpt about the event',
             gen_description=False)
-        assert evt.excerpt == evt.description
+        assert evt.excerpt() == evt.description
         evt.gen_description = True
-        assert evt.excerpt != evt.description
+        assert evt.excerpt() != evt.description
 
     def test_when(self):
         # same day, both pm
