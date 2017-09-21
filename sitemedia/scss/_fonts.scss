@@ -2,5 +2,5 @@
 
 /* font includes */
 @include font-face("BrownStdBold", "/static/fonts/BrownStd-bold", bold, $file-formats: otf);
-@include font-face("BrownStdRegular", "/static/fonts/BrownStd-Regular", $file-formats: otf woff);
+@include font-face("BrownStdRegular", "/static/fonts/BrownStd-Regular", $file-formats: otf);
 @include font-face("Lyon Text Web", "/static/fonts/LyonText-Regular-Web", $file-formats: eot woff woff2);
