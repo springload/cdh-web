@@ -1,3 +1,5 @@
+
+
 *.pyc
 *.pyo
 *.db
@@ -14,6 +16,7 @@ sitemedia/fonts
 
 # Ansible key convention
 .vault_passwd
+.vault_prod
 
 ## Python .gitignore from Github ##
 # Byte-compiled / optimized / DLL files

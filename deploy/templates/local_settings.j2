@@ -18,22 +18,7 @@ MEDIA_URL = '/media/'
 SHOW_TEST_WARNING = {{ test_waring | default(True) }}
 
 
-DATABASES = {
-    "default": {
-        # Ends with "postgresql_psycopg2", "mysql", "sqlite3" or "oracle".
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "{{ db_name }}",
-        # Not used with sqlite3.
-        "USER": "{{ db_usr }}",
-        # Not used with sqlite3.
-        "PASSWORD": "{{ db_pass }}",
-        # Set to empty string for localhost. Not used with sqlite3.
-        "HOST": "",
-        # Set to empty string for default. Not used with sqlite3.
-        "PORT": "",
-    }
-}
-
+DATABASES = {{ database_info }} 
 
 CAS_SERVER_URL='https://fed.princeton.edu/cas/'
 
