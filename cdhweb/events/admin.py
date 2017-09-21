@@ -7,7 +7,7 @@ class EventAdmin(admin.ModelAdmin):
         'tag_list')
     prepopulated_fields = {"slug": ("title",)}
     date_hierarchy = 'start_time'
-    search_fields = ('title',)
+    search_fields = ('title', 'content')
     list_filter = ('event_type',)
     filter_horizontal = ('attachments', )
 

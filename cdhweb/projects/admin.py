@@ -69,6 +69,8 @@ class GrantAdmin(admin.ModelAdmin):
 
 class MembershipAdmin(admin.ModelAdmin):
     list_display = ('project', 'user', 'grant', 'role')
+    list_filter = ('project', 'role')
+    search_fields = ('user__first_name', 'user__last_name', 'project__title')
 
 
 class RoleAdmin(admin.ModelAdmin):
