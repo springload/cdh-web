@@ -2,6 +2,7 @@
 django>=1.10,<1.11
 Mezzanine>=4.2.1
 django-compressor
+django-compressor-autoprefixer
 mysqlclient
 django-admin-sortable2
 django-taggit
