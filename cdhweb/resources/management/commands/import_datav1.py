@@ -173,6 +173,7 @@ class Command(BaseCommand):
         "B Floor, Firestone",
         "CDH",
         "Firestone Library, Floor B, Center for Digital Humanities",
+        'CDH (B Floor, Firestone Library)',
     ]
     # "245 East Pyne"
 
