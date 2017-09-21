@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # local ignores
 local_settings.py
 db.sqlite3
@@ -8,6 +9,12 @@ static/CACHE
 **/.sass-cache/
 
 # Vim stuff
+*.pyc
+*.pyo
+*.db
+.DS_Store
+.coverage
+
 *.swp
 
 # stock python git-ignores provided by github
@@ -112,6 +119,7 @@ sitemedia/fonts
 
 # Ansible key convention
 .vault_passwd
+.vault_prod
 
 ## Python .gitignore from Github ##
 # Byte-compiled / optimized / DLL files
