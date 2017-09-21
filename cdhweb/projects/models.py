@@ -91,6 +91,20 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         otherwise return short description.'''
         return super(Project, self).excerpt() or self.short_description
 
+    def latest_grant(self):
+        '''Most recent :class:`Grant`'''
+        return self.grant_set.order_by('-start_date').first()
+
+    def current_membership(self):
+        '''Project members associated with the most recent grant.
+        Returns :class:`Membership` queryset.'''
+        return self.membership_set.filter(grant=self.latest_grant())
+
+    def alumni_members(self):
+        '''Project alumni returns only project members who are
+        not associated with the latest grant.'''
+        return self.members.distinct().exclude(membership__grant=self.latest_grant())
+
 
 class GrantType(models.Model):
     grant_type = models.CharField(max_length=255, unique=True)

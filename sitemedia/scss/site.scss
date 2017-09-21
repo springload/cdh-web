@@ -669,6 +669,11 @@ $event-card-img-height: 240px;
 			list-style-type: none;
 			color: $dark-grey;
 			padding: 0;
+			font-family: $font-stack-body-text;
+
+			li.role {
+				margin-top: 15px;
+			}
 		}
 
 		h3 {
@@ -676,7 +681,16 @@ $event-card-img-height: 240px;
 			font-style: italic;
 			font-size: 18px;
 			margin-bottom: 0;
+			font-family: $font-stack-body-text;
 		}
+
+        a {
+	    	color: black;
+	    	text-decoration: none;
+	    	font-family: $font-stack-headline;
+	    	font-size: 18px;
+	    }
+
 	}
 
 	.description {
