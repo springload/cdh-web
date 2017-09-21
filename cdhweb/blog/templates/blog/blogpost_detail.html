@@ -1,9 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'blog/base.html' %}
 {% load mezzanine_tags humanize %}
+{# simple blog post page; adapted in part from mezzanine blog post template #}
 
-{% block page-subtitle %}{{ blogpost.title }} | Updates | {% endblock %}
-
-{# preliminary blog post page; adapted from mezzanine blog post template #}
+{% block page-subtitle %}{{ blogpost.title }} {{ block.super }}{% endblock %}
 
 {% block main %}
 <article typeof="schema:BlogPosting" class="blogpost">
@@ -15,6 +14,7 @@
         <meta property="schema:dateModified" content="{{ blogpost.updated|date:"c" }}"/>
 
         <div class="byline">
+        {% if blogpost.users.exists %}
         <div class="authors">
         {% for author in blogpost.users.all %}
             <span property="schema:author" typeywords
@@ -23,6 +23,7 @@
             </span>
         {% endfor %}
         </div>
+        {% endif %}
         <span class="date-published">{{ blogpost.publish_date|date:"F j, Y" }}</span>
         {# NOTE: google structured data testing tool claims publisher & image are required #}
         </div>
@@ -42,6 +43,4 @@
 {% if blogpost.attachments.exists %}
     {% include 'snippets/attachments.html' with attachments=blogpost.attachments.all %}
 {% endif %}
-
-
 {% endblock %}
