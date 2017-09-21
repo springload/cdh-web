@@ -79,7 +79,7 @@ class TestProject(TestCase):
 
         assert proj.latest_grant() == grant2
 
-    def test_current_members(self):
+    def test_current_membership(self):
         today = datetime.today()
         proj = Project.objects.create(title="Derrida's Margins")
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
@@ -105,14 +105,14 @@ class TestProject(TestCase):
         Membership.objects.create(project=proj,
             user=consult, grant=grant2, role=role)
 
-        current_members = [mship.user for mship in proj.current_members()]
+        current_members = [mship.user for mship in proj.current_membership()]
         assert lead in current_members
         assert consult in current_members
 
         # edit grant2 dates so it is not latest grant
         grant2.start_date = today - timedelta(days=30)
         grant2.save()
-        current_members = [mship.user for mship in proj.current_members()]
+        current_members = [mship.user for mship in proj.current_membership()]
         assert lead in current_members
         assert consult not in current_members
 
