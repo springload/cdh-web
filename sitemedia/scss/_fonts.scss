@@ -1,6 +1,21 @@
 @import "bourbon/bourbon";
 
 /* font includes */
-@include font-face("BrownStdBold", "/static/fonts/BrownStd-bold", bold, $file-formats: otf);
-@include font-face("BrownStdRegular", "/static/fonts/BrownStd-Regular", $file-formats: otf);
+
+/*
+ * Legal Disclaimer
+ *
+ * These Fonts are licensed only for use on these domains and their subdomains:
+ * digitalhumanities.princeton.edu
+ *
+ * It is illegal to download or use them on other websites.
+ *
+ * While the @font-face statements below may be modified by the client, this
+ * disclaimer may not be removed.
+ *
+ * Lineto.com, 2015
+ */
+
+@include font-face("BrownStdBold", "/static/fonts/lineto-brown-bold", bold, $file-formats: eot woff ttf svg);
+@include font-face("BrownStdRegular", "/static/fonts/lineto-brown-regular", $file-formats: eot woff ttf svg);
 @include font-face("Lyon Text Web", "/static/fonts/LyonText-Regular-Web", $file-formats: eot woff woff2);
