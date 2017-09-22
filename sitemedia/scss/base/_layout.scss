@@ -15,9 +15,8 @@ body {
 
 body {
   margin: 0;
-  /* FIXME: don't need both margin and padding here */
   margin-top: $header-nav-height;  /* clear the nav */
   padding: 0;
-  padding-top: $header-nav-height;
+  padding-top: $header-nav-height; /* add padding below the nav */
 }
 
