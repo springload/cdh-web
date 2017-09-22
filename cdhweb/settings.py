@@ -210,11 +210,7 @@ COMPRESS_PRECOMPILERS = (
 
 COMPRESS_CSS_FILTERS = (
     'compressor.filters.css_default.CssAbsoluteFilter',
-<<<<<<< HEAD
     'django_compressor_autoprefixer.AutoprefixerFilter',
-=======
-    'django_compressor_autoprefixer.AutoprefixerFilter'
->>>>>>> 80d100b6d17be6fef9e2a779b33c255291ef36d9
 )
 
 STATICFILES_FINDERS = (
