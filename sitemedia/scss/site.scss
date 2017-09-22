@@ -873,6 +873,10 @@ $event-card-img-height: 240px;
 
 	    ul {
 	    	@include list-style-reset;
+
+	    	li {
+	    		margin-bottom: 20px;
+	    	}
 	    }
 	}
 	p {
