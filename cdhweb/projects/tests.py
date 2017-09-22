@@ -64,6 +64,87 @@ class TestProject(TestCase):
         proj.short_description = 'project tagline'
         assert proj.excerpt() == proj.short_description
 
+    def test_latest_grant(self):
+        today = datetime.today()
+        proj = Project.objects.create(title="Derrida's Margins")
+        grtype = GrantType.objects.create(grant_type='Sponsored Project')
+        # first grant
+        Grant.objects.create(project=proj, grant_type=grtype,
+            start_date=today - timedelta(days=2),
+            end_date=today - timedelta(days=1))
+        # second grant
+        grant2 = Grant.objects.create(project=proj, grant_type=grtype,
+            start_date=today + timedelta(days=5),
+            end_date=today + timedelta(days=6))
+
+        assert proj.latest_grant() == grant2
+
+    def test_current_membership(self):
+        today = datetime.today()
+        proj = Project.objects.create(title="Derrida's Margins")
+        grtype = GrantType.objects.create(grant_type='Sponsored Project')
+        # older  grant
+        grant1 = Grant.objects.create(project=proj, grant_type=grtype,
+            start_date=today - timedelta(days=2),
+            end_date=today - timedelta(days=1))
+        # second grant
+        grant2 = Grant.objects.create(project=proj, grant_type=grtype,
+            start_date=today + timedelta(days=5),
+            end_date=today + timedelta(days=6))
+
+        # add project members
+        lead = get_user_model().objects.create(username='leader')
+        consult = get_user_model().objects.create(username='contributor')
+        role = Role.objects.create(title='consultant', sort_order=1)
+        # lead is on both grant1 and grant 2
+        Membership.objects.create(project=proj,
+            user=lead, grant=grant1, role=role)
+        Membership.objects.create(project=proj,
+            user=lead, grant=grant2, role=role)
+        # consult is only on grant2
+        Membership.objects.create(project=proj,
+            user=consult, grant=grant2, role=role)
+
+        current_members = [mship.user for mship in proj.current_membership()]
+        assert lead in current_members
+        assert consult in current_members
+
+        # edit grant2 dates so it is not latest grant
+        grant2.start_date = today - timedelta(days=30)
+        grant2.save()
+        current_members = [mship.user for mship in proj.current_membership()]
+        assert lead in current_members
+        assert consult not in current_members
+
+    def test_alumni(self):
+        today = datetime.today()
+        proj = Project.objects.create(title="Derrida's Margins")
+        grtype = GrantType.objects.create(grant_type='Sponsored Project')
+        # older grant
+        grant1 = Grant.objects.create(project=proj, grant_type=grtype,
+            start_date=today - timedelta(days=2),
+            end_date=today - timedelta(days=1))
+        # second grant
+        grant2 = Grant.objects.create(project=proj, grant_type=grtype,
+            start_date=today + timedelta(days=5),
+            end_date=today + timedelta(days=6))
+
+        # add project members
+        lead = get_user_model().objects.create(username='leader')
+        consult = get_user_model().objects.create(username='contributor')
+        role = Role.objects.create(title='consultant', sort_order=1)
+        # lead is on both grant1 and grant 2
+        Membership.objects.create(project=proj,
+            user=lead, grant=grant1, role=role)
+        Membership.objects.create(project=proj,
+            user=lead, grant=grant2, role=role)
+        # consult is only on grant1
+        Membership.objects.create(project=proj,
+            user=consult, grant=grant1, role=role)
+
+        assert consult in proj.alumni_members()
+        assert lead not in proj.alumni_members()
+
 
 class TestProjectQuerySet(TestCase):
 
