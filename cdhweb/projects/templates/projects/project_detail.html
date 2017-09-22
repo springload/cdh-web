@@ -7,7 +7,8 @@
 <div class="project-detail">
 <header>
     <h1>{{ project.title }}</h1>
-    {% if project.short_description %}
+    <h2>{{ project.short_description }}</h2>
+    {% if project.excerpt %}
     <p class="short_description">{{ project.excerpt }}</p>
     {% endif %}
 </header>
