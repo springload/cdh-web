@@ -1,9 +1,13 @@
-# CDH Website Repo
+# CDH Website
 
 [![Build Status](https://travis-ci.org/Princeton-CDH/cdh-web.svg?branch=develop)](https://travis-ci.org/Princeton-CDH/cdh-web)
 [![codecov](https://codecov.io/gh/Princeton-CDH/cdh-web/branch/develop/graph/badge.svg)](https://codecov.io/gh/Princeton-CDH/cdh-web)
 [![Code Health](https://landscape.io/github/Princeton-CDH/cdh-web/develop/landscape.svg?style=flat)](https://landscape.io/github/Princeton-CDH/cdh-web/develop)
 [![Requirements Status](https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=develop)](https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=develop)
+
+
+`cdhweb` is a Django+Mezzanine application that powers the CDH website
+with custom models for people, events, and projects.
 
 
 ## Development instructions
@@ -21,7 +25,7 @@ Initial setup and installation:
 - copy sample local settings and configure for your environment
     `cp cdhweb/local_settings.py.sample cdhweb/local_settings.py`
 
-- download licensed fonts and install locally under /sitemedia
+- download licensed fonts and install locally under /sitemedia/fonts/
 
 ## Unit Testing
 
