@@ -26,21 +26,20 @@
     virtualenv: "{{ deploy }}/env"
     requirements: "{{ deploy }}/requirements.txt"
 - name: Install local_settings.py
-  template:
-    src: templates/local_settings.j2
-    dest: '{{ deploy }}/{{ djangoapp }}/local_settings.py'
-    owner: deploy
-    group: apache
-    mode: 0750
+  synchronize:
+    src: /home/deploy/{{ djangoapp }}/local_settings.py
+    dest: "{{ deploy }}/{{ djangoapp }}/local_settings.py"
+  delegate_to: '{{ inventory_hostname }}'
 - name: Run ./manage.py collectstatic
   django_manage:
     command: collectstatic
     app_path: "{{ deploy }}"
     virtualenv: "{{ deploy }}/env"
 - name: Copy over robots.txt
-  template:
-    src: templates/robots.j2
+  synchronize:
+    src: /home/deploy/{{ djangoapp }}/robots.txt
     dest: '{{ deploy }}/static/robots.txt'
+  delegate_to: '{{ inventory_hostname }}'
 - name: Configure CACHE for django-compressor
   file:
     path: '{{ deploy }}/static/CACHE'
