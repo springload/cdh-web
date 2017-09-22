@@ -551,35 +551,40 @@ $event-card-img-height: 240px;
 	@include header-with-icon;
 }
 
-.events {
+.blogposts h1 {
+	background-image: url('../img/icons/CDH_icon_doc.svg');
+	@include header-with-icon;
+}
 
-	.archive-nav {
-		float: right;
-		text-align: right;
-		position: relative;
 
-		.submenu {
-			@include list-style-reset;
-			display: none;
-			font-family: $font-stack-headline;
-			font-size: 16px;
-			background-color: $light-grey;
-			background-color: rgba(248, 248, 248, 0.85);
-			position: absolute;
-			padding: 15px;
-			right: 0;
-			z-index: 6;
+// events or blogposts archives nav
 
-			a {
-				text-decoration: none;
-				color: $dark-grey;
-			}
+.archive-nav {
+	float: right;
+	text-align: right;
+	position: relative;
 
-			.current a {
-				border-bottom: 2px solid $cdh-blue;
-			}
+	.submenu {
+		@include list-style-reset;
+		display: none;
+		font-family: $font-stack-headline;
+		font-size: 16px;
+		background-color: $light-grey;
+		background-color: rgba(248, 248, 248, 0.85);
+		position: absolute;
+		padding: 15px;
+		right: 0;
+		z-index: 6;
 
+		a {
+			text-decoration: none;
+			color: $dark-grey;
 		}
+
+		.current a {
+			border-bottom: 2px solid $cdh-blue;
+		}
+
 	}
 }
 
@@ -1063,6 +1068,10 @@ section.blogposts {
 				padding-right: 37px;
 				display: inline-block;
 
+				@media (max-width: $small-max-width) {
+					display: block;
+					padding-right: 0;
+				}
 			}
 		}
 
