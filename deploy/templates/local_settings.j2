@@ -12,13 +12,13 @@ SECRET_KEY = "{{ secret_key }}"
 NEVERCACHE_KEY = "{{ nevercache_key }}"
 
 # override default media config so it is shared across deploys
-MEDIA_ROOT = '/var/deploy/cdh-web/media'
+MEDIA_ROOT = '/srv/www/media/'
 MEDIA_URL = '/media/'
 
 SHOW_TEST_WARNING = {{ test_waring | default(True) }}
 
 
-DATABASES = {{ database_info }} 
+{{ database_info }}
 
 CAS_SERVER_URL='https://fed.princeton.edu/cas/'
 
@@ -31,3 +31,23 @@ CAS_SERVER_URL='https://fed.princeton.edu/cas/'
 
 # Domains for public site
 ALLOWED_HOSTS = ["{{ allowed_host }}"]
+
+
+#####################
+# EMAIL AND LOGGING #
+#####################
+
+{{ email_conf }}
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        },
+    },
+}
