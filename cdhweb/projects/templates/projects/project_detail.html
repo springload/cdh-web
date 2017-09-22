@@ -22,16 +22,20 @@
     {% endfor %}
     {# include project alumni  #}
     {% if project.alumni_members %}
-        <li class="role"><h3>Project Alumni</h3></li>
+        <li class="role"><h3>Project Alums</h3></li>
         {% for alum in project.alumni_members %}
         <li>{{ alum }}</li>
         {% endfor %}
     {% endif %}
     </ul>
 
-    {% if project.website_url %}
-    <a href="{{ project.website_url }}">Project Website</a>
-    {% endif %}
+    <ul class="links">
+    {% for link in project.projectresource_set.all %}
+        {% with link_type=link.resource_type.name %}
+        <li><a href="{{ link.url }}">{% if link_type == 'website' %}Project Website{% elif link_typee == 'github' %}GitHub{% else %}{{ link_type|title }}{% endif %}</a></li>
+        {% endwith %}
+    {% endfor %}
+    </ul>
 
 
 </div>
