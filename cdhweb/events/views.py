@@ -48,7 +48,6 @@ class EventYearArchiveView(EventMixinView, YearArchiveView, LastModifiedListMixi
     context_object_name = 'events'
 
     def get_context_data(self, *args, **kwargs):
-        print(self.kwargs)
         context = super(EventYearArchiveView, self).get_context_data(*args, **kwargs)
         context.update({
             'date_list': Event.objects.dates('start_time', 'year'),
