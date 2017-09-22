@@ -46,10 +46,6 @@
 </div>
 </div>
 
-{% if event.attachments.exists %}
-    {% include 'snippets/attachments.html' with attachments=event.attachments.all %}
-{% endif %}
-
 {% endblock %}
 
 

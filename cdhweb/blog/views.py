@@ -6,7 +6,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView, \
     MonthArchiveView
 
-from .models import BlogPost
+from cdhweb.blog.models import BlogPost
+from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
 
 
 class BlogPostMixinView(object):
@@ -20,7 +21,7 @@ class BlogPostMixinView(object):
         return BlogPost.objects.published() # TODO: published(for_user=self.request.user)
 
 
-class BlogPostArchiveMixin(BlogPostMixinView):
+class BlogPostArchiveMixin(BlogPostMixinView, LastModifiedListMixin):
     '''Mixin with common settings for blogpost archive views'''
     date_field = 'publish_date'
     context_object_name = 'blogposts'
@@ -44,7 +45,6 @@ class BlogYearArchiveView(BlogPostArchiveMixin, YearArchiveView):
 
 
 class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
-
     month_format = '%m'
 
     def get_context_data(self, *args, **kwargs):
@@ -58,8 +58,13 @@ class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
         return context
 
 
-class BlogDetailView(BlogPostMixinView, DetailView):
-    pass
+class BlogDetailView(BlogPostMixinView, DetailView, LastModifiedMixin):
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(BlogDetailView, self).get_context_data(*args, **kwargs)
+        # also set object as page for common page display functionality
+        context['page'] = self.object
+        return context
 
 
 class RssBlogPostFeed(Feed):
