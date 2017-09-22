@@ -329,7 +329,7 @@ class Command(BaseCommand):
                 except ObjectDoesNotExist:
                     role = Role(title=item.fields.title)
 
-                role.sort_order = item.fields.rank
+                role.sort_order = (105 - item.fields.rank)
                 role.save()
                 # store reference by original pk for member lookup
                 role_orig_pk[item.pk] = role
