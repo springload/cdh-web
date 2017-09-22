@@ -57,10 +57,11 @@
                 console.log("click");
                 $('#mainmenu').toggle();
             });
-            $('#footermenu .menu-header a').on('click', function(e){
+            $('a.toggle').on('click', function(e){
                 $(this).parent().toggleClass('open');
                 $(this).parent().find('.submenu').toggle();
             });
+
     });
     </script>
 

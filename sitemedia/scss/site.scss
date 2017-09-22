@@ -536,7 +536,7 @@ $event-card-img-height: 240px;
 }
 // TODO: mixin for icons, support h1 for individual pages
 
-.events > h2, .events > h1 {
+.events > h2, .events h1 {
 	background-image: url('../img/icons/CDH_icon_cal.svg');
 	@include header-with-icon;
 }
@@ -549,6 +549,38 @@ $event-card-img-height: 240px;
 .people > h2, .people h1 {
 	background-image: url('../img/icons/CDH_icon_ppl.svg');
 	@include header-with-icon;
+}
+
+.events {
+
+	.archive-nav {
+		float: right;
+		text-align: right;
+		position: relative;
+
+		.submenu {
+			@include list-style-reset;
+			display: none;
+			font-family: $font-stack-headline;
+			font-size: 16px;
+			background-color: $light-grey;
+			background-color: rgba(248, 248, 248, 0.85);
+			position: absolute;
+			padding: 15px;
+			right: 0;
+			z-index: 6;
+
+			a {
+				text-decoration: none;
+				color: $dark-grey;
+			}
+
+			.current a {
+				border-bottom: 2px solid $cdh-blue;
+			}
+
+		}
+	}
 }
 
 
