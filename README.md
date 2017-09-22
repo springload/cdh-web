@@ -1,9 +1,13 @@
-# CDH Website Repo
+# CDH Website
 
-[![Build Status](https://travis-ci.org/Princeton-CDH/cdh-web.svg?branch=develop)](https://travis-ci.org/Princeton-CDH/cdh-web)
-[![codecov](https://codecov.io/gh/Princeton-CDH/cdh-web/branch/develop/graph/badge.svg)](https://codecov.io/gh/Princeton-CDH/cdh-web)
-[![Code Health](https://landscape.io/github/Princeton-CDH/cdh-web/develop/landscape.svg?style=flat)](https://landscape.io/github/Princeton-CDH/cdh-web/develop)
-[![Requirements Status](https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=develop)](https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=develop)
+[![Build Status](https://travis-ci.org/Princeton-CDH/cdh-web.svg)](https://travis-ci.org/Princeton-CDH/cdh-web)
+[![codecov](https://codecov.io/gh/Princeton-CDH/cdh-web/branch/master/graph/badge.svg)](https://codecov.io/gh/Princeton-CDH/cdh-web)
+[![Code Health](https://landscape.io/github/Princeton-CDH/cdh-web/master/landscape.svg?style=flat)](https://landscape.io/github/Princeton-CDH/cdh-web/master)
+[![Requirements Status](https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=master)](https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=master)
+
+
+`cdhweb` is a Django+Mezzanine application that powers the CDH website
+with custom models for people, events, and projects.
 
 
 ## Development instructions
@@ -21,7 +25,11 @@ Initial setup and installation:
 - copy sample local settings and configure for your environment
     `cp cdhweb/local_settings.py.sample cdhweb/local_settings.py`
 
-- download licensed fonts and install locally under /sitemedia
+- download licensed fonts and install locally under /sitemedia/fonts/
+
+- django-compressor dependencies: [install sass](http://sass-lang.com/install) for your operating system as appropriate. If you have Ruby gems installed, `gem install sass`. Also install [Node.js](https://nodejs.org/en/) and `npm`. Globally install `postcss-cli` and `autoprefixer`, i.e. 
+`npm -g postcss-cli autoprefixer`. You may need `sudo` for these operations.
+
 
 ## Unit Testing
 

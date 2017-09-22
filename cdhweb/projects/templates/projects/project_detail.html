@@ -22,7 +22,7 @@
     {% endfor %}
     {# include project alumni  #}
     {% if project.alumni_members %}
-        <li class="role"><h3>Project Alums</h3></li>
+        <li class="role"><h3>Project Alum{{ project.alumni_members|pluralize }}</h3></li>
         {% for alum in project.alumni_members %}
         <li>{{ alum }}</li>
         {% endfor %}

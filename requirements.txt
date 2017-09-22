@@ -6,8 +6,7 @@ django-compressor-autoprefixer
 mysqlclient
 django-admin-sortable2
 django-taggit
-# use develop branch of pucas until we have an initial release
-git+https://github.com/Princeton-CDH/django-pucas.git@develop#egg=pucas
+pucas>=0.5
 python-dateutil
 icalendar
 attrdict

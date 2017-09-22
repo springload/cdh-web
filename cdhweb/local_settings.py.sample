@@ -51,6 +51,51 @@ PUCAS_LDAP.update({
     'SEARCH_FILTER': "(uid=%(user)s)",
 })
 
+# optional configuration for compress autoprefixer
+# COMPRESS_AUTOPREFIXER_BINARY = '/usr/local/bin/postcss'
+# COMPRESS_AUTOPREFIXER_ARGS = '--use autoprefixer' (default)
+
+# COMPRESS_ENABLED = True
+
+# sample logging config
+#
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'basic': {
+#             'format': '[%(asctime)s] %(levelname)s:%(name)s::%(message)s',
+#             'datefmt': '%d/%b/%Y %H:%M:%S',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'basic'
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+#         },
+#         'viapy':  {
+#             'handlers': ['console'],
+#             'level': 'DEBUG'
+#         },
+#         'derrida':  {
+#             'handlers': ['console'],
+#             'level': 'DEBUG'
+#         },
+#         'haystack':  {
+#             'handlers': ['console'],
+#             'level': 'DEBUG'
+#         }
+
+#     },
+# }
+
+
 
 ###################
 # DEPLOY SETTINGS #
