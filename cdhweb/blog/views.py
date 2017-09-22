@@ -37,7 +37,7 @@ class BlogYearArchiveView(BlogPostArchiveMixin, YearArchiveView):
     def get_context_data(self, *args, **kwargs):
         context = super(BlogYearArchiveView, self).get_context_data(*args, **kwargs)
         context.update({
-            'date_list': BlogPost.objects.dates('publish_date', 'month'),
+            'date_list': BlogPost.objects.dates('publish_date', 'month', order='DESC'),
             'title': self.kwargs['year']
         })
         return context
@@ -52,7 +52,7 @@ class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
         # current requested month/year for display
         date = datetime.strptime('%(year)s %(month)s' % self.kwargs, '%Y %m')
         context.update({
-            'date_list': BlogPost.objects.dates('publish_date', 'month'),
+            'date_list': BlogPost.objects.dates('publish_date', 'month', order='DESC'),
             'title': date.strftime('%B %Y')
         })
         return context
