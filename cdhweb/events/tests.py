@@ -224,11 +224,20 @@ class TestViews(TestCase):
         assert 2017 in years
         assert 2016 in years
 
+        # should link to events by year
+        for year in years:
+            self.assertContains(response,
+                reverse('event:by-year', args=[year]))
+
     def test_events_by_year(self):
         response = self.client.get(reverse('event:by-year', args=[2017]))
+        assert response.context['title'] == '2017'
         self.assertContains(response, '2017 Events')
+        self.assertContains(response, reverse('event:upcoming'))
+
         events = Event.objects.filter(start_time__year=2017)
         for evt in events:
             assert evt in response.context['object_list']
-        self.assertContains(response, events[0].title)
-        self.assertContains(response, events[0].event_type.name)
+            self.assertContains(response, evt.title)
+            self.assertContains(response, evt.event_type.name)
+
