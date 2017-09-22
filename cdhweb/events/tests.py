@@ -186,6 +186,15 @@ class TestViews(TestCase):
         self.assertContains(response, event.full_url())
         self.assertContains(response, event.content)
 
+        # last modified header should be set on response
+        assert response.has_header('last-modified')
+        modified = event.updated.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        assert response['Last-Modified'] == modified
+        # and should return 304 not modified when header is present
+        response = self.client.get(event.get_absolute_url(),
+            HTTP_IF_MODIFIED_SINCE=modified)
+        assert response.status_code == 304
+
         # set status to draft
         event.status = CONTENT_STATUS_DRAFT
         event.save()
@@ -224,11 +233,32 @@ class TestViews(TestCase):
         assert 2017 in years
         assert 2016 in years
 
+        # should link to events by year
+        for year in years:
+            self.assertContains(response,
+                reverse('event:by-year', args=[year]))
+
+        # last modified header should be set on response
+        assert response.has_header('last-modified')
+        modified = Event.objects.upcoming().order_by('updated').first().updated
+        modified = modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        assert response['Last-Modified'] == modified
+        # and should return 304 not modified when header is present
+        response = self.client.get(reverse('event:upcoming'),
+            HTTP_IF_MODIFIED_SINCE=modified)
+        assert response.status_code == 304
+
+
+
     def test_events_by_year(self):
         response = self.client.get(reverse('event:by-year', args=[2017]))
+        assert response.context['title'] == '2017'
         self.assertContains(response, '2017 Events')
+        self.assertContains(response, reverse('event:upcoming'))
+
         events = Event.objects.filter(start_time__year=2017)
         for evt in events:
             assert evt in response.context['object_list']
-        self.assertContains(response, events[0].title)
-        self.assertContains(response, events[0].event_type.name)
+            self.assertContains(response, evt.title)
+            self.assertContains(response, evt.event_type.name)
+

@@ -4,9 +4,6 @@ html {
   font-size: 100%;
   line-height: $base-line-height;
 
-  @media (max-width: $small-max-width) {
-    font-size: 16px;
-  }
 }
 
 h1,
@@ -57,6 +54,10 @@ body {
 
   &.with-cards {
       background-color: $light-grey;
+  }
+
+  @media (max-width: $small-max-width) {
+    font-size: 16px;
   }
 
 }

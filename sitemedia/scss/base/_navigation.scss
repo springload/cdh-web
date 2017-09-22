@@ -39,6 +39,10 @@ header.nav {
             border-bottom-color: $cdh-blue;
             border-bottom-style: solid;
         }
+
+        @media (max-width: $small-max-width) {
+            padding-bottom: 0;
+        }
     }
 
     .mobile-nav  {
@@ -60,6 +64,9 @@ header.nav {
         @media (max-width: $small-max-width) {
             background-color: white;
             width: 100%;
+            max-width: 100%;  /* cancel 84% max-width */
+            padding: 5px 8%;
+            border-bottom: 1px solid $dark-grey;
         }
     }
 
@@ -117,6 +124,9 @@ header.nav {
                 height: auto;
                 li {
                     flex: auto;
+                    @media (max-width: $small-max-width) {
+                        margin-bottom: 5px;
+                    }
                 }
             }
 
@@ -135,7 +145,9 @@ header.nav {
             &.secondary-nav {
                 border-top: solid 1px #d8d8d8;
                 margin-top: 0;
-                padding-top: 14px;
+                padding-top: 10px;
+                font-family: $font-stack-headline;
+                font-weight: normal;
             }
         }
     }
@@ -197,6 +209,7 @@ footer {
         border-top: 1px;
         border-top-style: solid;
         border-top-color: #d8d8d8;
+        padding-top: 20px;
 
         @media (max-width: $small-max-width) {
             height: auto;
@@ -256,7 +269,7 @@ footer {
                     /* use as spacer in desktop view */
                     .toggle {
                         opacity: 0;
-                        min-height: 130px;
+                        min-height: 175px;
                         display: inline-block;
                         float: right;
                     }
