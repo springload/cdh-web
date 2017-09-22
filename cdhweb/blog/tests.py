@@ -77,6 +77,13 @@ class TestViews(TestCase):
 
         self.assertContains(response, ', '.join(post.keywords.all()))
 
+        # keywords & description in header
+        self.assertContains(response,
+            '<meta name="keywords" content="%s"/>' % ', '.join(post.keywords.all()))
+        self.assertContains(response,
+            '<meta name="description" content="%s"/>' % post.description)
+
+
         # feed links should occur twice: once in header, once in body
         self.assertContains(response, reverse('blog:rss'), count=2)
         self.assertContains(response, reverse('blog:atom'), count=2)
@@ -101,7 +108,7 @@ class TestViews(TestCase):
             self.assertNotContains(response, post.title)
             self.assertNotContains(response, post.get_absolute_url())
 
-    def test_blogs_by_monthr(self):
+    def test_blogs_by_month(self):
         response = self.client.get(reverse('blog:by-month',
             kwargs={'year': 2017, 'month': '09'}))
 

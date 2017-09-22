@@ -57,7 +57,12 @@ class EventYearArchiveView(EventMixinView, YearArchiveView, LastModifiedListMixi
 
 
 class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
-    pass
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(EventDetailView, self).get_context_data(*args, **kwargs)
+        # also set object as page for common page display functionality
+        context['page'] = self.object
+        return context
 
 
 class EventRedirectView(RedirectView):

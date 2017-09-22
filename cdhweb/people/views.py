@@ -1,8 +1,8 @@
-from django.shortcuts import render
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
-from .models import Profile
+from cdhweb.people.models import Profile
+from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
 
 
 class ProfileMixinView(object):
@@ -18,8 +18,13 @@ class ProfileMixinView(object):
 
 
 
-class ProfileDetailView(ProfileMixinView, DetailView):
-    pass
+class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ProfileDetailView, self).get_context_data(*args, **kwargs)
+        # also set object as page for common page display functionality
+        context['page'] = self.object
+        return context
 
 
 # class ProfileListView(ProfileMixinView, ListView):
@@ -29,7 +34,7 @@ class ProfileDetailView(ProfileMixinView, DetailView):
 #     pass
 
 
-class StaffListView(ProfileMixinView, ListView):
+class StaffListView(ProfileMixinView, ListView, LastModifiedListMixin):
 
     def get_queryset(self):
         # order by job title sort order and then by last name
