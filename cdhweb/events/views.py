@@ -1,9 +1,11 @@
-from django.http import HttpResponse
+import datetime
 
+from django.http import HttpResponse
 from django.views.generic.base import RedirectView
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView
 from django.views.generic.detail import DetailView
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 import icalendar
 
 from cdhweb.events.models import Event
@@ -21,7 +23,29 @@ class EventMixinView(object):
         return Event.objects.published() # TODO: published(for_user=self.request.user)
 
 
-class UpcomingEventsView(EventMixinView, ArchiveIndexView,
+class EventSemesterDates(object):
+
+    def get_semester_date_list(self):
+        date_list = []
+        dates = Event.objects.dates('start_time', 'month', order='ASC')
+        for date in dates:
+            # determine semester based on the month
+            if date.month <= 5:
+                semester = 'Spring'
+            elif date.month <= 8:
+                semester = 'Summer'
+            else:
+                semester = 'Fall'
+
+            # add semester + year to list if not already present
+            sem_date = (semester, date.year)
+            if sem_date not in date_list:
+                date_list.append(sem_date)
+
+        return date_list
+
+
+class UpcomingEventsView(EventMixinView, ArchiveIndexView, EventSemesterDates,
                          LastModifiedListMixin):
     date_field = "start_time"
     allow_future = True
@@ -32,7 +56,10 @@ class UpcomingEventsView(EventMixinView, ArchiveIndexView,
     # events in get_context_data instaed
     def get_context_data(self, *args, **kwargs):
         context = super(UpcomingEventsView, self).get_context_data(*args, **kwargs)
-        context['events'] = context['events'].upcoming()
+        context.update({
+            'events': context['events'].upcoming(),
+            'date_list': self.get_semester_date_list()
+        })
         return context
 
     def last_modified(self):
@@ -40,18 +67,50 @@ class UpcomingEventsView(EventMixinView, ArchiveIndexView,
             .order_by('updated').first().updated
 
 
-class EventYearArchiveView(EventMixinView, YearArchiveView, LastModifiedListMixin):
+class EventSemesterArchiveView(EventMixinView, YearArchiveView,
+                               EventSemesterDates, LastModifiedListMixin):
     date_field = "start_time"
     make_object_list = True
     allow_future = True
     template_name = 'events/event_archive.html'
     context_object_name = 'events'
+    date_list_period = 'month'
+
+    # use month/year archive on the blog and then collapse
+    semester_dates = {
+        # spring: jan 1 - may 31
+        'spring': {'start': (1, 1), 'end': (5, 31)},
+        # summer: june 1 - aug 31
+        'summer': {'start': (6, 1), 'end': (8, 31)},
+        # fall: sep 1 -  dec 31
+        'fall': {'start': (9, 1), 'end': (12, 31)},
+    }
+
+    def get_dated_items(self):
+        date_list, items, context = \
+            super(EventSemesterArchiveView, self).get_dated_items()
+
+        # year archive gets items by years; filter by semester
+        semester = self.kwargs['semester']
+        # generate dates for start and end with current year
+        month, year = self.semester_dates[semester]['start']
+        start = datetime.datetime(int(self.kwargs['year']), month, year,
+            tzinfo=timezone.get_default_timezone())
+        month, year = self.semester_dates[semester]['end']
+        end = datetime.datetime(int(self.kwargs['year']), month, year,
+            tzinfo=timezone.get_default_timezone())
+        items = items.filter(start_time__gte=start, start_time__lte=end)
+
+        return (date_list, items, context)
+
+    def get_date_list(self, *args, **kwargs):
+        return self.get_semester_date_list()
 
     def get_context_data(self, *args, **kwargs):
-        context = super(EventYearArchiveView, self).get_context_data(*args, **kwargs)
+        context = super(EventSemesterArchiveView, self).get_context_data(*args, **kwargs)
         context.update({
-            'date_list': Event.objects.dates('start_time', 'year', order='DESC'),
-            'title': self.kwargs['year']
+            'title': '%s %s' % (self.kwargs['semester'].title(),
+                                self.kwargs['year'])
         })
         return context
 
