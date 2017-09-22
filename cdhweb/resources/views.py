@@ -1,10 +1,10 @@
 from random import shuffle
 
 from django.views.generic.base import View, TemplateView
-from django.shortcuts import render
 from django.utils.cache import get_conditional_response
 
 from cdhweb.events.models import Event
+
 from cdhweb.projects.models import Project
 
 
@@ -16,7 +16,10 @@ class LastModifiedMixin(View):
 
     def dispatch(self, request, *args, **kwargs):
         response = super(LastModifiedMixin, self).dispatch(request, *args, **kwargs)
-        last_modified = self.last_modified()
+        # NOTE: remove microseconds so that comparison will pass,
+        # since microseconds are not included in the last-modified header
+
+        last_modified = self.last_modified().replace(microsecond=0)
         response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
         return get_conditional_response(request,
             last_modified=last_modified.timestamp(), response=response)
