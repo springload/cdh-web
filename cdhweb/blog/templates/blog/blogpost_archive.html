@@ -13,7 +13,7 @@
     {# include latest blogposts page link #}
     {% url 'blog:list' as latest_url %}
     <li {% if request.path == latest_url %}class="current"{% endif %}><a href="{{ latest_url }}">Latest</a></li>
-    {% for archive_date in date_list reversed %}
+    {% for archive_date in date_list %}
     {% ifchanged %}<li>{{ archive_date.year }}</li>{% endifchanged %}
         {% url 'blog:by-month' year=archive_date.year month=archive_date|date:"m" as blog_url %}
         <li {% if blog_url == request.path  %}class="current"{% endif %}>
