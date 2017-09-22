@@ -34,13 +34,9 @@
     </div>
 
     {% if blogpost.keywords.exists %}
-    <meta property="schema:keywords" content="{{ blogpost.keywords.all|join:', ' }}"/>
     <div class="keywords">Keywords: {{ blogpost.keywords.all|join:', ' }}</div>
     {% endif %}
 
 </article>
 
-{% if blogpost.attachments.exists %}
-    {% include 'snippets/attachments.html' with attachments=blogpost.attachments.all %}
-{% endif %}
 {% endblock %}

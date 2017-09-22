@@ -32,9 +32,4 @@
 {{ profile.bio|safe }}
 </div>
 
-{% if profile.attachments.exists %}
-    {% include 'snippets/attachments.html' with attachments=profile.attachments.all %}
-{% endif %}
-
-
 {% endblock %}
