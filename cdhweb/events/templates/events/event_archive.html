@@ -11,14 +11,14 @@
 <div class="archive-nav">
   <a class="toggle"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>
   <ul class="submenu">
+    {# include upcoming events page link #}
+    {% url 'event:upcoming' as upcoming_url %}
+    <li {% if request.path == upcoming_url %}class="current"{% endif %}><a href="{{ upcoming_url }}">Upcoming</a></li>
     {% for archive_date in date_list %}
         {% url 'event:by-year' year=archive_date.year as event_url %}
         <li {% if event_url == request.path  %}class="current"{% endif %}>
             <a href="{{ event_url }}">{{ archive_date.year }}</a></li>
     {% endfor %}
-    {# include upcoming events page link #}
-    {% url 'event:upcoming' as upcoming_url %}
-    <li {% if request.path == upcoming_url %}class="current"{% endif %}><a href="{{ upcoming_url }}">Upcoming</a></li>
   </ul>
 </div>
 
