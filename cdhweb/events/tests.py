@@ -228,15 +228,16 @@ class TestViews(TestCase):
         past_event = Event.objects.filter(end_time__lte=today).first()
         assert past_event not in response.context['events']
 
-        # should include all years represented in events
-        years = [date.year for date in response.context['date_list']]
-        assert 2017 in years
-        assert 2016 in years
+        # should include all semesters and years represented in events
+        date_list = response.context['date_list']
+        assert ('Fall', 2016) in date_list
+        assert ('Spring', 2017) in date_list
+        assert ('Fall', 2017) in date_list
 
-        # should link to events by year
-        for year in years:
+        # should link to events by semester
+        for semester, year in date_list:
             self.assertContains(response,
-                reverse('event:by-year', args=[year]))
+                reverse('event:by-semester', args=[semester.lower(), year]))
 
         # last modified header should be set on response
         assert response.has_header('last-modified')
@@ -248,17 +249,25 @@ class TestViews(TestCase):
             HTTP_IF_MODIFIED_SINCE=modified)
         assert response.status_code == 304
 
-
-
-    def test_events_by_year(self):
-        response = self.client.get(reverse('event:by-year', args=[2017]))
-        assert response.context['title'] == '2017'
-        self.assertContains(response, '2017 Events')
+    def test_events_by_semester(self):
+        response = self.client.get(reverse('event:by-semester', args=['spring', 2017]))
+        assert response.context['title'] == 'Spring 2017'
+        self.assertContains(response, 'Spring 2017 Events')
         self.assertContains(response, reverse('event:upcoming'))
 
-        events = Event.objects.filter(start_time__year=2017)
+        events = Event.objects.filter(start_time__year=2017, start_time__month__lte=5)
         for evt in events:
             assert evt in response.context['object_list']
             self.assertContains(response, evt.title)
             self.assertContains(response, evt.event_type.name)
+
+        date_list = response.context['date_list']
+        assert ('Fall', 2016) in date_list
+        assert ('Spring', 2017) in date_list
+        assert ('Fall', 2017) in date_list
+
+        # should link to events by semester
+        for semester, year in date_list:
+            self.assertContains(response,
+                reverse('event:by-semester', args=[semester.lower(), year]))
 
