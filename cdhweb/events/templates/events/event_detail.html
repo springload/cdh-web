@@ -2,6 +2,16 @@
 
 {% block page-subtitle %}{{ event.title }} | Events | {% endblock %}
 
+{% block extra-head %}
+    <meta name="twitter:label1" content="Date"/>
+    <meta name="twitter:data1" content="{{ event.when }}"/>
+    {% if event.location %}
+    <meta name="twitter:label2" content="Location"/>
+    <meta name="twitter:data1" content="{{ event.location.display_name }}"/>
+    {% endif %}
+{% endblock %}
+
+
 {% block main %}
 <div typeof="schema:Event" class="event-detail">
 
@@ -29,17 +39,18 @@
     <meta property="schema:endDate" content="{{ event.end_time|date:'c' }}"/>
     <div>{{ event.when }}</div>
 
+    {% if event.location %}
     <div property="schema:location" typeof="schema:Place" class="location">
         <span property="schema:name">{{ event.location.name }}</span>
         <div property="schema:address">{{ event.location.address}}</div>
     </div>
+    {% endif %}
 
     <a href="{{ event.get_ical_url}}" class="ical">Export to iCal</a>
 </div>
 
-<img property="schema:image" src="{{ MEDIA_URL }}{{ event.image }}"/>
-
 <div class="description">
+    <img property="schema:image" src="{{ MEDIA_URL }}{{ event.image }}"/>
     <meta property="schema:url" content="{{ event.full_url }}"/>
 
     <div property="schema:description">{{ event.content|safe }}</div>
