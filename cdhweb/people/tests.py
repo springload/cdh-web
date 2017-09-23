@@ -3,6 +3,7 @@ from unittest.mock import Mock
 from django.urls import reverse
 from django.test import TestCase
 from django.utils.text import slugify
+from mezzanine.core.models import CONTENT_STATUS_DRAFT
 import pytest
 
 from .models import Title, Person, Position, init_profile_from_ldap, Profile
@@ -75,6 +76,7 @@ def test_init_profile_from_ldap():
     assert profile.slug == slugify(ldapinfo.displayName)
     assert profile.phone_number == ''
     assert profile.office_location == ''
+    assert profile.status == CONTENT_STATUS_DRAFT
     # title should be created
     assert Title.objects.filter(title='Freeloader').exists()
 
