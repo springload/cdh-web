@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
@@ -27,6 +28,10 @@ class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
             'page': self.object,
             'opengraph_type': 'profile'
         })
+        if self.thumb:
+            context['preview_image'] = ''.join([settings.MEDIA_ROOT,
+                str(self.object.thumb)])
+
         return context
 
 

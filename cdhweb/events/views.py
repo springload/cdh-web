@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.views.generic.base import RedirectView
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView
@@ -134,6 +135,16 @@ class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
         context = super(EventDetailView, self).get_context_data(*args, **kwargs)
         # also set object as page for common page display functionality
         context['page'] = self.object
+        if self.object.image or self.object.image:
+            context.update({
+                'twitter_card_type': 'summary_large_image',
+                # generic preview image - prefer thumbnail'
+                'preview_image': ''.join([settings.MEDIA_URL,
+                    str(self.object.thumb or self.object.image)]),
+                # larger image - prefer fullsize
+                'twitter_image': ''.join([settings.MEDIA_URL,
+                    str(self.object.image or self.object.thumb)]),
+            })
         return context
 
 

@@ -16,6 +16,8 @@
         {% endif %}
       {% endfor %}
     {% endif %}
+
+    {{ block.super}} {# still include blog feed links #}
 {% endblock %}
 
 {% block main %}
@@ -32,7 +34,10 @@
         <div class="authors">
         {% for author in blogpost.users.all %}
             <span property="schema:author">
-                <a {% if author.published %}property="schema:url" href="{{ author.get_absolute_url }}"{% endif %}>
+                {% if author.published %}
+                <meta property="schema:url" content="{{ author.get_absolute_url }}"/>
+               {% endif %}
+                <a {% if author.published %}href="{{ author.get_absolute_url }}"{% endif %}>
                 <span property="schema:name">{{ author }}</span></a>{% if not forloop.last %}, {% endif %}
             </span>
         {% endfor %}
