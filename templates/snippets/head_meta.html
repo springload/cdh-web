@@ -1,0 +1,18 @@
+{% load static %}
+{# html metadata #}
+    <meta name="keywords" content="{% block meta_keywords %}{{ page.keywords.all|join:', ' }}{% endblock %}"/>
+    <meta name="description" content="{% block meta_description %}{{ page.description }}{% endblock %}"/>
+    {# open graph metadata #}
+    <meta name="og:title" content="{{ page.meta_title }}" />
+    <meta name="og:type" content="{{ opengraph_type|default:'website' }}" />
+    <meta name="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta name="og:image" content="{% static 'img/CDH_logo.svg' %}" />
+    <meta name="og:description" content="{{ page.description }}"/>
+    <meta name="og:site_name" content="Center for Digital Humanities @ Princeton University"/>
+    {# twitter card #}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@PrincetonDH" />
+    <meta name="twitter:title" content="{{ page.meta_title }}"/>
+    <meta name="twitter:description" content="{{ page.description }}" />
+    <meta name="twitter:image" content="{% static 'img/CDH_logo.svg' %}" />
+

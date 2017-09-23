@@ -23,7 +23,10 @@ class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
     def get_context_data(self, *args, **kwargs):
         context = super(ProfileDetailView, self).get_context_data(*args, **kwargs)
         # also set object as page for common page display functionality
-        context['page'] = self.object
+        context.update({
+            'page': self.object,
+            'opengraph_type': 'profile'
+        })
         return context
 
 

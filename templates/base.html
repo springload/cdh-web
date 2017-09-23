@@ -1,13 +1,11 @@
 {% load static pages_tags mezzanine_tags %}
 <!DOCTYPE html>
-<html lang='en' xmlns:schema="http://schema.org/">
-
+<html lang='en' xmlns:schema="http://schema.org/" xmlns:og="http://ogp.me/ns#" {% block headattrs %}{% endblock %}>
 <head>
     <meta charset='UTF-8'/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>{% block page-subtitle %}{% if page %}{{ page.meta_title|add:" | "}}{% endif %}{% endblock %}CDH @ Princeton</title>
-    <meta name="keywords" content="{% block meta_keywords %}{{ page.keywords.all|join:', ' }}{% endblock %}"/>
-    <meta name="description" content="{% block meta_description %}{{ page.description }}{% endblock %}"/>
+    {% include 'snippets/head_meta.html' %}
     {% block extra-head %}{% endblock %}
 
     {% compress css %}
