@@ -109,6 +109,11 @@ class TestEvent(TestCase):
         assert description in ical['description'].to_ical().decode()
         assert absurl in ical['description'].to_ical().decode()
 
+        # get by slug with wrong dates - should not be found
+        response = self.client.get(reverse('event:detail',
+            args=[1999, '01', event.slug]))
+        assert response.status_code == 404
+
 
 class TestEventQueryset(TestCase):
 
@@ -195,11 +200,17 @@ class TestViews(TestCase):
             HTTP_IF_MODIFIED_SINCE=modified)
         assert response.status_code == 304
 
+        # get by slug with wrong dates - should not be found
+        response = self.client.get(reverse('event:detail',
+            args=[1999, '01', event.slug]))
+        assert response.status_code == 404
+
         # set status to draft
         event.status = CONTENT_STATUS_DRAFT
         event.save()
         response = self.client.get(event.get_absolute_url())
         assert response.status_code == 404
+
 
     def test_upcoming(self):
         # use django timezone util for timezone-aware datetime
