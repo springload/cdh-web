@@ -682,6 +682,11 @@ $event-card-img-height: 240px;
 	    	width: auto;
 	    }
 
+	    h2 {
+		  font-size: modular-scale(-1);
+		}
+
+
 	  	.short_description {
 	  		font-style: italic;
 
