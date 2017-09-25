@@ -4,8 +4,10 @@ from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
 # from django.conf.urls.static import static
 from django.contrib import admin
+from django.shortcuts import render
 from django.views.i18n import set_language
 from django.views.generic.base import RedirectView
+
 
 from mezzanine.conf import settings
 
@@ -29,6 +31,8 @@ if settings.USE_MODELTRANSLATION:
     ]
 
 urlpatterns += [
+    url(r'robots\.txt$', lambda request: 
+        render(request, 'robots.txt', content_type='text/plain')),
     url("^people/", include("cdhweb.people.urls", namespace='people')),
     # actual blog url still TBD
     url("^updates/", include("cdhweb.blog.urls", namespace='blog')),
