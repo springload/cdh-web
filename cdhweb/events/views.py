@@ -11,6 +11,7 @@ import icalendar
 
 from cdhweb.events.models import Event
 from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
+from cdhweb.resources.utils import absolutize_url
 
 
 class EventMixinView(object):
@@ -139,11 +140,11 @@ class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
             context.update({
                 'twitter_card_type': 'summary_large_image',
                 # generic preview image - prefer thumbnail'
-                'preview_image': ''.join([settings.MEDIA_URL,
-                    str(self.object.thumb or self.object.image)]),
+                'preview_image': absolutize_url(''.join([settings.MEDIA_URL,
+                    str(self.object.thumb or self.object.image)])),
                 # larger image - prefer fullsize
-                'twitter_image': ''.join([settings.MEDIA_URL,
-                    str(self.object.image or self.object.thumb)]),
+                'twitter_image': absolutize_url(''.join([settings.MEDIA_URL,
+                    str(self.object.image or self.object.thumb)])),
             })
         return context
 
