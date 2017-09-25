@@ -202,6 +202,9 @@ MEDIA_URL = STATIC_URL + "media/"
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, *MEDIA_URL.strip("/").split("/"))
 
+# Increase file upload size to roughly 50 MB
+FILEBROWSER_MAX_UPLOAD_SIZE = 50000000
+
 COMPRESS_PRECOMPILERS = (
     # TODO: still need to integrate auto-prefixer
     # maybe https://github.com/dizballanze/django-compressor-autoprefixer ?
