@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
 # from django.conf.urls.static import static
@@ -31,8 +32,9 @@ if settings.USE_MODELTRANSLATION:
     ]
 
 urlpatterns += [
-    url(r'robots\.txt$', lambda request: 
-        render(request, 'robots.txt', content_type='text/plain')),
+    url(r'robots\.txt$', lambda request:
+        render(request, 'robots.txt',
+               content_type='text/plain', context={'DEBUG': settings.DEBUG})),
     url("^people/", include("cdhweb.people.urls", namespace='people')),
     # actual blog url still TBD
     url("^updates/", include("cdhweb.blog.urls", namespace='blog')),
