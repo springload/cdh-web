@@ -4,12 +4,11 @@
       state: directory
       mode: "u+rwx,g+rwx,o-rw"
 - name: Build a virtualenvironment
-  command: "virtualenv --system-site-packages env"
+  command: "virtualenv env"
   args:
     chdir: '{{ deploy }}'
     # Not quite, but close enough to check
     creates: "{{ deploy}}/env"
-
 - name: Upgrade pip to latest in virtualenv
   pip:
     name: pip
@@ -35,11 +34,6 @@
     command: collectstatic
     app_path: "{{ deploy }}"
     virtualenv: "{{ deploy }}/env"
-- name: Copy over robots.txt
-  synchronize:
-    src: /home/deploy/{{ djangoapp }}/robots.txt
-    dest: '{{ deploy }}/static/robots.txt'
-  delegate_to: '{{ inventory_hostname }}'
 - name: Configure CACHE for django-compressor
   file:
     path: '{{ deploy }}/static/CACHE'
