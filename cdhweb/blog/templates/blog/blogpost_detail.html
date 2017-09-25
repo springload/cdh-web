@@ -2,7 +2,7 @@
 {% load mezzanine_tags humanize %}
 {# simple blog post page; adapted in part from mezzanine blog post template #}
 
-{% block page-subtitle %}{{ blogpost.title }} {{ block.super }}{% endblock %}
+{% block page-subtitle %}{{ blogpost.title }} | {{ block.super }}{% endblock %}
 
 {% block headattrs %} xmlns:article="http://ogp.me/ns/article#"{% endblock %}
 {% block extra-head %}
