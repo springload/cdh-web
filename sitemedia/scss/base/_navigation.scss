@@ -272,11 +272,16 @@ footer {
                         min-height: 175px;
                         display: inline-block;
                         float: right;
+                        width: 1em;
+                        &:hover {
+                            cursor: pointer;
+                        }
                     }
 
                     @media (max-width: $small-max-width) {
                         border-bottom: 1px solid #d8d8d8;
-
+                        margin-top: 8px;
+                        padding-bottom: 5px;
                         width: 100%;
                         max-width: none;
 
@@ -294,6 +299,7 @@ footer {
 
                             li {
                                 display: block;
+                                max-width: none;
                             }
                         }
 
