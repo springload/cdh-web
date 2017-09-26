@@ -49,7 +49,9 @@ class PersonAdmin(admin.ModelAdmin):
     # NOTE: if we switched to profile instead of person here, is_staff
     # and published could be made list editable
     fields = ('username', 'first_name', 'last_name', 'email')
+    search_fields = ('first_name', 'last_name')
     inlines = [ProfileInline, PositionInline, UserResourceInline]
+    list_filter = ('profile__status', 'profile__is_staff')
 
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.profile.tags.all())

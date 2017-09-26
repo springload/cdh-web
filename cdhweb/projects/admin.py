@@ -1,15 +1,16 @@
-from adminsortable2.admin import SortableAdminMixin
+# from adminsortable2.admin import SortableAdminMixin
+from django.utils.functional import curry
 from django.contrib import admin
 from mezzanine.core.admin import DisplayableAdmin
 
 from .models import Project, GrantType, Grant, Membership, Role, \
     ProjectResource
 
-class MemberInline(admin.TabularInline):
+class ProjectMemberInline(admin.TabularInline):
     model = Membership
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        field = super(MemberInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        field = super(ProjectMemberInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
         # restrict only to grants associated with the current project
         if db_field.name == 'grant':
             if request.object is not None:
@@ -55,16 +56,39 @@ class ProjectAdmin(DisplayableAdmin):
         return u", ".join(o.name for o in obj.tags.all())
     tag_list.short_description = 'Tags'
 
-    inlines = [GrantInline, MemberInline, ResourceInline]
+    inlines = [GrantInline, ProjectMemberInline, ResourceInline]
 
     def get_form(self, request, obj=None, **kwargs):
         # save object reference for filtering grants in membership Inline
         request.object = obj
         return super(ProjectAdmin, self).get_form(request, obj, **kwargs)
 
+
+class GrantMemberInline(admin.TabularInline):
+    model = Membership
+    fields = ['user', 'role', 'project']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        field = super(GrantMemberInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        # restrict only to project associated with the current grant
+        # and *DEFAULT* to current project so it does not have to be selected
+        if db_field.name == 'project':
+            if request.object is not None:
+                field.queryset = field.queryset.filter(pk=request.object.project.pk)
+                field.initial = request.object.project.pk
+        return field
+
+
 class GrantAdmin(admin.ModelAdmin):
     list_display = ('project', 'grant_type', 'start_date', 'end_date')
     date_hierarchy = 'start_date'
+
+    def get_form(self, request, obj=None, **kwargs):
+        # save object reference for filtering grants in membership Inline
+        request.object = obj
+        return super(GrantAdmin, self).get_form(request, obj, **kwargs)
+
+    inlines = [GrantMemberInline]
 
 
 class MembershipAdmin(admin.ModelAdmin):

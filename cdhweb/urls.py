@@ -1,15 +1,11 @@
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
-# from django.conf.urls.static import static
 from django.contrib import admin
-from django.shortcuts import render
 from django.views.i18n import set_language
-from django.views.generic.base import RedirectView
-
-
-from mezzanine.conf import settings
+from django.views.generic.base import RedirectView, TemplateView
 
 from cdhweb.resources import views as resource_views
 
@@ -31,9 +27,10 @@ if settings.USE_MODELTRANSLATION:
     ]
 
 urlpatterns += [
-    url(r'robots\.txt$', lambda request:
-        render(request, 'robots.txt',
-               content_type='text/plain', context={'DEBUG': settings.DEBUG})),
+    url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt',
+        content_type='text/plain')),
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico',
+        permanent=True)),
     url("^people/", include("cdhweb.people.urls", namespace='people')),
     # actual blog url still TBD
     url("^updates/", include("cdhweb.blog.urls", namespace='blog')),

@@ -206,13 +206,12 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, *MEDIA_URL.strip("/").split("/"))
 FILEBROWSER_MAX_UPLOAD_SIZE = 50000000
 
 COMPRESS_PRECOMPILERS = (
-    # TODO: still need to integrate auto-prefixer
-    # maybe https://github.com/dizballanze/django-compressor-autoprefixer ?
     ('text/x-scss', 'sass --scss {infile} {outfile}'),
 )
 
 COMPRESS_CSS_FILTERS = (
     'compressor.filters.css_default.CssAbsoluteFilter',
+    # NOTE: requires COMPRESS_ENABLED = True when DEBUG is True
     'django_compressor_autoprefixer.AutoprefixerFilter',
 )
 

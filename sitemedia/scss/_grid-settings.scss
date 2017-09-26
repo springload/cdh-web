@@ -1,14 +1,7 @@
 @import "neat/neat";
 
-// breakpoints and content sizes for large, medium, and small viewports
-$medium-max-width: 1068px;
-$medium-content-width: 735px;
-
-// TODO: move to variables. better names?
-$small-max-width: 735px;
-$small-content-width: 84%;
-
-$large-content-width: 990px;
+// small, medium, large max widths and content widths defined
+// in variables
 
 $gutter: 30px;
 

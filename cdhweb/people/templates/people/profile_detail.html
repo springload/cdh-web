@@ -2,7 +2,7 @@
 {% load mezzanine_tags %}
 
 {% block page-subtitle %}{{ profile.title }} | People | {% endblock %}
-{% block headattrs %} xmlns:profile="http://ogp.me/ns/profile#"{% endblock %}
+
 {% block extra-head %}
     <meta name="profile.first_name" content="{{ profile.user.first_name }}"/>
     <meta name="profile.last_name" content="{{ profile.user.last_name }}"/>
@@ -19,8 +19,8 @@
 <div class="links">
     {# NOTE equiv to contributors in project #}
     <ul>
-    {% for resource in profile.user.resources.all %}
-        <li><a href="{{ resource.url }}">{{ resource.name }} {{ resource.url }}</a></li>
+    {% for resource in profile.user.userresource_set.all %}
+        <li><a href="{{ resource.url }}">{{ resource.resource_type.name }}</a></li>
     {% endfor %}
     </ul>
 </div>

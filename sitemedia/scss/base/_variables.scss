@@ -30,7 +30,14 @@ $black: #000000;
 // local items
 $header-nav-height: 90px;
 
+// breakpoints and content sizes for large, medium, and small viewports
+$medium-max-width: 1068px;
+$medium-content-width: 735px;
+
 $small-max-width: 735px;
+$small-content-width: 84%;
+
+$large-content-width: 990px;
 
 // bitters built-ins
 

@@ -34,7 +34,10 @@
     {# todo: affiliation?  #}
     {% endfor %}
     </ul>
+    {# don't repeat event type if it is an exact match (i.e. reading group) #}
+    {% if event.event_type.name != event.title %}
     <p>{{ event.event_type }}</p>
+    {% endif %}
     <meta property="schema:startDate" content="{{ event.start_time|date:'c' }}"/>
     <meta property="schema:endDate" content="{{ event.end_time|date:'c' }}"/>
     <div>{{ event.when }}</div>

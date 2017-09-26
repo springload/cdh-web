@@ -307,18 +307,24 @@ $event-card-img-height: 240px;
 			border: 2px solid $cdh-blue;
 			box-shadow: 5px 5px 0px $cdh-blue;
 			background-color: white;
-			/* TODO:  font style not clear in zeplin */
+			color: black;
 			font-family: $font-stack-headline;
 			font-size: 12px;
 			padding: 2px 5px;
 		}
 		.when {
+			color: $dark-grey;
 			position: absolute;
+			padding-left: 0;
 			bottom: 15px;
 			left: 15px;
+			font-family: $font-stack-headline;
 		}
 		.time {
 			padding-left: 20px;
+		}
+		.presenter {
+			font-family: $font-stack-headline;
 		}
 
 	} /* end event card */
@@ -398,10 +404,10 @@ $event-card-img-height: 240px;
 			font-family: $font-stack-headline-bold;
 
 			.title {
-				padding-top: 15px;
 				font-size: 16px;
 				margin: 0;
 				color: $dark-grey;
+				font-family: $font-stack-headline;
 			}
 			.name {
 				margin: 0;
