@@ -403,10 +403,10 @@ $event-card-img-height: 240px;
 			font-family: $font-stack-headline-bold;
 
 			.title {
-				padding-top: 15px;
 				font-size: 16px;
 				margin: 0;
 				color: $dark-grey;
+				font-family: $font-stack-headline;
 			}
 			.name {
 				margin: 0;
