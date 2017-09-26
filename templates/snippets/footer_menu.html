@@ -17,4 +17,7 @@
             {% endif %}
     {% endif %}
 {% endfor %}
+{% if user.is_staff %} {# convenience admin link for logged in users #}
+    <li class='menu-header'><a class="admin-link" href="{% url 'admin:index' %}"><span>Admin</span></a></li>
+{% endif %}
 </ul>
