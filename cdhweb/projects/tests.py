@@ -46,7 +46,7 @@ class TestProject(TestCase):
         assert proj.website_url is None
 
         # add a website url
-        website = ResourceType.objects.get(name='website')
+        website = ResourceType.objects.get(name='Website')
         mep_url = 'http://mep.princeton.edu'
         ProjectResource.objects.create(project=proj, resource_type=website,
                                        url=mep_url)
@@ -254,7 +254,7 @@ class TestViews(TestCase):
             Membership(project=proj, user=contrib3, grant=grant, role=pi)
         ])
         # add a website url
-        website = ResourceType.objects.get(name='website')
+        website = ResourceType.objects.get(name='Website')
         project_url = 'http://something.princeton.edu'
         ProjectResource.objects.create(project=proj, resource_type=website,
                                        url=project_url)

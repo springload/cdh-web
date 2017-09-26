@@ -256,7 +256,7 @@ class Command(BaseCommand):
     def import_projects(self, data):
         # track original project pk for associating project page content
         proj_orig_pk = {}
-        website_resource_type = ResourceType.objects.get(name='website')
+        website_resource_type = ResourceType.objects.get(name='Website')
         # for import purposes, all grants will be considered
         # current-year sponsored projects (manual cleanup required)
         sponsored_proj = GrantType.objects.get_or_create(grant_type='Sponsored Project')[0]

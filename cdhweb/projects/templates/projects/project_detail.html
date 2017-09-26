@@ -32,7 +32,7 @@
     <ul class="links">
     {% for link in project.projectresource_set.all %}
         {% with link_type=link.resource_type.name %}
-        <li><a href="{{ link.url }}">{% if link_type == 'website' %}Project Website{% elif link_typee == 'github' %}GitHub{% else %}{{ link_type|title }}{% endif %}</a></li>
+        <li><a href="{{ link.url }}">{% if link_type == 'website' %}Project Website{% else %}{{ link_type }}{% endif %}</a></li>
         {% endwith %}
     {% endfor %}
     </ul>
