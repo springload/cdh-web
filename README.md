@@ -27,7 +27,7 @@ Initial setup and installation:
 
 - download licensed fonts and install locally under /sitemedia/fonts/
 
-- django-compressor dependencies: [install sass](http://sass-lang.com/install) for your operating system as appropriate. If you have Ruby gems installed, `gem install sass`. Also install [Node.js](https://nodejs.org/en/) and `npm`. Globally install `postcss-cli` and `autoprefixer`, i.e. 
+- django-compressor dependencies: [install sass](http://sass-lang.com/install) for your operating system as appropriate. If you have Ruby gems installed, `gem install sass`. Also install [Node.js](https://nodejs.org/en/) and `npm`. Globally install `postcss-cli` and `autoprefixer`, i.e.
 `npm -g postcss-cli autoprefixer`. You may need `sudo` for these operations.
 
 

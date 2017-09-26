@@ -9,7 +9,7 @@ class EventAdmin(admin.ModelAdmin):
     date_hierarchy = 'start_time'
     search_fields = ('title', 'content')
     list_filter = ('event_type',)
-    filter_horizontal = ('attachments', )
+    filter_horizontal = ('speakers', 'attachments', )
 
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.tags.all())

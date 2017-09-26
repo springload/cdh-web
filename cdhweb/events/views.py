@@ -1,6 +1,7 @@
 import datetime
 
-from django.http import HttpResponse
+from django.conf import settings
+from django.http import HttpResponse, Http404
 from django.views.generic.base import RedirectView
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView
 from django.views.generic.detail import DetailView
@@ -10,6 +11,7 @@ import icalendar
 
 from cdhweb.events.models import Event
 from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
+from cdhweb.resources.utils import absolutize_url
 
 
 class EventMixinView(object):
@@ -117,10 +119,33 @@ class EventSemesterArchiveView(EventMixinView, YearArchiveView,
 
 class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
 
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        queryset = queryset.filter(slug=self.kwargs['slug'],
+                start_time__year=self.kwargs['year'],
+                start_time__month=self.kwargs['month'])
+        try:
+            # Get the single item from the filtered queryset
+            obj = queryset.get()
+        except queryset.model.DoesNotExist:
+            raise Http404("No Event found found matching the query")
+        return obj
+
     def get_context_data(self, *args, **kwargs):
         context = super(EventDetailView, self).get_context_data(*args, **kwargs)
         # also set object as page for common page display functionality
         context['page'] = self.object
+        if self.object.image or self.object.image:
+            context.update({
+                'twitter_card_type': 'summary_large_image',
+                # generic preview image - prefer thumbnail'
+                'preview_image': absolutize_url(''.join([settings.MEDIA_URL,
+                    str(self.object.thumb or self.object.image)])),
+                # larger image - prefer fullsize
+                'twitter_image': absolutize_url(''.join([settings.MEDIA_URL,
+                    str(self.object.image or self.object.thumb)])),
+            })
         return context
 
 

@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: {% if DEBUG %}/{% else %}/admin{% endif %}
+{# Let Twitterbot in for card testing regardless #}
+User-agent: Twitterbot
+Disallow:
+{# Add a sitemap #}
+Sitemap: http{% if request.is_secure %}s{% endif %}://{{ site }}/sitemap.xml

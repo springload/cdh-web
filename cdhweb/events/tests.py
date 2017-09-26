@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from datetime import datetime, timedelta
 from django.test import TestCase
 from django.urls import resolve, reverse
@@ -65,19 +67,19 @@ class TestEvent(TestCase):
         end = jan15 + timedelta(hours=1, minutes=30)
         event = Event(start_time=jan15, end_time=end)
         # start day month date time (no pm), end time (pm)
-        assert event.when() == '%s - %s' % (jan15.strftime('%B %d %I:%M'),
+        assert event.when() == '%s – %s' % (jan15.strftime('%B %d %I:%M'),
                                             end.strftime('%I:%M %p'))
 
         # same day, starting in am and ending in pm
         event.start_time = jan15 - timedelta(hours=10)
         # should include am on start time
-        assert event.when() == '%s - %s' % \
+        assert event.when() == '%s – %s' % \
             (event.start_time.strftime('%B %d %I:%M %p'),
              end.strftime('%I:%M %p'))
 
         # different days, same month
         event.start_time = jan15 + timedelta(days=1)
-        assert event.when() == '%s - %s' % \
+        assert event.when() == '%s – %s' % \
             (event.start_time.strftime('%B %d %I:%M'),
              end.strftime('%d %I:%M %p'))
 
@@ -108,6 +110,11 @@ class TestEvent(TestCase):
         # description should have tags stripped
         assert description in ical['description'].to_ical().decode()
         assert absurl in ical['description'].to_ical().decode()
+
+        # get by slug with wrong dates - should not be found
+        response = self.client.get(reverse('event:detail',
+            args=[1999, '01', event.slug]))
+        assert response.status_code == 404
 
 
 class TestEventQueryset(TestCase):
@@ -194,6 +201,11 @@ class TestViews(TestCase):
         response = self.client.get(event.get_absolute_url(),
             HTTP_IF_MODIFIED_SINCE=modified)
         assert response.status_code == 304
+
+        # get by slug with wrong dates - should not be found
+        response = self.client.get(reverse('event:detail',
+            args=[1999, '01', event.slug]))
+        assert response.status_code == 404
 
         # set status to draft
         event.status = CONTENT_STATUS_DRAFT

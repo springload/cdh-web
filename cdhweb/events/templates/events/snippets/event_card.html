@@ -1,7 +1,7 @@
 {# display a single event in card format #}
 {# FIXME: significant overlap with event_detail, esp. for schema properties #}
 <div class="card event" typeof="schema:Event"
-{% if event.image %}style="background-image:url('{{ MEDIA_URL }}{{ event.image }}')"{% endif %}>
+{% if event.thumb %}style="background-image:url('{{ MEDIA_URL }}{{ event.thumb }}')"{% endif %}>
     <a property="schema:url" href="{{ event.get_absolute_url }}">
     <div class="event-type">{{ event.event_type }}</div>
     <div class="content">
@@ -25,10 +25,9 @@
         {# description is recommended for schema.org #}
         <div style="display:none" property="schema:description">{{ event.content|safe }}</div>
 
-
         <div class="when">
             <span class="day">{{ event.start_time|date:"F j" }}</span>
-            <span class="time">{{ event.start_time|date:"g:i" }}-{{ event.end_time|date:"g:i A" }}</span>
+            <span class="time">{{ event.start_time|date:"g:i" }}–{{ event.end_time|date:"g:i A" }}</span>
         </div>
     </div>
 </a>

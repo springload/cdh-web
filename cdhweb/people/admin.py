@@ -1,14 +1,10 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
-from mezzanine.core.admin import DisplayableAdmin, DisplayableAdminForm
-from adminsortable2.admin import SortableAdminMixin
+from mezzanine.core.admin import DisplayableAdminForm
 
 from .models import Title, Profile, Position, Person
 from cdhweb.resources.models import UserResource
 
 
-# class TitleAdmin(SortableAdminMixin, admin.ModelAdmin):
 class TitleAdmin(admin.ModelAdmin):
     list_display = ('title', 'sort_order', 'num_people')
     list_editable = ('sort_order',)
@@ -42,19 +38,19 @@ class UserResourceInline(admin.TabularInline):
     model = UserResource
 
 
-
 class PersonAdmin(admin.ModelAdmin):
     list_display = ('username', 'first_name', 'last_name', 'current_title',
         'cdh_staff', 'published')
     # NOTE: if we switched to profile instead of person here, is_staff
     # and published could be made list editable
     fields = ('username', 'first_name', 'last_name', 'email')
+    search_fields = ('first_name', 'last_name')
     inlines = [ProfileInline, PositionInline, UserResourceInline]
+    list_filter = ('profile__status', 'profile__is_staff')
 
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.profile.tags.all())
     tag_list.short_description = 'Tags'
-
 
     # use inline fields for titles and resources
     # also: suppress management/auth fields like password, username, permissions,

@@ -3,6 +3,7 @@ from unittest.mock import Mock
 from django.urls import reverse
 from django.test import TestCase
 from django.utils.text import slugify
+from mezzanine.core.models import CONTENT_STATUS_DRAFT, CONTENT_STATUS_PUBLISHED
 import pytest
 
 from .models import Title, Person, Position, init_profile_from_ldap, Profile
@@ -75,6 +76,7 @@ def test_init_profile_from_ldap():
     assert profile.slug == slugify(ldapinfo.displayName)
     assert profile.phone_number == ''
     assert profile.office_location == ''
+    assert profile.status == CONTENT_STATUS_DRAFT
     # title should be created
     assert Title.objects.filter(title='Freeloader').exists()
 
@@ -97,3 +99,24 @@ class TestViews(TestCase):
         response = self.client.get('/about/staff/%s/' % slug)
         assert response.status_code == 301   # moved permanently
         assert response.url == reverse('people:profile', kwargs={'slug': slug})
+
+    def test_staff_list(self):
+        # create test person and add two positions
+        staffer = Person.objects.create(username='staff')
+        profile = Profile.objects.create(user=staffer, title='Amazing Contributor',
+            status=CONTENT_STATUS_PUBLISHED, is_staff=True)
+        staff_title = Title.objects.create(title='staff')
+        fellow = Title.objects.create(title='fellow')
+        Position.objects.create(user=staffer, title=fellow,
+            start_date='2015-01-01', end_date='2015-12-31')
+        Position.objects.create(user=staffer, title=staff_title,
+            start_date='2016-06-01')
+
+        response = self.client.get(reverse('people:staff'))
+        # person should only appear once even if they have multiple positions
+        assert len(response.context['object_list']) == 1
+
+        self.assertContains(response, profile.title)
+        self.assertContains(response, profile.current_title)
+        self.assertContains(response, profile.get_absolute_url())
+

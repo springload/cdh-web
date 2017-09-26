@@ -12,7 +12,7 @@ INITIAL_TAGSSET = ["network analysis", "data visualization", "data modeling",
     "english", "slavic", "classics", "periodical studies", "literary studies"]
 
 #: initial resource types, in sort order
-INITIAL_RESOURCE_TYPES = ["website", "twitter", "github"]
+INITIAL_RESOURCE_TYPES = ["Website", "Twitter", "Github"]
 
 
 def create_initial_tags(apps, schema_editor):

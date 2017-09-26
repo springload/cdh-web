@@ -27,7 +27,7 @@ header.nav {
      a {
         color: #000000;
         text-decoration: none;
-        padding-bottom: 14px;
+        padding-bottom: 13px;
         &:focus,
         &:hover,
         &:visited {
@@ -76,13 +76,17 @@ header.nav {
         display: flex;
         flex-direction: row;
         a.home-page {
-            width: 60px;
-            height: 44.8px;
-            margin-right: 36.2px;
+            width: 80px;
+            height: 60px;
+            margin-right: 25px;
+
+            @media (max-width: $medium-max-width) {
+                margin-right: 15px;
+            }
+
             img {
-                flex: auto;
-                width: 60px;
-                height: 44.8px;
+                width: 80px;
+                height: 60px;
             }
 
         }
@@ -213,6 +217,7 @@ footer {
 
         @media (max-width: $small-max-width) {
             height: auto;
+            padding-top: 0;
         }
 
 
@@ -245,6 +250,8 @@ footer {
             @media (max-width: $small-max-width) {
                 width: 100%;
                 height: auto;
+                padding: 0;
+                margin: 0;
             }
 
             &> li {
@@ -272,28 +279,52 @@ footer {
                         min-height: 175px;
                         display: inline-block;
                         float: right;
+                        width: 1em;
+                        &:hover {
+                            cursor: pointer;
+                        }
                     }
 
                     @media (max-width: $small-max-width) {
                         border-bottom: 1px solid #d8d8d8;
-
+                        margin: 0;
+                        padding: 0;
                         width: 100%;
+
+                        vertical-align: middle;
                         max-width: none;
+
+                        a {
+                            display: inline-block;
+                            height: 44px;   /* recommended minimum for touchable element */
+                            padding-right: 10px;
+                            position: relative;
+                        }
 
                         .toggle {
                             opacity: 1;
                             min-height: auto;
                             float: none;
                             display: inline-block;
+                            width: 100%;
+                            font-size: 115%;
+                            text-align: right;
+                            vertical-align: top;
                             position: absolute;
                             right: 0;
                             top: 0;
+
+                            .button {
+                                display: inline-block;  /* to allow rotation */
+                            }
                         }
                         .submenu {
                             display: none;  /* hide by default on mobile */
 
                             li {
+                                margin-top: 0;
                                 display: block;
+                                max-width: none;
                             }
                         }
 
@@ -310,7 +341,7 @@ footer {
 
                 &.menu-header.open {
                     @media (max-width: $small-max-width) {
-                        .toggle {
+                        .toggle .button {
                             -webkit-transform: rotate(45deg);
                             transform: rotate(45deg);
                         }

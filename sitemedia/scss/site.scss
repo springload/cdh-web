@@ -307,18 +307,24 @@ $event-card-img-height: 240px;
 			border: 2px solid $cdh-blue;
 			box-shadow: 5px 5px 0px $cdh-blue;
 			background-color: white;
-			/* TODO:  font style not clear in zeplin */
-			font-family: $font-stack-headline;
+			color: black;
+			font-family: $font-stack-headline-bold;
 			font-size: 12px;
-			padding: 2px 5px;
+			padding: 1px 5px;
 		}
 		.when {
+			color: $dark-grey;
 			position: absolute;
+			padding-left: 0;
 			bottom: 15px;
 			left: 15px;
+			font-family: $font-stack-headline;
 		}
 		.time {
 			padding-left: 20px;
+		}
+		.presenter {
+			font-family: $font-stack-headline;
 		}
 
 	} /* end event card */
@@ -398,10 +404,10 @@ $event-card-img-height: 240px;
 			font-family: $font-stack-headline-bold;
 
 			.title {
-				padding-top: 15px;
 				font-size: 16px;
 				margin: 0;
 				color: $dark-grey;
+				font-family: $font-stack-headline;
 			}
 			.name {
 				margin: 0;
@@ -681,6 +687,10 @@ $event-card-img-height: 240px;
 	    	margin-right: 0;
 	    	width: auto;
 	    }
+
+	    h2 {
+		  font-size: modular-scale(-1);
+		}
 
 	  	.short_description {
 	  		font-style: italic;
@@ -1008,29 +1018,16 @@ $event-card-img-height: 240px;
 	img {
 		margin: 0 0 50px 0;
     	width: auto;
-
-		@include grid-column(6);
-		@include grid-media($large-grid){
-			@include grid-column(9);
-		}
-		@media (max-width: $small-max-width) {
-			margin: 0 0 50px 0;
-	    	width: auto;
-	    }
 	}
 
 	.description {
-		clear: both;
 		@include grid-column(6);
-		@include grid-shift(3);
 
 		@include grid-media($large-grid){
 		    @include grid-column(9);
-			@include grid-shift(3);
 		}
 
 		@media (max-width: $small-max-width) {
-			@include grid-shift(0);
 	    	margin-left: 0;
 	    	margin-right: 0;
 	    	width: auto;

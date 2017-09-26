@@ -29,6 +29,7 @@ class LastModifiedListMixin(LastModifiedMixin):
 
     def last_modified(self):
         # for list object displayable
+        # NOTE: this will error if there are no published items
         return self.get_queryset().order_by('updated').first().updated
 
 

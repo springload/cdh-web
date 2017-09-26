@@ -5,7 +5,8 @@ from django.urls import reverse
 from django.utils.text import slugify
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.managers import DisplayableManager
-from mezzanine.core.models import Displayable, CONTENT_STATUS_PUBLISHED
+from mezzanine.core.models import Displayable, CONTENT_STATUS_PUBLISHED, \
+    CONTENT_STATUS_DRAFT
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
@@ -119,7 +120,6 @@ class Profile(Displayable, AdminThumbMixin):
             return current_positions.first().title
 
 
-
 def workshops_taught(user):
     '''Return a QuerySet for the list of workshop events taught by a
     particular user.'''
@@ -167,6 +167,10 @@ def init_profile_from_ldap(user, ldapinfo):
     # 'street' in ldap is office location
     if ldapinfo.street:
         profile.office_location = str(ldapinfo.street)
+
+    # set profiles to draft by default so we don't get a new page
+    # for every account we initialize
+    profile.status = CONTENT_STATUS_DRAFT
     profile.save()
 
     # NOTE: job title is available in LDAP; attaching to a person

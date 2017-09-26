@@ -16,6 +16,7 @@ def absolutize_url(local_url):
     root = Site.objects.get_current().domain
     # but also add the http:// if necessary, since most sites docs
     # suggest using just the domain name
+    # NOTE: this is problematic for dev/test sites without https
     if not root.startswith('https'):
         root = 'https://' + root
 

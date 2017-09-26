@@ -17,9 +17,6 @@ h6 {
   line-height: $heading-line-height;
   margin: 0 0 $small-spacing;
 }
-h2 {
-  font-size: modular-scale(-1);
-}
 
 p {
   margin: 0 0 $small-spacing;
@@ -32,9 +29,11 @@ p {
   transition: color $base-duration $base-timing;
   /* use background to do a colored underline */
   background-image: linear-gradient(to right, $cdh-blue 100%, transparent 0%);
-  background-position: 0 0.85em;
+  background-position: 0 1em;
   background-repeat: repeat-x;
   background-size: 8px 2px;
+  font-family: $font-stack-headline;
+  font-size: 18px; /* adjust so x-height matches Lyon in text */
 
   &:hover {
     background-color: $light-cdh-blue;
@@ -57,6 +56,11 @@ body {
 
   &.with-cards {
       background-color: $light-grey;
+  }
+  &.small-no-cards {
+      @media (max-width: $small-max-width) {
+        background-color: white;
+      }
   }
 
   @media (max-width: $small-max-width) {

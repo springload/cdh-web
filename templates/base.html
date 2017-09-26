@@ -1,13 +1,28 @@
 {% load static pages_tags mezzanine_tags %}
 <!DOCTYPE html>
-<html lang='en' xmlns:schema="http://schema.org/">
-
+<html lang='en' xmlns:schema="http://schema.org/" prefix="og: http://ogp.me/ns# profile: http://ogp.me/ns/profile#" {% block headattrs %}{% endblock %}>
 <head>
     <meta charset='UTF-8'/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    {# Google Analytics recommends this implementation now #}
+    {% if INCLUDE_ANALYTICS %}
+    <!-- Global Site Tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-87887700-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments)};
+      gtag('js', new Date());
+      gtag('config', 'UA-87887700-1');
+    </script>
+    {% endif %}
     <title>{% block page-subtitle %}{% if page %}{{ page.meta_title|add:" | "}}{% endif %}{% endblock %}CDH @ Princeton</title>
-    <meta name="keywords" content="{% block meta_keywords %}{{ page.keywords.all|join:', ' }}{% endblock %}"/>
-    <meta name="description" content="{% block meta_description %}{{ page.description }}{% endblock %}"/>
+    {% if SHOW_TEST_WARNING %} {# test variant favicon to help differentiate test/prod sites #}
+    <link rel="shortcut icon" href="{%  static 'favicon-test.ico' %}">
+    {% else %}
+    <link rel="shortcut icon" href="{%  static 'favicon.ico' %}">
+    {% endif %}
+    {% include 'snippets/head_meta.html' %}
+    <meta name="google-site-verification" content="pS2kpksxg6JeC90IvA8BHVsFuK_6b7J_vARVLqqu7ck" />
     {% block extra-head %}{% endblock %}
 
     {% compress css %}
@@ -19,51 +34,9 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
     crossorigin="anonymous"></script>
+    {% compress js %}
     <script src="{% static 'js/local.js' %}"></script>
-
-    <script>
-        var scroll = 0;
-        /*
-        	Check every time the window scrolls. If it's by 25px or more and
-          the scroll is below 90px, hide the navi. If the scroll down isn't
-          those, leave it as is.
-          If the scroll is up by 5 px, bring the menu back.
-        */
-        $(window).scroll(function()
-        {
-            scrolled = $(document).scrollTop();
-            if (scrolled - scroll > 25 && scrolled > scroll && scrolled >
-                90)
-            {
-                $('header').addClass('hidden');
-            }
-            else if (scrolled > scroll)
-            {
-                // Do nothing since the scroll was either
-                // too high or not 'enough'
-            }
-            else if (scrolled < scroll && scroll - scrolled > 5)
-            {
-                $('header').removeClass('hidden');
-            }
-
-            scroll = scrolled;
-
-        });
-
-        $(document).ready(function() {
-            $('.menu-toggle').on('click', function(e){
-                e.preventDefault();
-                console.log("click");
-                $('#mainmenu').toggle();
-            });
-            $('a.toggle').on('click', function(e){
-                $(this).parent().toggleClass('open');
-                $(this).parent().find('.submenu').toggle();
-            });
-
-    });
-    </script>
+    {% endcompress %}
 
 </head>
 

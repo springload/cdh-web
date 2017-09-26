@@ -10,6 +10,9 @@ DEBUG = True
 # Turn this on in test/QA site to show test banner
 # SHOW_TEST_WARNING = True
 
+# Turn this on to enable google analytics in production
+# INCLUDE_ANALYTICS = True
+
 # Make these unique, and don't share it with anybody.
 SECRET_KEY = ""
 NEVERCACHE_KEY = ""

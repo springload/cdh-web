@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
 from cdhweb.people.models import Profile
 from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
+from cdhweb.resources.utils import absolutize_url
 
 
 class ProfileMixinView(object):
@@ -23,7 +25,14 @@ class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
     def get_context_data(self, *args, **kwargs):
         context = super(ProfileDetailView, self).get_context_data(*args, **kwargs)
         # also set object as page for common page display functionality
-        context['page'] = self.object
+        context.update({
+            'page': self.object,
+            'opengraph_type': 'profile'
+        })
+        if self.object.thumb:
+            context['preview_image'] = absolutize_url(''.join([settings.MEDIA_URL,
+                str(self.object.thumb)]))
+
         return context
 
 
@@ -41,6 +50,7 @@ class StaffListView(ProfileMixinView, ListView, LastModifiedListMixin):
         # (TODO: perhaps job start date for secondary?)
         return super(StaffListView, self).get_queryset() \
             .filter(is_staff=True) \
+            .distinct() \
             .order_by('user__positions__title__sort_order', 'user__last_name')
 
     def get_context_data(self):

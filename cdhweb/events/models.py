@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from datetime import datetime
 
 from django.db import models
@@ -158,7 +160,7 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         # and times - may want to clean these up. May also want to
         # convert am/pm to lower case
 
-        return ' - '.join([start, end])
+        return ' – '.join([start, end])
 
     def ical_event(self):
         '''Return the current event as a :class:`icalendar.Event` for

@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -82,7 +81,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
     @property
     def website_url(self):
         website = self.projectresource_set \
-            .filter(resource_type__name='website').first()
+            .filter(resource_type__name='Website').first()
         if website:
             return website.url
 
