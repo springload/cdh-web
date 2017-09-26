@@ -19,8 +19,8 @@
 <div class="links">
     {# NOTE equiv to contributors in project #}
     <ul>
-    {% for resource in profile.user.resources.all %}
-        <li><a href="{{ resource.url }}">{{ resource.name }} {{ resource.url }}</a></li>
+    {% for resource in profile.user.userresource_set.all %}
+        <li><a href="{{ resource.url }}">{{ resource.resource_type.name }}</a></li>
     {% endfor %}
     </ul>
 </div>
