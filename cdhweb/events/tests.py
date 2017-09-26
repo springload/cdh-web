@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from datetime import datetime, timedelta
 from django.test import TestCase
 from django.urls import resolve, reverse
@@ -65,19 +67,19 @@ class TestEvent(TestCase):
         end = jan15 + timedelta(hours=1, minutes=30)
         event = Event(start_time=jan15, end_time=end)
         # start day month date time (no pm), end time (pm)
-        assert event.when() == '%s - %s' % (jan15.strftime('%B %d %I:%M'),
+        assert event.when() == '%s – %s' % (jan15.strftime('%B %d %I:%M'),
                                             end.strftime('%I:%M %p'))
 
         # same day, starting in am and ending in pm
         event.start_time = jan15 - timedelta(hours=10)
         # should include am on start time
-        assert event.when() == '%s - %s' % \
+        assert event.when() == '%s – %s' % \
             (event.start_time.strftime('%B %d %I:%M %p'),
              end.strftime('%I:%M %p'))
 
         # different days, same month
         event.start_time = jan15 + timedelta(days=1)
-        assert event.when() == '%s - %s' % \
+        assert event.when() == '%s – %s' % \
             (event.start_time.strftime('%B %d %I:%M'),
              end.strftime('%d %I:%M %p'))
 
