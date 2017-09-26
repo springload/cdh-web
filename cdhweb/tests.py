@@ -13,7 +13,7 @@ class TestRobotsTxt(TestCase):
         assert 'robots.txt' in [template.name for template in res.templates]
         with self.settings(DEBUG=False):
             res = self.client.get('/robots.txt')
-            self.assertContains(res, 'Disallow: ')
+            self.assertContains(res, 'Disallow: /admin')
         with self.settings(DEBUG=True):
             res = self.client.get('/robots.txt')
             self.assertContains(res, 'Disallow: /')
