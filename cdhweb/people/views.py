@@ -50,6 +50,7 @@ class StaffListView(ProfileMixinView, ListView, LastModifiedListMixin):
         # (TODO: perhaps job start date for secondary?)
         return super(StaffListView, self).get_queryset() \
             .filter(is_staff=True) \
+            .distinct() \
             .order_by('user__positions__title__sort_order', 'user__last_name')
 
     def get_context_data(self):
