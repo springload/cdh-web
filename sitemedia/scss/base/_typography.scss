@@ -33,6 +33,7 @@ p {
   background-repeat: repeat-x;
   background-size: 8px 2px;
   font-family: $font-stack-headline;
+  font-size: 18px; /* adjust so x-height matches Lyon in text */
 
   &:hover {
     background-color: $light-cdh-blue;
