@@ -2,7 +2,7 @@
 {% load mezzanine_tags %}
 
 {% block page-subtitle %}{{ profile.title }} | People | {% endblock %}
-{% block headattrs %} xmlns:profile="http://ogp.me/ns/profile#"{% endblock %}
+
 {% block extra-head %}
     <meta name="profile.first_name" content="{{ profile.user.first_name }}"/>
     <meta name="profile.last_name" content="{{ profile.user.last_name }}"/>

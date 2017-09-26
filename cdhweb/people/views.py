@@ -4,6 +4,7 @@ from django.views.generic.list import ListView
 
 from cdhweb.people.models import Profile
 from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
+from cdhweb.resources.utils import absolutize_url
 
 
 class ProfileMixinView(object):
@@ -28,9 +29,9 @@ class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
             'page': self.object,
             'opengraph_type': 'profile'
         })
-        if self.thumb:
-            context['preview_image'] = ''.join([settings.MEDIA_ROOT,
-                str(self.object.thumb)])
+        if self.object.thumb:
+            context['preview_image'] = absolutize_url(''.join([settings.MEDIA_URL,
+                str(self.object.thumb)]))
 
         return context
 

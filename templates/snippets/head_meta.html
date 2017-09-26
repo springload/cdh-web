@@ -1,20 +1,18 @@
 {% load static %}
 {# html metadata #}
-    {% static 'img/CDH_logo.svg' as cdh_logo%}
-
     <meta name="keywords" content="{% block meta_keywords %}{{ page.keywords.all|join:', ' }}{% endblock %}"/>
     <meta name="description" content="{% block meta_description %}{{ page.description }}{% endblock %}"/>
     {# open graph metadata #}
-    <meta name="og:title" content="{{ page.meta_title }}" />
-    <meta name="og:type" content="{{ opengraph_type|default:'website' }}" />
-    <meta name="og:url" content="{{ request.build_absolute_uri }}" />
-    <meta name="og:image" content="{% firstof preview_image cdh_logo %}" />
-    <meta name="og:description" content="{{ page.description }}"/>
-    <meta name="og:site_name" content="Center for Digital Humanities @ Princeton University"/>
+    <meta property="og:title" content="{{ page.meta_title }}" />
+    <meta property="og:type" content="{{ opengraph_type|default:'website' }}" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:image" content="{% firstof preview_image default_preview_image %}" />
+    <meta property="og:description" content="{{ page.description }}"/>
+    <meta property="og:site_name" content="Center for Digital Humanities @ Princeton University"/>
     {# twitter card #}
     <meta name="twitter:card" content="{{ twitter_card_type|default:'summary' }}" />
     <meta name="twitter:site" content="@PrincetonDH" />
     <meta name="twitter:title" content="{{ page.meta_title }}"/>
     <meta name="twitter:description" content="{{ page.description }}" />
-    <meta name="twitter:image" content="{% firstof twitter_image preview_image cdh_logo %}" />
+    <meta name="twitter:image" content="{% firstof twitter_image preview_image default_preview_image %}" />
 
