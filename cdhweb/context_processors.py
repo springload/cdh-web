@@ -12,6 +12,11 @@ def template_settings(request):
         'SHOW_TEST_WARNING': getattr(settings, 'SHOW_TEST_WARNING', False),
         'site': Site.objects.get_current(),
         'default_preview_image': absolutize_url(''.join([settings.STATIC_URL,
-                                                         'img/CDH_logo.svg']))
+                                                         'img/CDH_logo.svg'])),
+        # Include analytics based on settings.DEBUG or override in settings.py
+        # Defaults to opposite of settings.DEBUG
+        'INCLUDE_ANALYTICS': getattr(settings, 'INCLUDE_ANALYTICS',
+                                     not settings.DEBUG)
+
     }
     return context_extras
