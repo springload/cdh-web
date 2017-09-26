@@ -1,9 +1,9 @@
 # CDH Website
 
-[![Build Status](https://travis-ci.org/Princeton-CDH/cdh-web.svg?branch=develop)](https://travis-ci.org/Princeton-CDH/cdh-web)
-[![codecov](https://codecov.io/gh/Princeton-CDH/cdh-web/branch/develop/graph/badge.svg)](https://codecov.io/gh/Princeton-CDH/cdh-web)
-[![Code Health](https://landscape.io/github/Princeton-CDH/cdh-web/develop/landscape.svg?style=flat)](https://landscape.io/github/Princeton-CDH/cdh-web/develop)
-[![Requirements Status](https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=develop)](https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=develop)
+[![Build Status](https://travis-ci.org/Princeton-CDH/cdh-web.svg)](https://travis-ci.org/Princeton-CDH/cdh-web)
+[![codecov](https://codecov.io/gh/Princeton-CDH/cdh-web/branch/master/graph/badge.svg)](https://codecov.io/gh/Princeton-CDH/cdh-web)
+[![Code Health](https://landscape.io/github/Princeton-CDH/cdh-web/master/landscape.svg?style=flat)](https://landscape.io/github/Princeton-CDH/cdh-web/)
+[![Requirements Status](https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg)](https://requires.io/github/Princeton-CDH/cdh-web/requirements/)
 
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.

@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2.1
+
+* As a content editor, I want to associate people with projects more efficiently so I don't have to enter repeating information.
+* bug fix: Resource links on user profile page don't work
+* bug fix: People with multiple positions are listed multiple times on the staff page
+* bug fix: Event urls now honor year/month and event slugs can be repeated
+* Basic twitter/opengraph metadata now included in page headers
+* robots.txt now managed by the application; includes path to sitemap.xml
+* favicon now managed by the application; includes dev/test icon
+* Many improvements and clean up in design implementation
+
 ## 2.0
 
 **CDH web 2.0 is a completely new implementation of the functionality in the
