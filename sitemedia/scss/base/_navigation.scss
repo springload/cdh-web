@@ -218,6 +218,7 @@ footer {
 
         @media (max-width: $small-max-width) {
             height: auto;
+            padding-top: 0;
         }
 
 
@@ -250,6 +251,8 @@ footer {
             @media (max-width: $small-max-width) {
                 width: 100%;
                 height: auto;
+                padding: 0;
+                margin: 0;
             }
 
             &> li {
@@ -285,24 +288,42 @@ footer {
 
                     @media (max-width: $small-max-width) {
                         border-bottom: 1px solid #d8d8d8;
-                        margin-top: 8px;
-                        padding-bottom: 5px;
+                        margin: 0;
+                        padding: 0;
                         width: 100%;
+
+                        vertical-align: middle;
                         max-width: none;
+
+                        a {
+                            display: inline-block;
+                            height: 44px;   /* recommended minimum for touchable element */
+                            padding-right: 10px;
+                            position: relative;
+                        }
 
                         .toggle {
                             opacity: 1;
                             min-height: auto;
                             float: none;
                             display: inline-block;
+                            width: 100%;
+                            font-size: 115%;
+                            text-align: right;
+                            vertical-align: top;
                             position: absolute;
                             right: 0;
                             top: 0;
+
+                            .button {
+                                display: inline-block;  /* to allow rotation */
+                            }
                         }
                         .submenu {
                             display: none;  /* hide by default on mobile */
 
                             li {
+                                margin-top: 0;
                                 display: block;
                                 max-width: none;
                             }
@@ -321,7 +342,7 @@ footer {
 
                 &.menu-header.open {
                     @media (max-width: $small-max-width) {
-                        .toggle {
+                        .toggle .button {
                             -webkit-transform: rotate(45deg);
                             transform: rotate(45deg);
                         }

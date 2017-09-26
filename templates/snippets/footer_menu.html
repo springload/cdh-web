@@ -7,7 +7,7 @@
         <li class='menu-header'>
             {# set page_branch for submenu if there is one #}
             {% if page.has_children_in_menu %}
-            <a class="toggle">+</a> {# toggle for mobile menu #}
+            <a class="toggle"><span class="button">+</span></a> {# toggle for mobile menu #}
             {% endif %}
             <a href="{{ page.get_absolute_url }}">{{ page.title }}</a>
             {% if page.has_children_in_menu %}
