@@ -1,5 +1,8 @@
 # as of 2017/08 mezzanine does not yet support django 1.11
 django>=1.10,<1.11
+# Pin older version of Pillow for compatibility until
+# Mezzanine master is integrated into a pip release
+Pillow<4.2
 Mezzanine>=4.2.1
 django-compressor
 django-compressor-autoprefixer
