@@ -31,13 +31,15 @@ $black: #000000;
 $header-nav-height: 90px;
 
 // breakpoints and content sizes for large, medium, and small viewports
-$medium-max-width: 1068px;
-$medium-content-width: 735px;
-
 $small-max-width: 735px;
 $small-content-width: 84%;
 
+$medium-max-width: 1068px;
+$medium-min-width: $small-max-width + 1;
+$medium-content-width: 735px;
+
 $large-content-width: 990px;
+$large-min-width: $medium-max-width + 1;
 
 // bitters built-ins
 

@@ -80,15 +80,15 @@ div.spacer {
 }
 
 @mixin small-card {
- 	@include grid-column(3);
+	max-width: 225px;
+	@media (min-width: $medium-min-width) {
+		max-width: none;
+	    @include grid-column(3);
+	}
 	@include grid-media($large-grid){
 	    @include grid-column(3);
 	}
 
-	@media (max-width: $small-max-width) {
-		width: 225px;
-		float: none;
-	}
 }
 
 article.landing-page {
@@ -508,8 +508,12 @@ $event-card-img-height: 240px;
 }
 
 
-.homepage section {
-	@include grid-container;
+.homepage section, section.events, section.projects, section.people {
+    @media (min-width: $medium-min-width) {
+		@include grid-container;
+		@include grid-collapse;
+	}
+
 }
 
 
@@ -533,12 +537,18 @@ $event-card-img-height: 240px;
 	background-size: 50px 54px;
 }
 
-.homepage section > h2 {
+.homepage section > h2, .events h1, .projects h1, .people h1 {
 	@include header-with-icon;
 	a {
 		text-decoration: none;
 		color: $dark-grey;
 	}
+	@include grid-media($neat-grid) {
+	    @include grid-column(9);
+	}
+	@include grid-media($large-grid) {
+	    @include grid-column(12);
+    }
 }
 // TODO: mixin for icons, support h1 for individual pages
 
@@ -563,12 +573,14 @@ $event-card-img-height: 240px;
 }
 
 
+
 // events or blogposts archives nav
 
 .archive-nav {
 	float: right;
 	text-align: right;
 	position: relative;
+	margin-right: $gutter;
 
 	.submenu {
 		@include list-style-reset;
