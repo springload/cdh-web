@@ -7,6 +7,7 @@ from django.views.generic.dates import ArchiveIndexView, YearArchiveView, \
     MonthArchiveView
 
 from cdhweb.blog.models import BlogPost
+from cdhweb.resources.utils import absolutize_url
 from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
 
 
@@ -83,6 +84,27 @@ class RssBlogPostFeed(Feed):
 
     def item_description(self, item):
         return item.content
+
+    def item_link(self, item):
+        return absolutize_url(item.get_absolute_url())
+
+    def item_author_name(self, item):
+        return ', '.join([str(auth) for auth in item.users.all()])
+
+    def item_author_link(self, item):
+        if item.users.count() == 1:
+            author = item.users.first()
+            if author.published():
+                return absolutize_url(author.get_absolute_url())
+
+    def item_pubdate(self, item):
+        return item.publish_date
+
+    def item_updatedate(self, item):
+        return item.updated
+
+    def item_categories(self, item):
+        return [str(kw) for kw in item.keywords.all()]
 
 
 class AtomBlogPostFeed(RssBlogPostFeed):

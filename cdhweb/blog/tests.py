@@ -37,6 +37,12 @@ class TestViews(TestCase):
         self.assertContains(response, post.get_absolute_url())
         self.assertContains(response, escape(post.content[:100]))
 
+        # post with author
+        authorpost = BlogPost.objects.filter(users__isnull=False).first()
+        self.assertContains(response, str(authorpost.users.first()))
+
+        # TODO: author with published profile page, multiple authors
+
     def test_atom_feed(self):
         response = self.client.get(reverse('blog:atom'))
         assert response['content-type'] == 'application/atom+xml; charset=utf-8'
