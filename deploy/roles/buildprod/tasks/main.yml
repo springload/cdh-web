@@ -3,18 +3,12 @@
       path: "{{ deploy }}/env"
       state: directory
       mode: "u+rwx,g+rwx,o-rw"
-- name: Build a virtualenvironment
-  command: "virtualenv env"
-  args:
-    chdir: '{{ deploy }}'
-    # Not quite, but close enough to check
-    creates: "{{ deploy}}/env"
 - name: Upgrade pip to latest in virtualenv
   pip:
     name: pip
     state: latest
     virtualenv: "{{ deploy }}/env"
-  ignore_errors: true
+    virtualenv_site_packages: yes
 - name: Set perms
   file:
       path: "{{ deploy }}/env"
@@ -24,6 +18,7 @@
   pip:
     virtualenv: "{{ deploy }}/env"
     requirements: "{{ deploy }}/requirements.txt"
+    virtualenv_site_packages: yes
 - name: Install local_settings.py
   synchronize:
     src: /home/deploy/{{ djangoapp }}/local_settings.py
@@ -41,11 +36,3 @@
     owner: deploy
     group: apache
     mode: 0770
-- name: Set ownership recursively
-  file:
-    path: "{{ deploy }}"
-    state: directory
-    owner: deploy
-    group: apache
-    recurse: yes
-  ignore_errors: true

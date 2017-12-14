@@ -15,3 +15,6 @@ deploy: '{{ install_root }}/{{ version }}-{{ repo_info.after}}'
 db_backup: '/tmp/pre-{{ version }}-{{ repo_info.after }}-{{ djangoapp }}.sql'
 # Symlink for /var/www
 symlink: 'cdh-web'
+# Database info from deploy user environment
+db_name: "{{ lookup('env', 'MEP_DB_NAME') }}"
+db_host: "{{ lookup('env', 'DB_HOST') }}"
