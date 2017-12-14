@@ -13,3 +13,4 @@ pucas>=0.5
 python-dateutil
 icalendar
 attrdict
+django-fullurl

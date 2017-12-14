@@ -51,19 +51,25 @@ class Person(User):
             return current_positions.first().title
 
     def cdh_staff(self):
-        'is CDH staff'
+        '''is CDH staff'''
         return self.profile.is_staff
     cdh_staff.boolean = True
     cdh_staff.short_description = 'CDH Staff'
 
     def published(self):
-        'page is published'
-        return self.profile.status == CONTENT_STATUS_PUBLISHED
+        '''person has a published profile page'''
+        try:
+            return self.profile.status == CONTENT_STATUS_PUBLISHED
+        except ObjectDoesNotExist:
+            return False
     published.boolean = True
 
     def get_absolute_url(self):
-        'Display url for user profile'
-        return self.profile.get_absolute_url()
+        ''''Display url for user profile'''
+        try:
+            return self.profile.get_absolute_url()
+        except ObjectDoesNotExist:
+            pass
 
     def __str__(self):
         '''Custom person display to make it easier to choose people

@@ -286,6 +286,7 @@ INSTALLED_APPS = [
     "taggit",
     'adminsortable2',
     "compressor",
+    "fullurl",
     "django_cas_ng",
     "pucas",
     # local apps

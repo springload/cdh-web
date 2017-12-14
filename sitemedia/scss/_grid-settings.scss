@@ -8,14 +8,15 @@ $gutter: 30px;
 // set medium viewport grid as default
 $neat-grid: (
     columns: 9,
-    gutter: $gutter
+    gutter: $gutter,
+    media: $medium-min-width
 );
 
 // large grid for over 1068 px
 $large-grid: (
     columns: 12,
     gutter: $gutter,
-    media: 1069px
+    media: $large-min-width
 );
 
 
