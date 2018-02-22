@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from unittest.mock import Mock
 
 from django.urls import reverse
@@ -107,9 +108,10 @@ class TestViews(TestCase):
             status=CONTENT_STATUS_PUBLISHED, is_staff=True)
         staff_title = Title.objects.create(title='staff')
         fellow = Title.objects.create(title='fellow')
-        Position.objects.create(user=staffer, title=fellow,
+        postdoc = Title.objects.create(title='post-doc')
+        prev_post = Position.objects.create(user=staffer, title=postdoc,
             start_date='2015-01-01', end_date='2015-12-31')
-        Position.objects.create(user=staffer, title=staff_title,
+        cur_post = Position.objects.create(user=staffer, title=staff_title,
             start_date='2016-06-01')
 
         response = self.client.get(reverse('people:staff'))
@@ -120,4 +122,14 @@ class TestViews(TestCase):
         self.assertContains(response, profile.current_title)
         self.assertContains(response, profile.get_absolute_url())
 
+        # should be listed if position end date is set for future
+        cur_post.end_date = date.today() + timedelta(days=1)
+        cur_post.save()
+        response = self.client.get(reverse('people:staff'))
+        assert profile in response.context['object_list']
+        # should not be listed if position end date has passed
+        cur_post.end_date = date.today() - timedelta(days=1)
+        cur_post.save()
+        response = self.client.get(reverse('people:staff'))
+        assert profile not in response.context['object_list']
 

@@ -1,4 +1,7 @@
+from datetime import date
+
 from django.conf import settings
+from django.db.models import Q
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
@@ -46,15 +49,20 @@ class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
 class StaffListView(ProfileMixinView, ListView, LastModifiedListMixin):
 
     def get_queryset(self):
+        # filter to profiles with staff flag set
+        # *and* a current position (no end date or unexpired end date).
         # order by job title sort order and then by last name
-        # (TODO: perhaps job start date for secondary?)
+        # (TODO: perhaps job start date for secondary sort?)
         return super(StaffListView, self).get_queryset() \
             .filter(is_staff=True) \
-            .distinct() \
-            .order_by('user__positions__title__sort_order', 'user__last_name')
+            .filter(Q(user__positions__end_date__isnull=True) |
+                    Q(user__positions__end_date__gte=date.today())) \
+            .order_by('user__positions__title__sort_order', 'user__last_name') \
+            .distinct()
 
     def get_context_data(self):
         context = super(StaffListView, self).get_context_data()
+        print(self.get_queryset())
         context.update({
             'title': 'Who we are'
         })
