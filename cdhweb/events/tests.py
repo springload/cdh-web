@@ -96,6 +96,18 @@ class TestEvent(TestCase):
         # month name should display
         assert end.strftime('%B') in event.when()
 
+    def test_duration(self):
+        jan15 = datetime(2015, 1, 15, hour=16, tzinfo=timezone.get_default_timezone())
+        end = jan15 + timedelta(hours=1)
+        event = Event(start_time=jan15, end_time=end)
+        dur = event.duration()
+        assert isinstance(dur, timedelta)
+        assert dur == timedelta(hours=1)
+
+        # should work with days also
+        event.end_time = jan15 + timedelta(days=1)
+        assert event.duration().days == 1
+
     def test_ical_event(self):
         jan15 = datetime(2015, 1, 15, hour=16)
         end = jan15 + timedelta(hours=1, minutes=30)

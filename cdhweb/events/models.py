@@ -164,6 +164,10 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
 
         return ' – '.join([start, end])
 
+    def duration(self):
+        '''duration between start and end time as :class:`datetime.timedelta`'''
+        return self.end_time - self.start_time
+
     def ical_event(self):
         '''Return the current event as a :class:`icalendar.Event` for
         inclusion in a :class:`icalendar.Calendar`'''

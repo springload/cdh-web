@@ -26,8 +26,18 @@
         <div style="display:none" property="schema:description">{{ event.content|safe }}</div>
 
         <div class="when">
-            <span class="day">{{ event.start_time|date:"F j" }}</span>
+            {# if duration is more than one day, display start/end days #}
+            <span class="day">{{ event.start_time|date:"F j" }}
+                {# display date range for multiday event #}
+                {% if event.duration.days >= 1 %} -
+                {% if event.start_time.month != event.end_time.month %}{{ event.end_time|date:"F" }}{% endif %}
+                {{ event.end_time|date:"j" }}
+                {% endif %}
+            </span>
+            {# do not display time on card for multiday event #}
+            {% if event.duration.days < 1 %}
             <span class="time">{{ event.start_time|date:"g:i" }}–{{ event.end_time|date:"g:i A" }}</span>
+            {% endif %}
         </div>
     </div>
 </a>
