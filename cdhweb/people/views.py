@@ -62,7 +62,6 @@ class StaffListView(ProfileMixinView, ListView, LastModifiedListMixin):
 
     def get_context_data(self):
         context = super(StaffListView, self).get_context_data()
-        print(self.get_queryset())
         context.update({
             'title': 'Who we are'
         })
