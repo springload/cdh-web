@@ -29,7 +29,7 @@
     <li property="schema:performer" typeof="schema:Person">
         <h3><a property="schema:name"
             {% if person.published %}href="{{ person.get_absolute_url }}"{% endif %}>
-            {{ person.profile.title }}</a></h3>
+            {{ person }}</a></h3>
     </li>
     {# todo: affiliation?  #}
     {% endfor %}

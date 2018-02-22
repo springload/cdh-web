@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime, timedelta
+
 from django.test import TestCase
 from django.urls import resolve, reverse
 from django.utils import timezone
@@ -9,6 +10,7 @@ from mezzanine.core.models import CONTENT_STATUS_DRAFT
 import pytz
 
 from cdhweb.events.models import Event, EventType, Location
+from cdhweb.people.models import Person
 from cdhweb.resources.utils import absolutize_url
 
 
@@ -223,6 +225,14 @@ class TestViews(TestCase):
         response = self.client.get(event.get_absolute_url(),
             HTTP_IF_MODIFIED_SINCE=modified)
         assert response.status_code == 304
+
+        # test with user without profile
+        speaker = Person.objects.create(username='anon', first_name='Anne',
+            last_name='Onomus')
+        event.speakers.add(speaker)
+        response = self.client.get(event.get_absolute_url())
+        self.assertContains(response, str(speaker),
+            msg_prefix='event speaker name should display without profile')
 
         # TODO: how to test with image associated?
 
