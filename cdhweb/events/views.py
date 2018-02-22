@@ -43,7 +43,6 @@ class EventSemesterDates(object):
             sem_date = (semester, date.year)
             if sem_date not in date_list:
                 date_list.append(sem_date)
-
         return date_list
 
 
@@ -52,6 +51,7 @@ class UpcomingEventsView(EventMixinView, ArchiveIndexView, EventSemesterDates,
     date_field = "start_time"
     allow_future = True
     context_object_name = 'events'
+    allow_empty = True   # don't 404 even if no events in the system
 
     # NOTE: can't use get_queryset to restrict to upcoming because
     # that affects the archive date list as well; restricting to upcoming
@@ -65,8 +65,10 @@ class UpcomingEventsView(EventMixinView, ArchiveIndexView, EventSemesterDates,
         return context
 
     def last_modified(self):
-        return self.get_queryset().upcoming() \
-            .order_by('updated').first().updated
+        upcoming = self.get_queryset().upcoming()
+        # don't error if there are no upcoming events
+        if upcoming.exists():
+            return upcoming.order_by('updated').first().updated
 
 
 class EventSemesterArchiveView(EventMixinView, YearArchiveView,

@@ -25,6 +25,22 @@
     <h1>{{ title|default:'Upcoming' }} Events</h1>
     {% for event in events %}
         {% include 'events/snippets/event_card.html' %}
+    {% empty %}
+        {# semester event archive will 404 for no events; upcoming does not #}
+        <div>Next semester's events are being scheduled.
+        {# link to most recent semester if we have past events #}
+        {% if date_list %}
+            Check back later or browse
+            {% for semester, year in date_list reversed %}
+                {% if forloop.first %}
+                    {% url 'event:by-semester' semester=semester|slugify year=year as event_url %}
+                    <a href="{{ event_url }}">{{ semester }} {{ year }}</a></li>
+                {% endif %}
+            {% endfor %} events.
+        {% else %}
+            Check back later.
+        {% endif %}
+        </div>
     {% endfor %}
 </section>
 

@@ -213,8 +213,17 @@ class TestViews(TestCase):
         response = self.client.get(event.get_absolute_url())
         assert response.status_code == 404
 
-
     def test_upcoming(self):
+        # no upcoming events - should not error
+        response = self.client.get(reverse('event:upcoming'))
+        assert response.status_code == 200
+        self.assertContains(response,
+            "Next semester's events are being scheduled")
+        self.assertContains(response,
+            "Check back later")
+        self.assertContains(response,
+            reverse('event:by-semester', args=['fall', '2017']))
+
         # use django timezone util for timezone-aware datetime
         tomorrow = timezone.now() + timedelta(days=1)
         event_type = EventType.objects.first()
@@ -261,6 +270,15 @@ class TestViews(TestCase):
         response = self.client.get(reverse('event:upcoming'),
             HTTP_IF_MODIFIED_SINCE=modified)
         assert response.status_code == 304
+
+        # no upcoming events OR past events
+        Event.objects.all().delete()
+        response = self.client.get(reverse('event:upcoming'))
+        assert response.status_code == 200
+        self.assertContains(response,
+            "Next semester's events are being scheduled")
+        self.assertContains(response,
+            "Check back later.")
 
     def test_events_by_semester(self):
         response = self.client.get(reverse('event:by-semester', args=['spring', 2017]))

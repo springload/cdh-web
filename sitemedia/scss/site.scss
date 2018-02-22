@@ -575,8 +575,23 @@ $event-card-img-height: 240px;
 }
 
 
-
 // events or blogposts archives nav
+
+/* display text content within event list (e.g. for no upcoming)
+   at full grid or full content width. */
+.events > div  {
+ 	@include grid-column(9);
+	@include grid-media($large-grid){
+	    @include grid-column(12);
+	}
+	@media (max-width: $small-max-width) {
+		width: 100%;
+		float: none;
+		margin-left: 0;
+	}
+
+
+}
 
 .archive-nav {
 	float: right;

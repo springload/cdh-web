@@ -19,10 +19,14 @@ class LastModifiedMixin(View):
         # NOTE: remove microseconds so that comparison will pass,
         # since microseconds are not included in the last-modified header
 
-        last_modified = self.last_modified().replace(microsecond=0)
-        response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        last_modified = self.last_modified()
+        if last_modified:
+            last_modified = self.last_modified().replace(microsecond=0)
+            response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+            last_modified = last_modified.timestamp()
+
         return get_conditional_response(request,
-            last_modified=last_modified.timestamp(), response=response)
+            last_modified=last_modified, response=response)
 
 
 class LastModifiedListMixin(LastModifiedMixin):
