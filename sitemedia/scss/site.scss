@@ -274,7 +274,7 @@ $event-card-img-height: 240px;
 	/* event cards */
 	&.event {
 		@include large-card;
-	 	background-size: cover;
+	 	background-size: contain !important;
 
 		height: $event-card-height;
 		/* background options for when an image is added in the template */
