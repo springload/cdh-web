@@ -161,6 +161,24 @@ header.nav {
 footer {
     padding-top: 150px;
 
+    @media (max-width: $small-max-width) {
+        /* styles for footer as toggable mobile nav menu */
+        &.mobile-nav {
+            position: fixed;
+            top: 35px;
+            background-color: white;
+            padding-top: 0;
+            width: 100%;
+            height: 100%;
+
+            .contact {
+                position: absolute;
+                bottom: 0;
+                left: 8%;
+            }
+        }
+    }
+
     section.contact {
         // margin-top: 156px;
         position: relative;

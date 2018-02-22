@@ -43,7 +43,8 @@ $(document).ready(function(){
 
     $('.menu-toggle').on('click', function(e){
         e.preventDefault();
-        $('#mainmenu').toggle();
+        // toggle footer to act as main mobile nav
+        $('footer').toggleClass('mobile-nav');
     });
     $('a.toggle').on('click', function(e){
         $(this).parent().toggleClass('open');
