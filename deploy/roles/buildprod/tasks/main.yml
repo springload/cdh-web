@@ -36,3 +36,5 @@
     owner: deploy
     group: apache
     mode: 0770
+- name: Ensure SELinux rules are configured for CACHE
+  command: "restorecon -r {{ deploy }}/static/CACHE"
