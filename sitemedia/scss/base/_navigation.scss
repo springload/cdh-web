@@ -161,6 +161,16 @@ header.nav {
 footer {
     padding-top: 150px;
 
+    ul {
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        list-style-type: none;
+        display: block;
+    }
+
     @media (max-width: $small-max-width) {
         /* styles for footer as toggable mobile nav menu */
         &.mobile-nav {
@@ -180,31 +190,36 @@ footer {
     }
 
     section.contact {
-        // margin-top: 156px;
+        @extend .responsive-container;
+
         position: relative;
         border-top: 0;
         height: auto;
-        display: flex;
-        flex-direction: row;
+        padding-top: 70px;
 
         font-family: $font-stack-headline;
         font-size: 12px;
         color: $dark-grey;
 
+        display: grid;
+        grid-template-columns: 5fr 1fr;
+        grid-template-areas: "contact-info social";
+
         .contact-info {
-            flex-grow: 5;
-            flex-basis: 83.5%;
+            grid-area: contact-info;
+            min-width: 265px;
         }
 
         .social {
-            flex-grow: 1;
-            flex-basis: 16.5%;
+            grid-area: social;
+            justify-self: start;
             padding-bottom: 15px;
+            min-width: 75px;
+            position: relative;
         }
 
         @media (max-width: $small-max-width) {
             margin-top: 15px;
-            flex-direction: column;
             .social {
                 order: 1;
             }
@@ -216,22 +231,48 @@ footer {
         /* software version */
         .sw-version {
            font-size: small;
-           position: absolute;
-           right: 0;
-           bottom: 5px;
+           position: absolute;  /* within social section */
+           left: 0;
+           bottom: 10px;
         }
 
     }
 
-    section {
+     a {
+        color: #000000;
+        text-decoration: none;
+        &:focus,
+        &:hover,
+        &:visited {
+            text-decoration: none;
+            color: #000000;
+        }
+        span.fa {
+            font-size: 20px;
+            height: 20px;
+            width: 20px;
+            color: $dark-grey !important;
+        }
+    }
+
+
+    section.footer-menu {
         @extend .responsive-container;
-        height: 175px;
+
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+
+        @media (max-width: $small-max-width) {
+            display: block;
+        }
+
+        min-height: 175px;
         width: 100%;
-        overflow: hidden;
         border-top: 1px;
         border-top-style: solid;
         border-top-color: #d8d8d8;
         padding-top: 20px;
+
 
         @media (max-width: $small-max-width) {
             height: auto;
@@ -239,31 +280,7 @@ footer {
         }
 
 
-         a {
-            color: #000000;
-            text-decoration: none;
-            &:focus,
-            &:hover,
-            &:visited {
-                text-decoration: none;
-                color: #000000;
-            }
-            span.fa {
-                font-size: 20px;
-                height: 20px;
-                width: 20px;
-                color: $dark-grey !important;
-            }
-        }
-
-
         ul {
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            justify-content: space-evenly;
-            height: 125px;
-            padding: 0;
 
             @media (max-width: $small-max-width) {
                 width: 100%;
@@ -273,9 +290,7 @@ footer {
             }
 
             &> li {
-                display: inline;
-                flex: auto;
-                flex-grow: 1;
+                display: block;
                 max-width: 135px;
                 color: #000000;
                 margin-top: 6px;
