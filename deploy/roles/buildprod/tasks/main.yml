@@ -9,6 +9,7 @@
     state: latest
     virtualenv: "{{ deploy }}/env"
     virtualenv_site_packages: yes
+  ignore_errors: true
 - name: Set perms
   file:
       path: "{{ deploy }}/env"
@@ -20,10 +21,9 @@
     requirements: "{{ deploy }}/requirements.txt"
     virtualenv_site_packages: yes
 - name: Install local_settings.py
-  synchronize:
-    src: /home/deploy/{{ djangoapp }}/local_settings.py
+  copy:
+    src: "{{ lookup('env', 'HOME') }}/.deploy/{{ local_settings_path }}"
     dest: "{{ deploy }}/{{ djangoapp }}/local_settings.py"
-  delegate_to: '{{ inventory_hostname }}'
 - name: Run ./manage.py collectstatic
   django_manage:
     command: collectstatic
