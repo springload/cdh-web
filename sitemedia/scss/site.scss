@@ -695,6 +695,8 @@ $event-card-img-height: 240px;
 
 .project-detail {
 
+    overflow: auto;  /* include floated grid content */
+
 	header {
 		@include grid-container;
         @include grid-collapse;
@@ -760,10 +762,11 @@ $event-card-img-height: 240px;
 			list-style-type: none;
 			color: $dark-grey;
 			padding: 0;
-			font-family: $font-stack-body-text;
+			font-family: $font-stack-headline;
 
 			li.role {
 				margin-top: 15px;
+				font-family: $font-stack-body-text;
 			}
 		}
 
@@ -785,6 +788,7 @@ $event-card-img-height: 240px;
 	}
 
 	.description {
+
 		@include grid-column(6);
 		@include grid-media($large-grid){
 		    @include grid-column(9);
@@ -794,6 +798,7 @@ $event-card-img-height: 240px;
 	    	margin-left: 0;
 	    	margin-right: 0;
 	    	width: auto;
+			margin-bottom: 100px;
 	    }
 
 		img {
