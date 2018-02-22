@@ -720,8 +720,12 @@ $event-card-img-height: 240px;
 
 	    h2 {
 		  font-size: modular-scale(-1);
-		}
 
+			@include grid-media($large-grid){
+			    @include grid-column(7);
+			    margin-left: 0;
+			}
+		}
 
 	  	.short_description {
 	  		font-style: italic;
