@@ -192,6 +192,8 @@ class TestViews(TestCase):
         self.assertContains(response, event.get_ical_url())
         self.assertContains(response, event.full_url())
         self.assertContains(response, event.content)
+        self.assertNotContains(response, '<img property="schema:image',
+            msg_prefix='should not embed image when event has none')
 
         # last modified header should be set on response
         assert response.has_header('last-modified')
@@ -201,6 +203,8 @@ class TestViews(TestCase):
         response = self.client.get(event.get_absolute_url(),
             HTTP_IF_MODIFIED_SINCE=modified)
         assert response.status_code == 304
+
+        # TODO: how to test with image associated?
 
         # get by slug with wrong dates - should not be found
         response = self.client.get(reverse('event:detail',
