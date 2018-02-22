@@ -45,7 +45,9 @@
     {% if event.location %}
     <div property="schema:location" typeof="schema:Place" class="location">
         <span property="schema:name">{{ event.location.name }}</span>
-        <div property="schema:address">{{ event.location.address}}</div>
+        <div property="schema:address"
+        {% if event.location.name == event.location.address %}style="display:none"{% endif %}>
+        {{ event.location.address}}</div>
     </div>
     {% endif %}
 
