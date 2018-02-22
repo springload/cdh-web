@@ -1127,6 +1127,17 @@ section.blogposts {
 	}
 }
 
+/* same width/side margins as blog post content */
+.richtextpage #maincontent {
+	padding: 0;
+	margin-bottom: 50px;
+
+	@include grid-media($large-grid) {
+		@include grid-shift(2);
+		@include grid-column(8);
+	}
+}
+
 
 .pagination, .feeds {
 	text-align: center;
