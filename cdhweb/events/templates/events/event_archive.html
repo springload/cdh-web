@@ -27,7 +27,7 @@
         {% include 'events/snippets/event_card.html' %}
     {% empty %}
         {# semester event archive will 404 for no events; upcoming does not #}
-        <div>Next semester's events are being scheduled.
+        <div><p>Next semester's events are being scheduled.
         {# link to most recent semester if we have past events #}
         {% if date_list %}
             Check back later or browse
@@ -40,7 +40,7 @@
         {% else %}
             Check back later.
         {% endif %}
-        </div>
+        </p></div>
     {% endfor %}
 </section>
 
