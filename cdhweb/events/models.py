@@ -136,29 +136,31 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
             'slug': self.slug})
 
     def when(self):
-        '''event start/end date and time, formatted for display.'''
+        '''Event start/end date and time, formatted for display.
+        Removes leading zeros from hours and converts am/pm to lower case.'''
+
+        # NOTE: - in %-I is to remove leading zero
+        # (possibly platform specific?)
+
         local_tz = timezone.get_default_timezone()
         # convert dates to local timezone for display
         local_start = self.start_time.astimezone(local_tz)
         local_end = self.end_time.astimezone(local_tz)
-        start = local_start.strftime('%B %d %I:%M')
+        start = ' '.join([local_start.strftime('%B %d'),
+                          local_start.strftime('%-I:%M')])
         start_ampm = local_start.strftime('%p')
         # include start am/pm if *different* from end
         if start_ampm != local_end.strftime('%p'):
-            start += ' %s' % start_ampm
+            start += ' %s' % start_ampm.lower()
 
         # include end month and day if *different* from start
         end_pieces = []
         if local_start.month != local_end.month:
-            end_pieces.append(local_end.strfime('%B'))
+            end_pieces.append(local_end.strftime('%B'))
         if local_start.day != local_end.day:
             end_pieces.append(local_end.strftime('%d'))
-        end_pieces.append(local_end.strftime('%I:%M %p'))
+        end_pieces.append(local_end.strftime('%-I:%M %p').lower())
         end = ' '.join(end_pieces)
-
-        # FIXME: strftime doesn't provide non-leading zero days
-        # and times - may want to clean these up. May also want to
-        # convert am/pm to lower case
 
         return ' – '.join([start, end])
 

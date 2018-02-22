@@ -67,26 +67,34 @@ class TestEvent(TestCase):
         end = jan15 + timedelta(hours=1, minutes=30)
         event = Event(start_time=jan15, end_time=end)
         # start day month date time (no pm), end time (pm)
-        assert event.when() == '%s – %s' % (jan15.strftime('%B %d %I:%M'),
-                                            end.strftime('%I:%M %p'))
+        assert event.when() == '%s – %s' % (jan15.strftime('%B %d %-I:%M'),
+                                            end.strftime('%-I:%M %p').lower())
 
         # same day, starting in am and ending in pm
         event.start_time = jan15 - timedelta(hours=10)
         # should include am on start time
-        assert event.when() == '%s – %s' % \
-            (event.start_time.strftime('%B %d %I:%M %p'),
-             end.strftime('%I:%M %p'))
+        # NOTE: %-I should be equivalent to %I with lstrip('0')
+        assert event.when() == '%s %s – %s' % \
+            (event.start_time.strftime('%B %d %-I:%M'),
+             event.start_time.strftime('%p').lower(),
+             end.strftime('%I:%M %p').lstrip('0').lower())
 
         # different days, same month
         event.start_time = jan15 + timedelta(days=1)
-        assert event.when() == '%s – %s' % \
-            (event.start_time.strftime('%B %d %I:%M'),
-             end.strftime('%d %I:%M %p'))
+        assert event.when() == '%s – %s %s' % \
+            (event.start_time.strftime('%B %d %-I:%M'),
+             end.strftime('%d %-I:%M'), end.strftime('%p').lower())
 
         # different timezone should get localized to current timezone
         event.start_time = datetime(2015, 1, 15, hour=20, tzinfo=pytz.UTC)
         event.end_time = event.start_time + timedelta(hours=12)
-        assert '3:00 PM' in event.when()
+        assert '3:00 pm' in event.when()
+
+        # different months
+        end = jan15 + timedelta(days=35)
+        event = Event(start_time=jan15, end_time=end)
+        # month name should display
+        assert end.strftime('%B') in event.when()
 
     def test_ical_event(self):
         jan15 = datetime(2015, 1, 15, hour=16)
