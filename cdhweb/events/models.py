@@ -156,8 +156,8 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         # include end month and day if *different* from start
         end_pieces = []
         if local_start.month != local_end.month:
-            end_pieces.append(local_end.strftime('%B'))
-        if local_start.day != local_end.day:
+            end_pieces.append(local_end.strftime('%B %d'))
+        elif local_start.day != local_end.day:
             end_pieces.append(local_end.strftime('%d'))
         end_pieces.append(local_end.strftime('%-I:%M %p').lower())
         end = ' '.join(end_pieces)

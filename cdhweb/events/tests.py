@@ -98,6 +98,12 @@ class TestEvent(TestCase):
         # month name should display
         assert end.strftime('%B') in event.when()
 
+        # different months, same day
+        feb15 = datetime(2015, 2, 15, hour=16, tzinfo=timezone.get_default_timezone())
+        event = Event(start_time=jan15, end_time=feb15)
+        assert event.start_time.strftime('%B %d') in event.when()
+        assert event.end_time.strftime('%B %d') in event.when()
+
     def test_duration(self):
         jan15 = datetime(2015, 1, 15, hour=16, tzinfo=timezone.get_default_timezone())
         end = jan15 + timedelta(hours=1)
