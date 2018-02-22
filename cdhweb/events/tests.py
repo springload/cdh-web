@@ -170,6 +170,26 @@ class TestEventQueryset(TestCase):
 
         assert earlier_event in list(Event.objects.upcoming())
 
+    def test_recent(self):
+        # use django timezone util for timezone-aware datetime
+        tomorrow = timezone.now() + timedelta(days=1)
+        yesterday = timezone.now() - timedelta(days=1)
+        last_month = timezone.now() - timedelta(days=30)
+        event_type = EventType.objects.first()
+        next_event = Event.objects.create(start_time=tomorrow, end_time=tomorrow,
+            slug='some-workshop', event_type=event_type)
+        last_event = Event.objects.create(start_time=yesterday, end_time=yesterday,
+            slug='some-workshop', event_type=event_type)
+        older_event = Event.objects.create(start_time=yesterday, end_time=yesterday,
+            slug='some-workshop', event_type=event_type)
+
+        recent = list(Event.objects.recent())
+        assert next_event not in recent
+        assert last_event in recent
+        assert older_event in recent
+        # most recent listed first
+        assert last_event == recent[0]
+
 
 class TestViews(TestCase):
     fixtures = ['test_events.json']
@@ -289,6 +309,12 @@ class TestViews(TestCase):
         # should not include past events
         past_event = Event.objects.filter(end_time__lte=today).first()
         assert past_event not in response.context['events']
+
+        # should include recent events
+        assert past_event in response.context['recent']
+        self.assertContains(response, 'Recent Events')
+        self.assertContains(response, past_event.title)
+        self.assertContains(response, past_event.get_absolute_url())
 
         # should include all semesters and years represented in events
         date_list = response.context['date_list']

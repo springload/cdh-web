@@ -30,7 +30,7 @@
         <div><p>Next semester's events are being scheduled.
         {# link to most recent semester if we have past events #}
         {% if date_list %}
-            Check back later or browse
+            Check back later or view
             {% for semester, year in date_list reversed %}
                 {% if forloop.first %}
                     {% url 'event:by-semester' semester=semester|slugify year=year as event_url %}
@@ -42,6 +42,13 @@
         {% endif %}
         </p></div>
     {% endfor %}
+
+    {% if recent.exists %}
+    <h2>Recent Events</h2>
+        {% for event in recent reversed %}  {# display in chronological order #}
+            {% include 'events/snippets/event_card.html' %}
+        {% endfor %}
+    {% endif %}
 </section>
 
 {% endblock %}

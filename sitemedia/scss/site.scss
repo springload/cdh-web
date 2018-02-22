@@ -540,7 +540,7 @@ $event-card-img-height: 240px;
 	background-size: 50px 54px;
 }
 
-.homepage section > h2, .events h1, .projects h1, .people h1 {
+.homepage section > h2, .events h1, .events h2, .projects h1, .people h1 {
 	@include header-with-icon;
 	a {
 		text-decoration: none;

@@ -62,6 +62,16 @@ class EventQuerySet(models.QuerySet):
             tzinfo=timezone.get_default_timezone())
         return self.filter(end_time__gte=today)
 
+    def recent(self):
+        '''Find past events, most recent first.  Only includes events
+        with end date in the past.'''
+        now = timezone.now()
+        # construct a datetime based on now but with zero hour/minute/second
+        today = datetime(now.year, now.month, now.day,
+            tzinfo=timezone.get_default_timezone())
+        return self.filter(end_time__lt=today).order_by('-start_time')
+
+
 
 class EventManager(DisplayableManager):
     # extend displayable manager to preserve access to published filter
@@ -70,6 +80,9 @@ class EventManager(DisplayableManager):
 
     def upcoming(self):
         return self.get_queryset().upcoming()
+
+    def recent(self):
+        return self.get_queryset().recent()
 
 
 class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):

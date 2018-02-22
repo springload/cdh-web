@@ -58,8 +58,10 @@ class UpcomingEventsView(EventMixinView, ArchiveIndexView, EventSemesterDates,
     # events in get_context_data instaed
     def get_context_data(self, *args, **kwargs):
         context = super(UpcomingEventsView, self).get_context_data(*args, **kwargs)
+        event_qs = context['events']
         context.update({
-            'events': context['events'].upcoming(),
+            'events': event_qs.upcoming(),
+            'recent': event_qs.recent()[:6],
             'date_list': self.get_semester_date_list()
         })
         return context
