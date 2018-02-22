@@ -989,6 +989,13 @@ $event-card-img-height: 240px;
 	    	width: auto;
 	    }
 
+	    h1 {
+			@include grid-media($large-grid){
+			    @include grid-column(7);
+			    margin-left: 0;
+			}
+	    }
+
 	  	.short_description {   /* equiv to project short_description */
 	  		font-style: italic;
 	  		font-family: $font-stack-body-text;
