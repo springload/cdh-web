@@ -369,7 +369,7 @@ $event-card-img-height: 240px;
 
 	}
 
-	/* larger project card */
+	/* r project card */
 	&.project-large {
 		@include large-card;
 
@@ -1101,6 +1101,9 @@ section.blogposts {
 	padding: 0;
 	margin-bottom: 50px;
 
+	@include grid-shift(1);
+	@include grid-column(7);
+
 	@include grid-media($large-grid) {
 		@include grid-shift(2);
 		@include grid-column(8);
@@ -1145,13 +1148,22 @@ section.blogposts {
 }
 
 /* same width/side margins as blog post content */
-.richtextpage #maincontent {
-	padding: 0;
-	margin-bottom: 50px;
+body.richtextpage {
 
-	@include grid-media($large-grid) {
-		@include grid-shift(2);
-		@include grid-column(8);
+	#maincontent {
+		@include grid-container;
+		padding: 0;
+		margin-bottom: 50px;
+
+		> div {
+			@include grid-shift(1);
+			@include grid-column(7);
+
+			@include grid-media($large-grid) {
+				@include grid-shift(2);
+				@include grid-column(8);
+			}
+		}
 	}
 }
 
