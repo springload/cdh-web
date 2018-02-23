@@ -33,6 +33,7 @@ $header-nav-height: 90px;
 // breakpoints and content sizes for large, medium, and small viewports
 $small-max-width: 735px;
 $small-content-width: 84%;
+$small-min-width: 320px;
 
 $medium-max-width: 1068px;
 $medium-min-width: $small-max-width + 1;

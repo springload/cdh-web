@@ -17,6 +17,7 @@
 
     @media (max-width: $small-max-width) {
         max-width: $small-content-width;
+        min-width: $small-min-width;
     }
 
 	/* uncomment for visual debugging
