@@ -6,18 +6,15 @@
         {# top-level pages #}
         {% for page in page_branch %}
             {% if page.in_menu %}
-            <li id="primary-menu-{{ page.html_id }}">
+            <li id="{{ page.html_id }}">
                 <a href="{{ page.get_absolute_url }}"
                    {% if page.is_current_or_ascendant %}class="current-page"{% endif %}>
                     {{ page.title }}</a>
+
+            {# include all submenus; active will be displayed, others displayed on hover  #}
+            {% page_menu page "snippets/secondary_navigation.html" %}
             </li>
             {% endif %}
         {% endfor %}
     </ul>
-    {# pages in the menu for the currently active section of the site#}
-    {% for page in page_branch %}
-        {% if page.in_menu and page.is_current_or_ascendant %}
-            {% page_menu page "snippets/secondary_navigation.html" %}
-        {% endif %}
-    {% endfor %}
 </section>

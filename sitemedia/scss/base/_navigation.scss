@@ -27,7 +27,7 @@ header.nav {
      a {
         color: #000000;
         text-decoration: none;
-        padding-bottom: 13px;
+        padding-bottom: 10px;
         &:focus,
         &:hover,
         &:visited {
@@ -102,7 +102,7 @@ header.nav {
         flex-direction: column;
         flex: auto;
         padding: 0;
-
+        position: relative;
 
         ul {
             display: flex;
@@ -110,10 +110,7 @@ header.nav {
             text-align: left;
             padding: 0;
             width: 100%;
-            height: 15px;
             // Make sure margins behave for spacing between rows (~28 px)
-            margin-bottom: 14px;
-            margin-top: 14px;
 
             @media (max-width: $small-max-width) {
                 height: auto;
@@ -123,14 +120,31 @@ header.nav {
 
             &.primary-nav {
                 margin: 0;
-                text-transform: uppercase;
                 padding-bottom: 14px;
                 height: auto;
-                li {
+                > li {
                     flex: auto;
                     @media (max-width: $small-max-width) {
                         margin-bottom: 5px;
                     }
+
+                    &:hover {
+                        /* add indicator for section of menu being viewed */
+                        > a {
+                            border-bottom: 4px;
+                            border-bottom-color: $cdh-blue;
+                            border-bottom-style: solid;
+                        }
+
+                        /* display secondary nav for menu section */
+                        .secondary-nav {
+                            display: block;
+                        }
+                    }
+                }
+                > li > a {
+                    /* only uppercase for primary nav, not secondary */
+                    text-transform: uppercase;
                 }
             }
 
@@ -149,9 +163,19 @@ header.nav {
             &.secondary-nav {
                 border-top: solid 1px #d8d8d8;
                 margin-top: 0;
-                padding-top: 10px;
                 font-family: $font-stack-headline;
                 font-weight: normal;
+                display: none;
+                height: auto;
+                position: absolute;
+                top: 30px;
+                left: 0;
+                padding-top: 7px;
+                background-color: $light-grey;
+
+                &.active {
+                    display: block;
+                }
             }
         }
     }
@@ -179,7 +203,8 @@ footer {
             background-color: white;
             padding-top: 0;
             width: 100%;
-            height: 100%;
+            height: calc(100% - 35px);
+            z-index: 5;
 
             .contact {
                 position: absolute;
