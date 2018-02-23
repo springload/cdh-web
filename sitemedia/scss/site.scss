@@ -1096,8 +1096,8 @@ section.blogposts {
 	@include grid-container;
 }
 
-.blogpost {
-	// margin-top: 340px; // currently handled by spacer div
+@mixin content-page {
+	/* for blog posts and text content pages */
 	padding: 0;
 	margin-bottom: 50px;
 
@@ -1108,6 +1108,20 @@ section.blogposts {
 		@include grid-shift(2);
 		@include grid-column(8);
 	}
+
+	@media (max-width: $small-max-width) {
+    	margin-left: 0;
+    	margin-right: 0;
+		@include grid-shift(0);
+    	width: auto;
+	}
+}
+
+
+.blogpost {
+	// margin-top: 340px; // currently handled by spacer div
+	@include content-page;
+
 	header {
 		h1 {
 			margin-top: 250px - $header-nav-height;
@@ -1156,13 +1170,7 @@ body.richtextpage {
 		margin-bottom: 50px;
 
 		> div {
-			@include grid-shift(1);
-			@include grid-column(7);
-
-			@include grid-media($large-grid) {
-				@include grid-shift(2);
-				@include grid-column(8);
-			}
+			@include content-page;
 		}
 	}
 }
