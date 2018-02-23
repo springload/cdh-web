@@ -1180,9 +1180,17 @@ body.richtextpage {
 	#maincontent {
 		padding: 0;
 		margin-bottom: 50px;
+		@include grid-container;
 
 		> div, h1 {
-			@include content-page;
+			@include grid-shift(1);
+			@include grid-column(7);
+
+			@include grid-media($large-grid) {
+				@include grid-shift(2);
+				@include grid-column(8);
+			}
+
 		}
 	}
 }
