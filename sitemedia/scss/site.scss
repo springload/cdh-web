@@ -1183,14 +1183,7 @@ body.richtextpage {
 		@include grid-container;
 
 		> div, h1 {
-			@include grid-shift(1);
-			@include grid-column(7);
-
-			@include grid-media($large-grid) {
-				@include grid-shift(2);
-				@include grid-column(8);
-			}
-
+			@include content-page;
 		}
 	}
 }
