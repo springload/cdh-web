@@ -35,6 +35,10 @@ class TestLocation(TestCase):
         loc.address = 'Waterstone Library, Floor 3'
         assert str(loc.display_name) == '%s, %s' % (loc.name, loc.address)
 
+        # name and address thesame
+        loc = Location(name='101 East Pyne', address='101 East Pyne')
+        assert str(loc.display_name) == loc.name
+
 
 class TestEvent(TestCase):
 

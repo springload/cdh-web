@@ -37,16 +37,18 @@ class EventType(models.Model):
 
 
 class Location(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255,
+        help_text='Name of the location')
     short_name = models.CharField(max_length=80, blank=True)
-    address = models.CharField(max_length=255)
+    address = models.CharField(max_length=255,
+        help_text='Addres of the location (will not display if same as name)')
 
     def __str__(self):
         return self.short_name or self.name
 
     @property
     def display_name(self):
-        if self.name and self.address:
+        if self.name and self.address and self.name != self.address:
             return ', '.join([self.name, self.address])
         return self.name
 
