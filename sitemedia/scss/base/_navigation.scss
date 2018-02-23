@@ -194,19 +194,14 @@ footer {
     @media (max-width: $small-max-width) {
         /* styles for footer as toggable mobile nav menu */
         &.mobile-nav {
-            position: fixed;
+            position: absolute;
             top: 35px;
             background-color: white;
             padding-top: 0;
             width: 100%;
-            height: calc(100% - 35px);
             z-index: 5;
 
-            .contact {
-                position: absolute;
-                bottom: 0;
-                left: 8%;
-            }
+            border-bottom: 1px solid #d8d8d8
         }
     }
 
