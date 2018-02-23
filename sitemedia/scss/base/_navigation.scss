@@ -144,6 +144,11 @@ header.nav {
                     text-transform: uppercase;
                     font-family: $font-stack-headline-bold;
                     color: #000000;
+                    /* display secondary nav for menu section */
+                    .secondary-nav {
+                            display: block;
+                        }
+                    }
                 }
             }
 
@@ -168,12 +173,13 @@ header.nav {
                 top: 30px;
                 left: 0;
                 padding-top: 7px;
+                background-color: $light-grey;
 
                 &.active {
                     display: block;
                 }
             }
-        }
+
     }
 }
 
@@ -199,6 +205,7 @@ footer {
             background-color: white;
             padding-top: 0;
             width: 100%;
+            height: calc(100% - 35px);
             z-index: 5;
 
             border-bottom: 1px solid #d8d8d8
