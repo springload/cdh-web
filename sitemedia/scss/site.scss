@@ -843,6 +843,10 @@ $event-card-img-height: 240px;
 	    	width: auto;
 	    }
 
+	    h1 {
+	    	margin-bottom: 0;
+	    }
+
 	  	.title {   /* equiv to project short_description */
 	  		font-style: italic;
 	  		font-family: $font-stack-body-text;
