@@ -23,6 +23,7 @@
 </header>
 
 <div class="details">
+    {% if event.speakers.exists %}
     <ul>
     {% for person in event.speakers.all %}
     {# performer == presenter #}
@@ -34,6 +35,7 @@
     {# todo: affiliation?  #}
     {% endfor %}
     </ul>
+    {% endif %}
     {# don't repeat event type if it is an exact match (i.e. reading group) #}
     {% if event.event_type.name != event.title %}
     <p>{{ event.event_type }}</p>
@@ -51,7 +53,9 @@
     </div>
     {% endif %}
 
-    <a href="{{ event.get_ical_url}}" class="ical">Export to iCal</a>
+    <div class="ical">
+        <p><a href="{{ event.get_ical_url}}">Export to iCal</a></p>
+    </div>
 </div>
 
 <div class="description">
