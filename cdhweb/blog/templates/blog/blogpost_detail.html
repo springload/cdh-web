@@ -61,6 +61,21 @@
     <div class="keywords">Keywords: {{ blogpost.keywords.all|join:', ' }}</div>
     {% endif %}
 
+    {# fixme: needs to come after attachments  #}
+    {% if next or previous %}
+    <p class="next-previous">
+        {% if previous %}
+        <p><a href="{{ previous.get_absolute_url }}" rel="previous">< {{ previous }}</a></p>
+        {% endif %}
+
+        {% if next %}
+        <p><a href="{{ next.get_absolute_url }}" rel="next">{{ next }} ></a></p>
+        {% endif %}
+    </p>
+    {% endif %}
+
 </article>
+
+
 
 {% endblock %}
