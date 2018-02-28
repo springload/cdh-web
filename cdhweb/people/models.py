@@ -111,8 +111,12 @@ class ProfileQuerySet(models.QuerySet):
 
     def order_by_position(self):
         # order by job title sort order and then by start date
-        return self.order_by('user__positions__title__sort_order',
-                             'user__positions__start_date')
+        # annotate to avoid duplicates in the queryset due to multiple positions
+        # sort on highest position title and earliest start date (may
+        # not be from the same position)
+        return self.annotate(max_title=models.Max('user__positions__title__sort_order'),
+                             min_start=models.Min('user__positions__start_date')) \
+                   .order_by('max_title', 'min_start')
 
 
 class ProfileManager(DisplayableManager):
