@@ -54,11 +54,7 @@ class StaffListView(ProfileMixinView, ListView, LastModifiedListMixin):
         # order by job title sort order and then by last name
         # (TODO: perhaps job start date for secondary sort?)
         return super(StaffListView, self).get_queryset() \
-            .filter(is_staff=True) \
-            .filter(Q(user__positions__end_date__isnull=True) |
-                    Q(user__positions__end_date__gte=date.today())) \
-            .order_by('user__positions__title__sort_order', 'user__last_name') \
-            .distinct()
+            .staff().current().order_by_position().distinct()
 
     def get_context_data(self):
         context = super(StaffListView, self).get_context_data()
@@ -71,18 +67,8 @@ class StaffListView(ProfileMixinView, ListView, LastModifiedListMixin):
 class AlumniListView(ProfileMixinView, ListView, LastModifiedListMixin):
 
     def get_queryset(self):
-        print(super(AlumniListView, self).get_queryset() \
-            .filter(is_staff=True) \
-            .exclude(Q(user__positions__end_date__isnull=True) |
-                    Q(user__positions__end_date__gte=date.today())) \
-            .order_by('user__positions__title__sort_order', 'user__last_name') \
-            .distinct())
         return super(AlumniListView, self).get_queryset() \
-            .filter(is_staff=True) \
-            .exclude(Q(user__positions__end_date__isnull=True) |
-                    Q(user__positions__end_date__gte=date.today())) \
-            .order_by('user__positions__title__sort_order', 'user__last_name') \
-            .distinct()
+            .staff().not_current().order_by_position().distinct()
 
     def get_context_data(self):
         context = super(AlumniListView, self).get_context_data()

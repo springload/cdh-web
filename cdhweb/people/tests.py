@@ -52,6 +52,146 @@ class TestPerson(TestCase):
         Profile.objects.create(user=pers, title='Gwen of the Lake')
         assert str(pers) == pers.profile.title
 
+    def test_cdh_staff(self):
+        pers = Person.objects.create(username='foo')
+        assert not pers.cdh_staff()
+        profile = Profile.objects.create(user=pers, is_staff=False)
+        assert not pers.cdh_staff()
+
+        profile.is_staff = True
+        profile.save()
+        assert pers.cdh_staff()
+
+
+class TestProfile(TestCase):
+
+    def test_str(self):
+        pers = Person(username='foo', first_name='Jean', last_name='Smith')
+        profile = Profile(user=pers)
+        assert str(profile) == '%s %s' % (pers.first_name, pers.last_name)
+
+    def get_absolute_url(self):
+        pers = Person(username='foo', first_name='Jean', last_name='Jones')
+        profile = Profile(user=pers, slug='jean-jones')
+        assert profile.get_absolute_url() == \
+            reverse('people:profile', kwargs={'slug': profile.slug})
+
+    def current_title(self):
+        pers = Person(username='foo', first_name='Jean', last_name='Jones')
+        profile = Profile(user=pers, slug='jean-jones')
+        # no position
+        assert profile.current_title is None
+
+        # previous position, no current
+        fellow = Title.objects.create(title='fellow')
+        postdoc = Title.objects.create(title='post-doc')
+        prev_post = Position.objects.create(user=pers, title=postdoc,
+            start_date='2015-01-01', end_date='2015-12-31')
+        assert profile.current_title is None
+
+        # current position
+        cur_post = Position.objects.create(user=pers, title=staff_title,
+            start_date='2016-06-01')
+        assert profile.current_title is cur_post.title
+
+
+@pytest.mark.django_db
+class ProfileQuerySetTest(TestCase):
+
+    def test_is_staff(self):
+        staffer = Person.objects.create(username='staffer')
+        staff_profile = Profile.objects.create(user=staffer, is_staff=True)
+        grad = Person.objects.create(username='grad')
+        grad_profile = Profile.objects.create(user=grad, is_staff=False)
+
+        staff = Profile.objects.all().staff()
+        assert staff.count() == 1
+        assert staff_profile in staff
+        assert grad_profile not in staff
+
+    def test_current(self):
+        staffer = Person.objects.create(username='staffer')
+        staff_profile = Profile.objects.create(user=staffer)
+        staff_title = Title.objects.create(title='staff')
+        postdoc = Title.objects.create(title='post-doc')
+        # previous post
+        prev_post = Position.objects.create(user=staffer, title=postdoc,
+            start_date='2015-01-01', end_date='2015-12-31')
+
+        assert not Profile.objects.all().current().exists()
+
+        # current post - no end date
+        cur_post = Position.objects.create(user=staffer, title=staff_title,
+            start_date='2016-06-01')
+        current_profiles = Profile.objects.all().current()
+        assert current_profiles.exists()
+        assert staff_profile in current_profiles
+
+        # end date in future also considered current
+        cur_post.end_date = date.today() + timedelta(days=30)
+        cur_post.save()
+        assert current_profiles.exists()
+        assert staff_profile in current_profiles
+
+    def test_not_current(self):
+        # current staff person
+        staffer = Person.objects.create(username='staffer')
+        staff_profile = Profile.objects.create(user=staffer)
+        staff_title = Title.objects.create(title='staff')
+        # current post - no end date
+        cur_post = Position.objects.create(user=staffer, title=staff_title,
+            start_date='2016-06-01')
+
+        assert not Profile.objects.all().not_current().exists()
+
+        # past fellow
+        fellow = Person.objects.create(username='fellow')
+        fellow_profile = Profile.objects.create(user=fellow)
+        postdoc = Title.objects.create(title='post-doc')
+        # previous post
+        prev_post = Position.objects.create(user=fellow, title=postdoc,
+            start_date='2015-01-01', end_date='2015-12-31')
+        not_current = Profile.objects.all().not_current()
+        assert not_current.exists()
+        assert fellow_profile in not_current
+        assert staff_profile not in not_current
+
+        # end date in future also considered current
+        cur_post.end_date = date.today() + timedelta(days=30)
+        cur_post.save()
+        assert not_current.exists()
+        assert staff_profile not in not_current
+
+    def test_order_by_position(self):
+        director_title = Title.objects.create(title='director', sort_order=1)
+        staff_title = Title.objects.create(title='staff', sort_order=2)
+
+        director = Person.objects.create(username='director')
+        director_profile = Profile.objects.create(user=director)
+        Position.objects.create(user=director, title=director_title,
+            start_date='2016-06-01')
+
+        staffer = Person.objects.create(username='staffer')
+        staff_profile = Profile.objects.create(user=staffer)
+        cur_post = Position.objects.create(user=staffer, title=staff_title,
+            start_date='2016-06-01')
+
+        profiles = Profile.objects.all().order_by_position()
+        # sort by position title order
+        assert director_profile == profiles[0]
+        assert staff_profile == profiles[1]
+
+        # second staffer with later start
+        staffer2 = Person.objects.create(username='staffer2')
+        staff2_profile = Profile.objects.create(user=staffer2)
+        Position.objects.create(user=staffer2, title=staff_title,
+            start_date='2016-12-01')
+        profiles = Profile.objects \
+            .filter(user__positions__title__title='staff').order_by_position()
+        # should sort by start date, earliest first
+        assert staff_profile == profiles[0]
+        assert staff2_profile == profiles[1]
+
 
 @pytest.mark.django_db
 def test_init_profile_from_ldap():
