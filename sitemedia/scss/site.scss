@@ -600,11 +600,17 @@ $event-card-img-height: 240px;
 	position: relative;
 	margin-right: $gutter;
 
+	font-family: $font-stack-headline;
+	font-size: 16px;
+
+	a {
+		text-decoration: none;
+		color: $dark-grey;
+	}
+
 	.submenu {
 		@include list-style-reset;
 		display: none;
-		font-family: $font-stack-headline;
-		font-size: 16px;
 		background-color: $light-grey;
 		background-color: rgba(248, 248, 248, 0.85);
 		position: absolute;
@@ -612,10 +618,6 @@ $event-card-img-height: 240px;
 		right: 0;
 		z-index: 6;
 
-		a {
-			text-decoration: none;
-			color: $dark-grey;
-		}
 
 		.current a {
 			border-bottom: 2px solid $cdh-blue;

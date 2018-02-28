@@ -59,7 +59,8 @@ class StaffListView(ProfileMixinView, ListView, LastModifiedListMixin):
     def get_context_data(self):
         context = super(StaffListView, self).get_context_data()
         context.update({
-            'title': 'Who we are'
+            'title': 'Who we are',
+            'nav_title': 'Staff'
         })
         return context
 
