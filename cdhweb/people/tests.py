@@ -358,3 +358,23 @@ class TestViews(TestCase):
         self.assertContains(response, alum_post.years)
         self.assertContains(response, alum_profile.get_absolute_url())
 
+
+    def test_profile_detail(self):
+         # create test person and add two positions
+        staffer = Person.objects.create(username='staff')
+        profile = Profile.objects.create(user=staffer, title='Amazing Contributor',
+            status=CONTENT_STATUS_PUBLISHED, is_staff=True, slug='staffer')
+        staff_title = Title.objects.create(title='staff')
+        fellow = Title.objects.create(title='fellow')
+        postdoc = Title.objects.create(title='post-doc')
+        prev_post = Position.objects.create(user=staffer, title=postdoc,
+            start_date=date(2015, 1, 1), end_date=date(2015, 12, 31))
+        cur_post = Position.objects.create(user=staffer, title=staff_title,
+            start_date=date(2016, 6,1))
+
+        response = self.client.get(reverse('people:profile', args=[profile.slug]))
+        self.assertContains(response, profile.title)
+        self.assertContains(response, cur_post.title)
+        self.assertContains(response, prev_post.title)
+        self.assertContains(response, prev_post.years)
+        self.assertNotContains(response, cur_post.years)
