@@ -14,13 +14,10 @@
 
         {% with position=profile.user.positions.first %}
         <p class="title">
-        {% if position.end_date %}
-            {{ position.start_date.year }}{% if position.end_date.year != position.start_date.year%}-{{ position.end_date.year }}{% endif %}
-        {% endif %}
-        <br/>
-        {{ profile.user.positions.first.title|default:'' }}
-        {% endwith %}
+            {% if not position.is_current %}{{ position.years }}<br/>{% endif %}
+            {{ profile.user.positions.first.title|default:'' }}
         </p>
+        {% endwith %}
         <p class="name">{{ profile.title }}</p>
         </div>
     </a>

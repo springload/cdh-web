@@ -189,6 +189,28 @@ class Position(models.Model):
     def __str__(self):
         return '%s %s (%s)' % (self.user, self.title, self.start_date.year)
 
+    @property
+    def is_current(self):
+        '''is position current - start date before today and end date
+        in the future or not set'''
+        today = date.today()
+        return self.start_date <= today and \
+            (not self.end_date or self.end_date > today)
+
+    @property
+    def years(self):
+        '''year or year range for display'''
+        val = str(self.start_date.year)
+
+        if self.end_date:
+            # start and end the same year - return single year only
+            if self.start_date.year == self.end_date.year:
+                return val
+
+            return '%s–%s' % (val, self.end_date.year)
+
+        return '%s–' % val
+
 
 def init_profile_from_ldap(user, ldapinfo):
     '''Extra user/profile init logic for auto-populating people
