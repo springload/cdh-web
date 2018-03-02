@@ -51,7 +51,7 @@
         <nav id='mainmenu'>
             <a href='{% url 'home' %}' class='home-page'>
               <img
-              alt='CDH Logo'
+              alt='The Center for Digital Humanities @ Princeton'
               src='{% static "img/CDH_logo.svg" %}' />
             </a>
             {% page_menu "snippets/primary_navigation.html" %}
@@ -77,7 +77,7 @@
     {% endblock content %}
 
     <footer>
-        <section class="footer-menu">
+        <section class="footer-menu" id="footermenu">
             {% page_menu "snippets/footer_menu.html" %}
         </section>
 
@@ -108,9 +108,9 @@
             {# social links #}
             <div class="social">
                 <ul>
-                <li><a href='https://www.facebook.com/princetoncdh/' property="schema:sameAs"><span class='fa fa-facebook-square'
+                <li><a href='https://www.facebook.com/princetoncdh/' property="schema:sameAs" title="Facebook"><span class='fa fa-facebook-square'
                     aria-label='CDH Facebook Link'></span></a>
-                    <a href='https://twitter.com/PrincetonDH' property="schema:sameAs"><span class='fa fa-twitter'
+                    <a href='https://twitter.com/PrincetonDH' property="schema:sameAs" title="Twitter"><span class='fa fa-twitter'
                      aria-label='CDH Twitter Link'></span></a>
                 </li>
                 </ul>
