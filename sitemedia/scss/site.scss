@@ -834,6 +834,7 @@ $event-card-img-height: 240px;
     	margin-left: 0;
     	margin-right: 0;
     	width: auto;
+    	padding-bottom: 30px;
 
   		@include grid-push(3);
 		@include grid-media($large-grid) {
@@ -858,9 +859,10 @@ $event-card-img-height: 240px;
 	  		font-family: $font-stack-body-text;
 	  		color: $dark-grey;
 	  		font-size: 21px;
+	  		line-height: 1.52;
 
-			margin-left: 0;
-		    margin-right: 0;
+	  		margin: 0;
+	  		padding: 0;
 	    	width: auto;
 
 			@include grid-media($large-grid){
