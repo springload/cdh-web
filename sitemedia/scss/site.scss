@@ -1178,11 +1178,10 @@ section.blogposts {
 body.richtextpage {
 
 	#maincontent {
-		@include grid-container;
 		padding: 0;
 		margin-bottom: 50px;
 
-		> div {
+		> div, h1 {
 			@include content-page;
 		}
 	}
