@@ -1,4 +1,4 @@
-@import "neat/neat";
+// @import "neat/neat";
 
 // small, medium, large max widths and content widths defined
 // in variables
@@ -19,4 +19,31 @@ $large-grid: (
     media: $large-min-width
 );
 
+$large-grid-cols: 12;
+$medium-grid-cols: 9;
 
+@mixin grid-container {
+    display: grid;
+    grid-column-gap: $gutter;
+    // width: 100%;
+
+    // medium
+    grid-template-columns: [start] repeat($medium-grid-cols, 1fr) [end];
+    // large
+    @media (min-width: $large-min-width) {
+        grid-template-columns: [start] repeat($large-grid-cols, 1fr) [end];
+    }
+}
+
+
+@mixin grid-column($span) {
+    grid-column-end: span $span;
+}
+
+@mixin grid-push($cols) {
+    grid-column-start: $cols + 1;
+}
+
+@mixin full-grid-width() {
+    grid-column: start / end;
+}

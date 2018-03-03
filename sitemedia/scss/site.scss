@@ -7,8 +7,6 @@
 
 /* container with max-width for large, medium, and small viewports */
 .responsive-container {
-    @include grid-container;
-    // can we use grid-collapse here to consume gutters or does it need to be on elements?
     max-width: $large-content-width;
     margin: auto;
     @media (max-width: $medium-max-width) {
@@ -19,12 +17,6 @@
         max-width: $small-content-width;
         min-width: $small-min-width;
     }
-
-	/* uncomment for visual debugging
-    @include grid-visual();
-    @include grid-media($large-grid){
-      @include grid-visual();
-    } */
 }
 
 #maincontent {
@@ -69,9 +61,7 @@ div.spacer {
 
 @mixin large-card {
  	@include grid-column(4);
-	@include grid-media($large-grid){
-	    @include grid-column(4);
-	}
+
 	@media (max-width: $small-max-width) {
 		width: 100%;
 		float: none;
@@ -81,14 +71,11 @@ div.spacer {
 
 @mixin small-card {
 	max-width: 225px;
+    @include grid-column(3);
+
 	@media (min-width: $medium-min-width) {
 		max-width: none;
-	    @include grid-column(3);
 	}
-	@include grid-media($large-grid){
-	    @include grid-column(3);
-	}
-
 }
 
 article.landing-page {
@@ -174,12 +161,7 @@ article.landing-page {
 		}
 	}
 
-	div {
-		// @extend .responsive-container;
-	}
-
 	#maincontent {
-		// @extend .responsive-container;
 		margin-top: -116px;
 		background-color: white;
 		z-index: 4;  /* overlap background image from header */
@@ -206,6 +188,10 @@ article.landing-page {
 .attachments {
 	@extend .responsive-container;
 	clear: both;
+
+	@media (min-width: $medium-min-width) {
+		@include grid-container;
+	}
 }
 
 
@@ -242,7 +228,7 @@ article.landing-page {
 
 /* card layouts - projects, events */
 
-$event-card-height: 426px;
+$event-card-height: 425px;
 $event-card-img-height: 240px;
 
 .card {
@@ -274,35 +260,37 @@ $event-card-img-height: 240px;
 	/* event cards */
 	&.event {
 		@include large-card;
-	 	background-size: contain !important;
 
 		height: $event-card-height;
 		/* background options for when an image is added in the template */
-		background-size: cover;
+		// background-size: cover;
+	 	background-size: contain !important;
 		/* background-position: 50% 50%;  maybe? */
 		background-repeat: no-repeat;
 
-		.content {
-			position: absolute;
-			top: $event-card-img-height;
-			width: 100%;
-			height: $event-card-height - $event-card-img-height;
+		> a {
+			display: grid;
+			grid-template-rows: $event-card-img-height 155px 35px;
+			grid-row-gap: 0;
+			grid-template-areas:
+				"image"
+				"content"
+				"when";
 
 			> *  {
-				padding-left: 15px;
-				padding-right: 15px;
+				padding: 15px;
 			}
+		}
 
+		.content {
+			grid-area: content;
 			h2 {
-				padding-top: 15px;
 				margin-bottom: 0;
 			}
-
 		}
 
 		.event-type {
 			position: absolute;
-			/* width: 104px; */
 			z-index: 5;
 			top: -12px;
 			left: 15px;
@@ -315,15 +303,17 @@ $event-card-img-height: 240px;
 			padding: 1px 5px;
 		}
 		.when {
+			grid-area: when;
 			color: $dark-grey;
-			position: absolute;
-			padding-left: 0;
-			bottom: 15px;
-			left: 15px;
+			background-color: white;
 			font-family: $font-stack-headline;
+			align-self: end;
+			padding: 5px 15px 15px;
+			font-size: 16px;
+			line-height: 19px;
 		}
 		.time {
-			padding-left: 15px;
+			padding-left: 20px;
 		}
 		.presenter {
 			font-family: $font-stack-headline;
@@ -368,7 +358,7 @@ $event-card-img-height: 240px;
 
 	}
 
-	/* r project card */
+	/* large project card */
 	&.project-large {
 		@include large-card;
 
@@ -389,7 +379,6 @@ $event-card-img-height: 240px;
 		@include large-card;
 		background: none; /* no blue stripes */
 
-		// @include dark-blue-gradient;
 		/* styles for image as photo */
 		background-size: contain;
 		background-repeat: no-repeat;
@@ -468,7 +457,6 @@ $event-card-img-height: 240px;
 		    }
 		    .author {
 		    	font-family: $font-stack-headline;
-		    	// margin-top: 7px;
 		    	padding: 0;
 		    }
 
@@ -514,11 +502,8 @@ $event-card-img-height: 240px;
 .homepage section, section.events, section.projects, section.people {
     @media (min-width: $medium-min-width) {
 		@include grid-container;
-		@include grid-collapse;
 	}
-
 }
-
 
 @mixin header-with-icon {
 	/* font-family: BrownStd-Alt;    ?? */
@@ -546,12 +531,11 @@ $event-card-img-height: 240px;
 		text-decoration: none;
 		color: $dark-grey;
 	}
-	@include grid-media($neat-grid) {
-	    @include grid-column(9);
-	}
-	@include grid-media($large-grid) {
+
+    @include grid-column(9);
+    @media (min-width: $large-min-width) {
 	    @include grid-column(12);
-    }
+	}
 }
 // TODO: mixin for icons, support h1 for individual pages
 
@@ -584,7 +568,7 @@ $event-card-img-height: 240px;
  	@include grid-column(9);
  	padding-bottom: 15px;
 
-	@include grid-media($large-grid){
+    @media (min-width: $large-min-width) {
 	    @include grid-column(12);
 	}
 	@media (max-width: $small-max-width) {
@@ -666,9 +650,7 @@ $event-card-img-height: 240px;
 }
 
 .ribbon-wrapper {
-  // $action-color: red !default;
   $action-color: rgb(255, 69, 69) !default;
-  // $action-color: #477dca !default;
   $ribbon-background: $action-color;
   $ribbon-size: 375px;
 
@@ -680,7 +662,6 @@ $event-card-img-height: 240px;
 
   .ribbon {
     background-color: $ribbon-background;
-    // box-shadow: 0 0 3px rgba(#000, 0.3);
     color: #fff;
     font-size: 0.8em;
     right: -75px;
@@ -698,38 +679,24 @@ $event-card-img-height: 240px;
 .project-detail {
 
     overflow: auto;  /* include floated grid content */
+    @include grid-container;
 
 	header {
-		// @include grid-container;
-        @include grid-collapse;
-
-    	/* full width of container */
-    	margin-left: 0;
-    	margin-right: 0;
-    	width: auto;
-
 	    @include grid-column(6);
   		@include grid-push(3);
 
-		@include grid-media($large-grid) {
-			// @include grid-container;
-	        @include grid-collapse($large-grid);
+	    @media (min-width: $large-min-width) {
 		    @include grid-column(9);
-	  		@include grid-push(3);
 	  	}
 
 	    @media (max-width: $small-max-width) {
-	    	@include grid-push(0);
-	    	/* full width of container */
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
+	    	@include full-grid-width();
 	    }
 
 	    h2 {
 		  font-size: modular-scale(-1);
 
-			@include grid-media($large-grid){
+		    @media (min-width: $large-min-width) {
 			    @include grid-column(7);
 			    margin-left: 0;
 			}
@@ -737,13 +704,12 @@ $event-card-img-height: 240px;
 
 	  	.short_description {
 	  		font-style: italic;
-		    // @include grid-column(7);
 		    margin-left: 0;
 		    margin-right: 0;
 
 			@media (min-width: $large-min-width) {
 				/* according to spec, should be 7 cols, but can't
-				   get grid cols right if we nest; should be close enough */
+				   get grid cols right due to nesting should be close enough */
 			    width: 75%;
 			}
 	  	}
@@ -752,17 +718,8 @@ $event-card-img-height: 240px;
 		font-size: 18px;
 
 		@include grid-column(3);
-		@include grid-media($large-grid){
-		    @include grid-column(3);
-		}
 	    @media (max-width: $small-max-width) {
-	    	width: 100%;
-	    }
-
-	    @media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
+	    	@include full-grid-width;
 	    }
 
 		ul {
@@ -797,14 +754,12 @@ $event-card-img-height: 240px;
 	.description {
 
 		@include grid-column(6);
-		@include grid-media($large-grid){
+	    @media (min-width: $large-min-width) {
 		    @include grid-column(9);
 		}
 
 		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
+			@include full-grid-width;
 			margin-bottom: 100px;
 	    }
 
@@ -827,28 +782,12 @@ $event-card-img-height: 240px;
 	@include grid-container;
 
 	header {
-		@include grid-container;
-        @include grid-collapse;
-
-    	/* full width of container */
-    	margin-left: 0;
-    	margin-right: 0;
-    	width: auto;
-    	padding-bottom: 30px;
-
   		@include grid-push(3);
-		@include grid-media($large-grid) {
-			@include grid-container;
-	        @include grid-collapse($large-grid);
-	  		@include grid-push(3);
-	  	}
+  		@include grid-column(7);
+
 	    @media (max-width: $small-max-width) {
-	    	@include grid-push(0);
-	    	/* full width of container */
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
+	    	@include full-grid-width;
+		    }
 
 	    h1 {
 	    	margin-bottom: 0;
@@ -865,9 +804,8 @@ $event-card-img-height: 240px;
 	  		padding: 0;
 	    	width: auto;
 
-			@include grid-media($large-grid){
+		    @media (min-width: $large-min-width) {
 			    @include grid-column(7);
-			    margin-left: 0;
 			}
 
 	  	}
@@ -878,14 +816,9 @@ $event-card-img-height: 240px;
 		margin-bottom: 35px;
 
 		@include grid-column(3);
-		@include grid-media($large-grid){
-		    @include grid-column(3);
-		}
 
 	    @media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
+	    	@include full-grid-width;
 	    }
 
 		ul {
@@ -907,13 +840,8 @@ $event-card-img-height: 240px;
     	width: auto;
 
 		@include grid-column(5);
-		@include grid-media($large-grid){
-			@include grid-column(5);
-		}
 		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
+			@include full-grid-width;
 	    }
 	}
 
@@ -924,18 +852,13 @@ $event-card-img-height: 240px;
 
 		@include grid-column(4);
 		@include grid-push(3);
-		@include grid-media($large-grid){
-			@include grid-column(4);
-		}
 		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
+			@include full-grid-width;
+			margin-bottom: 35px;
 	    }
 	    a {
 	    	color: $dark-grey ;
 	    	text-decoration: none;
-	    	// background-image: none !important;
 	    }
 
 	    ul {
@@ -949,9 +872,7 @@ $event-card-img-height: 240px;
 	p {
 		margin-top: 0;
 		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
+			@include full-grid-width;
 	    }
 
 	}
@@ -959,14 +880,11 @@ $event-card-img-height: 240px;
 	.bio {
 		@include grid-column(6);
 		@include grid-push(3);
-		@include grid-media($large-grid){
+	    @media (min-width: $large-min-width) {
 			@include grid-column(8);
-			@include grid-push(3);
 		}
 		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
+			@include full-grid-width;
 	    }
 
 	}
@@ -980,31 +898,13 @@ $event-card-img-height: 240px;
 	@include grid-container;
 
 	header {
-		// @include grid-container;
-        @include grid-collapse;
-
-    	/* full width of container */
-    	margin-left: 0;
-    	margin-right: 0;
-    	width: auto;
-
   		@include grid-push(3);
-
-		@include grid-media($large-grid) {
-			// @include grid-container;
-	        @include grid-collapse($large-grid);
-	  		@include grid-push(3);
-	  	}
 	    @media (max-width: $small-max-width) {
-	    	@include grid-push(0);
-	    	/* full width of container */
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
+	    	@include full-grid-width;
 	    }
 
 	    h1 {
-			@include grid-media($large-grid){
+		    @media (min-width: $large-min-width) {
 			    @include grid-column(7);
 			    margin-left: 0;
 			}
@@ -1016,14 +916,10 @@ $event-card-img-height: 240px;
 	  		color: $dark-grey;
 	  		font-size: 21px;
 
-/*			margin-left: 0;
-		    margin-right: 0;
-	    	width: auto;*/
 		    @include grid-column(6);
 
-			@include grid-media($large-grid){
+    		@media (min-width: $large-min-width) {
 			    @include grid-column(7);
-			    // margin-left: 0;
 			}
 
 	  	}
@@ -1037,11 +933,8 @@ $event-card-img-height: 240px;
 		line-height: 1.22;
 
 		@include grid-column(3);
-		@include grid-media($large-grid){
-		    @include grid-column(3);
-		}
 	    @media (max-width: $small-max-width) {
-	    	width: 100%;
+			@include full-grid-width;
 	    }
 
 	    @media (max-width: $small-max-width) {
@@ -1071,9 +964,7 @@ $event-card-img-height: 240px;
 			background-image: url('../img/icons/CDH_icon_cal.svg');
 			background-size: 50px 54px;
 			background-repeat: no-repeat;
-
     	}
-
 
 	    .location {
 	    	margin-top: 16px;
@@ -1088,14 +979,12 @@ $event-card-img-height: 240px;
 	.description {
 		@include grid-column(6);
 
-		@include grid-media($large-grid){
+	    @media (min-width: $large-min-width) {
 		    @include grid-column(9);
 		}
 
 		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
+			@include full-grid-width;
 	    }
 
 		img {
@@ -1111,6 +1000,47 @@ $event-card-img-height: 240px;
 
 section.blogposts {
 	@include grid-container;
+
+	h1 {
+		@include grid-column(7);
+	    @media (min-width: $large-min-width) {
+			@include grid-column(10);
+		}
+		@media (max-width: $small-max-width) {
+			@include full-grid-width;
+		}
+
+	}
+
+	.archive-nav {
+		@include grid-column(2);
+		justify-self: end;
+		float: none;
+		margin: 0;
+
+		@media (max-width: $small-max-width) {
+		    grid-column: start / end;
+		    justify-self: center;
+		    margin-bottom: 50px;
+		}
+
+	}
+
+	.blogpost {
+	    @media (min-width: $medium-min-width) {
+			@include grid-push(1);
+			@include grid-column(7);
+		}
+	    @media (min-width: $large-min-width) {
+			@include grid-push(2);
+			@include grid-column(8);
+		}
+
+		@media (max-width: $small-max-width) {
+			@include full-grid-width;
+		}
+
+	}
 }
 
 @mixin content-page {
@@ -1118,19 +1048,16 @@ section.blogposts {
 	padding: 0;
 	margin-bottom: 50px;
 
-	@include grid-shift(1);
-	@include grid-column(7);
+	@include grid-push(1);
+	@include grid-column($medium-grid-cols - 1);
 
-	@include grid-media($large-grid) {
-		@include grid-shift(2);
-		@include grid-column(8);
+    @media (min-width: $large-min-width) {
+		@include grid-push(2);
+		@include grid-column($large-grid-cols - 2);
 	}
 
 	@media (max-width: $small-max-width) {
-    	margin-left: 0;
-    	margin-right: 0;
-		@include grid-shift(0);
-    	width: auto;
+		@include full-grid-width;
 	}
 }
 
@@ -1143,6 +1070,10 @@ section.blogposts {
 		h1 {
 			margin-top: 250px - $header-nav-height;
 			margin-bottom: 50px;
+
+			@media (max-width: $small-max-width) {
+				margin-top: 0;
+			}
 		}
 
 		.byline {
@@ -1186,7 +1117,7 @@ body.richtextpage {
 		margin-bottom: 50px;
 		@include grid-container;
 
-		> div, h1 {
+		> div, h1, header {
 			@include content-page;
 		}
 	}

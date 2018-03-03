@@ -18,5 +18,12 @@ body {
   margin-top: $header-nav-height;  /* clear the nav */
   padding: 0;
   padding-top: $header-nav-height; /* add padding below the nav */
+
+  min-width: $small-min-width;
+
+  @media (max-width: $small-max-width) {
+      margin-top: $small-header-nav-height;
+      padding-top: $small-header-nav-height;
+  }
 }
 

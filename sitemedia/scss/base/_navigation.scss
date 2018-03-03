@@ -87,6 +87,7 @@ header.nav {
             img {
                 width: 80px;
                 height: 60px;
+                max-width: none;
             }
 
         }
@@ -212,6 +213,10 @@ footer {
 
     section.contact {
         @extend .responsive-container;
+        @media (max-width: $small-max-width) {
+            width: 100%;
+        }
+
 
         position: relative;
         border-top: 0;
@@ -292,6 +297,9 @@ footer {
 
     section.footer-menu {
         @extend .responsive-container;
+        @media (max-width: $small-max-width) {
+            width: 100%;
+        }
 
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
