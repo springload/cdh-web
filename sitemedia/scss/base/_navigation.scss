@@ -186,6 +186,7 @@ header.nav {
 
 footer {
     padding-top: 150px;
+    @extend .responsive-container;
 
     ul {
         padding: 0;
@@ -212,12 +213,6 @@ footer {
     }
 
     section.contact {
-        @extend .responsive-container;
-        @media (max-width: $small-max-width) {
-            width: 100%;
-        }
-
-
         position: relative;
         border-top: 0;
         height: auto;
@@ -296,11 +291,6 @@ footer {
 
 
     section.footer-menu {
-        @extend .responsive-container;
-        @media (max-width: $small-max-width) {
-            width: 100%;
-        }
-
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
 

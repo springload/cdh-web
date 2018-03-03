@@ -328,7 +328,7 @@ $event-card-img-height: 240px;
 	 	background-size: cover;
 
 		h2 {
-			margin-bottom: 0;
+			margin-bottom: 5px;
 		}
 
 		@include cdhlogo-shadow(40px);
@@ -377,6 +377,8 @@ $event-card-img-height: 240px;
 	/* profile cards */
 	&.profile {
 		@include large-card;
+		display: block;
+		position: relative;
 		background: none; /* no blue stripes */
 
 		/* styles for image as photo */
@@ -386,20 +388,24 @@ $event-card-img-height: 240px;
 
 		a {
 			display: block;  /* make the whole card clickable */
+			position: absolute;
 			width: 100%;
 			height: 100%;
 		}
 
 		.content {
-			padding-top: 240px;
-			background-color: transparent;
+			margin-top: 240px;
+			padding-top: 15px;
+			background-color: $light-grey;
 			font-family: $font-stack-headline-bold;
+			width: 100%;
 
 			.title {
-				font-size: 16px;
+				font-size: 18px;
 				margin: 0;
 				color: $dark-grey;
-				font-family: $font-stack-headline;
+		  		font-family: $font-stack-body-text;
+		  		font-style: italic;
 			}
 			.name {
 				margin: 0;
@@ -790,7 +796,7 @@ $event-card-img-height: 240px;
 		    }
 
 	    h1 {
-	    	margin-bottom: 0;
+	    	margin-bottom: 5px;
 	    }
 
 	  	.title {   /* equiv to project short_description */
@@ -803,6 +809,9 @@ $event-card-img-height: 240px;
 	  		margin: 0;
 	  		padding: 0;
 	    	width: auto;
+	    	&:last-child {
+		    	margin-bottom: 30px;
+		    }
 
 		    @media (min-width: $large-min-width) {
 			    @include grid-column(7);
@@ -849,12 +858,15 @@ $event-card-img-height: 240px;
 		color: $dark-grey;
 		font-family: $font-stack-headline;
 		font-size: 18px;
+		margin-bottom: 35px;
 
 		@include grid-column(4);
-		@include grid-push(3);
+	    @media (min-width: $medium-min-width) and (max-width: $medium-max-width) {
+			@include grid-push(3);
+		}
 		@media (max-width: $small-max-width) {
 			@include full-grid-width;
-			margin-bottom: 35px;
+
 	    }
 	    a {
 	    	color: $dark-grey ;
@@ -899,15 +911,9 @@ $event-card-img-height: 240px;
 
 	header {
   		@include grid-push(3);
+  		@include grid-column(7);
 	    @media (max-width: $small-max-width) {
 	    	@include full-grid-width;
-	    }
-
-	    h1 {
-		    @media (min-width: $large-min-width) {
-			    @include grid-column(7);
-			    margin-left: 0;
-			}
 	    }
 
 	  	.short_description {   /* equiv to project short_description */
