@@ -6,6 +6,8 @@
 {% block main %}
 <section class="people">
 
+<h1>{{ title|default:"People" }}</h1>
+
 {# drop-down nav adapted from events page #}
 <div class="archive-nav">
   <a class="toggle">
@@ -19,7 +21,7 @@
   </ul>
 </div>
 
-<h1>{{ title|default:"People" }}</h1>
+
 {% for profile in object_list %}
     <div class="card profile"
         {% if profile.thumb %}style="background-image:url('{{ MEDIA_URL }}{{ profile.thumb }}')"{% endif %}>

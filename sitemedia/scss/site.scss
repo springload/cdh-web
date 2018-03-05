@@ -585,11 +585,6 @@ $event-card-img-height: 240px;
 }
 
 .archive-nav {
-	float: right;
-	text-align: right;
-	position: relative;
-	margin-right: $gutter;
-
 	font-family: $font-stack-headline;
 	font-size: 16px;
 
@@ -980,7 +975,7 @@ $event-card-img-height: 240px;
 
 }
 
-section.blogposts {
+section.blogposts, section.people, section.events {
 	@include grid-container;
 
 	h1 {

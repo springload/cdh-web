@@ -8,6 +8,8 @@
 
 <section class="events">
 
+  <h1>{{ title|default:'Upcoming' }} Events</h1>
+
 <div class="archive-nav">
   <a class="toggle">
     {{ title|default:'Upcoming' }}
@@ -24,7 +26,7 @@
   </ul>
 </div>
 
-    <h1>{{ title|default:'Upcoming' }} Events</h1>
+
     {% for event in events %}
         {% include 'events/snippets/event_card.html' %}
     {% empty %}
