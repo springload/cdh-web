@@ -70,15 +70,15 @@ class TestProfile(TestCase):
         profile = Profile(user=pers)
         assert str(profile) == '%s %s' % (pers.first_name, pers.last_name)
 
-    def get_absolute_url(self):
+    def test_get_absolute_url(self):
         pers = Person(username='foo', first_name='Jean', last_name='Jones')
         profile = Profile(user=pers, slug='jean-jones')
         assert profile.get_absolute_url() == \
             reverse('people:profile', kwargs={'slug': profile.slug})
 
-    def current_title(self):
-        pers = Person(username='foo', first_name='Jean', last_name='Jones')
-        profile = Profile(user=pers, slug='jean-jones')
+    def test_current_title(self):
+        pers = Person.objects.create(username='foo', first_name='Jean', last_name='Jones')
+        profile = Profile.objects.create(user=pers, slug='jean-jones')
         # no position
         assert profile.current_title is None
 
@@ -90,9 +90,10 @@ class TestProfile(TestCase):
         assert profile.current_title is None
 
         # current position
+        staff_title = Title.objects.create(title='staff')
         cur_post = Position.objects.create(user=pers, title=staff_title,
-            start_date='2016-06-01')
-        assert profile.current_title is cur_post.title
+            start_date=date(2016, 6, 1))
+        assert profile.current_title == cur_post.title
 
 
 @pytest.mark.django_db
