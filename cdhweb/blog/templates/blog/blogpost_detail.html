@@ -20,6 +20,8 @@
     {{ block.super}} {# still include blog feed links #}
 {% endblock %}
 
+{% block bodyattrs %}class="blogpost"{% endblock %}
+
 {% block main %}
 <article typeof="schema:BlogPosting" class="blogpost">
     <header>

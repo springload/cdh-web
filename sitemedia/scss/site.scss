@@ -5,6 +5,13 @@
 @import "fonts";
 
 
+/* nearly all block elements should be full-width on mobile */
+header, div, p, img, section, article {
+	@media (max-width: $small-max-width) {
+		@include full-grid-width();
+	}
+}
+
 /* container with max-width for large, medium, and small viewports */
 .responsive-container {
     max-width: $large-content-width;
@@ -60,23 +67,19 @@ div.spacer {
 }
 
 @mixin large-card {
- 	@include grid-column(4);
-
-	@media (max-width: $small-max-width) {
-		width: 100%;
-		float: none;
-		margin-left: 0;
-	}
+	@media (min-width: $medium-min-width) {
+	 	@include grid-column(4);
+	 }
 }
 
 @mixin small-card {
 	max-width: 225px;
-    @include grid-column(3);
-
 	@media (min-width: $medium-min-width) {
+	    @include grid-column(3);
 		max-width: none;
 	}
 }
+
 
 article.landing-page {
 	/* undo default body margin to clear top nav */
@@ -537,8 +540,9 @@ $event-card-img-height: 240px;
 		text-decoration: none;
 		color: $dark-grey;
 	}
-
-    @include grid-column(9);
+	@media (min-width: $medium-min-width) {
+ 	   @include grid-column(9);
+	}
     @media (min-width: $large-min-width) {
 	    @include grid-column(12);
 	}
@@ -571,16 +575,12 @@ $event-card-img-height: 240px;
 /* display text content within event list (e.g. for no upcoming)
    at full grid or full content width. */
 .events > div  {
- 	@include grid-column(9);
  	padding-bottom: 15px;
-
+	@media (min-width: $medium-min-width) {
+	 	@include grid-column(9);
+	}
     @media (min-width: $large-min-width) {
 	    @include grid-column(12);
-	}
-	@media (max-width: $small-max-width) {
-		width: 100%;
-		float: none;
-		margin-left: 0;
 	}
 }
 
@@ -688,16 +688,14 @@ $event-card-img-height: 240px;
     @include grid-container;
 
 	header {
-	    @include grid-column(6);
-  		@include grid-push(3);
+		@media (min-width: $medium-min-width) {
+		    @include grid-column(6);
+	  		@include grid-push(3);
 
-	    @media (min-width: $large-min-width) {
-		    @include grid-column(9);
-	  	}
-
-	    @media (max-width: $small-max-width) {
-	    	@include full-grid-width();
-	    }
+		    @media (min-width: $large-min-width) {
+			    @include grid-column(9);
+		  	}
+		  }
 
 	    h2 {
 		  font-size: modular-scale(-1);
@@ -723,10 +721,9 @@ $event-card-img-height: 240px;
 	.contributors {
 		font-size: 18px;
 
-		@include grid-column(3);
-	    @media (max-width: $small-max-width) {
-	    	@include full-grid-width;
-	    }
+		@media (min-width: $medium-min-width) {
+			@include grid-column(3);
+		}
 
 		ul {
 			list-style-type: none;
@@ -759,13 +756,14 @@ $event-card-img-height: 240px;
 
 	.description {
 
-		@include grid-column(6);
-	    @media (min-width: $large-min-width) {
-		    @include grid-column(9);
+		@media (min-width: $medium-min-width) {
+			@include grid-column(6);
+		    @media (min-width: $large-min-width) {
+			    @include grid-column(9);
+			}
 		}
 
 		@media (max-width: $small-max-width) {
-			@include full-grid-width;
 			margin-bottom: 100px;
 	    }
 
@@ -788,12 +786,10 @@ $event-card-img-height: 240px;
 	@include grid-container;
 
 	header {
-  		@include grid-push(3);
-  		@include grid-column(7);
-
-	    @media (max-width: $small-max-width) {
-	    	@include full-grid-width;
-		    }
+		@media (min-width: $medium-min-width) {
+	  		@include grid-push(3);
+  			@include grid-column(7);
+		}
 
 	    h1 {
 	    	margin-bottom: 5px;
@@ -824,11 +820,9 @@ $event-card-img-height: 240px;
 		text-transform: capitalize;
 		margin-bottom: 35px;
 
-		@include grid-column(3);
-
-	    @media (max-width: $small-max-width) {
-	    	@include full-grid-width;
-	    }
+		@media (min-width: $medium-min-width) {
+			@include grid-column(3);
+		}
 
 		ul {
 			list-style-type: none;
@@ -848,10 +842,9 @@ $event-card-img-height: 240px;
 		margin: 0 0 50px 0;
     	width: auto;
 
-		@include grid-column(5);
-		@media (max-width: $small-max-width) {
-			@include full-grid-width;
-	    }
+		@media (min-width: $medium-min-width) {
+			@include grid-column(5);
+		}
 	}
 
 	.education {
@@ -860,14 +853,12 @@ $event-card-img-height: 240px;
 		font-size: 18px;
 		margin-bottom: 35px;
 
-		@include grid-column(4);
-	    @media (min-width: $medium-min-width) and (max-width: $medium-max-width) {
-			@include grid-push(3);
+		@media (min-width: $medium-min-width) {
+			@include grid-column(4);
+		    @media (max-width: $medium-max-width) {
+				@include grid-push(3);
+			}
 		}
-		@media (max-width: $small-max-width) {
-			@include full-grid-width;
-
-	    }
 	    a {
 	    	color: $dark-grey ;
 	    	text-decoration: none;
@@ -883,21 +874,16 @@ $event-card-img-height: 240px;
 	}
 	p {
 		margin-top: 0;
-		@media (max-width: $small-max-width) {
-			@include full-grid-width;
-	    }
-
 	}
 
 	.bio {
-		@include grid-column(6);
-		@include grid-push(3);
-	    @media (min-width: $large-min-width) {
+		@media (min-width: $medium-min-width) {
+			@include grid-column(6);
+			@include grid-push(3);
+		}
+    	@media (min-width: $large-min-width) {
 			@include grid-column(8);
 		}
-		@media (max-width: $small-max-width) {
-			@include full-grid-width;
-	    }
 
 	}
 
@@ -910,11 +896,10 @@ $event-card-img-height: 240px;
 	@include grid-container;
 
 	header {
-  		@include grid-push(3);
-  		@include grid-column(7);
-	    @media (max-width: $small-max-width) {
-	    	@include full-grid-width;
-	    }
+		@media (min-width: $medium-min-width) {
+	  		@include grid-push(3);
+  			@include grid-column(7);
+  		}
 
 	  	.short_description {   /* equiv to project short_description */
 	  		font-style: italic;
@@ -922,8 +907,9 @@ $event-card-img-height: 240px;
 	  		color: $dark-grey;
 	  		font-size: 21px;
 
-		    @include grid-column(6);
-
+			@media (min-width: $medium-min-width) {
+			    @include grid-column(6);
+			}
     		@media (min-width: $large-min-width) {
 			    @include grid-column(7);
 			}
@@ -938,16 +924,9 @@ $event-card-img-height: 240px;
 		font-size: 18px;
 		line-height: 1.22;
 
-		@include grid-column(3);
-	    @media (max-width: $small-max-width) {
-			@include full-grid-width;
-	    }
-
-	    @media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
+		@media (min-width: $medium-min-width) {
+			@include grid-column(3);
+		}
 
 		ul {
 			list-style-type: none;
@@ -983,15 +962,12 @@ $event-card-img-height: 240px;
 	}
 
 	.description {
-		@include grid-column(6);
-
+		@media (min-width: $medium-min-width) {
+			@include grid-column(6);
+		}
 	    @media (min-width: $large-min-width) {
 		    @include grid-column(9);
 		}
-
-		@media (max-width: $small-max-width) {
-			@include full-grid-width;
-	    }
 
 		img {
 			max-width: 100%;
@@ -1008,14 +984,12 @@ section.blogposts {
 	@include grid-container;
 
 	h1 {
-		@include grid-column(7);
+		@media (min-width: $medium-min-width) {
+			@include grid-column(7);
+		}
 	    @media (min-width: $large-min-width) {
 			@include grid-column(10);
 		}
-		@media (max-width: $small-max-width) {
-			@include full-grid-width;
-		}
-
 	}
 
 	.archive-nav {
@@ -1042,10 +1016,6 @@ section.blogposts {
 			@include grid-column(8);
 		}
 
-		@media (max-width: $small-max-width) {
-			@include full-grid-width;
-		}
-
 	}
 }
 
@@ -1067,6 +1037,12 @@ section.blogposts {
 	}
 }
 
+
+body.blogpost {
+	#maincontent {
+		@include grid-container;
+	}
+}
 
 .blogpost {
 	// margin-top: 340px; // currently handled by spacer div
