@@ -997,6 +997,9 @@ section.blogposts, section.people, section.events {
 		justify-self: end;
 		float: none;
 		margin: 0;
+		> a {
+			line-height: 54px;   /* match h1 vertically */
+		}
 
 		@media (max-width: $small-max-width) {
 		    grid-column: start / end;
