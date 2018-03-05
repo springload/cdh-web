@@ -990,6 +990,10 @@ section.blogposts {
 	    @media (min-width: $large-min-width) {
 			@include grid-column(10);
 		}
+		@media (max-width: $small-max-width) {
+			@include full-grid-width;
+			margin-bottom: 5px;
+		}
 	}
 
 	.archive-nav {
@@ -1024,16 +1028,15 @@ section.blogposts {
 	padding: 0;
 	margin-bottom: 50px;
 
-	@include grid-push(1);
-	@include grid-column($medium-grid-cols - 1);
+
+    @media (min-width: $medium-min-width) {
+		@include grid-push(1);
+		@include grid-column(7);
+	}
 
     @media (min-width: $large-min-width) {
 		@include grid-push(2);
-		@include grid-column($large-grid-cols - 2);
-	}
-
-	@media (max-width: $small-max-width) {
-		@include full-grid-width;
+		@include grid-column(8);
 	}
 }
 
