@@ -60,7 +60,8 @@ class StaffListView(ProfileMixinView, ListView, LastModifiedListMixin):
         context = super(StaffListView, self).get_context_data()
         context.update({
             'title': 'Who we are',
-            'nav_title': 'Staff'
+            'nav_title': 'Who we are | Current',
+            'archive_menu_title': 'Current'
         })
         return context
 
@@ -74,7 +75,10 @@ class AlumniListView(ProfileMixinView, ListView, LastModifiedListMixin):
     def get_context_data(self):
         context = super(AlumniListView, self).get_context_data()
         context.update({
-            'title': 'Alumni'
+            'title': 'Alumni',
+            'nav_title': 'Who we are | Alumni',
+            'archive_menu_title': 'Alumni'
+
         })
         return context
 
