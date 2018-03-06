@@ -17,3 +17,6 @@ DATABASES = {
 # required with django 1.11 when debug is false, even for tests
 ALLOWED_HOSTS = ["*"]
 
+# configure django-compressor to compress css & javascript
+COMPRESS_ENABLED = True
+
