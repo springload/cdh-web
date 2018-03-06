@@ -145,11 +145,6 @@ header.nav {
                     text-transform: uppercase;
                     font-family: $font-stack-headline-bold;
                     color: #000000;
-                    /* display secondary nav for menu section */
-                    .secondary-nav {
-                            display: block;
-                        }
-                    }
                 }
             }
 
@@ -179,7 +174,7 @@ header.nav {
                     display: block;
                 }
             }
-
+        }
     }
 }
 
