@@ -14,17 +14,13 @@
 <header>
     <h1>{{ profile.title }}</h1>
     {# display all positions, current first; dates for non-current #}
-    {# <p class="title">{{ profile.current_title|default:'' }}</p> #}
-    {# TODO: move titles closer together #}
     {% for position in profile.user.positions.all %}
-        <p class="title">{% if position.end_date %}
+        <p class="title">{% if not position.is_current %}
             {{ position.start_date.year }}{% if position.end_date.year != position.start_date.year%}-{{ position.end_date.year }}{% endif %}
             {% endif %}
         {{ position.title }}
         </p>
-
     {% endfor %}
-
 </header>
 
 <div class="links">
