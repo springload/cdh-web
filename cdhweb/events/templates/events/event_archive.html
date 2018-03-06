@@ -47,9 +47,9 @@
         </p></div>
     {% endfor %}
 
-    {% if recent.exists %}
-    <h2>Recent Events</h2>
-        {% for event in recent reversed %}  {# display in chronological order #}
+    {% if past.exists %}
+    <h2>Past Events</h2>
+        {% for event in past reversed %}  {# display in chronological order #}
             {% include 'events/snippets/event_card.html' %}
         {% endfor %}
     {% endif %}
