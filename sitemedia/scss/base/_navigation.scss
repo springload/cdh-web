@@ -201,13 +201,15 @@ footer {
     @media (max-width: $small-max-width) {
         /* styles for footer as toggable mobile nav menu */
         &.mobile-nav {
-            position: absolute;
-            top: 35px;
+            position: fixed;
+            padding-top: $small-header-nav-height;
+            top: 0;
+            bottom: 0;
             background-color: white;
-            padding-top: 0;
             width: 100%;
             max-width: 100%;
             z-index: 5;
+            overflow: auto;
 
             border-bottom: 1px solid #d8d8d8;
 

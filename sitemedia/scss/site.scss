@@ -67,8 +67,10 @@ div.spacer {
 }
 
 @mixin large-card {
+	max-width: 310px;
 	@media (min-width: $medium-min-width) {
 	 	@include grid-column(4);
+		max-width: none;
 	 }
 }
 
@@ -512,6 +514,9 @@ $event-card-img-height: 240px;
     @media (min-width: $medium-min-width) {
 		@include grid-container;
 	}
+	h2 {
+		@include full-grid-width;
+	}
 }
 
 @mixin header-with-icon {
@@ -548,6 +553,10 @@ $event-card-img-height: 240px;
 	}
 }
 // TODO: mixin for icons, support h1 for individual pages
+
+.fixed {
+	position: fixed;
+}
 
 .events > h2, .events h1 {
 	background-image: url('../img/icons/CDH_icon_cal.svg');

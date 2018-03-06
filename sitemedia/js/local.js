@@ -45,6 +45,7 @@ $(document).ready(function(){
         e.preventDefault();
         // toggle footer to act as main mobile nav
         $('footer').toggleClass('mobile-nav');
+        $('body').toggleClass('fixed');
     });
     $('a.toggle').on('click', function(e){
         $(this).parent().toggleClass('open');
