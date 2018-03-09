@@ -66,3 +66,20 @@ Run tests using py.test::
 
   py.test
 
+Documentation
+~~~~~~~~~~~~~
+
+Documentation is generated using `sphinx <http://www.sphinx-doc.org/>`__
+To generate documentation, first install development requirements::
+
+    pip install -r dev-requirements.txt
+
+Then build the documentation using the customized make file in the `docs`
+directory::
+
+    cd sphinx-docs
+    make html
+
+When building documentation for a production release, use `make docs` to
+update the published documentation on GitHub Pages.
+
