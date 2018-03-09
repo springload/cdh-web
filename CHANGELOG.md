@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## 2.2
+
+* As a user, I want to see past CDH positions on a staff member profile page so I can learn about a person's history with CDH.
+* As a user I want to view a list of alumni so I can get learn about people who have worked with CDH in the past.
+* As a user, I want to see details about CDH alumni so I can learn about their past work at CDH and where they are now.
+* Upcoming events page now includes 6 most recent past events
+* bug fix: home page doesn't display any message when there are no upcoming events
+* bug fix: events page is broken when there are no upcoming events
+* bug fix: events with different starting and ending months error on display
+* bug fix: non-CDH address display on event detail page repeats information
+* bug fix: allow adding speakers to events pages without creating a profile
+* bug fix: people with multiple positions are listed multiple times on the staff page
+* Multiple design fixes and improvements
+  * converted from Neat grid to CSS Grid for main grid and footer
+  * fixed broken image reference for events with no detail image
+  * mobile footer formatting and mobile main navigation menu
+  * Typography link style fixes
+  * Main menu navigation (LM viewport) now provides submenu links on hover
+  * Improved navigation menu style for moving between events pages, staff and alumni pages
+  * Improvements to event card, project detail page, profile page, content pages
+
 ## 2.1
 
 * As a content editor, I want to associate people with projects more efficiently so I don't have to enter repeating information.
