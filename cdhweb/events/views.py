@@ -20,12 +20,14 @@ class EventMixinView(object):
     model = Event
 
     def get_queryset(self):
-        # use displayable manager to find published events only
+        '''use displayable manager to find published events only'''
         # (or draft profiles for logged in users with permission to view)
         return Event.objects.published() # TODO: published(for_user=self.request.user)
 
 
 class EventSemesterDates(object):
+    '''Mixin to return list of event semester dates based on
+    event dates in the system.'''
 
     def get_semester_date_list(self):
         date_list = []
@@ -43,34 +45,43 @@ class EventSemesterDates(object):
             sem_date = (semester, date.year)
             if sem_date not in date_list:
                 date_list.append(sem_date)
-
         return date_list
 
 
 class UpcomingEventsView(EventMixinView, ArchiveIndexView, EventSemesterDates,
                          LastModifiedListMixin):
+    '''Upcoming events view.  Displays future published events and
+    6 most recent past events.'''
+
     date_field = "start_time"
     allow_future = True
     context_object_name = 'events'
+    allow_empty = True   # don't 404 even if no events in the system
 
     # NOTE: can't use get_queryset to restrict to upcoming because
     # that affects the archive date list as well; restricting to upcoming
     # events in get_context_data instaed
     def get_context_data(self, *args, **kwargs):
         context = super(UpcomingEventsView, self).get_context_data(*args, **kwargs)
+        event_qs = context['events']
         context.update({
-            'events': context['events'].upcoming(),
+            'events': event_qs.upcoming(),
+            # find 6 most recent past events
+            'past': event_qs.recent()[:6],
             'date_list': self.get_semester_date_list()
         })
         return context
 
     def last_modified(self):
-        return self.get_queryset().upcoming() \
-            .order_by('updated').first().updated
+        upcoming = self.get_queryset().upcoming()
+        # don't error if there are no upcoming events
+        if upcoming.exists():
+            return upcoming.order_by('updated').first().updated
 
 
 class EventSemesterArchiveView(EventMixinView, YearArchiveView,
                                EventSemesterDates, LastModifiedListMixin):
+    '''Display events by semester'''
     date_field = "start_time"
     make_object_list = True
     allow_future = True
@@ -118,6 +129,7 @@ class EventSemesterArchiveView(EventMixinView, YearArchiveView,
 
 
 class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
+    '''Event detail page'''
 
     def get_object(self, queryset=None):
         if queryset is None:
@@ -160,6 +172,7 @@ class EventRedirectView(RedirectView):
 
 
 class EventIcalView(EventDetailView):
+    '''Download event information as ical'''
 
     def render_to_response(self, context, **response_kwargs):
         cal = icalendar.Calendar()

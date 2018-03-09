@@ -1,4 +1,7 @@
+from datetime import date
+
 from django.conf import settings
+from django.db.models import Q
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
@@ -46,17 +49,36 @@ class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
 class StaffListView(ProfileMixinView, ListView, LastModifiedListMixin):
 
     def get_queryset(self):
+        # filter to profiles with staff flag set
+        # *and* a current position (no end date or unexpired end date).
         # order by job title sort order and then by last name
-        # (TODO: perhaps job start date for secondary?)
+        # (TODO: perhaps job start date for secondary sort?)
         return super(StaffListView, self).get_queryset() \
-            .filter(is_staff=True) \
-            .distinct() \
-            .order_by('user__positions__title__sort_order', 'user__last_name')
+            .staff().current().order_by_position().distinct()
 
     def get_context_data(self):
         context = super(StaffListView, self).get_context_data()
         context.update({
-            'title': 'Who we are'
+            'title': 'Who we are',
+            'nav_title': 'Who we are | Current',
+            'archive_menu_title': 'Current'
+        })
+        return context
+
+
+class AlumniListView(ProfileMixinView, ListView, LastModifiedListMixin):
+
+    def get_queryset(self):
+        return super(AlumniListView, self).get_queryset() \
+            .staff().not_current().order_by_position().distinct()
+
+    def get_context_data(self):
+        context = super(AlumniListView, self).get_context_data()
+        context.update({
+            'title': 'Alumni',
+            'nav_title': 'Who we are | Alumni',
+            'archive_menu_title': 'Alumni'
+
         })
         return context
 

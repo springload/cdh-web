@@ -5,13 +5,35 @@
 
 {% block main %}
 <section class="people">
-<h1>{{ title|default:"People" }}</h1>
+
+<h1>{{ title|default:"Who we are" }}</h1>
+
+{# drop-down nav adapted from events page #}
+<div class="archive-nav">
+  <a class="toggle">
+    {{ archive_menu_title }}
+    <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
+  <ul class="submenu">
+    {% url 'people:staff' as staff_url %}
+    {% url 'people:alumni' as alumni_url %}
+    <li {% if request.path == staff_url %}class="current"{% endif %}><a href="{{ staff_url }}">Current</a></li>
+    <li {% if request.path == alumni_url %}class="current"{% endif %}><a href="{{ alumni_url }}">Alumni</a></li>
+  </ul>
+</div>
+
+
 {% for profile in object_list %}
     <div class="card profile"
         {% if profile.thumb %}style="background-image:url('{{ MEDIA_URL }}{{ profile.thumb }}')"{% endif %}>
-    <a href="{{ profile.get_absolute_url }}">
+    <a href="{{ profile.get_absolute_url }}" title="{{ profile.title }}">
         <div class="content">
-        <p class="title">{{ profile.current_title|default:'' }}</p>
+
+        {% with position=profile.user.positions.first %}
+        <p class="title">
+            {% if not position.is_current %}{{ position.years }}<br/>{% endif %}
+            {{ profile.user.positions.first.title|default:'' }}
+        </p>
+        {% endwith %}
         <p class="name">{{ profile.title }}</p>
         </div>
     </a>

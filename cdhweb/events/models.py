@@ -37,16 +37,18 @@ class EventType(models.Model):
 
 
 class Location(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255,
+        help_text='Name of the location')
     short_name = models.CharField(max_length=80, blank=True)
-    address = models.CharField(max_length=255)
+    address = models.CharField(max_length=255,
+        help_text='Addres of the location (will not display if same as name)')
 
     def __str__(self):
         return self.short_name or self.name
 
     @property
     def display_name(self):
-        if self.name and self.address:
+        if self.name and self.address and self.name != self.address:
             return ', '.join([self.name, self.address])
         return self.name
 
@@ -62,17 +64,38 @@ class EventQuerySet(models.QuerySet):
             tzinfo=timezone.get_default_timezone())
         return self.filter(end_time__gte=today)
 
+    def recent(self):
+        '''Find past events, most recent first.  Only includes events
+        with end date in the past.'''
+        now = timezone.now()
+        # construct a datetime based on now but with zero hour/minute/second
+        today = datetime(now.year, now.month, now.day,
+            tzinfo=timezone.get_default_timezone())
+        return self.filter(end_time__lt=today).order_by('-start_time')
+
+
 
 class EventManager(DisplayableManager):
     # extend displayable manager to preserve access to published filter
+
     def get_queryset(self):
+        '''return default queryset :class:`EventQuerySet`'''
         return EventQuerySet(self.model, using=self._db)
 
     def upcoming(self):
+        '''Find upcoming events. Includes events that end on the current
+        day even if the start time is past.'''
         return self.get_queryset().upcoming()
+
+    def recent(self):
+        '''Find past events, most recent first.  Only includes events
+        with end date in the past.'''
+        return self.get_queryset().recent()
 
 
 class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
+    '''An event, such as a workshop, lecture, or conference.'''
+
     # description = rich text field
     # NOTE: do we want a sponsor field? or jest include in description?
     sponsor = models.CharField(max_length=80, null=True, blank=True)
@@ -114,6 +137,7 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         ordering = ("start_time",)
 
     def get_absolute_url(self):
+        '''event detail url on this site'''
         # we don't have to worry about the various url config options
         # that mezzanine has to support; just handle the url style we
         # want to use locally
@@ -129,6 +153,7 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         return absolutize_url(self.get_absolute_url())
 
     def get_ical_url(self):
+        '''URL to download this event as ical'''
         return reverse('event:ical', kwargs={
             'year': self.start_time.year,
             # force two-digit month
@@ -136,31 +161,37 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
             'slug': self.slug})
 
     def when(self):
-        '''event start/end date and time, formatted for display.'''
+        '''Event start/end date and time, formatted for display.
+        Removes leading zeros from hours and converts am/pm to lower case.'''
+
+        # NOTE: - in %-I is to remove leading zero
+        # (possibly platform specific?)
+
         local_tz = timezone.get_default_timezone()
         # convert dates to local timezone for display
         local_start = self.start_time.astimezone(local_tz)
         local_end = self.end_time.astimezone(local_tz)
-        start = local_start.strftime('%B %d %I:%M')
+        start = ' '.join([local_start.strftime('%B %d'),
+                          local_start.strftime('%-I:%M')])
         start_ampm = local_start.strftime('%p')
         # include start am/pm if *different* from end
         if start_ampm != local_end.strftime('%p'):
-            start += ' %s' % start_ampm
+            start += ' %s' % start_ampm.lower()
 
         # include end month and day if *different* from start
         end_pieces = []
         if local_start.month != local_end.month:
-            end_pieces.append(local_end.strfime('%B'))
-        if local_start.day != local_end.day:
+            end_pieces.append(local_end.strftime('%B %d'))
+        elif local_start.day != local_end.day:
             end_pieces.append(local_end.strftime('%d'))
-        end_pieces.append(local_end.strftime('%I:%M %p'))
+        end_pieces.append(local_end.strftime('%-I:%M %p').lower())
         end = ' '.join(end_pieces)
 
-        # FIXME: strftime doesn't provide non-leading zero days
-        # and times - may want to clean these up. May also want to
-        # convert am/pm to lower case
-
         return ' – '.join([start, end])
+
+    def duration(self):
+        '''duration between start and end time as :class:`datetime.timedelta`'''
+        return self.end_time - self.start_time
 
     def ical_event(self):
         '''Return the current event as a :class:`icalendar.Event` for

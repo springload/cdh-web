@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime, timedelta
+
 from django.test import TestCase
 from django.urls import resolve, reverse
 from django.utils import timezone
@@ -9,6 +10,7 @@ from mezzanine.core.models import CONTENT_STATUS_DRAFT
 import pytz
 
 from cdhweb.events.models import Event, EventType, Location
+from cdhweb.people.models import Person
 from cdhweb.resources.utils import absolutize_url
 
 
@@ -32,6 +34,10 @@ class TestLocation(TestCase):
         assert str(loc.display_name) == loc.name
         loc.address = 'Waterstone Library, Floor 3'
         assert str(loc.display_name) == '%s, %s' % (loc.name, loc.address)
+
+        # name and address thesame
+        loc = Location(name='101 East Pyne', address='101 East Pyne')
+        assert str(loc.display_name) == loc.name
 
 
 class TestEvent(TestCase):
@@ -67,26 +73,52 @@ class TestEvent(TestCase):
         end = jan15 + timedelta(hours=1, minutes=30)
         event = Event(start_time=jan15, end_time=end)
         # start day month date time (no pm), end time (pm)
-        assert event.when() == '%s – %s' % (jan15.strftime('%B %d %I:%M'),
-                                            end.strftime('%I:%M %p'))
+        assert event.when() == '%s – %s' % (jan15.strftime('%B %d %-I:%M'),
+                                            end.strftime('%-I:%M %p').lower())
 
         # same day, starting in am and ending in pm
         event.start_time = jan15 - timedelta(hours=10)
         # should include am on start time
-        assert event.when() == '%s – %s' % \
-            (event.start_time.strftime('%B %d %I:%M %p'),
-             end.strftime('%I:%M %p'))
+        # NOTE: %-I should be equivalent to %I with lstrip('0')
+        assert event.when() == '%s %s – %s' % \
+            (event.start_time.strftime('%B %d %-I:%M'),
+             event.start_time.strftime('%p').lower(),
+             end.strftime('%I:%M %p').lstrip('0').lower())
 
         # different days, same month
         event.start_time = jan15 + timedelta(days=1)
-        assert event.when() == '%s – %s' % \
-            (event.start_time.strftime('%B %d %I:%M'),
-             end.strftime('%d %I:%M %p'))
+        assert event.when() == '%s – %s %s' % \
+            (event.start_time.strftime('%B %d %-I:%M'),
+             end.strftime('%d %-I:%M'), end.strftime('%p').lower())
 
         # different timezone should get localized to current timezone
         event.start_time = datetime(2015, 1, 15, hour=20, tzinfo=pytz.UTC)
         event.end_time = event.start_time + timedelta(hours=12)
-        assert '3:00 PM' in event.when()
+        assert '3:00 pm' in event.when()
+
+        # different months
+        end = jan15 + timedelta(days=35)
+        event = Event(start_time=jan15, end_time=end)
+        # month name should display
+        assert end.strftime('%B') in event.when()
+
+        # different months, same day
+        feb15 = datetime(2015, 2, 15, hour=16, tzinfo=timezone.get_default_timezone())
+        event = Event(start_time=jan15, end_time=feb15)
+        assert event.start_time.strftime('%B %d') in event.when()
+        assert event.end_time.strftime('%B %d') in event.when()
+
+    def test_duration(self):
+        jan15 = datetime(2015, 1, 15, hour=16, tzinfo=timezone.get_default_timezone())
+        end = jan15 + timedelta(hours=1)
+        event = Event(start_time=jan15, end_time=end)
+        dur = event.duration()
+        assert isinstance(dur, timedelta)
+        assert dur == timedelta(hours=1)
+
+        # should work with days also
+        event.end_time = jan15 + timedelta(days=1)
+        assert event.duration().days == 1
 
     def test_ical_event(self):
         jan15 = datetime(2015, 1, 15, hour=16)
@@ -142,6 +174,26 @@ class TestEventQueryset(TestCase):
 
         assert earlier_event in list(Event.objects.upcoming())
 
+    def test_recent(self):
+        # use django timezone util for timezone-aware datetime
+        tomorrow = timezone.now() + timedelta(days=1)
+        yesterday = timezone.now() - timedelta(days=1)
+        last_month = timezone.now() - timedelta(days=30)
+        event_type = EventType.objects.first()
+        next_event = Event.objects.create(start_time=tomorrow, end_time=tomorrow,
+            slug='some-workshop', event_type=event_type)
+        last_event = Event.objects.create(start_time=yesterday, end_time=yesterday,
+            slug='some-workshop', event_type=event_type)
+        older_event = Event.objects.create(start_time=yesterday, end_time=yesterday,
+            slug='some-workshop', event_type=event_type)
+
+        recent = list(Event.objects.recent())
+        assert next_event not in recent
+        assert last_event in recent
+        assert older_event in recent
+        # most recent listed first
+        assert last_event == recent[0]
+
 
 class TestViews(TestCase):
     fixtures = ['test_events.json']
@@ -192,6 +244,8 @@ class TestViews(TestCase):
         self.assertContains(response, event.get_ical_url())
         self.assertContains(response, event.full_url())
         self.assertContains(response, event.content)
+        self.assertNotContains(response, '<img property="schema:image',
+            msg_prefix='should not embed image when event has none')
 
         # last modified header should be set on response
         assert response.has_header('last-modified')
@@ -201,6 +255,16 @@ class TestViews(TestCase):
         response = self.client.get(event.get_absolute_url(),
             HTTP_IF_MODIFIED_SINCE=modified)
         assert response.status_code == 304
+
+        # test with user without profile
+        speaker = Person.objects.create(username='anon', first_name='Anne',
+            last_name='Onomus')
+        event.speakers.add(speaker)
+        response = self.client.get(event.get_absolute_url())
+        self.assertContains(response, str(speaker),
+            msg_prefix='event speaker name should display without profile')
+
+        # TODO: how to test with image associated?
 
         # get by slug with wrong dates - should not be found
         response = self.client.get(reverse('event:detail',
@@ -214,6 +278,16 @@ class TestViews(TestCase):
         assert response.status_code == 404
 
     def test_upcoming(self):
+        # no upcoming events - should not error
+        response = self.client.get(reverse('event:upcoming'))
+        assert response.status_code == 200
+        self.assertContains(response,
+            "Next semester's events are being scheduled")
+        self.assertContains(response,
+            "Check back later")
+        self.assertContains(response,
+            reverse('event:by-semester', args=['fall', '2017']))
+
         # use django timezone util for timezone-aware datetime
         tomorrow = timezone.now() + timedelta(days=1)
         event_type = EventType.objects.first()
@@ -240,6 +314,12 @@ class TestViews(TestCase):
         past_event = Event.objects.filter(end_time__lte=today).first()
         assert past_event not in response.context['events']
 
+        # should include recent events
+        assert past_event in response.context['past']
+        self.assertContains(response, 'Past Events')
+        self.assertContains(response, past_event.title)
+        self.assertContains(response, past_event.get_absolute_url())
+
         # should include all semesters and years represented in events
         date_list = response.context['date_list']
         assert ('Fall', 2016) in date_list
@@ -260,6 +340,15 @@ class TestViews(TestCase):
         response = self.client.get(reverse('event:upcoming'),
             HTTP_IF_MODIFIED_SINCE=modified)
         assert response.status_code == 304
+
+        # no upcoming events OR past events
+        Event.objects.all().delete()
+        response = self.client.get(reverse('event:upcoming'))
+        assert response.status_code == 200
+        self.assertContains(response,
+            "Next semester's events are being scheduled")
+        self.assertContains(response,
+            "Check back later.")
 
     def test_events_by_semester(self):
         response = self.client.get(reverse('event:by-semester', args=['spring', 2017]))

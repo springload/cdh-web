@@ -23,6 +23,11 @@ ADMIN_MENU_ORDER = (
     ("Content", ("pages.Page", "blog.BlogPost",
                 (_("Media Library"), "media-library"),
                 "resources.Attachment")),
+    ("Events", ('events.Event', 'events.Location', 'events.EventType')),
+    ('Profiles', ('people.Person', 'people.Position', 'people.Title')),
+    ('Projects', ('projects.Project', 'projects.Grant', 'projects.Membership',
+                 'projects.Role', 'projects.GrantType')),
+    ('Resources', ('resources.ResourceType', 'taggit.Tag')),
     ("Site", ("sites.Site", "redirects.Redirect", "conf.Setting")),
     ("Users", ("auth.User", "auth.Group",)),
 )
@@ -286,6 +291,7 @@ INSTALLED_APPS = [
     "taggit",
     'adminsortable2',
     "compressor",
+    "fullurl",
     "django_cas_ng",
     "pucas",
     # local apps
@@ -317,10 +323,8 @@ MIDDLEWARE_CLASSES = (
 
     "mezzanine.core.request.CurrentRequestMiddleware",
     "mezzanine.core.middleware.RedirectFallbackMiddleware",
-    "mezzanine.core.middleware.TemplateForDeviceMiddleware",
-    "mezzanine.core.middleware.TemplateForHostMiddleware",
     "mezzanine.core.middleware.AdminLoginInterfaceSelectorMiddleware",
-    "mezzanine.core.middleware.SitePermissionMiddleware",
+    # "mezzanine.core.middleware.SitePermissionMiddleware",
     "mezzanine.pages.middleware.PageMiddleware",
     "mezzanine.core.middleware.FetchFromCacheMiddleware",
 )

@@ -7,3 +7,5 @@ repo_url: 'https://www.github.com/{{repo }}.git'
 version: '{{ ver.stdout }}'
 # Name of the django application (usually 'project' of 'project-django')
 djangoapp: cdhweb
+# deploy user HOME
+home: "{{ lookup('env', 'HOME') }}"

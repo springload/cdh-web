@@ -43,7 +43,9 @@ $(document).ready(function(){
 
     $('.menu-toggle').on('click', function(e){
         e.preventDefault();
-        $('#mainmenu').toggle();
+        // toggle footer to act as main mobile nav
+        $('footer').toggleClass('mobile-nav');
+        $('body').toggleClass('fixed');
     });
     $('a.toggle').on('click', function(e){
         $(this).parent().toggleClass('open');
@@ -51,5 +53,17 @@ $(document).ready(function(){
     });
 
 
+    // show submenu on mouseover for main menu entry
+    $('.primary-nav > li').not('.current-page').mouseover(function() {
+        // hide all secondary nav, show this one
+        $(this).parent().find('li .secondary-nav').hide();
+        $(this).find('.secondary-nav').show();
+    });
+    // restore current page menu when mouse leaves primary nav
+    $('.primary-nav').mouseout(function() {
+        // hide all secondary nav, show the current one
+        $(this).find('.secondary-nav').hide();
+        $(this).find('.secondary-nav.active').show();
+    })
 
 });

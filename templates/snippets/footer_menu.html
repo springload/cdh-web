@@ -4,6 +4,8 @@
 <ul>
 {% for page in page_branch %}
     {% if page.in_menu %}
+    {# footer has 6 columns; ul breaks to next column #}
+    {% if not forloop.first and forloop.counter <= 6 %}<ul>{% endif %}
         <li class='menu-header'>
             {# set page_branch for submenu if there is one #}
             {% if page.has_children_in_menu %}
@@ -15,6 +17,10 @@
                 {% page_menu page "snippets/footer_secondary_nav.html" %}
             </ul>
             {% endif %}
+        </li>
+        {% if forloop.counter < 6 %}
+        </ul>
+        {% endif %}
     {% endif %}
 {% endfor %}
 {% if user.is_staff %} {# convenience admin link for logged in users #}

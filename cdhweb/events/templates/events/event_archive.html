@@ -8,8 +8,12 @@
 
 <section class="events">
 
+  <h1>{{ title|default:'Upcoming' }} Events</h1>
+
 <div class="archive-nav">
-  <a class="toggle"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>
+  <a class="toggle">
+    {{ title|default:'Upcoming' }}
+    <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
   <ul class="submenu">
     {# include upcoming events page link #}
     {% url 'event:upcoming' as upcoming_url %}
@@ -22,10 +26,33 @@
   </ul>
 </div>
 
-    <h1>{{ title|default:'Upcoming' }} Events</h1>
+
     {% for event in events %}
         {% include 'events/snippets/event_card.html' %}
+    {% empty %}
+        {# semester event archive will 404 for no events; upcoming does not #}
+        <div><p>Next semester's events are being scheduled.
+        {# link to most recent semester if we have past events #}
+        {% if date_list %}
+            Check back later or view
+            {% for semester, year in date_list reversed %}
+                {% if forloop.first %}
+                    {% url 'event:by-semester' semester=semester|slugify year=year as event_url %}
+                    <a href="{{ event_url }}">{{ semester }} {{ year }}</a></li>
+                {% endif %}
+            {% endfor %} events.
+        {% else %}
+            Check back later.
+        {% endif %}
+        </p></div>
     {% endfor %}
+
+    {% if past.exists %}
+    <h2>Past Events</h2>
+        {% for event in past reversed %}  {# display in chronological order #}
+            {% include 'events/snippets/event_card.html' %}
+        {% endfor %}
+    {% endif %}
 </section>
 
 {% endblock %}

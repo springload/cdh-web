@@ -121,6 +121,12 @@ local_settings.py
 # Scrapy stuff:
 .scrapy
 
+# Sphinx documentation
+sphinx-docs/_build/
+
+# PyBuilder
+target/
+
 # Jupyter Notebook
 .ipynb_checkpoints
 

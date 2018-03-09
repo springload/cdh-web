@@ -7,6 +7,7 @@ from django.views.generic.dates import ArchiveIndexView, YearArchiveView, \
     MonthArchiveView
 
 from cdhweb.blog.models import BlogPost
+from cdhweb.resources.utils import absolutize_url
 from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
 
 
@@ -31,10 +32,13 @@ class BlogPostArchiveMixin(BlogPostMixinView, LastModifiedListMixin):
 
 
 class BlogIndexView(BlogPostArchiveMixin, ArchiveIndexView):
+    '''Main blog post list view'''
     date_list_period = 'month'
 
 
 class BlogYearArchiveView(BlogPostArchiveMixin, YearArchiveView):
+    '''Blog post archive by year'''
+
     def get_context_data(self, *args, **kwargs):
         context = super(BlogYearArchiveView, self).get_context_data(*args, **kwargs)
         context.update({
@@ -45,6 +49,7 @@ class BlogYearArchiveView(BlogPostArchiveMixin, YearArchiveView):
 
 
 class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
+    '''Blog post archive by month'''
     month_format = '%m'
 
     def get_context_data(self, *args, **kwargs):
@@ -59,6 +64,7 @@ class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
 
 
 class BlogDetailView(BlogPostMixinView, DetailView, LastModifiedMixin):
+    '''Blog post detail view'''
 
     def get_context_data(self, *args, **kwargs):
         context = super(BlogDetailView, self).get_context_data(*args, **kwargs)
@@ -71,20 +77,54 @@ class BlogDetailView(BlogPostMixinView, DetailView, LastModifiedMixin):
 
 
 class RssBlogPostFeed(Feed):
-    title = "Center for Digit Humanities @ Princeton University Updates"
+    '''Blog post RSS feed'''
+    title = "Center for Digital Humanities @ Princeton University Updates"
     link = "/updates/"
     description = "Updates and news on work from the Center for Digital Humanities @ Princeton University"
 
     def items(self):
+        '''ten most recent blog posts, ordered by publish date'''
         return BlogPost.objects.order_by('-publish_date')[:10]
 
     def item_title(self, item):
+        '''blog post title'''
         return item.title
 
     def item_description(self, item):
+        '''blog post description, for feed content'''
         return item.content
+
+    def item_link(self, item):
+        '''absolute link to blog post'''
+        return absolutize_url(item.get_absolute_url())
+
+    def item_author_name(self, item):
+        '''author of the blog post; comma-separated list for multiple'''
+        return ', '.join([str(auth) for auth in item.users.all()])
+
+    def item_author_link(self, item):
+        '''link to author profile page, if there is only one author and
+        the author has a published profile'''
+        if item.users.count() == 1:
+            author = item.users.first()
+            if author.published():
+                return absolutize_url(author.get_absolute_url())
+
+    def item_pubdate(self, item):
+        '''publication date'''
+        return item.publish_date
+
+    def item_updatedate(self, item):
+        '''last modified date'''
+        return item.updated
+
+    def item_categories(self, item):
+        '''keyword category terms'''
+        return [str(kw) for kw in item.keywords.all()]
 
 
 class AtomBlogPostFeed(RssBlogPostFeed):
+    '''Blog post Atom feed'''
+
     feed_type = Atom1Feed
     subtitle = RssBlogPostFeed.description

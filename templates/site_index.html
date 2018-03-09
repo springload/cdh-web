@@ -14,6 +14,11 @@
 <h2><a href="{% url 'event:upcoming' %}">Upcoming Events</a></h2>
 {% for event in events %}
     {% include 'events/snippets/event_card.html' %}
+{% empty %}
+    <div>
+    <p>Next semester's events are being scheduled.
+        Check back later or view <a href="{% url 'event:upcoming' %}">past events</a>.</p>
+    </div>
 {% endfor %}
 </section>
 

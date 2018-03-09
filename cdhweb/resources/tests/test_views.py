@@ -20,6 +20,10 @@ class TestViews(TestCase):
         # should not error even if no events/projects to display
         response = self.client.get(index_url)
         assert response.status_code == 200
+        self.assertContains(response, "Next semester's events are being scheduled.",
+            msg_prefix='should display a message when there are no upcoming events')
+        self.assertContains(response, reverse('event:upcoming'),
+            msg_prefix='should link to upcoming events (in lieue of an archive)')
 
         ### test how projects are displayed on the home page
         today = timezone.now()

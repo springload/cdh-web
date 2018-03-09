@@ -17,6 +17,8 @@ install:
 
 script:
   - py.test --cov=cdhweb
+  # run django-compressor to ensure SCSS compiles
+  - python manage.py compress -f -v0
 
 after_success:
 - codecov

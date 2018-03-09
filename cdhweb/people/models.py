@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -51,19 +53,28 @@ class Person(User):
             return current_positions.first().title
 
     def cdh_staff(self):
-        'is CDH staff'
-        return self.profile.is_staff
+        '''is CDH staff'''
+        try:
+            return self.profile.is_staff
+        except ObjectDoesNotExist:
+            return False
     cdh_staff.boolean = True
     cdh_staff.short_description = 'CDH Staff'
 
     def published(self):
-        'page is published'
-        return self.profile.status == CONTENT_STATUS_PUBLISHED
+        '''person has a published profile page'''
+        try:
+            return self.profile.status == CONTENT_STATUS_PUBLISHED
+        except ObjectDoesNotExist:
+            return False
     published.boolean = True
 
     def get_absolute_url(self):
-        'Display url for user profile'
-        return self.profile.get_absolute_url()
+        ''''Display url for user profile'''
+        try:
+            return self.profile.get_absolute_url()
+        except ObjectDoesNotExist:
+            pass
 
     def __str__(self):
         '''Custom person display to make it easier to choose people
@@ -76,6 +87,44 @@ class Person(User):
             if self.first_name or self.last_name:
                 return ' '.join([self.first_name, self.last_name]).strip()
             return self.username
+
+
+class ProfileQuerySet(models.QuerySet):
+
+    def staff(self):
+        '''Return only CDH staff members'''
+        return self.filter(is_staff=True)
+
+    def _current_position_query(self):
+        return (models.Q(user__positions__end_date__isnull=True) |
+               models.Q(user__positions__end_date__gte=date.today()))
+
+    def current(self):
+        '''Return profiles for users with a current position, either
+        with no end date set or an end date in the future.'''
+        return self.filter(self._current_position_query())
+
+    def not_current(self):
+        '''Return profiles for users without a current position, based on
+        no end date set or an end date in the future.'''
+        return self.exclude(self._current_position_query())
+
+    def order_by_position(self):
+        # order by job title sort order and then by start date
+        # annotate to avoid duplicates in the queryset due to multiple positions
+        # sort on highest position title and earliest start date (may
+        # not be from the same position)
+        return self.annotate(max_title=models.Max('user__positions__title__sort_order'),
+                             min_start=models.Min('user__positions__start_date')) \
+                   .order_by('max_title', 'min_start')
+
+
+class ProfileManager(DisplayableManager):
+    # extend displayable manager to provide access to
+    # mezzanine published queryset filter
+
+    def get_queryset(self):
+        return ProfileQuerySet(self.model, using=self._db)
 
 
 class Profile(Displayable, AdminThumbMixin):
@@ -103,8 +152,9 @@ class Profile(Displayable, AdminThumbMixin):
 
     tags = TaggableManager(blank=True)
 
-    # use displayable manager for access to published queryset filter, etc.
-    objects = DisplayableManager()
+    # custome manager; includes mezzanine's displayable manager for access
+    # to published queryset filter, etc.
+    objects = ProfileManager()
 
     def __str__(self):
         # FIXME: should this be self.title instead?
@@ -115,9 +165,8 @@ class Profile(Displayable, AdminThumbMixin):
 
     @property
     def current_title(self):
-        current_positions = self.user.positions.filter(end_date__isnull=True)
-        if current_positions.exists():
-            return current_positions.first().title
+        # FIXME: dowe actually need this here?
+        return self.user.current_title
 
 
 def workshops_taught(user):
@@ -143,6 +192,28 @@ class Position(models.Model):
 
     def __str__(self):
         return '%s %s (%s)' % (self.user, self.title, self.start_date.year)
+
+    @property
+    def is_current(self):
+        '''is position current - start date before today and end date
+        in the future or not set'''
+        today = date.today()
+        return self.start_date <= today and \
+            (not self.end_date or self.end_date > today)
+
+    @property
+    def years(self):
+        '''year or year range for display'''
+        val = str(self.start_date.year)
+
+        if self.end_date:
+            # start and end the same year - return single year only
+            if self.start_date.year == self.end_date.year:
+                return val
+
+            return '%s–%s' % (val, self.end_date.year)
+
+        return '%s–' % val
 
 
 def init_profile_from_ldap(user, ldapinfo):

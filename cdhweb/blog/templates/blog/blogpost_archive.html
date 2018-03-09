@@ -7,8 +7,10 @@
 
 <section class="blogposts">
 
+<h1>{{ title|default:'Latest' }} Updates</h1>
+
 <div class="archive-nav">
-  <a class="toggle"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>
+  <a class="toggle">Latest <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
   <ul class="submenu">
     {# include latest blogposts page link #}
     {% url 'blog:list' as latest_url %}
@@ -22,7 +24,7 @@
   </ul>
 </div>
 
-    <h1>{{ title|default:'Latest' }} Updates</h1>
+
 
 {% for blogpost in blogposts %}
 {# TODO: convert to snippet ?  some overlap with blogpost detail #}

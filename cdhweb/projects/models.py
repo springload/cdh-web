@@ -15,9 +15,11 @@ from cdhweb.resources.models import ResourceType, Attachment, ExcerptMixin
 class ProjectQuerySet(models.QuerySet):
 
     def highlighted(self):
+        '''return projects that are marked as highlighted'''
         return self.filter(highlight=True)
 
     def current(self):
+        '''current projects with an active grant'''
         today = timezone.now()
         # current projects means an active grant
         # filter for projects with grants where start and end date
@@ -27,7 +29,10 @@ class ProjectQuerySet(models.QuerySet):
 
 
 class ProjectManager(DisplayableManager):
-    # extend displayable manager to preserve access to published filter
+    '''Custom manager for :class:`Project`.  Extends
+    :class:`mezzanine.core.managers.DisplayableManager` to preserve
+    capability to find published items.'''
+
     def get_queryset(self):
         return ProjectQuerySet(self.model, using=self._db)
 
@@ -39,6 +44,8 @@ class ProjectManager(DisplayableManager):
 
 
 class Project(Displayable, AdminThumbMixin, ExcerptMixin):
+    '''A CDH sponsored project'''
+
     short_description = models.CharField(max_length=255, blank=True,
         help_text='Brief tagline for display on project card in browse view')
     long_description = RichTextField()
@@ -80,6 +87,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
 
     @property
     def website_url(self):
+        '''website url, if set'''
         website = self.projectresource_set \
             .filter(resource_type__name='Website').first()
         if website:
@@ -101,6 +109,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
 
 
 class GrantType(models.Model):
+    '''Model to track kinds of grants'''
     grant_type = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
@@ -108,6 +117,7 @@ class GrantType(models.Model):
 
 
 class Grant(models.Model):
+    '''A specific grant associated with a project'''
     project = models.ForeignKey(Project)
     grant_type = models.ForeignKey(GrantType)
     start_date = models.DateField()
@@ -121,6 +131,7 @@ class Grant(models.Model):
 # fixme: where does resource type go, for associated links?
 
 class Role(models.Model):
+    '''A role on a project'''
     title = models.CharField(max_length=255, unique=True)
     sort_order = models.PositiveIntegerField(default=0, blank=False,
         null=False)
@@ -135,6 +146,7 @@ class Role(models.Model):
 class MembershipQuerySet(models.QuerySet):
 
     def current(self):
+        '''Filter to memebers of the current grant'''
         today = timezone.now()
         # current projects means an active grant
         # filter for projects with grants where start and end date
@@ -146,6 +158,7 @@ class MembershipQuerySet(models.QuerySet):
 
 
 class Membership(models.Model):
+    '''Project membership - joins project, grant, user, and role.'''
     project = models.ForeignKey(Project)
     user = models.ForeignKey(Person)
     grant = models.ForeignKey(Grant)
@@ -155,7 +168,6 @@ class Membership(models.Model):
 
     class Meta:
         ordering = ('role__sort_order', 'user__last_name')
-
 
     def __str__(self):
         return '%s - %s on %s' % (self.user, self.role, self.grant)
