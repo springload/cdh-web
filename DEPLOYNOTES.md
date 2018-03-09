@@ -1,5 +1,12 @@
 # Deploy Notes
 
+## 2.2
+
+- Adds an alumni page, parallel to current staff.  Existing profile pages
+  for past staff should be republished.
+- Fixes rich text page template to include page title as an H1.  Existing
+  content with the title repeated will need to be edited.
+
 ## 2.1
 
 - Resource names have been changed to store proper case in the database.
