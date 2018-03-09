@@ -23,6 +23,14 @@ CDH Website
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.
 
+View `software and architecture documentation <https://princeton-cdh.github.io/cdh-web/>`_
+for the current release.
+
+This repository uses `git-flow <https://github.com/nvie/gitflow>`_ conventions; master
+contains the most recent release, and work in progress will be on the develop branch.
+Pull requests should be made against develop.
+
+
 
 Development instructions
 ------------------------
