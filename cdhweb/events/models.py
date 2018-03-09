@@ -77,17 +77,25 @@ class EventQuerySet(models.QuerySet):
 
 class EventManager(DisplayableManager):
     # extend displayable manager to preserve access to published filter
+
     def get_queryset(self):
+        '''return default queryset :class:`EventQuerySet`'''
         return EventQuerySet(self.model, using=self._db)
 
     def upcoming(self):
+        '''Find upcoming events. Includes events that end on the current
+        day even if the start time is past.'''
         return self.get_queryset().upcoming()
 
     def recent(self):
+        '''Find past events, most recent first.  Only includes events
+        with end date in the past.'''
         return self.get_queryset().recent()
 
 
 class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
+    '''An event, such as a workshop, lecture, or conference.'''
+
     # description = rich text field
     # NOTE: do we want a sponsor field? or jest include in description?
     sponsor = models.CharField(max_length=80, null=True, blank=True)
@@ -129,6 +137,7 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         ordering = ("start_time",)
 
     def get_absolute_url(self):
+        '''event detail url on this site'''
         # we don't have to worry about the various url config options
         # that mezzanine has to support; just handle the url style we
         # want to use locally
@@ -144,6 +153,7 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         return absolutize_url(self.get_absolute_url())
 
     def get_ical_url(self):
+        '''URL to download this event as ical'''
         return reverse('event:ical', kwargs={
             'year': self.start_time.year,
             # force two-digit month

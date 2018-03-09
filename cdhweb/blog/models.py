@@ -33,6 +33,7 @@ class MultiOwnable(models.Model):
             self.users.filter(id=request.user.id).exists()
 
     def author_list(self):
+        '''comma-separated list of authors'''
         return ', '.join(str(user) for user in self.users.all())
     author_list.short_description = 'Authors'
 
