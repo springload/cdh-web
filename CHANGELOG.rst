@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+2.2.1
+-----
+
+Minor Sphinx documentation and README cleanup.
+
 2.2
 ---
 
