@@ -6,6 +6,7 @@
 * As a user I want to view a list of alumni so I can get learn about people who have worked with CDH in the past.
 * As a user, I want to see details about CDH alumni so I can learn about their past work at CDH and where they are now.
 * Upcoming events page now includes 6 most recent past events
+* Upgrade to Django 1.11.x
 * bug fix: home page doesn't display any message when there are no upcoming events
 * bug fix: events page is broken when there are no upcoming events
 * bug fix: events with different starting and ending months error on display
