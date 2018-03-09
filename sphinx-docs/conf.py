@@ -122,7 +122,7 @@ html_theme_options = {
 
 html_sidebars = {
     '**': ['about.html', 'navigation.html',
-           'localtoc.html', 'searchbox.html'],
+           'localtoc.html', 'searchbox.html', 'sidebar_footer.html'],
 }
 
 
