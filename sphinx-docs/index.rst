@@ -10,6 +10,12 @@ Welcome to CDH website's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   Change Log <changelog>
+   deploynotes
+
+
+.. include:: ../README.rst
+    :start-after: sphinx-start-marker-do-not-remove
 
 
 Indices and tables
