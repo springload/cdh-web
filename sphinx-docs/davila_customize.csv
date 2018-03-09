@@ -1,0 +1,104 @@
+# Customization file for DAVILA for cdh-web
+#It is a pipe ('|') separated CSV file
+
+#If you replace the file, make sure the new file is called "customize.csv" and placed in the data folder of your Processing sketch, or follow the instructions
+#in README.TXT to use another name/location
+
+#If you create the file as a spreadsheet and then export to PIPE SEPARATED CSV
+#make sure you remove any quotation marks or unnecessary spaces from the csv file, they will confuse the parser!
+
+#These lines set the metadata for your diagram, the information will display in the top left corner, in bold
+
+#title|NAME OF DIAGRAM
+title|CDH Website (v2.2)
+
+#url|LOCATION OF PROJECT
+url|cdh.princeton.edu
+
+#creators|PEOPLE INVOLVED
+creators|Database design: Jean Bauer, Rebecca Koeser
+creators|Lead developer: Rebecca Koeser
+creators|Database implementation: Benjamin Hicks, Rebecca Koeser
+
+#This next group of lines allows you to color code your modules and indicate which entity is the central node of that module
+#The central node allows you to choose whether to display all the entities in the module, or just the central entity and module name to save space
+#If you don't want to indicate a central module, make sure there is "|" immediately after the hex color, otherwise the parser will throw an
+#Array Out of Bounds exception
+#Probably best to limit your diagram to 5 or 6 modules, otherwise it can get confusing
+
+#module|NAME OF MODULE|HEX COLOR|CENTRAL ENTITY OF THAT MODULE
+module|events|#f2dd3c|events_event
+#module|people|#47a2f7|
+module|people|#47a2f7|auth_user
+module|projects|#9b78cc|projects_project
+module|blog|#e8322c|blog_blogpost
+module|resources|#3cc4f2|resources_attachment
+module|django|#5B806B|django_content_type
+module|mezzanine|#f46241|pages_page
+module|tags|#70727c|taggit_tag
+
+#This next line lets you license your diagram under the copyright(or copyleft) of your choice
+#The license will display in the bottom left corner
+
+#license|COPYRIGHT STATEMENT
+license|This work is licensed under the Creative Commons Attribution-Share-Alike 3.0 License
+
+#The following lines assign a module and an annotation to each entity in the database
+#The structure is as follows
+
+#ENTITY NAME(*exactly* as it appears in your schema)|MODULE NAME|BRIEF DESCRIPTION OF ENTITY
+
+auth_group|django|
+auth_group_permissions|django|
+auth_permission|django|
+auth_user|people|
+auth_user_groups|django|
+auth_user_user_permissions|django|
+blog_blogpost|blog|
+blog_blogpost_attachments|blog|
+blog_blogpost_related_posts|blog|
+blog_blogpost_users|blog|
+conf_setting|mezzanine|
+core_sitepermission|mezzanine|
+core_sitepermission_sites|mezzanine|
+django_admin_log|django|
+django_cas_ng_proxygrantingticket|django|
+django_cas_ng_sessionticket|django|
+django_comment_flags|django|
+django_comments|django|
+django_content_type|django|
+django_migrations|django|
+django_redirect|django|
+django_session|django|
+django_site|django|
+events_event|events|
+events_event_attachments|events|
+events_event_speakers|events|
+events_eventtype|events|
+events_location|events|
+generic_assignedkeyword|mezzanine|
+generic_keyword|mezzanine|
+generic_rating|mezzanine|
+generic_threadedcomment|mezzanine|
+pages_link|mezzanine|
+pages_page|mezzanine|
+pages_richtextpage|mezzanine|
+people_position|people|
+people_profile|people|
+people_profile_attachments|people|
+people_title|people|
+projects_grant|projects|
+projects_granttype|projects|
+projects_membership|projects|
+projects_project|projects|
+projects_project_attachments|projects|
+projects_projectresource|projects|
+projects_role|projects|
+resources_attachment|resources|
+resources_attachment_pages|resources|
+resources_landingpage|resources|
+resources_resourcetype|resources|
+resources_userresource|resources|
+taggit_tag|tags|
+taggit_taggeditem|tags|
+
