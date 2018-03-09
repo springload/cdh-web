@@ -60,8 +60,6 @@ body {
 
   &.with-cards {
       background-color: $light-grey;
-
-
   }
   &.small-no-cards {
       @media (max-width: $small-max-width) {

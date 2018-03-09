@@ -3,7 +3,6 @@ from django.contrib.sites.models import Site
 
 from cdhweb.resources.utils import absolutize_url
 
-
 def template_settings(request):
     '''Template context processor: add selected setting to context
     so it can be used on any page .'''

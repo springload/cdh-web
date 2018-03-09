@@ -359,7 +359,6 @@ class TestViews(TestCase):
         self.assertContains(response, alum_post.years)
         self.assertContains(response, alum_profile.get_absolute_url())
 
-
     def test_profile_detail(self):
          # create test person and add two positions
         staffer = Person.objects.create(username='staff')
@@ -379,3 +378,4 @@ class TestViews(TestCase):
         self.assertContains(response, prev_post.title)
         self.assertContains(response, prev_post.years)
         self.assertNotContains(response, cur_post.years)
+

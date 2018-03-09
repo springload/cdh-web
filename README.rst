@@ -23,6 +23,14 @@ CDH Website
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.
 
+View `software and architecture documentation <https://princeton-cdh.github.io/cdh-web/>`_
+for the current release.
+
+This repository uses `git-flow <https://github.com/nvie/gitflow>`_ conventions; master
+contains the most recent release, and work in progress will be on the develop branch.
+Pull requests should be made against develop.
+
+
 
 Development instructions
 ------------------------
@@ -55,12 +63,11 @@ Initial setup and installation:
 Unit Testing
 ------------
 
-Unit tests are written with [py.test](http://doc.pytest.org/) but use Django fixture loading and convenience
-testing methods when that makes things easier.  To run them, first install
-development requirements::
+Unit tests are written with `py.test <http://doc.pytest.org/>`_ but use
+Django fixture loading and convenience testing methods when that makes
+things easier.  To run them, first install development requirements::
 
   pip install -r dev-requirements.txt
-
 
 Run tests using py.test::
 
