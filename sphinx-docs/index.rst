@@ -10,6 +10,7 @@ Welcome to CDH website's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   architecture
    codedocs
    Change Log <changelog>
    deploynotes
