@@ -1,9 +1,8 @@
-# stay on 1.11.x (LTS release)
-django>=1.11,<2.0
+# stay on 1.10.x for mezzanine/filebrowser_safe compatibiliity
+django>=1.10,<1.11
 # manually pin a compatible version of pillow for mezzanine image preview
 pillow<4.2
-# mezzanine from github required for django 1.11 compatibility; should be > 4.2.3
-git+https://github.com/stephenmcd/mezzanine.git@397409d#egg=mezzanine
+mezzanine
 django-compressor
 django-compressor-autoprefixer
 mysqlclient

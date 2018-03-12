@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+2.2.2
+-----
+
+Downgrade Django to 1.10.x (and latest released version of Mezzanine)
+to avoid a Django compatibility issue with filebrowser_safe.
+
 2.2.1
 -----
 
