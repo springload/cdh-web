@@ -26,7 +26,8 @@ Minor Sphinx documentation and README cleanup.
 * bug fix: non-CDH address display on event detail page repeats information
 * bug fix: allow adding speakers to events pages without creating a profile
 * bug fix: people with multiple positions are listed multiple times on the staff page
-* Multiple design fixes and improvements
+* Multiple design fixes and improvements'
+
   * converted from Neat grid to CSS Grid for main grid and footer
   * fixed broken image reference for events with no detail image
   * mobile footer formatting and mobile main navigation menu
