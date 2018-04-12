@@ -28,7 +28,7 @@ if settings.USE_MODELTRANSLATION:
 
 # use test favicon when test warning is enabled as another visual indicator
 FAVICON = '/static/favicon.ico'
-if settings.SHOW_TEST_WARNING:
+if settings.get('SHOW_TEST_WARNING', False):
     FAVICON = '/static/favicon-test.ico'
 
 urlpatterns += [
