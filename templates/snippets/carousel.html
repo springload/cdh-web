@@ -18,7 +18,7 @@
     {% if updates|length > 1 %}
     <div id="post-controls">
         {% for post in updates %}
-            <a href="#">
+            <a href="">
                 <div class="dot{% if forloop.first %} active{% endif %}" data-index="{{ forloop.counter0 }}"></div>
             </a>
         {% endfor %}
