@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+2.3.1
+---
+
+Sets a null href attribute on carousel links to prevent reloading the page but keep them accessible to screen readers.
+
 2.3
 ---
 
