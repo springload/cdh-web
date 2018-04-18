@@ -3,20 +3,20 @@ CDH Website
 
 .. sphinx-start-marker-do-not-remove
 
-.. image:: https://travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master
+.. image:: https://travis-ci.org/Princeton-CDH/cdh-web.svg?branch=develop
    :target: https://travis-ci.org/Princeton-CDH/cdh-web
    :alt: Build status
 
-.. image:: https://landscape.io/github/Princeton-CDH/cdh-web/master/landscape.svg?style=flat
-  :target: https://landscape.io/github/Princeton-CDH/cdh-web/master
+.. image:: https://landscape.io/github/Princeton-CDH/cdh-web/develop/landscape.svg?style=flat
+  :target: https://landscape.io/github/Princeton-CDH/cdh-web/develop
   :alt: Code Health
 
-.. image:: https://codecov.io/gh/Princeton-CDH/cdh-web/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/Princeton-CDH/cdh-web/branch/develop/graph/badge.svg
    :target: https://codecov.io/gh/Princeton-CDH/cdh-web
    :alt: Code coverage
 
-.. image:: https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=master
-   :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=master
+.. image:: https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=develop
+   :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=develop
    :alt: Requirements Status
 
 
