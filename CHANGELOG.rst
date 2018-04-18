@@ -1,6 +1,16 @@
 CHANGELOG
 =========
 
+2.3
+---
+
+* As a Content Editor, I want my rich text editor preview to match the way the content will display on the site so that I don't have to check the published version myself.
+* As a Content Editor, I should only be able to use supported formatting and tags when I edit site content so that the CDH has a uniform web presence.
+* As a Content Editor, I want to designate blog posts as featured so I can highlight their importance.
+* As a user, I want to see featured updates on the homepage so I can see what's going on at the CDH.
+
+Upgrade tinyMCE to v4.7.9.
+
 2.2.2
 -----
 

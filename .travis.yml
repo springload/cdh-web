@@ -1,24 +1,21 @@
 language: python
-
 python:
-  - "3.5"
-
+- '3.5'
 before_install:
-  - rvm install 2.0
-  - gem install sass
-  - npm install -g postcss-cli autoprefixer
-
+- rvm install 2.0
+- gem install sass
+- npm install -g postcss-cli autoprefixer
 install:
-  - pip install -r requirements.txt
-  - pip install -r dev-requirements.txt
-  - pip install codecov
-  - cp ci/testsettings.py cdhweb/local_settings.py
-  - python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
-
+- pip install -r requirements.txt
+- pip install -r dev-requirements.txt
+- pip install codecov
+- cp ci/testsettings.py cdhweb/local_settings.py
+- python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
 script:
-  - py.test --cov=cdhweb
-  # run django-compressor to ensure SCSS compiles
-  - python manage.py compress -f -v0
-
+- py.test --cov=cdhweb
+- python manage.py compress -f -v0
 after_success:
 - codecov
+notifications:
+  slack:
+    secure: aj/+9gYRfdUMRpce4DjKgJ/zdGGzUI1TiaVN382+KtU8j6JyRR4PXsT2KqEt3qiLqoP3wbCRr37shv/HjDOYtWV8BdoKC8BvBLgrj60ifhubCFwGohvA9aqNj43wUDtQrFmjCVgUxhYzxWGkSx4OXEiANWO+72Ebid976HeLOHplfH7IDl6+SpOUyZbuL3+kLjswRxYnwNSuctORAo/evTOlqbQ46M6ok8ubJgp65He3zfizk7bds7CZT51j4YzSw/7jckZocXbrBIXO+VSO8kQXsjt+xjDTRnlCmO3mGjg+KFEsSG8gplPJWZlI8sNIeK9zcOTWMgKMLzgeQCVqEslCA7cb/GnMQRGhgd5OflDddh632SPkioYkGAtkc4IJVQjA9vkeRrwRDO38sBZSBNlAnUCD258YBP89/xKyTDGsEHAdo9MIaHQ32y+70oFkMwylvvC/x9oW+XHssaouPNeUjrahAYbJGgqMRVLBW4/27cdk61tJUX/2dkVYX0aC+DLhr+L8enkTNZlvRwGqTjtPkB3l6rnAO/bkmhf3eGkZDhv0jIx8qIG/x67HqkqzyUn/ozAvPeE2lMD5MEcTiUS7aVzFuJIepmgu6znzDiQROGh+gYwx0iuxRBWaWPQ47fudtOF+AsMrrBDLPyF9RmPchSQLg/C03Yi6CaZz/Qo=
