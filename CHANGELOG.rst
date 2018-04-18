@@ -1,6 +1,16 @@
 CHANGELOG
 =========
 
+2.3
+---
+
+* As a Content Editor, I want my rich text editor preview to match the way the content will display on the site so that I don't have to check the published version myself.
+* As a Content Editor, I should only be able to use supported formatting and tags when I edit site content so that the CDH has a uniform web presence.
+* As a Content Editor, I want to designate blog posts as featured so I can highlight their importance.
+* As a user, I want to see featured updates on the homepage so I can see what's going on at the CDH.
+
+Upgrade tinyMCE to v4.7.9.
+
 2.2.2
 -----
 
@@ -26,7 +36,8 @@ Minor Sphinx documentation and README cleanup.
 * bug fix: non-CDH address display on event detail page repeats information
 * bug fix: allow adding speakers to events pages without creating a profile
 * bug fix: people with multiple positions are listed multiple times on the staff page
-* Multiple design fixes and improvements
+* Multiple design fixes and improvements'
+
   * converted from Neat grid to CSS Grid for main grid and footer
   * fixed broken image reference for events with no detail image
   * mobile footer formatting and mobile main navigation menu

@@ -20,6 +20,8 @@
     virtualenv: "{{ deploy }}/env"
     requirements: "{{ deploy }}/requirements.txt"
     virtualenv_site_packages: yes
+- name: Restorecon for env to set it correctly
+  command: "restorecon -r {{ deploy }}/env"
 - name: Install local_settings.py
   copy:
     src: "{{ lookup('env', 'HOME') }}/.deploy/{{ local_settings_path }}"
