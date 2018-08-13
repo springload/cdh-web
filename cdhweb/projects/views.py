@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
@@ -18,6 +19,11 @@ class ProjectMixinView(object):
 
 class ProjectListView(ProjectMixinView, ListView, LastModifiedListMixin):
     pass
+
+    # def get_queryset(self):
+        # projects = super().get_queryset()
+        # return projects.annotate(has_website=Count(projectresource__resource_type__name='Website'))
+
 
 
 class ProjectDetailView(ProjectMixinView, DetailView, LastModifiedMixin):

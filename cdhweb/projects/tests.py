@@ -225,6 +225,18 @@ class TestViews(TestCase):
         self.assertContains(response, escape(proj.title))
         self.assertContains(response, proj.get_absolute_url())
         self.assertContains(response, proj.short_description)
+        # no external link
+        self.assertNotContains(response, '<a class="external" title="Project Website"')
+
+        # add link
+        website = ResourceType.objects.get(name='Website')
+        project_url = 'http://derridas-margins.princeton.edu'
+        ProjectResource.objects.create(project=proj, resource_type=website,
+                                       url=project_url)
+        response = self.client.get(reverse('project:list'))
+        self.assertContains(response, '<a class="external" title="Project Website"')
+        self.assertContains(response, project_url)
+
         # TODO: test thumbnail image
 
     def test_detail(self):
