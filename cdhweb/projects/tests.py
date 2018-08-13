@@ -227,15 +227,20 @@ class TestViews(TestCase):
         self.assertContains(response, proj.short_description)
         # no external link
         self.assertNotContains(response, '<a class="external" title="Project Website"')
+        # no 'built by cdh' flag
+        self.assertNotContains(response, 'Built by CDH')
 
-        # add link
+        # add link, set as built by cdh
         website = ResourceType.objects.get(name='Website')
         project_url = 'http://derridas-margins.princeton.edu'
         ProjectResource.objects.create(project=proj, resource_type=website,
                                        url=project_url)
+        proj.cdh_built = True
+        proj.save()
         response = self.client.get(reverse('project:list'))
         self.assertContains(response, '<a class="external" title="Project Website"')
         self.assertContains(response, project_url)
+        self.assertContains(response, 'Built by CDH')
 
         # TODO: test thumbnail image
 

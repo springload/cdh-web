@@ -109,6 +109,16 @@ div.spacer {
 	}
 }
 
+/* small label with cdh shadow; used for event card event type and elsewhere */
+@mixin cdh-shadow-label {
+	border: 2px solid $cdh-blue;
+	box-shadow: 5px 5px 0px $cdh-blue;
+	background-color: white;
+	color: black;
+	font-family: $font-stack-headline-bold;
+	font-size: 12px;
+	padding: 1px 5px;
+}
 
 article.landing-page {
 	/* undo default body margin to clear top nav */
@@ -499,13 +509,15 @@ $event-card-img-height: 240px;
 			z-index: 5;
 			top: -12px;
 			left: 15px;
+			@include cdh-shadow-label;
+/*
 			border: 2px solid $cdh-blue;
 			box-shadow: 5px 5px 0px $cdh-blue;
 			background-color: white;
 			color: black;
 			font-family: $font-stack-headline-bold;
 			font-size: 12px;
-			padding: 1px 5px;
+			padding: 1px 5px; */
 		}
 		.when {
 			grid-area: when;
@@ -567,13 +579,20 @@ $event-card-img-height: 240px;
 		a.external {
 			position: absolute;
 			display: inline-block;
-			top: -45px;
+			top: -35px;
 			right: 55px;
 			width: 30px;
 			height: 30px;
 			background-image: url('../img/icons/CDH_icon_link.svg');
 			background-repeat: no-repeat;
 			background-color: transparent;
+		}
+
+		.cdh-built {
+			@include cdh-shadow-label;
+			position: absolute;
+			top: -35px;
+			left: 15px;
 		}
 
 	}
