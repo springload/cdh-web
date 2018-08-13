@@ -51,6 +51,8 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
     long_description = RichTextField()
     highlight = models.BooleanField(default=False,
         help_text='Include in randomized project display on the home page.')
+    cdh_built = models.BooleanField('CDH Built', default=False,
+        help_text='Project built by CDH Development & Design team.')
 
     members = models.ManyToManyField(Person, through='Membership')
     resources = models.ManyToManyField(ResourceType, through='ProjectResource')
