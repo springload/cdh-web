@@ -993,6 +993,12 @@ $event-card-img-height: 240px;
 	    	font-size: 18px;
 	    }
 
+	    .cdh-built {
+			@include cdh-shadow-label;
+			margin-top: 25px;
+			display: inline-block;
+	    }
+
 	}
 
 	/* link section spans both columns; links in the left sidebar,
