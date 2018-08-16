@@ -969,11 +969,11 @@ $event-card-img-height: 240px;
 			list-style-type: none;
 			color: $dark-grey;
 			padding: 0;
-			margin: 0;
+			margin-top: -15px;
 			font-family: $font-stack-headline;
 
 			li.role {
-				margin-bottom: 15px;
+				margin-top: 15px;
 				font-family: $font-stack-body-text;
 			}
 		}
