@@ -969,10 +969,11 @@ $event-card-img-height: 240px;
 			list-style-type: none;
 			color: $dark-grey;
 			padding: 0;
+			margin: 0;
 			font-family: $font-stack-headline;
 
 			li.role {
-				margin-top: 15px;
+				margin-bottom: 15px;
 				font-family: $font-stack-body-text;
 			}
 		}
@@ -1006,6 +1007,8 @@ $event-card-img-height: 240px;
 		  	}
 		}
 
+		margin-bottom: 25px;
+
 		li.website a {
 			@media (min-width: $medium-min-width) {
 				@include grid-container;
@@ -1033,6 +1036,8 @@ $event-card-img-height: 240px;
 		a:hover {
 		    background-color: $light-cdh-blue;
   	 	}
+
+  	 	/* TODO: refactor similar styles, reuse on profile page */
 
 		/* icons for different link types */
 		li.website a {
@@ -1108,7 +1113,7 @@ $event-card-img-height: 240px;
 
 		img {
 			max-width: 100%;
-			margin: 50px auto;
+			margin: 0 auto 50px;
 		}
 		p {
 			margin-top: 0;
