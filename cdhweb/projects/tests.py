@@ -216,6 +216,22 @@ class TestMembershipQuerySet(TestCase):
         assert Membership.objects.current().exists()
 
 
+class TestProjectResource(TestCase):
+
+    def test_display_url(self):
+        base_url = 'derridas-margins.princeton.edu'
+        project_url = 'http://%s' % base_url
+        proj = Project.objects.create(title="Derrida's Margins")
+        website = ResourceType.objects.get(name='Website')
+        res = ProjectResource.objects.create(project=proj, resource_type=website,
+                                             url=project_url)
+        assert res.display_url() == base_url
+
+        # https
+        res.url = 'https://%s' % base_url
+        assert res.display_url() == base_url
+
+
 class TestViews(TestCase):
     fixtures = ['test-pages.json']
 

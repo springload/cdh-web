@@ -181,3 +181,11 @@ class ProjectResource(models.Model):
     resource_type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     url = models.URLField()
+
+    def display_url(self):
+        '''url cleaned up for display, with leading http(s):// removed'''
+        if self.url.startswith('https://'):
+            return self.url[8:]
+        elif self.url.startswith('http://'):
+            return self.url[7:]
+
