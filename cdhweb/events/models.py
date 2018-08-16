@@ -109,6 +109,9 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         help_text='Guest lecturer(s) or Workshop leader(s)',
         blank=True)
 
+    attendance = models.PositiveIntegerField(null=True, blank=True,
+        help_text='Total number of people who attended the event. (Internal only, for reporting purposes.)')
+
     # TODO: include expected size? (required size?)
     image = FileField(verbose_name="Image",
         upload_to=upload_to("events.image", "events"),
