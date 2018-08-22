@@ -40,7 +40,11 @@ header, div, p, img, section, article {
 
 	#maincontent {
 		position: relative;
-		margin-top: 30px;
+        margin-top: 30px;
+        
+        section:nth-child(1) {
+            margin-top: 50px;
+        }
 	}
 
 	&.with-carousel {
