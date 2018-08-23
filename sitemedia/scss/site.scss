@@ -1334,7 +1334,7 @@ $event-card-img-height: 240px;
 
 }
 
-section.blogposts, section.people, section.events {
+section.blogposts, section.people, section.events, section.projects {
 	@include grid-container;
 
 	h1 {
