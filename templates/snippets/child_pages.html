@@ -1,0 +1,14 @@
+{% load pages_tags %}
+{# child pages rendered as attachment cards #}
+<div class="attachments page-children">
+    {% for page in page_branch %}
+        {% if page.in_menu %}
+            <div class="attachment card">
+                <a href="{{ page.get_absolute_url }}">
+                    <h2>{{ page.title }}</h2>
+                </a>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+    
