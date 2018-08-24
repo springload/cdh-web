@@ -138,6 +138,7 @@ article.landing-page {
     @media (max-width: $small-max-width) {
     	margin-top: -120px;  /* ?? */
     }
+
 	// padding-top: 90px;
 	width: 100%;
 	position: relative;
@@ -234,7 +235,7 @@ article.landing-page {
 	}
 
 	.attachments {
-        background-color: white;
+		margin-top: 50px;
 	}
 
 }
@@ -247,9 +248,6 @@ article.landing-page {
 		@include grid-container;
 	}
 
-	.card {
-	    background-color: white;
-	}
 }
 
 
@@ -685,7 +683,7 @@ $event-card-img-height: 240px;
     /* attachment cards */
 	&.attachment {
 		@include small-card;
-		background: none;
+		background: white;
 		position: relative;
 
 		/* use this to make the card square -
@@ -1468,12 +1466,31 @@ body.blogpost {
 			margin-bottom: 50px;
 
 			.authors {
-				padding-right: 37px;
 				display: inline-block;
 
+				/* commas after authors names except last author */
+				&::after {
+					content: ", ";
+				}
 				@media (max-width: $small-max-width) {
 					display: block;
-					padding-right: 0;
+
+					/* no commas on mobile */
+					&::after {
+						content: "";
+					}
+				}
+
+				&:last-of-type::after {
+					content: "";
+				}
+			}
+
+
+			.date-published {
+				padding-left: 40px;
+				@media (max-width: $small-max-width) {
+					padding-left: 0;
 				}
 			}
 		}
