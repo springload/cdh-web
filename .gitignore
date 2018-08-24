@@ -1,18 +1,76 @@
+# local ignores
+local_settings.py
+db.sqlite3
 
+# Media ignores
+static
+static/media/
+static/CACHE
+sitemedia/fonts
+**/.sass-cache/
 
+# Vim stuff
 *.pyc
 *.pyo
 *.db
 .DS_Store
 .coverage
+
+# Visual Studio Code settings
+.vscode
+
 *.swp
-static
-local_settings.py
-*.out
+
+# stock python git-ignores provided by github
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
 .cache
-.sass-cache
+nosetests.xml
+coverage.xml
+*,cover
+.hypothesis/
+.pytest_cache/
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# IPython Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# dotenv
+.env
+
+# virtualenv
+venv/
+ENV/
 env/
-sitemedia/fonts
+
+# Rope project settings
+.ropeproject
+
+*.out
 
 # Ansible key convention
 .vault_passwd
@@ -56,17 +114,6 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-
 # Translations
 *.mo
 *.pot
@@ -75,27 +122,17 @@ coverage.xml
 *.log
 local_settings.py
 
-# Flask stuff:
-instance/
-.webassets-cache
-
 # Scrapy stuff:
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+sphinx-docs/_build/
 
 # PyBuilder
 target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
 
 # SageMath parsed files
 *.sage.py
@@ -112,9 +149,6 @@ venv.bak/
 # Spyder project settings
 .spyderproject
 .spyproject
-
-# Rope project settings
-.ropeproject
 
 # mkdocs documentation
 /site

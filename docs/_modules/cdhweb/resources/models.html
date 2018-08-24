@@ -1,0 +1,210 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cdhweb.resources.models &#8212; CDH website 2.3.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cdhweb.resources.models</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="k">import</span> <span class="n">User</span>
+
+<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="k">import</span> <span class="n">FileField</span>
+<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="k">import</span> <span class="n">RichText</span>
+<span class="kn">from</span> <span class="nn">mezzanine.pages.models</span> <span class="k">import</span> <span class="n">Page</span>
+<span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="k">import</span> <span class="n">upload_to</span>
+
+
+<div class="viewcode-block" id="ResourceType"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.resources.models.ResourceType">[docs]</a><span class="k">class</span> <span class="nc">ResourceType</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Resource type for associating particular kinds of URLs</span>
+<span class="sd">    with people and projects (e.g., project url, GitHub, Twitter, etc)&#39;&#39;&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">sort_order</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># NOTE: defining the relationship here since we can&#39;t add to it to</span>
+    <span class="c1"># django&#39;s auth.User directly</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">through</span><span class="o">=</span><span class="s1">&#39;UserResource&#39;</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;resources&#39;</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_order&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+
+<span class="k">class</span> <span class="nc">ExcerptMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">excerpt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Content excerpt. Returns description only if it is not</span>
+<span class="sd">        auto-generated, since generated description will be redundant</span>
+<span class="sd">        when displayed on the page.&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_description</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
+
+
+
+<div class="viewcode-block" id="UserResource"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.resources.models.UserResource">[docs]</a><span class="k">class</span> <span class="nc">UserResource</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Through-model for associating users with resource types and</span>
+<span class="sd">    corresponding URLs for the specified resource type.&#39;&#39;&#39;</span>
+    <span class="n">resource_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ResourceType</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span></div>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Attachment"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.resources.models.Attachment">[docs]</a><span class="k">class</span> <span class="nc">Attachment</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="s1">&#39;Document&#39;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;resources.documents&quot;</span><span class="p">,</span> <span class="s2">&quot;documents&quot;</span><span class="p">))</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># TODO: needs validation to ensure one and only one of</span>
+    <span class="c1"># file and url is set</span>
+    <span class="n">PDF</span> <span class="o">=</span> <span class="s1">&#39;PDF&#39;</span>
+    <span class="n">MSWORD</span> <span class="o">=</span> <span class="s1">&#39;DOC&#39;</span>
+    <span class="n">VIDEO</span> <span class="o">=</span> <span class="s1">&#39;VIDEO&#39;</span>
+    <span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;URL&#39;</span>
+    <span class="n">type_choices</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">PDF</span><span class="p">,</span> <span class="s1">&#39;PDF Document&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">MSWORD</span><span class="p">,</span> <span class="s1">&#39;MS Word Document&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">VIDEO</span><span class="p">,</span> <span class="s1">&#39;Video&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">URL</span><span class="p">,</span> <span class="s1">&#39;URL&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">attachment_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">type_choices</span><span class="p">)</span>
+
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Page</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;attachments&#39;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;, </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_type</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39; (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_type</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="LandingPage"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.resources.models.LandingPage">[docs]</a><span class="k">class</span> <span class="nc">LandingPage</span><span class="p">(</span><span class="n">Page</span><span class="p">,</span> <span class="n">RichText</span><span class="p">):</span>
+    <span class="n">tagline</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span>
+        <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;resources.landing_pages.image&quot;</span><span class="p">,</span> <span class="s2">&quot;resources&quot;</span><span class="p">),</span></div>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">CDH website</a></h1>
+
+
+
+<p class="blurb">Django/Mezzanine website that powers cdh.princeton.edu</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=Princeton-CDH&repo=cdh-web&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/Princeton-CDH/cdh-web">
+    <img
+        alt="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
+        src="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+    
+
+<p>
+<a href="https://codecov.io/github/Princeton-CDH/cdh-web">
+    <img
+    alt="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
+    src="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../codedocs.html">Code Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../deploynotes.html">Deploy Notes</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="powered_by">
+<p>Powered by:</p>
+<a href="http://cdh.princeton.edu/">
+<img src="https://cdh.princeton.edu/static/img/CDH_logo.svg"
+    alt="Center for Digital Humanities @ Princeton" />
+</a>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, CDH @ Princeton & Trustees of Princeton University.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

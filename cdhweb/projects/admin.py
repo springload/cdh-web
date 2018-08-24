@@ -31,7 +31,7 @@ class ProjectAdmin(DisplayableAdmin):
         "tag_list")
     list_editable = ("status", "highlight")
 
-    list_filter = ("status", "grant", "keywords__keyword")
+    list_filter = ("status", "cdh_built", "grant__grant_type", "keywords__keyword")
     # displayable date hierarchy is publish date, does that make sense here?
     date_hierarchy = "publish_date"
     prepopulated_fields = {"slug": ("title",)}
@@ -42,7 +42,7 @@ class ProjectAdmin(DisplayableAdmin):
         (None, {
             "fields": ["title", "status", ("publish_date", "expiry_date"),
                        "short_description", "long_description", "highlight",
-                       "image", "thumb", 'attachments'],  # tags todo
+                       "cdh_built", "image", "thumb", 'attachments'],  # tags todo
         }),
         ("Meta data", {
             "fields": ["_meta_title", "slug",

@@ -315,8 +315,8 @@ class TestViews(TestCase):
         assert past_event not in response.context['events']
 
         # should include recent events
-        assert past_event in response.context['recent']
-        self.assertContains(response, 'Recent Events')
+        assert past_event in response.context['past']
+        self.assertContains(response, 'Past Events')
         self.assertContains(response, past_event.title)
         self.assertContains(response, past_event.get_absolute_url())
 

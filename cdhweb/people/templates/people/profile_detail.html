@@ -13,7 +13,14 @@
 <div class="profile">
 <header>
     <h1>{{ profile.title }}</h1>
-    <p class="title">{{ profile.current_title|default:'' }}</p>
+    {# display all positions, current first; dates for non-current #}
+    {% for position in profile.user.positions.all %}
+        <p class="title">{% if not position.is_current %}
+            {{ position.start_date.year }}{% if position.end_date.year != position.start_date.year%}-{{ position.end_date.year }}{% endif %}
+            {% endif %}
+        {{ position.title }}
+        </p>
+    {% endfor %}
 </header>
 
 <div class="links">
@@ -26,7 +33,7 @@
 </div>
 
 {% if profile.image %}
-<img src="{{ MEDIA_URL }}{{ profile.image }}"/>
+<img src="{{ MEDIA_URL }}{{ profile.image }}" alt="photo of {{ profile.title }}"/>
 {% endif %}
 
 <div class="education">
@@ -38,4 +45,5 @@
 {{ profile.bio|safe }}
 </div>
 
+</div>
 {% endblock %}

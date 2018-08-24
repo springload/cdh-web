@@ -1,0 +1,291 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CHANGELOG &#8212; CDH website 2.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Deploy Notes" href="deploynotes.html" />
+    <link rel="prev" title="Code Documentation" href="codedocs.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="changelog">
+<h1>CHANGELOG<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>2.3<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>As a Content Editor, I want my rich text editor preview to match the way the content will display on the site so that I don’t have to check the published version myself.</li>
+<li>As a Content Editor, I should only be able to use supported formatting and tags when I edit site content so that the CDH has a uniform web presence.</li>
+<li>As a Content Editor, I want to designate blog posts as featured so I can highlight their importance.</li>
+<li>As a user, I want to see featured updates on the homepage so I can see what’s going on at the CDH.</li>
+</ul>
+<p>Upgrade tinyMCE to v4.7.9.</p>
+</div>
+<div class="section" id="id2">
+<h2>2.2.2<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Downgrade Django to 1.10.x (and latest released version of Mezzanine)
+to avoid a Django compatibility issue with filebrowser_safe.</p>
+</div>
+<div class="section" id="id3">
+<h2>2.2.1<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>Minor Sphinx documentation and README cleanup.</p>
+</div>
+<div class="section" id="id4">
+<h2>2.2<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>As a user, I want to see past CDH positions on a staff member profile page so I can learn about a person’s history with CDH.</li>
+<li>As a user I want to view a list of alumni so I can get learn about people who have worked with CDH in the past.</li>
+<li>As a user, I want to see details about CDH alumni so I can learn about their past work at CDH and where they are now.</li>
+<li>Upcoming events page now includes 6 most recent past events</li>
+<li>Upgrade to Django 1.11.x</li>
+<li>bug fix: home page doesn’t display any message when there are no upcoming events</li>
+<li>bug fix: events page is broken when there are no upcoming events</li>
+<li>bug fix: events with different starting and ending months error on display</li>
+<li>bug fix: non-CDH address display on event detail page repeats information</li>
+<li>bug fix: allow adding speakers to events pages without creating a profile</li>
+<li>bug fix: people with multiple positions are listed multiple times on the staff page</li>
+<li>Multiple design fixes and improvements’<ul>
+<li>converted from Neat grid to CSS Grid for main grid and footer</li>
+<li>fixed broken image reference for events with no detail image</li>
+<li>mobile footer formatting and mobile main navigation menu</li>
+<li>Typography link style fixes</li>
+<li>Main menu navigation (LM viewport) now provides submenu links on hover</li>
+<li>Improved navigation menu style for moving between events pages, staff and alumni pages</li>
+<li>Improvements to event card, project detail page, profile page, content pages</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h2>2.1<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>As a content editor, I want to associate people with projects more efficiently so I don’t have to enter repeating information.</li>
+<li>bug fix: Resource links on user profile page don’t work</li>
+<li>bug fix: People with multiple positions are listed multiple times on the staff page</li>
+<li>bug fix: Event urls now honor year/month and event slugs can be repeated</li>
+<li>Basic twitter/opengraph metadata now included in page headers</li>
+<li>robots.txt now managed by the application; includes path to sitemap.xml</li>
+<li>favicon now managed by the application; includes dev/test icon</li>
+<li>Many improvements and clean up in design implementation</li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h2>2.0<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p><strong>CDH web 2.0 is a completely new implementation of the functionality in the
+previous version, with a restructured database and site templates based on
+bourbon+neat rather than bootstrap.</strong></p>
+<div class="section" id="profiles">
+<h3>Profiles<a class="headerlink" href="#profiles" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>As a user I want to view a list of staff members so I can get an idea of the people who work at the CDH.</li>
+<li>As a user, I want to see details about a staff member so I can learn about their role, research interests, and how to contact them.</li>
+<li>As an admin, I want to create and edit staff profiles so I can publish information about staff research and roles.</li>
+<li>As an admin, I want user information and titles automatically populated so I don’t have to manually enter it.</li>
+</ul>
+</div>
+<div class="section" id="events">
+<h3>Events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>As a user I want to view a list of upcoming events so that I can find and attend events that interest me.</li>
+<li>As a user, I want to view event details so I can decide if I’m interested and know when and where to attend.</li>
+<li>As a user, I want to view previous events by semester so that I can get a sense of event and workshop offerings.</li>
+<li>As a user, I want to download event information as ical so I can add it to my personal calendar.</li>
+<li>As a content editor, I want to create and edit event types so I can categorize kinds of events.</li>
+<li>As a content editor, I want to create and edit event locations so that I can enter them once and have them displayed consistently across the site.</li>
+<li>As a content editor, I want to create and edit events so that I can publicize workshops, lectures, or other events.</li>
+</ul>
+</div>
+<div class="section" id="projects">
+<h3>Projects<a class="headerlink" href="#projects" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>As a user I want to see a list of current projects so I can learn more about the work of CDH.</li>
+<li>As a user, I want to view sponsored project details so I can read about project goals, progress, and contributors.</li>
+<li>As an admin, I want to associate urls for other resources with projects so that I can provide links to materials related to projects.</li>
+<li>As an admin, I want to create and edit project roles and associate people as members of projects so that I can document project contributors.</li>
+<li>As an admin, I want to create and edit grant types and associate grants with projects, so that I can document when and which kinds of grants a project received from CDH.</li>
+<li>As an admin user, I want to create and edit project pages so that I can publish information about sponsored projects.</li>
+</ul>
+</div>
+<div class="section" id="blog">
+<h3>Blog<a class="headerlink" href="#blog" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>As a user, I want to view previous blog posts by year and month so that I can read past updates.</li>
+<li>As a user, I want to subscribe to a blog post feed so I can read CDH updates in the feed reader of my choosing.</li>
+<li>As a user, I want to view blog posts so that I can read updates about CDH and its work.</li>
+<li>As a user, I want to browse a paginated list of blog posts so that I can find and read older updates about CDH and its work.</li>
+<li>As a content editor, I want to create and edit blog posts so that I can share updates about CDH and its work.</li>
+<li>As a content editor, I want to associate an author other than myself with a blog post so that I can indicate who wrote the content.</li>
+<li>As a content editor, I want to associate one or more authors with a blog post so that I can document everyone who contributed to the content.</li>
+</ul>
+</div>
+<div class="section" id="other-content">
+<h3>Other Content<a class="headerlink" href="#other-content" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>As a user, I want to navigate using the header or footer menus, so that I can find the content I’m looking for.</li>
+<li>As a user I want to view upcoming events and highlighted projects on the homepage so I can get a sense of the CDH and its activities.</li>
+<li>As a user, I want to view content pages so that I can read materials that interest me.</li>
+<li>As a user, I want to view and download files associated with pages on the site so that I can access other materials related to the content.</li>
+<li>As an admin, I want to upload files and media and associate them with other content so that I can share files and other non-web content with users.</li>
+<li>As an admin I want to edit and create resource types so I can determine what kind of links and resources can be associated with people and projects.</li>
+<li>As an admin, I want to manage links in the header so that I can update navigation when the site changes.</li>
+<li>As an admin, I want to create and manage landing pages and other content pages so that I can publish top-level and other content pages.</li>
+<li>As an admin, I want to manage links in the footer so I can update site navigation when content changes.</li>
+</ul>
+</div>
+<div class="section" id="import">
+<h3>Import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>As an admin, I want an import of content from the previous version of the site so that all the information available on the old site is migrated to the new version.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">CDH website</a></h1>
+
+
+
+<p class="blurb">Django/Mezzanine website that powers cdh.princeton.edu</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=Princeton-CDH&repo=cdh-web&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/Princeton-CDH/cdh-web">
+    <img
+        alt="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
+        src="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+    
+
+<p>
+<a href="https://codecov.io/github/Princeton-CDH/cdh-web">
+    <img
+    alt="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
+    src="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codedocs.html">Code Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">2.2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">2.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">2.0</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deploynotes.html">Deploy Notes</a></li>
+</ul>
+
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">CHANGELOG</a><ul>
+<li><a class="reference internal" href="#id1">2.3</a></li>
+<li><a class="reference internal" href="#id2">2.2.2</a></li>
+<li><a class="reference internal" href="#id3">2.2.1</a></li>
+<li><a class="reference internal" href="#id4">2.2</a></li>
+<li><a class="reference internal" href="#id5">2.1</a></li>
+<li><a class="reference internal" href="#id6">2.0</a><ul>
+<li><a class="reference internal" href="#profiles">Profiles</a></li>
+<li><a class="reference internal" href="#events">Events</a></li>
+<li><a class="reference internal" href="#projects">Projects</a></li>
+<li><a class="reference internal" href="#blog">Blog</a></li>
+<li><a class="reference internal" href="#other-content">Other Content</a></li>
+<li><a class="reference internal" href="#import">Import</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="powered_by">
+<p>Powered by:</p>
+<a href="http://cdh.princeton.edu/">
+<img src="https://cdh.princeton.edu/static/img/CDH_logo.svg"
+    alt="Center for Digital Humanities @ Princeton" />
+</a>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, CDH @ Princeton & Trustees of Princeton University.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/changelog.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

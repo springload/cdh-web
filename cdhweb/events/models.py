@@ -10,12 +10,11 @@ import icalendar
 
 from mezzanine.core.fields import FileField
 from mezzanine.core.models import Displayable, RichText
-from mezzanine.core.managers import DisplayableManager
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
 from cdhweb.people.models import Person
-from cdhweb.resources.models import Attachment, ExcerptMixin
+from cdhweb.resources.models import Attachment, ExcerptMixin, PublishedQuerySetMixin
 from cdhweb.resources.utils import absolutize_url
 
 
@@ -53,7 +52,7 @@ class Location(models.Model):
         return self.name
 
 
-class EventQuerySet(models.QuerySet):
+class EventQuerySet(PublishedQuerySetMixin):
 
     def upcoming(self):
         '''Find upcoming events. Includes events that end on the current
@@ -74,20 +73,9 @@ class EventQuerySet(models.QuerySet):
         return self.filter(end_time__lt=today).order_by('-start_time')
 
 
-
-class EventManager(DisplayableManager):
-    # extend displayable manager to preserve access to published filter
-    def get_queryset(self):
-        return EventQuerySet(self.model, using=self._db)
-
-    def upcoming(self):
-        return self.get_queryset().upcoming()
-
-    def recent(self):
-        return self.get_queryset().recent()
-
-
 class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
+    '''An event, such as a workshop, lecture, or conference.'''
+
     # description = rich text field
     # NOTE: do we want a sponsor field? or jest include in description?
     sponsor = models.CharField(max_length=80, null=True, blank=True)
@@ -100,6 +88,9 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
     speakers = models.ManyToManyField(Person,
         help_text='Guest lecturer(s) or Workshop leader(s)',
         blank=True)
+
+    attendance = models.PositiveIntegerField(null=True, blank=True,
+        help_text='Total number of people who attended the event. (Internal only, for reporting purposes.)')
 
     # TODO: include expected size? (required size?)
     image = FileField(verbose_name="Image",
@@ -116,8 +107,8 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
 
     tags = TaggableManager(blank=True)
 
-    # override default manager with custom version
-    objects = EventManager()
+    # override manager for custom queryset filters
+    objects = EventQuerySet.as_manager()
 
     admin_thumb_field = "thumb"
     event_type.verbose_name = 'Type'
@@ -129,6 +120,7 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         ordering = ("start_time",)
 
     def get_absolute_url(self):
+        '''event detail url on this site'''
         # we don't have to worry about the various url config options
         # that mezzanine has to support; just handle the url style we
         # want to use locally
@@ -144,6 +136,7 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         return absolutize_url(self.get_absolute_url())
 
     def get_ical_url(self):
+        '''URL to download this event as ical'''
         return reverse('event:ical', kwargs={
             'year': self.start_time.year,
             # force two-digit month

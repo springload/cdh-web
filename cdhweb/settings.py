@@ -23,6 +23,11 @@ ADMIN_MENU_ORDER = (
     ("Content", ("pages.Page", "blog.BlogPost",
                 (_("Media Library"), "media-library"),
                 "resources.Attachment")),
+    ("Events", ('events.Event', 'events.Location', 'events.EventType')),
+    ('Profiles', ('people.Person', 'people.Position', 'people.Title')),
+    ('Projects', ('projects.Project', 'projects.Grant', 'projects.Membership',
+                 'projects.Role', 'projects.GrantType')),
+    ('Resources', ('resources.ResourceType', 'taggit.Tag')),
     ("Site", ("sites.Site", "redirects.Redirect", "conf.Setting")),
     ("Users", ("auth.User", "auth.Group",)),
 )
@@ -85,6 +90,23 @@ ADMIN_MENU_ORDER = (
 # If True, the django-modeltranslation will be added to the
 # INSTALLED_APPS setting.
 USE_MODELTRANSLATION = False
+
+# List of allowed tags in the rich text editor (tinyMCE). We need to add the
+# HTML5 <figcaption>, as it's not included by default.
+#
+RICHTEXT_ALLOWED_TAGS = ('a', 'abbr', 'acronym', 'address', 'area', 'article',
+                        'aside', 'b', 'bdo', 'big', 'blockquote', 'br',
+                        'button', 'caption', 'center', 'cite', 'code', 'col',
+                        'colgroup', 'dd', 'del', 'dfn', 'dir', 'div', 'dl',
+                        'dt', 'em', 'fieldset', 'figure', 'figcaption', 'font',
+                        'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                        'header', 'hr', 'i', 'img', 'input', 'ins', 'kbd',
+                        'label', 'legend', 'li', 'map', 'men', 'nav', 'ol',
+                        'optgroup', 'option', 'p', 'pre', 'q', 's', 'samp',
+                        'section', 'select', 'small', 'span', 'strike',
+                        'strong', 'sub', 'sup', 'table', 'tbody', 'td',
+                        'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', '',
+                        'ul', 'var', 'wbr')
 
 
 ########################
@@ -318,8 +340,6 @@ MIDDLEWARE_CLASSES = (
 
     "mezzanine.core.request.CurrentRequestMiddleware",
     "mezzanine.core.middleware.RedirectFallbackMiddleware",
-    "mezzanine.core.middleware.TemplateForDeviceMiddleware",
-    "mezzanine.core.middleware.TemplateForHostMiddleware",
     "mezzanine.core.middleware.AdminLoginInterfaceSelectorMiddleware",
     # "mezzanine.core.middleware.SitePermissionMiddleware",
     "mezzanine.pages.middleware.PageMiddleware",

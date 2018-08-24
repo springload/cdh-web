@@ -26,11 +26,15 @@ if settings.USE_MODELTRANSLATION:
         url('^i18n/$', set_language, name='set_language'),
     ]
 
+# use test favicon when test warning is enabled as another visual indicator
+FAVICON = '/static/favicon.ico'
+if getattr(settings, 'SHOW_TEST_WARNING', False):
+    FAVICON = '/static/favicon-test.ico'
+
 urlpatterns += [
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt',
         content_type='text/plain')),
-    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico',
-        permanent=True)),
+    url(r'^favicon\.ico$', RedirectView.as_view(url=FAVICON, permanent=True)),
     url("^people/", include("cdhweb.people.urls", namespace='people')),
     # actual blog url still TBD
     url("^updates/", include("cdhweb.blog.urls", namespace='blog')),

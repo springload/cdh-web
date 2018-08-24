@@ -5,10 +5,15 @@
 @import "fonts";
 
 
+/* nearly all block elements should be full-width on mobile */
+header, div, p, img, section, article {
+	@media (max-width: $small-max-width) {
+		@include full-grid-width();
+	}
+}
+
 /* container with max-width for large, medium, and small viewports */
 .responsive-container {
-    @include grid-container;
-    // can we use grid-collapse here to consume gutters or does it need to be on elements?
     max-width: $large-content-width;
     margin: auto;
     @media (max-width: $medium-max-width) {
@@ -19,17 +24,42 @@
         max-width: $small-content-width;
         min-width: $small-min-width;
     }
-
-	/* uncomment for visual debugging
-    @include grid-visual();
-    @include grid-media($large-grid){
-      @include grid-visual();
-    } */
 }
 
 #maincontent {
 	@extend .responsive-container;
 }
+
+/* add full-bleed carousel images on homepage */
+.homepage {
+	margin-top: -$header-nav-height;
+
+	@media (max-width: $small-max-width) {
+		margin-top: -$small-header-nav-height;
+	}
+
+	#maincontent {
+		position: relative;
+        margin-top: 30px;
+        
+        section:nth-child(1) {
+            margin-top: 50px;
+        }
+	}
+
+	&.with-carousel {
+		#maincontent {
+			margin-top: 0;
+			top: -70px;
+
+			@media (max-width: $small-max-width) {
+				top: -10px;
+			}
+		}
+	}
+
+}
+
 
 div.bleed-image-placeholder {
 	width: 100%;
@@ -68,27 +98,30 @@ div.spacer {
 }
 
 @mixin large-card {
- 	@include grid-column(4);
-	@include grid-media($large-grid){
-	    @include grid-column(4);
-	}
-	@media (max-width: $small-max-width) {
-		width: 100%;
-		float: none;
-		margin-left: 0;
-	}
+	max-width: 310px;
+	@media (min-width: $medium-min-width) {
+	 	@include grid-column(4);
+		max-width: none;
+	 }
 }
 
 @mixin small-card {
 	max-width: 225px;
 	@media (min-width: $medium-min-width) {
+	    @include grid-column(3);
 		max-width: none;
-	    @include grid-column(3);
 	}
-	@include grid-media($large-grid){
-	    @include grid-column(3);
-	}
+}
 
+/* small label with cdh shadow; used for event card event type and elsewhere */
+@mixin cdh-shadow-label {
+	border: 2px solid $cdh-blue;
+	box-shadow: 5px 5px 0px $cdh-blue;
+	background-color: white;
+	color: black;
+	font-family: $font-stack-headline-bold;
+	font-size: 12px;
+	padding: 1px 5px;
 }
 
 article.landing-page {
@@ -174,12 +207,7 @@ article.landing-page {
 		}
 	}
 
-	div {
-		// @extend .responsive-container;
-	}
-
 	#maincontent {
-		// @extend .responsive-container;
 		margin-top: -116px;
 		background-color: white;
 		z-index: 4;  /* overlap background image from header */
@@ -206,6 +234,10 @@ article.landing-page {
 .attachments {
 	@extend .responsive-container;
 	clear: both;
+
+	@media (min-width: $medium-min-width) {
+		@include grid-container;
+	}
 }
 
 
@@ -240,9 +272,182 @@ article.landing-page {
 	}
 }
 
+/* carousel layout - featured posts & updates */
+
+#carousel,
+#carousel .post-update,
+#carousel .post-update header {
+	height: $carousel-height;
+	width: 100%;
+
+	@media (max-width: $small-max-width) {
+		height: $small-carousel-height;
+	}
+}
+
+#carousel {
+	display: block;
+	position: relative;
+	top: -$header-nav-height;
+
+	@media (max-width: $small-max-width) {
+		height: 100%;
+		top: -$small-header-nav-height;
+	}
+
+	a {
+		text-decoration: none;
+	}
+
+	#post-controls {
+		display: flex;
+		justify-content: center;
+		position: relative;
+		top: $carousel-height - 30px;
+
+		@media (max-width: $small-max-width) {
+  	    	display: none;
+	    }
+
+		a {
+			cursor: pointer;
+			padding: 0 8px;
+		}
+
+		.dot {
+			margin: auto;
+			background-color: $dark-grey;
+			border-radius: 100%;
+			width: 10px;
+			height: 10px;
+
+			&.active {
+				background-color: $cdh-blue;
+			}
+		}
+	}
+
+	.post-update {
+		position: absolute;
+		top: 0;
+		display: block;
+		transition: opacity 1s ease;
+		opacity: 0;
+
+		@media (max-width: $small-max-width) {
+			position: relative;
+			transition: none;
+			opacity: 100;
+		}
+
+		&.active {
+			opacity: 100;
+		}
+
+		header {
+			background-image: url('/static/img/post-default-background.jpg');
+			background-color: rgba(0, 0, 0, 0.2); // dark grey fallback
+			background-size: cover;
+			background-position: 50% 50%;
+			background-repeat: no-repeat;
+
+			@media (max-width: $small-max-width) {
+				height: 200px;
+			}
+		}
+
+		.header-overlay {
+			width: 100%;
+			height: 100%;
+			background-color: rgba($cdh-blue, 0.2); // tint the header image
+			opacity: 20;
+		}
+
+		.post-update-text {
+			position: relative;
+			z-index: 4;
+			margin: auto;
+			top: -392px;
+			width: 990px;
+			height: 320px;
+			background-color: $base-background-color;
+			padding: 45px 86px;
+
+			@media (max-width: $medium-max-width) {
+				width: 735px;
+				padding: 40px 30px;
+			}
+
+			@media (max-width: $small-max-width) {
+				top: 0;
+				width: 100%;
+				padding: 10px 25px;
+			}
+
+			.quote {
+				display: none;
+				position: absolute;
+				color: $cdh-blue;
+				font-size: 8em;
+				font-family: $font-stack-headline-bold;
+				font-style: italic;
+				transform: rotate(180deg);
+				margin: -275px -125px;
+				z-index: 5;
+
+				@media (min-width: $medium-max-width) {
+					// display: block;
+				}
+			}
+
+			.heading {
+				margin: 5px 0;
+			}
+
+			.line {
+				width: 30px;
+				height: 4px;
+				background-color: $cdh-blue;
+				margin: 20px 0;
+
+				@media (max-width: $small-max-width) {
+					margin: 10px 0;
+				}
+			}
+
+			.title {
+				font-size: 2em;
+				color: $black;
+				margin-bottom: 20px;
+
+				@media (max-width: $small-max-width) {
+					font-size: 1.25em;
+					margin-bottom: 10px;
+				}
+			}
+
+			.heading,
+			.description {
+				font-size: 0.75em;
+				color: $dark-grey;
+				font-family: $font-stack-headline;
+				line-height: normal;
+
+				@media (max-width: $small-max-width) {
+					font-size: 1em;
+				}
+			}
+		}
+	}
+}
+
+#spacer { // used if there are no blog posts of any kind for carousel
+	height: 150px;
+}
+
 /* card layouts - projects, events */
 
-$event-card-height: 426px;
+$event-card-height: 425px;
 $event-card-img-height: 240px;
 
 .card {
@@ -265,7 +470,7 @@ $event-card-img-height: 240px;
 		height: 100%;
 	}
 
-	.content {.  /* card-description font */
+	.content {  /* card-description font */
 		font-family: $font-stack-headline;
 		font-size: 16px;
 		background-color: white;
@@ -274,56 +479,62 @@ $event-card-img-height: 240px;
 	/* event cards */
 	&.event {
 		@include large-card;
-	 	background-size: contain !important;
 
 		height: $event-card-height;
 		/* background options for when an image is added in the template */
-		background-size: cover;
+		// background-size: cover;
+	 	background-size: contain !important;
 		/* background-position: 50% 50%;  maybe? */
 		background-repeat: no-repeat;
 
-		.content {
-			position: absolute;
-			top: $event-card-img-height;
-			width: 100%;
-			height: $event-card-height - $event-card-img-height;
+		> a {
+			display: grid;
+			grid-template-rows: $event-card-img-height 155px 35px;
+			grid-row-gap: 0;
+			grid-template-areas:
+				"image"
+				"content"
+				"when";
 
 			> *  {
-				padding-left: 15px;
-				padding-right: 15px;
+				padding: 15px;
 			}
+		}
 
+		.content {
+			grid-area: content;
 			h2 {
-				padding-top: 15px;
 				margin-bottom: 0;
 			}
-
 		}
 
 		.event-type {
 			position: absolute;
-			/* width: 104px; */
 			z-index: 5;
 			top: -12px;
 			left: 15px;
+			@include cdh-shadow-label;
+/*
 			border: 2px solid $cdh-blue;
 			box-shadow: 5px 5px 0px $cdh-blue;
 			background-color: white;
 			color: black;
 			font-family: $font-stack-headline-bold;
 			font-size: 12px;
-			padding: 1px 5px;
+			padding: 1px 5px; */
 		}
 		.when {
+			grid-area: when;
 			color: $dark-grey;
-			position: absolute;
-			padding-left: 0;
-			bottom: 15px;
-			left: 15px;
+			background-color: white;
 			font-family: $font-stack-headline;
+			align-self: end;
+			padding: 5px 15px 15px;
+			font-size: 16px;
+			line-height: 19px;
 		}
 		.time {
-			padding-left: 15px;
+			padding-left: 20px;
 		}
 		.presenter {
 			font-family: $font-stack-headline;
@@ -337,8 +548,11 @@ $event-card-img-height: 240px;
 		height: 170px;
 	 	background-size: cover;
 
+	 	/* add space for link and 'built by cdh' indicators */
+	 	margin-top: 30px;
+
 		h2 {
-			margin-bottom: 0;
+			margin-bottom: 5px;
 		}
 
 		@include cdhlogo-shadow(40px);
@@ -366,9 +580,28 @@ $event-card-img-height: 240px;
 			margin: 0;
 		}
 
+		a.external {
+			position: absolute;
+			display: inline-block;
+			top: -35px;
+			right: 55px;
+			width: 30px;
+			height: 30px;
+			background-image: url('../img/icons/CDH_icon_link.svg');
+			background-repeat: no-repeat;
+			background-color: transparent;
+		}
+
+		.cdh-built {
+			@include cdh-shadow-label;
+			position: absolute;
+			top: -35px;
+			left: 15px;
+		}
+
 	}
 
-	/* r project card */
+	/* large project card */
 	&.project-large {
 		@include large-card;
 
@@ -387,9 +620,10 @@ $event-card-img-height: 240px;
 	/* profile cards */
 	&.profile {
 		@include large-card;
+		display: block;
+		position: relative;
 		background: none; /* no blue stripes */
 
-		// @include dark-blue-gradient;
 		/* styles for image as photo */
 		background-size: contain;
 		background-repeat: no-repeat;
@@ -397,20 +631,24 @@ $event-card-img-height: 240px;
 
 		a {
 			display: block;  /* make the whole card clickable */
+			position: absolute;
 			width: 100%;
 			height: 100%;
 		}
 
 		.content {
-			padding-top: 240px;
-			background-color: transparent;
+			margin-top: 240px;
+			padding-top: 15px;
+			background-color: $light-grey;
 			font-family: $font-stack-headline-bold;
+			width: 100%;
 
 			.title {
-				font-size: 16px;
+				font-size: 18px;
 				margin: 0;
 				color: $dark-grey;
-				font-family: $font-stack-headline;
+		  		font-family: $font-stack-body-text;
+		  		font-style: italic;
 			}
 			.name {
 				margin: 0;
@@ -468,7 +706,6 @@ $event-card-img-height: 240px;
 		    }
 		    .author {
 		    	font-family: $font-stack-headline;
-		    	// margin-top: 7px;
 		    	padding: 0;
 		    }
 
@@ -514,11 +751,11 @@ $event-card-img-height: 240px;
 .homepage section, section.events, section.projects, section.people {
     @media (min-width: $medium-min-width) {
 		@include grid-container;
-		@include grid-collapse;
 	}
-
+	h2 {
+		@include full-grid-width;
+	}
 }
-
 
 @mixin header-with-icon {
 	/* font-family: BrownStd-Alt;    ?? */
@@ -546,14 +783,18 @@ $event-card-img-height: 240px;
 		text-decoration: none;
 		color: $dark-grey;
 	}
-	@include grid-media($neat-grid) {
-	    @include grid-column(9);
+	@media (min-width: $medium-min-width) {
+ 	   @include grid-column(9);
 	}
-	@include grid-media($large-grid) {
+    @media (min-width: $large-min-width) {
 	    @include grid-column(12);
-    }
+	}
 }
 // TODO: mixin for icons, support h1 for individual pages
+
+.fixed {
+	position: fixed;
+}
 
 .events > h2, .events h1 {
 	background-image: url('../img/icons/CDH_icon_cal.svg');
@@ -581,30 +822,28 @@ $event-card-img-height: 240px;
 /* display text content within event list (e.g. for no upcoming)
    at full grid or full content width. */
 .events > div  {
- 	@include grid-column(9);
  	padding-bottom: 15px;
-
-	@include grid-media($large-grid){
-	    @include grid-column(12);
+	@media (min-width: $medium-min-width) {
+	 	@include grid-column(9);
 	}
-	@media (max-width: $small-max-width) {
-		width: 100%;
-		float: none;
-		margin-left: 0;
+    @media (min-width: $large-min-width) {
+	    @include grid-column(12);
 	}
 }
 
 .archive-nav {
-	float: right;
-	text-align: right;
+	font-family: $font-stack-headline;
+	font-size: 16px;
 	position: relative;
-	margin-right: $gutter;
+
+	a {
+		text-decoration: none;
+		color: $dark-grey;
+	}
 
 	.submenu {
 		@include list-style-reset;
 		display: none;
-		font-family: $font-stack-headline;
-		font-size: 16px;
 		background-color: $light-grey;
 		background-color: rgba(248, 248, 248, 0.85);
 		position: absolute;
@@ -612,10 +851,6 @@ $event-card-img-height: 240px;
 		right: 0;
 		z-index: 6;
 
-		a {
-			text-decoration: none;
-			color: $dark-grey;
-		}
 
 		.current a {
 			border-bottom: 2px solid $cdh-blue;
@@ -664,9 +899,7 @@ $event-card-img-height: 240px;
 }
 
 .ribbon-wrapper {
-  // $action-color: red !default;
   $action-color: rgb(255, 69, 69) !default;
-  // $action-color: #477dca !default;
   $ribbon-background: $action-color;
   $ribbon-size: 375px;
 
@@ -678,7 +911,6 @@ $event-card-img-height: 240px;
 
   .ribbon {
     background-color: $ribbon-background;
-    // box-shadow: 0 0 3px rgba(#000, 0.3);
     color: #fff;
     font-size: 0.8em;
     right: -75px;
@@ -696,38 +928,22 @@ $event-card-img-height: 240px;
 .project-detail {
 
     overflow: auto;  /* include floated grid content */
+    @include grid-container;
 
 	header {
-		// @include grid-container;
-        @include grid-collapse;
-
-    	/* full width of container */
-    	margin-left: 0;
-    	margin-right: 0;
-    	width: auto;
-
-	    @include grid-column(6);
-  		@include grid-push(3);
-
-		@include grid-media($large-grid) {
-			// @include grid-container;
-	        @include grid-collapse($large-grid);
-		    @include grid-column(9);
+		@media (min-width: $medium-min-width) {
+		    @include grid-column(6);
 	  		@include grid-push(3);
-	  	}
 
-	    @media (max-width: $small-max-width) {
-	    	@include grid-push(0);
-	    	/* full width of container */
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
+		    @media (min-width: $large-min-width) {
+			    @include grid-column(9);
+		  	}
+		  }
 
 	    h2 {
 		  font-size: modular-scale(-1);
 
-			@include grid-media($large-grid){
+		    @media (min-width: $large-min-width) {
 			    @include grid-column(7);
 			    margin-left: 0;
 			}
@@ -735,38 +951,29 @@ $event-card-img-height: 240px;
 
 	  	.short_description {
 	  		font-style: italic;
-		    // @include grid-column(7);
 		    margin-left: 0;
 		    margin-right: 0;
 
 			@media (min-width: $large-min-width) {
 				/* according to spec, should be 7 cols, but can't
-				   get grid cols right if we nest; should be close enough */
+				   get grid cols right due to nesting should be close enough */
 			    width: 75%;
 			}
 	  	}
 	}
-	.contributors {
+
+	.contributors, .links {
 		font-size: 18px;
 
-		@include grid-column(3);
-		@include grid-media($large-grid){
-		    @include grid-column(3);
+		@media (min-width: $medium-min-width) {
+			@include grid-column(3);
 		}
-	    @media (max-width: $small-max-width) {
-	    	width: 100%;
-	    }
-
-	    @media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
 
 		ul {
 			list-style-type: none;
 			color: $dark-grey;
 			padding: 0;
+			margin-top: -15px;
 			font-family: $font-stack-headline;
 
 			li.role {
@@ -790,25 +997,133 @@ $event-card-img-height: 240px;
 	    	font-size: 18px;
 	    }
 
+	    .cdh-built {
+			@include cdh-shadow-label;
+			margin-top: 25px;
+			display: inline-block;
+	    }
+
+	}
+
+	/* link section spans both columns; links in the left sidebar,
+   	   project website in the main column to make it more visible */
+	.links {
+		/* duplicate grid to line up project url with main column */
+		@media (min-width: $medium-min-width) {
+		    @include grid-column(9);
+
+		    @media (min-width: $large-min-width) {
+			    @include grid-column(12);
+		  	}
+		}
+
+		margin-bottom: 25px;
+
+		li.website a {
+			@media (min-width: $medium-min-width) {
+				@include grid-container;
+				span {
+				    @include grid-column(3);
+				}
+			}
+
+			/* secondary display of website url, to emphasize */
+			.url {
+				/* hide on mobile */
+				@media (max-width: $small-max-width) {
+					display: none;
+				}
+
+				@media (min-width: $medium-min-width) {
+			  		@include grid-push(3);
+				    @include grid-column(9);
+			  }
+			  font-size: 115%;
+			  text-indent: 0;
+			}
+		}
+
+		a:hover {
+		    background-color: $light-cdh-blue;
+  	 	}
+
+  	 	/* TODO: refactor similar styles, reuse on profile page */
+
+		/* icons for different link types */
+		li.website a {
+			background-image: url('../img/icons/CDH_icon_link.svg');
+			background-repeat: no-repeat;
+			background-size: 30px 30px;
+			text-indent: 35px;  /* padding pushes the grid */
+			@media (max-width: $small-max-width) {
+				/* tweak size & indent to align with other icons */
+				background-size: contain;
+				padding-left: 30px;
+				margin-left: 5px;
+				text-indent: 0px;
+			}
+		}
+
+		/* github uses font-awesome */
+		li.github a {
+			&::before {
+			    display: inline-block;
+			    font-style: normal;
+			    font-variant: normal;
+			    text-rendering: auto;
+			    -webkit-font-smoothing: antialiased;
+			    // font-family: "Font Awesome 5 Free";
+			    font-family: "Font Awesome 5 Brands";
+			    font-weight: 900;
+			    content: "\f09b";  /* github  */
+			    // content: "\f092";  /* github square */
+			    // content: "\f121"; /* code */
+			    width:30px;
+			    text-align: center;
+			    font-size: 20px;
+			    color: $dark-grey;
+			}
+			padding-left: 0;
+		}
+
+		/* twitter also uses font-awesome */
+		li.twitter a {
+			&::before {
+			    display: inline-block;
+			    font-style: normal;
+			    font-variant: normal;
+			    text-rendering: auto;
+			    -webkit-font-smoothing: antialiased;
+			    font-family: "Font Awesome 5 Brands";
+			    font-weight: 900;
+			    content: "\f099";  /* github  */
+			    width:30px;
+			    text-align: center;
+			    font-size: 20px;
+			    color: $dark-grey;
+			}
+			padding-left: 0;
+		}
+
+
 	}
 
 	.description {
 
-		@include grid-column(6);
-		@include grid-media($large-grid){
-		    @include grid-column(9);
+		@media (min-width: $medium-min-width) {
+			@include grid-column(6);
+		    @media (min-width: $large-min-width) {
+			    @include grid-column(9);
+			}
 		}
 
 		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
 			margin-bottom: 100px;
 	    }
 
 		img {
 			max-width: 100%;
-			margin: 50px auto;
+			margin: 0 auto 50px;
 		}
 		p {
 			margin-top: 0;
@@ -825,30 +1140,13 @@ $event-card-img-height: 240px;
 	@include grid-container;
 
 	header {
-		@include grid-container;
-        @include grid-collapse;
-
-    	/* full width of container */
-    	margin-left: 0;
-    	margin-right: 0;
-    	width: auto;
-
-  		@include grid-push(3);
-		@include grid-media($large-grid) {
-			@include grid-container;
-	        @include grid-collapse($large-grid);
+		@media (min-width: $medium-min-width) {
 	  		@include grid-push(3);
-	  	}
-	    @media (max-width: $small-max-width) {
-	    	@include grid-push(0);
-	    	/* full width of container */
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
+  			@include grid-column(7);
+		}
 
 	    h1 {
-	    	margin-bottom: 0;
+	    	margin-bottom: 5px;
 	    }
 
 	  	.title {   /* equiv to project short_description */
@@ -856,14 +1154,17 @@ $event-card-img-height: 240px;
 	  		font-family: $font-stack-body-text;
 	  		color: $dark-grey;
 	  		font-size: 21px;
+	  		line-height: 1.52;
 
-			margin-left: 0;
-		    margin-right: 0;
+	  		margin: 0;
+	  		padding: 0;
 	    	width: auto;
+	    	&:last-child {
+		    	margin-bottom: 30px;
+		    }
 
-			@include grid-media($large-grid){
+		    @media (min-width: $large-min-width) {
 			    @include grid-column(7);
-			    margin-left: 0;
 			}
 
 	  	}
@@ -873,16 +1174,9 @@ $event-card-img-height: 240px;
 		text-transform: capitalize;
 		margin-bottom: 35px;
 
-		@include grid-column(3);
-		@include grid-media($large-grid){
-		    @include grid-column(3);
+		@media (min-width: $medium-min-width) {
+			@include grid-column(3);
 		}
-
-	    @media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
 
 		ul {
 			list-style-type: none;
@@ -902,36 +1196,26 @@ $event-card-img-height: 240px;
 		margin: 0 0 50px 0;
     	width: auto;
 
-		@include grid-column(5);
-		@include grid-media($large-grid){
+		@media (min-width: $medium-min-width) {
 			@include grid-column(5);
 		}
-		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
 	}
 
 	.education {
 		color: $dark-grey;
 		font-family: $font-stack-headline;
 		font-size: 18px;
+		margin-bottom: 35px;
 
-		@include grid-column(4);
-		@include grid-push(3);
-		@include grid-media($large-grid){
+		@media (min-width: $medium-min-width) {
 			@include grid-column(4);
+		    @media (max-width: $medium-max-width) {
+				@include grid-push(3);
+			}
 		}
-		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
 	    a {
 	    	color: $dark-grey ;
 	    	text-decoration: none;
-	    	// background-image: none !important;
 	    }
 
 	    ul {
@@ -944,26 +1228,16 @@ $event-card-img-height: 240px;
 	}
 	p {
 		margin-top: 0;
-		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
-
 	}
 
 	.bio {
-		@include grid-column(6);
-		@include grid-push(3);
-		@include grid-media($large-grid){
-			@include grid-column(8);
+		@media (min-width: $medium-min-width) {
+			@include grid-column(6);
 			@include grid-push(3);
 		}
-		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
+    	@media (min-width: $large-min-width) {
+			@include grid-column(8);
+		}
 
 	}
 
@@ -976,35 +1250,10 @@ $event-card-img-height: 240px;
 	@include grid-container;
 
 	header {
-		// @include grid-container;
-        @include grid-collapse;
-
-    	/* full width of container */
-    	margin-left: 0;
-    	margin-right: 0;
-    	width: auto;
-
-  		@include grid-push(3);
-
-		@include grid-media($large-grid) {
-			// @include grid-container;
-	        @include grid-collapse($large-grid);
+		@media (min-width: $medium-min-width) {
 	  		@include grid-push(3);
-	  	}
-	    @media (max-width: $small-max-width) {
-	    	@include grid-push(0);
-	    	/* full width of container */
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
-
-	    h1 {
-			@include grid-media($large-grid){
-			    @include grid-column(7);
-			    margin-left: 0;
-			}
-	    }
+  			@include grid-column(7);
+  		}
 
 	  	.short_description {   /* equiv to project short_description */
 	  		font-style: italic;
@@ -1012,14 +1261,11 @@ $event-card-img-height: 240px;
 	  		color: $dark-grey;
 	  		font-size: 21px;
 
-/*			margin-left: 0;
-		    margin-right: 0;
-	    	width: auto;*/
-		    @include grid-column(6);
-
-			@include grid-media($large-grid){
+			@media (min-width: $medium-min-width) {
+			    @include grid-column(6);
+			}
+    		@media (min-width: $large-min-width) {
 			    @include grid-column(7);
-			    // margin-left: 0;
 			}
 
 	  	}
@@ -1032,19 +1278,9 @@ $event-card-img-height: 240px;
 		font-size: 18px;
 		line-height: 1.22;
 
-		@include grid-column(3);
-		@include grid-media($large-grid){
-		    @include grid-column(3);
+		@media (min-width: $medium-min-width) {
+			@include grid-column(3);
 		}
-	    @media (max-width: $small-max-width) {
-	    	width: 100%;
-	    }
-
-	    @media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
 
 		ul {
 			list-style-type: none;
@@ -1067,9 +1303,7 @@ $event-card-img-height: 240px;
 			background-image: url('../img/icons/CDH_icon_cal.svg');
 			background-size: 50px 54px;
 			background-repeat: no-repeat;
-
     	}
-
 
 	    .location {
 	    	margin-top: 16px;
@@ -1082,17 +1316,12 @@ $event-card-img-height: 240px;
 	}
 
 	.description {
-		@include grid-column(6);
-
-		@include grid-media($large-grid){
+		@media (min-width: $medium-min-width) {
+			@include grid-column(6);
+		}
+	    @media (min-width: $large-min-width) {
 		    @include grid-column(9);
 		}
-
-		@media (max-width: $small-max-width) {
-	    	margin-left: 0;
-	    	margin-right: 0;
-	    	width: auto;
-	    }
 
 		img {
 			max-width: 100%;
@@ -1105,8 +1334,50 @@ $event-card-img-height: 240px;
 
 }
 
-section.blogposts {
+section.blogposts, section.people, section.events, section.projects {
 	@include grid-container;
+
+	h1 {
+		@media (min-width: $medium-min-width) {
+			@include grid-column(7);
+		}
+	    @media (min-width: $large-min-width) {
+			@include grid-column(10);
+		}
+		@media (max-width: $small-max-width) {
+			@include full-grid-width;
+			margin-bottom: 5px;
+		}
+	}
+
+	.archive-nav {
+		@include grid-column(2);
+		justify-self: end;
+		float: none;
+		margin: 0;
+		> a {
+			line-height: 54px;   /* match h1 vertically */
+		}
+
+		@media (max-width: $small-max-width) {
+		    grid-column: start / end;
+		    justify-self: center;
+		    margin-bottom: 50px;
+		}
+
+	}
+
+	.blogpost {
+	    @media (min-width: $medium-min-width) {
+			@include grid-push(1);
+			@include grid-column(7);
+		}
+	    @media (min-width: $large-min-width) {
+			@include grid-push(2);
+			@include grid-column(8);
+		}
+
+	}
 }
 
 @mixin content-page {
@@ -1114,22 +1385,24 @@ section.blogposts {
 	padding: 0;
 	margin-bottom: 50px;
 
-	@include grid-shift(1);
-	@include grid-column(7);
 
-	@include grid-media($large-grid) {
-		@include grid-shift(2);
-		@include grid-column(8);
+    @media (min-width: $medium-min-width) {
+		@include grid-push(1);
+		@include grid-column(7);
 	}
 
-	@media (max-width: $small-max-width) {
-    	margin-left: 0;
-    	margin-right: 0;
-		@include grid-shift(0);
-    	width: auto;
+    @media (min-width: $large-min-width) {
+		@include grid-push(2);
+		@include grid-column(8);
 	}
 }
 
+
+body.blogpost {
+	#maincontent {
+		@include grid-container;
+	}
+}
 
 .blogpost {
 	// margin-top: 340px; // currently handled by spacer div
@@ -1139,6 +1412,10 @@ section.blogposts {
 		h1 {
 			margin-top: 250px - $header-nav-height;
 			margin-bottom: 50px;
+
+			@media (max-width: $small-max-width) {
+				margin-top: 0;
+			}
 		}
 
 		.byline {
@@ -1178,11 +1455,11 @@ section.blogposts {
 body.richtextpage {
 
 	#maincontent {
-		@include grid-container;
 		padding: 0;
 		margin-bottom: 50px;
+		@include grid-container;
 
-		> div {
+		> div, h1, header {
 			@include content-page;
 		}
 	}

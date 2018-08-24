@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %} {# add a class to main content for home-page specific styles #}
-<div class="homepage">
+<div class="homepage{% if updates %} with-carousel{% endif %}">
+{% if updates %}
+{% include 'snippets/carousel.html' %}
+{% endif %}
 {{ block.super }}
 </div>
 {% endblock %}
@@ -17,7 +20,7 @@
 {% empty %}
     <div>
     <p>Next semester's events are being scheduled.
-        Check back later or view <a href="{% url 'event:upcoming' %}">recent events</a>.</p>
+        Check back later or view <a href="{% url 'event:upcoming' %}">past events</a>.</p>
     </div>
 {% endfor %}
 </section>

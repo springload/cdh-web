@@ -1,5 +1,7 @@
 <div class="card project {% if large %}project-large{% endif %}"
 {% if project.thumb %}style="background-image:url('{{ MEDIA_URL }}{{ project.thumb }}')"{% endif %}>
+{% if project.cdh_built %}<div class="cdh-built">Built by CDH</div>{% endif %}
+{% if project.website_url %}<a class="external" title="Project Website" href="{{ project.website_url }}"> </a>{% endif %}
     <a href="{{ project.get_absolute_url }}">
     <div class="content">
         <h2>{{ project.title }}</h2>
