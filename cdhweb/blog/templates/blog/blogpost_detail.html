@@ -63,21 +63,21 @@
     <div class="keywords">Keywords: {{ blogpost.keywords.all|join:', ' }}</div>
     {% endif %}
 
-    {# fixme: needs to come after attachments  #}
-    {% if next or previous %}
-    <p class="next-previous">
-        {% if previous %}
-        <p><a href="{{ previous.get_absolute_url }}" rel="previous">< {{ previous }}</a></p>
-        {% endif %}
-
-        {% if next %}
-        <p><a href="{{ next.get_absolute_url }}" rel="next">{{ next }} ></a></p>
-        {% endif %}
-    </p>
-    {% endif %}
 
 </article>
+{% endblock %}
 
-
+{% block content-footer %}
+    {# display next & previous blog post links #}
+    {% if next or previous %}
+    <div class="next-previous">
+        {% if previous %}
+        <p class="prev"><a href="{{ previous.get_absolute_url }}" rel="previous">{{ previous }}</a></p>
+        {% endif %}
+        {% if next %}
+        <p class="next"><a href="{{ next.get_absolute_url }}" rel="next">{{ next }}</a></p>
+        {% endif %}
+    </div>
+    {% endif %}
 
 {% endblock %}

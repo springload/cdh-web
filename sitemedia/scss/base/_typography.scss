@@ -52,7 +52,7 @@ p {
   }
 }
 
-#maincontent p a {
+#maincontent p a, #maincontent li a {
   @include body-link-style;
 }
 
