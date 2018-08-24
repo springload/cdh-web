@@ -3,6 +3,9 @@
 @import "base/base";
 @import "grid-settings";
 @import "fonts";
+@import "fontawesome/fontawesome.scss";
+@import "fontawesome/solid.scss";
+@import "fontawesome/brands.scss";
 
 
 /* nearly all block elements should be full-width on mobile */
@@ -1068,20 +1071,12 @@ $event-card-img-height: 240px;
 		/* github uses font-awesome */
 		li.github a {
 			&::before {
-			    display: inline-block;
-			    font-style: normal;
-			    font-variant: normal;
-			    text-rendering: auto;
-			    -webkit-font-smoothing: antialiased;
-			    // font-family: "Font Awesome 5 Free";
-			    font-family: "Font Awesome 5 Brands";
-			    font-weight: 900;
-			    content: "\f09b";  /* github  */
-			    // content: "\f092";  /* github square */
-			    // content: "\f121"; /* code */
+				@include fa-icon;
+				@extend .fab;
+	        	content: fa-content($fa-var-github);
+
 			    width:30px;
 			    text-align: center;
-			    font-size: 20px;
 			    color: $dark-grey;
 			}
 			padding-left: 0;
@@ -1090,14 +1085,10 @@ $event-card-img-height: 240px;
 		/* twitter also uses font-awesome */
 		li.twitter a {
 			&::before {
-			    display: inline-block;
-			    font-style: normal;
-			    font-variant: normal;
-			    text-rendering: auto;
-			    -webkit-font-smoothing: antialiased;
-			    font-family: "Font Awesome 5 Brands";
-			    font-weight: 900;
-			    content: "\f099";  /* github  */
+				@include fa-icon;
+				@extend .fab;
+	        	content: fa-content($fa-var-twitter);
+
 			    width:30px;
 			    text-align: center;
 			    font-size: 20px;
@@ -1473,40 +1464,33 @@ body.blogpost {
 			text-align: left;
 
 		  	&::before {
-			    display: inline-block;
-			    font-style: normal;
-			    font-variant: normal;
-			    text-rendering: auto;
-			    -webkit-font-smoothing: antialiased;
-			    font-family: "Font Awesome 5 Free";
-			    font-weight: 900;
+				@include fa-icon;
+				@extend .fas;
+	        	content: fa-content($fa-var-angle-double-left);
+
 			    width:30px;
 			    text-align: center;
 			    font-size: 20px;
 			    color: $dark-grey;
-			    content: "\f100"; /* angle-double-left */
 		  	}
-	 }
+
+	}
 
 	  &.next {
 	  	float: right;
 
 	  	&::after {
-			    display: inline-block;
-			    font-style: normal;
-			    font-variant: normal;
-			    text-rendering: auto;
-			    -webkit-font-smoothing: antialiased;
-			    font-family: "Font Awesome 5 Free";
-			    font-weight: 900;
+				@include fa-icon;
+				@extend .fas;
+	        	content: fa-content($fa-var-angle-double-right);
+
 			    width:30px;
 			    text-align: center;
 			    font-size: 20px;
 			    color: $dark-grey;
-			    content: "\f101"; /* angle-double-right */
-
 		  	}
-	  }
+		}
+
 	}
 
 
