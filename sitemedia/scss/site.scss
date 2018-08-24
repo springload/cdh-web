@@ -1456,10 +1456,14 @@ body.blogpost {
 	@include content-page;
 
 	&::after {
+		content: " ";
+		display: block;
 		clear: both;
 	}
 
 	p {
+		margin-bottom: 25px;
+
 		a {
   		  @include body-link-style;
 		}
