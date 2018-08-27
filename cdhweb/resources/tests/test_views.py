@@ -5,6 +5,7 @@ from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from mezzanine.pages.models import Page
 import pytest
 
 from cdhweb.blog.models import BlogPost
@@ -14,6 +15,7 @@ from cdhweb.resources.utils import absolutize_url
 
 
 class TestViews(TestCase):
+    fixtures = ['test_pages.json']
 
     def test_site_index(self):
         index_url = reverse('home')
@@ -128,6 +130,22 @@ class TestViews(TestCase):
 
         # not yet testing published/unpublished
 
+    def test_child_pages_attachment(self):
+        about = Page.objects.get(title='About')
+        annual_report = Page.objects.get(title='Annual Report')
+        response = self.client.get(about.get_absolute_url())
+        # page-children attachment section should be present
+        self.assertContains(response, '<div class="attachments page-children">')
+        # child page title and url should be present
+        self.assertContains(response, annual_report.title)
+        self.assertContains(response, annual_report.get_absolute_url())
+
+        # delete child page to check behavior without
+        annual_report.delete()
+        response = self.client.get(about.get_absolute_url())
+        # should not error, should not contain page-children attachment section
+        self.assertNotContains(response, '<div class="attachments page-children">')
+
 
 @pytest.mark.django_db
 def test_absolutize_url():
@@ -153,4 +171,7 @@ def test_absolutize_url():
     # site with https:// included
     current_site.domain = 'https://example.org'
     assert absolutize_url(local_path) == 'https://example.org/sub/foo/bar/'
+
+
+
 
