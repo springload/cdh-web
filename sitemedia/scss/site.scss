@@ -15,6 +15,24 @@ header, div, p, img, section, article {
 	}
 }
 
+@mixin content-page {
+	/* for blog posts and text content pages */
+	padding: 0;
+	margin-bottom: 50px;
+
+
+    @media (min-width: $medium-min-width) {
+		@include grid-push(1);
+		@include grid-column(7);
+	}
+
+    @media (min-width: $large-min-width) {
+		@include grid-push(2);
+		@include grid-column(8);
+	}
+}
+
+
 /* container with max-width for large, medium, and small viewports */
 .responsive-container {
     max-width: $large-content-width;
@@ -808,6 +826,11 @@ $event-card-img-height: 240px;
 	h2 {
 		@include full-grid-width;
 	}
+
+	.richtext {
+		@include content-page;
+	}
+
 }
 
 @mixin header-with-icon {
@@ -1421,22 +1444,6 @@ section.blogposts, section.people, section.events, section.projects {
 	}
 }
 
-@mixin content-page {
-	/* for blog posts and text content pages */
-	padding: 0;
-	margin-bottom: 50px;
-
-
-    @media (min-width: $medium-min-width) {
-		@include grid-push(1);
-		@include grid-column(7);
-	}
-
-    @media (min-width: $large-min-width) {
-		@include grid-push(2);
-		@include grid-column(8);
-	}
-}
 
 
 body.blogpost {
