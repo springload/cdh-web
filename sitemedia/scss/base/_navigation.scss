@@ -188,12 +188,12 @@ header.nav {
         width: 100%;
         display: none;
         top: 55px;
-        
+
         .inner {
             margin-left: 85px;
             border-top: solid 1px #d8d8d8;
         }
-        
+
         .secondary-nav,
         .tertiary-nav {
             list-style: none;
@@ -226,7 +226,7 @@ header.nav {
                 &:last-child {
                     margin-bottom: 0;
                 }
-                
+
                 @media (min-width: $large-min-width) {
                     margin-right: 30px;
                     margin-bottom: 0;
@@ -379,12 +379,12 @@ footer {
         form {
 
             /* display email icon at left and indent content past it */
-            background-image: url('../img/icons/CDH_icon_SVG/cdh_icon_email.svg');
+            background-image: url('../img/cdh-icons/email.svg');
             background-size: 54px 54px;
             background-repeat: no-repeat;
             display: flex;
             align-items: baseline;
-            
+
             @media (max-width: $small-max-width) {
                 align-items: center;
                 flex-direction: column;
