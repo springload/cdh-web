@@ -126,6 +126,10 @@ class TestViews(TestCase):
             self.assertContains(response, event.title)
             # TODO: date/time
 
+        # test editable page content displayed
+        page = Page.objects.get(slug='/')
+        self.assertContains(response, page.richtextpage.content)
+
         # TODO: not yet testing speakers displayed
 
         # not yet testing published/unpublished
