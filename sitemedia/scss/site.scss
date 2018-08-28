@@ -1305,10 +1305,10 @@ $event-card-img-height: 240px;
 		}
 
     }
-    
+
     .recent-posts {
         margin-top: 50px;
-        
+
         .blogpost h3 {
             font-size: 20px;
         }
@@ -1591,6 +1591,21 @@ body.richtextpage {
 		> div, h1, header {
 			@include content-page;
 		}
+	}
+
+	&.consult {
+		section {
+			@include content-page;
+
+			iframe {
+				margin: 0;
+				padding: 0;
+				border: 0;
+				width: 100%;
+				height: 750px;
+			}
+		}
+
 	}
 }
 
