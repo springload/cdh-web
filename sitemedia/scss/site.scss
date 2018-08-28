@@ -772,7 +772,7 @@ $event-card-img-height: 240px;
 				@include cdh-icon('link');
 			}
 		}
-		&.people {
+		&.ppl {
 			a::after {
 				@include cdh-icon('ppl');
 			}
