@@ -1475,18 +1475,23 @@ section.blogposts, section.people, section.events, section.projects {
 
 
 body.blogpost {
+
 	#maincontent {
+		padding: 0;
+		margin-bottom: 50px;
 		@include grid-container;
+
+		> h1 {
+            @include content-page;
+        }
 	}
 }
 
-.blogpost {
-	// margin-top: 340px; // currently handled by spacer div
-	@include content-page;
+article.blogpost {
+    @include content-page;
 
 	header {
 		h1 {
-			margin-top: 250px - $header-nav-height;
 			margin-bottom: 50px;
 
 			@media (max-width: $small-max-width) {
