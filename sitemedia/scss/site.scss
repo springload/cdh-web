@@ -1294,7 +1294,8 @@ $event-card-img-height: 240px;
 		margin-top: 0;
 	}
 
-	.bio {
+    .bio,
+    .recent-posts {
 		@media (min-width: $medium-min-width) {
 			@include grid-column(6);
 			@include grid-push(3);
@@ -1303,7 +1304,15 @@ $event-card-img-height: 240px;
 			@include grid-column(8);
 		}
 
-	}
+    }
+    
+    .recent-posts {
+        margin-top: 50px;
+        
+        .blogpost h3 {
+            font-size: 20px;
+        }
+    }
 
 
 }
