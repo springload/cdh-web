@@ -667,6 +667,9 @@ $event-card-img-height: 240px;
 		position: relative;
 		background: none; /* no blue stripes */
 
+        /* fallback display for people without a photo */
+        @include dark-blue-gradient;
+
 		/* styles for image as photo */
 		background-size: contain;
 		background-repeat: no-repeat;
@@ -765,7 +768,7 @@ $event-card-img-height: 240px;
 				right: 15px;
 				width: 42px;
 				height: 52px;
-				@include cdh-icon('doc');
+				background-image: url('../img/cdh-icons/doc.svg');
 				background-size: contain;
 				background-repeat: no-repeat;
 			}
@@ -1427,10 +1430,10 @@ section.blogposts, section.people, section.events, section.projects {
 
 	h1 {
 		@media (min-width: $medium-min-width) {
-			@include grid-column(7);
+			@include grid-column(6);
 		}
 	    @media (min-width: $large-min-width) {
-			@include grid-column(10);
+			@include grid-column(9);
 		}
 		@media (max-width: $small-max-width) {
 			@include full-grid-width;
@@ -1439,7 +1442,7 @@ section.blogposts, section.people, section.events, section.projects {
 	}
 
 	.archive-nav {
-		@include grid-column(2);
+		@include grid-column(3);
 		justify-self: end;
 		float: none;
 		margin: 0;

@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 from mezzanine.core.fields import RichTextField, FileField
 from mezzanine.core.models import Displayable, CONTENT_STATUS_PUBLISHED, \
@@ -11,7 +12,8 @@ from mezzanine.core.models import Displayable, CONTENT_STATUS_PUBLISHED, \
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
-from cdhweb.resources.models import Attachment, PublishedQuerySetMixin
+from cdhweb.resources.models import Attachment, PublishedQuerySetMixin, \
+    DateRange
 
 
 class Title(models.Model):
@@ -75,6 +77,31 @@ class Person(User):
         except ObjectDoesNotExist:
             pass
 
+    @property
+    def website_url(self):
+        '''personal website url, if set'''
+        website = self.userresource_set \
+            .filter(resource_type__name='Website').first()
+        if website:
+            return website.url
+
+    @property
+    def profile_url(self):
+        '''local profile url, user has a profile, or website url if there is one'''
+        try:
+            if self.profile.is_staff and self.published():
+                return self.get_absolute_url()
+        except ObjectDoesNotExist:
+            pass
+
+        return self.website_url
+
+    @property
+    def latest_grant(self):
+        '''most recent grants where this person is project director'''
+        return self.membership_set.filter(role__title='Project Director') \
+                   .order_by('-grant__start_date').first().grant
+
     def __str__(self):
         '''Custom person display to make it easier to choose people
         in admin menus.  Uses profile title if available, otherwise combines
@@ -90,23 +117,64 @@ class Person(User):
 
 class ProfileQuerySet(PublishedQuerySetMixin):
 
+    postdoc_title = 'Postdoctoral Fellow'
+
     def staff(self):
         '''Return only CDH staff members'''
         return self.filter(is_staff=True)
 
+    def postdocs(self):
+        '''Return CDH Postdoctoral Fellows, based on role title'''
+        return self.filter(user__positions__title__title__icontains=self.postdoc_title)
+
+    def not_postdocs(self):
+        '''Exclude CDH Postdoctoral Fellows, based on role title'''
+        return self.exclude(user__positions__title__title__icontains=self.postdoc_title)
+
+    #: position titles that indicate a staff person is a student
+    student_titles = ['Graduate Fellow', 'Graduate Assistant',
+                      'Undergraduate Assistant']
+    #: student status codes from LDAP
+    student_pu_status = ['graduate', 'undergraduate']
+
+    def students(self):
+        '''Return CDH student assistants and grantees based on Project Director
+        project role.'''
+        return self.filter(
+            models.Q(user__positions__title__title__in=self.student_titles) |
+            ((models.Q(pu_status__in=self.student_pu_status))
+             & models.Q(user__membership__role__title='Project Director')))
+
+    def not_student_staff(self):
+        '''Filter out people with CDH student titles'''
+        return self.exclude(user__positions__title__title__in=self.student_titles)
+
     def _current_position_query(self):
-        return (models.Q(user__positions__end_date__isnull=True) |
-                models.Q(user__positions__end_date__gte=date.today()))
+        # query to find a user with a current cdh position
+        # user *has* a position and it has no end date or date after today
+        return (
+            models.Q(user__positions__isnull=False) &
+            (models.Q(user__positions__end_date__isnull=True) |
+             models.Q(user__positions__end_date__gte=date.today())
+            )
+        )
+
+    def _current_grant_query(self):
+        today = timezone.now()
+        return (
+            models.Q(user__membership__role__title='Project Director') &
+            (models.Q(user__membership__grant__start_date__lte=today) &
+             (models.Q(user__membership__grant__end_date__gte=today) |
+              models.Q(user__membership__grant__end_date__isnull=True))
+            )
+        )
 
     def current(self):
-        '''Return profiles for users with a current position, either
-        with no end date set or an end date in the future.'''
-        return self.filter(self._current_position_query())
-
-    def not_current(self):
-        '''Return profiles for users without a current position, based on
-        no end date set or an end date in the future.'''
-        return self.exclude(self._current_position_query())
+        '''Return profiles for users with a current position *or*
+        a current grant, based on start and end dates: either no end date
+        set or an end date in the future.'''
+        return self.filter(models.Q(self._current_position_query()) |
+                           models.Q(self._current_grant_query()))
 
     def order_by_position(self):
         '''order by job title sort order and then by start date'''
@@ -119,15 +187,28 @@ class ProfileQuerySet(PublishedQuerySetMixin):
 
 
 class Profile(Displayable, AdminThumbMixin):
-    user = models.OneToOneField(User)
-    is_staff = models.BooleanField(default=False,
-        help_text='If checked, this person will be listed on the CDH staff page.')
+    user = models.OneToOneField(Person)
+    is_staff = models.BooleanField(
+        default=False,
+        help_text='CDH staff or Postdoctoral Fellow. If checked, person ' +
+        'will be listed on the CDH staff page (except for ' +
+        'postdocs) and will have a profile page on the site.')
     education = RichTextField()
     bio = RichTextField()
     # NOTE: could use regex here, but how standard are staff phone
     # numbers? or django-phonenumber-field, but that's probably overkill
     phone_number = models.CharField(max_length=50, blank=True)
     office_location = models.CharField(max_length=255, blank=True)
+
+    PU_STATUS_CHOICES = (
+        ('fac', 'Faculty'),
+        ('stf', 'Staff'),
+        ('graduate', 'Graduate Student'),
+        ('undergraduate', 'Undergraduate Student'),
+        ('external', 'Not associated with Princeton')
+    )
+    pu_status = models.CharField('Princeton Status', choices=PU_STATUS_CHOICES,
+                                 max_length=15, blank=True, default='')
 
     image = FileField(verbose_name="Image",
         upload_to=upload_to("people.image", "people"),
@@ -168,42 +249,18 @@ def workshops_taught(user):
 User.workshops_taught = workshops_taught
 
 
-class Position(models.Model):
+class Position(DateRange):
     '''Through model for many-to-many relation between people
     and titles.  Adds start and end dates to the join table.'''
     user = models.ForeignKey(User, on_delete=models.CASCADE,
-        related_name='positions')
+                             related_name='positions')
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField(blank=True, null=True)
 
     class Meta:
         ordering = ['-start_date']
 
     def __str__(self):
         return '%s %s (%s)' % (self.user, self.title, self.start_date.year)
-
-    @property
-    def is_current(self):
-        '''is position current - start date before today and end date
-        in the future or not set'''
-        today = date.today()
-        return self.start_date <= today and \
-            (not self.end_date or self.end_date >= today)
-
-    @property
-    def years(self):
-        '''year or year range for display'''
-        val = str(self.start_date.year)
-
-        if self.end_date:
-            # start and end the same year - return single year only
-            if self.start_date.year == self.end_date.year:
-                return val
-
-            return '%s–%s' % (val, self.end_date.year)
-
-        return '%s–' % val
 
 
 def init_profile_from_ldap(user, ldapinfo):
@@ -217,21 +274,28 @@ def init_profile_from_ldap(user, ldapinfo):
         profile = user.profile
     except ObjectDoesNotExist:
         profile = Profile.objects.create(user=user)
+        # set profiles to draft by default when creating a new profile *only
+        # so we don't get a new page for every account we initialize
+        profile.status = CONTENT_STATUS_DRAFT
 
     # populate profile with data we can pull from ldap
+    # but do not set any fields with content, which may contain edits
+
     # - set user's display name as page title
-    profile.title = str(ldapinfo.displayName)
+    if not profile.title:
+        profile.title = str(ldapinfo.displayName)
     # - generate a slug based on display name
-    profile.slug = slugify(ldapinfo.displayName)
-    if ldapinfo.telephoneNumber:
+    if not profile.slug:
+        profile.slug = slugify(ldapinfo.displayName)
+    if ldapinfo.telephoneNumber and not profile.phone_number:
         profile.phone_number = str(ldapinfo.telephoneNumber)
     # 'street' in ldap is office location
-    if ldapinfo.street:
+    if ldapinfo.street and not profile.office_location:
         profile.office_location = str(ldapinfo.street)
 
-    # set profiles to draft by default so we don't get a new page
-    # for every account we initialize
-    profile.status = CONTENT_STATUS_DRAFT
+    # always update PU status to current
+    profile.pu_status = str(ldapinfo.pustatus)
+
     profile.save()
 
     # NOTE: job title is available in LDAP; attaching to a person

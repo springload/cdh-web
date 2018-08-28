@@ -1,5 +1,5 @@
 from django.contrib import admin
-from mezzanine.core.admin import DisplayableAdminForm
+from mezzanine.core.admin import DisplayableAdminForm, DisplayableAdmin
 
 from .models import Title, Profile, Position, Person
 from cdhweb.resources.models import UserResource
@@ -13,21 +13,6 @@ class TitleAdmin(admin.ModelAdmin):
     # and/or css/js includes and grappelli; sorting works fine when
     # grappelli is not installed.  We should be able to address this
     # with a little bit of template customization.
-
-
-class ProfileInline(admin.StackedInline):
-    model = Profile
-    max_num = 1
-    form = DisplayableAdminForm
-    # NOTE: may not be able to use displayable admin with inline;
-    # could still use DisplayableAdminForm
-    prepopulated_fields = {"slug": ("title",)}
-    # TODO: grapelli templates don't include a way to have the first profile
-    # default to open instead of collapsed; maybe use javascript
-    # classes = ("collapse-open",)
-    # inline_classes = ('collapse-open',)  # this is ignored
-    exclude = ('tags', )
-    filter_horizontal = ('attachments', )
 
 
 class PositionInline(admin.TabularInline):
@@ -44,8 +29,8 @@ class PersonAdmin(admin.ModelAdmin):
     # NOTE: if we switched to profile instead of person here, is_staff
     # and published could be made list editable
     fields = ('username', 'first_name', 'last_name', 'email')
-    search_fields = ('first_name', 'last_name')
-    inlines = [ProfileInline, PositionInline, UserResourceInline]
+    search_fields = ('first_name', 'last_name', 'username')
+    inlines = [PositionInline, UserResourceInline]
     list_filter = ('profile__status', 'profile__is_staff')
 
     def tag_list(self, obj):
@@ -56,6 +41,29 @@ class PersonAdmin(admin.ModelAdmin):
     # also: suppress management/auth fields like password, username, permissions,
     # last login and date joined
 
+class ProfileAdmin(DisplayableAdmin):
+    list_display = ('title', 'status', 'is_staff', 'pu_status', "admin_link",
+                    "admin_thumb")
+    list_filter = ('status', 'is_staff', 'pu_status')
+    search_fields = ('title', 'user__last_name', 'user__username',
+                     'user__first_name', 'bio')
+    prepopulated_fields = {"slug": ("title",)}
+    filter_horizontal = ('attachments', )
+    # customized fieldset based on DisplayableAdmin field set
+    fieldsets = (
+        (None, {
+            "fields": ["title", "pu_status", "is_staff", "education", "bio",
+                       "phone_number", "office_location",
+                       "image", "thumb",
+                       "status", ("publish_date", "expiry_date")],
+        }),
+        ("Page Metadata", {
+            "fields": ["_meta_title", "slug",
+                       ("description", "gen_description"),
+                        "keywords", "in_sitemap"],
+            "classes": ("collapse-open",)
+        }),
+    )
 
 class PositionAdmin(admin.ModelAdmin):
     list_display = ('user', 'title', 'start_date', 'end_date')
@@ -64,4 +72,5 @@ class PositionAdmin(admin.ModelAdmin):
 
 admin.site.register(Title, TitleAdmin)
 admin.site.register(Person, PersonAdmin)
+admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Position, PositionAdmin)

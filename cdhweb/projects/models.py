@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -9,7 +11,7 @@ from taggit.managers import TaggableManager
 
 from cdhweb.people.models import Person
 from cdhweb.resources.models import ResourceType, Attachment, ExcerptMixin, \
-    PublishedQuerySetMixin
+    PublishedQuerySetMixin, DateRange
 
 
 class ProjectQuerySet(PublishedQuerySetMixin):
@@ -131,12 +133,10 @@ class GrantType(models.Model):
         return self.grant_type
 
 
-class Grant(models.Model):
+class Grant(DateRange):
     '''A specific grant associated with a project'''
     project = models.ForeignKey(Project)
     grant_type = models.ForeignKey(GrantType)
-    start_date = models.DateField()
-    end_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return '%s: %s (%s-%s)' % (self.project.title, self.grant_type.grant_type,
