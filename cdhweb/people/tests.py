@@ -135,6 +135,13 @@ class ProfileQuerySetTest(TestCase):
         assert current_profiles.exists()
         assert staff_profile in current_profiles
 
+        # end today = still current
+        cur_post.end_date = date.today()
+        cur_post.save()
+        assert current_profiles.exists()
+        assert staff_profile in current_profiles
+
+
     def test_not_current(self):
         # current staff person
         staffer = Person.objects.create(username='staffer')
@@ -222,6 +229,10 @@ class TestPosition(TestCase):
         # end date in past
         pos.end_date = date.today() - timedelta(days=3)
         assert not pos.is_current
+
+        # end date = today, current
+        pos.end_date = date.today()
+        assert pos.is_current
 
         # start date in future
         pos.start_date = date.today() + timedelta(days=3)
