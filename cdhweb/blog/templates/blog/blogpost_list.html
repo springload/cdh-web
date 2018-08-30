@@ -1,5 +1,5 @@
 {% for post in blogposts %}
-<div class="blogpost">
+<article class="blogpost">
     <header>
         <a href="{{ post.get_absolute_url }}">
             {# h3 for profile, h2 elsewhere #}
@@ -25,7 +25,7 @@
                     </span>
                     {% endif %}
                 {% endfor %}
-            </div>
+            </div><br/>
             {% endif %}
             <span class="date-published">{{ post.publish_date|date:"F j, Y" }}</span>
         </div>
@@ -34,5 +34,5 @@
     {% if not profile %}
     <div>{{ post.description|safe }}</div>
     {% endif %}
-</div>
+</article>
 {% endfor %}

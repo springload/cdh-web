@@ -693,8 +693,9 @@ $event-card-img-height: 240px;
 			.title {
 				font-size: 18px;
 				margin: 0;
-				color: $dark-grey;
-                font-family: $font-stack-headline;
+                color: $dark-grey;
+                font-style: italic;
+                font-family: $font-stack-body-text;
                 font-weight: normal;
 			}
 			.name {
@@ -1523,14 +1524,6 @@ article.blogpost {
 
 				&:last-of-type::after {
 					content: "";
-				}
-			}
-
-
-			.date-published {
-				padding-left: 40px;
-				@media (max-width: $small-max-width) {
-					padding-left: 0;
 				}
 			}
 		}
