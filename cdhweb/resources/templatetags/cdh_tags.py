@@ -14,6 +14,7 @@ URL_ICON_MAPPING = OrderedDict([
     ('/projects/', 'folder'),
     ('/events/', 'cal'),
     ('/contact/', 'convo'),
+    ('/consult/', 'convo'),
     ('seed-grant', 'seed'),
     ('fellowship', 'medal'),
     ('prize', 'medal'),
