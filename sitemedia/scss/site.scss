@@ -851,6 +851,13 @@ $event-card-img-height: 240px;
 		@include content-page;
 	}
 
+	/* editable text content embedded on a dynamic page, e.g. profile list */
+	section.textcontent {
+		@include grid-container;
+		grid-column-start: start;
+		grid-column-end: end;
+	}
+
 }
 
 @mixin header-with-icon {

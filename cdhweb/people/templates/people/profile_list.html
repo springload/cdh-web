@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load mezzanine_tags %}
 
 {% block page-subtitle %}{{ title|default:"People" }} | {% endblock %}
 {% block bodyattrs %}class="with-cards"{% endblock %}
@@ -7,6 +8,7 @@
 <section class="people">
 
 <h1>{{ title }}</h1>
+
 
 {# drop-down nav adapted from events page #}
 <div class="archive-nav">
@@ -18,6 +20,14 @@
     {% endfor %}
   </ul>
 </div>
+
+
+{# display editable page content; wrapped for formatting reasons #}
+<section class="textcontent">
+    <div class="richtext">
+    {{ page.richtextpage.content|richtext_filters }}
+    </div>
+</section>
 
 {# current people #}
 {% for profile in current %}
