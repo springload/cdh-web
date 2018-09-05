@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import resolve, reverse
+from django.utils import timezone
 from django.utils.html import escape
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED, CONTENT_STATUS_DRAFT
 
@@ -280,21 +281,21 @@ class TestProjectQuerySet(TestCase):
         assert proj in Project.objects.published(staffer)
 
         # publish date in future - only visible to staff user
-        proj.publish_date = datetime.today() + timedelta(days=2)
+        proj.publish_date = timezone.now() + timedelta(days=2)
         proj.save()
         assert proj not in Project.objects.published()
         assert proj not in Project.objects.published(nonstaffer)
         assert proj in Project.objects.published(staffer)
 
         # publish date in past - visible to all
-        proj.publish_date = datetime.today() - timedelta(days=2)
+        proj.publish_date = timezone.now() - timedelta(days=2)
         proj.save()
         assert proj in Project.objects.published()
         assert proj in Project.objects.published(nonstaffer)
         assert proj in Project.objects.published(staffer)
 
         # expiration date in past - only visible to staff user
-        proj.expiry_date = datetime.today() - timedelta(days=2)
+        proj.expiry_date = timezone.now() - timedelta(days=2)
         proj.save()
         assert proj not in Project.objects.published()
         assert proj not in Project.objects.published(nonstaffer)
