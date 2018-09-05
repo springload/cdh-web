@@ -507,11 +507,6 @@ $event-card-img-height: 240px;
 		@include large-card;
 
 		height: $event-card-height;
-		/* background options for when an image is added in the template */
-		// background-size: cover;
-	 	background-size: contain !important;
-		/* background-position: 50% 50%;  maybe? */
-		background-repeat: no-repeat;
 
 		> a {
 			display: grid;
@@ -525,7 +520,15 @@ $event-card-img-height: 240px;
 			> *  {
 				padding: 15px;
 			}
-		}
+        }
+        
+        .image {
+            grid-area: image;
+            height: 100%;
+            padding: 0;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
 
 		.content {
 			grid-area: content;
