@@ -35,10 +35,12 @@
 {% for profile in current %}
     {% include 'people/snippets/profile_card.html' %}
 {% empty %}
+    {% if show_events %}
     <p class="message">Next semester's speaking events are being scheduled.
         Check back later or <a href="{% url 'event:upcoming' %}">view other
             upcoming events.</a>
     </p>
+    {% endif %}
 {% endfor %}
 
 {# executive committe page only has an additinoal current section #}
