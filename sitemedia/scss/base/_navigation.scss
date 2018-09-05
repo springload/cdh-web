@@ -323,6 +323,11 @@ footer {
             grid-area: copyright;
         }
 
+        .a11y {
+            float: right;
+            margin-right: 2rem;
+        }
+
         .social {
             grid-area: social;
             justify-self: start;
