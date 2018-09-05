@@ -120,7 +120,19 @@ class Person(User):
 
 class ProfileQuerySet(PublishedQuerySetMixin):
 
+    #: position titles that indicate a person is a postdoc
     postdoc_title = 'Postdoctoral Fellow'
+
+    #: position titles that indicate a staff person is a student
+    student_titles = ['Graduate Fellow', 'Graduate Assistant',
+                      'Undergraduate Assistant']
+    #: student status codes from LDAP
+    student_pu_status = ['graduate', 'undergraduate']
+
+    #: executive committee member titles
+    exec_member_title = 'Executive Committee Member'
+    with_exec_title = 'Sits with Executive Committee'
+    exec_committee_titles = [exec_member_title, with_exec_title]
 
     def staff(self):
         '''Return only CDH staff members'''
@@ -133,9 +145,6 @@ class ProfileQuerySet(PublishedQuerySetMixin):
     def not_postdocs(self):
         '''Exclude CDH Postdoctoral Fellows, based on role title'''
         return self.exclude(user__positions__title__title__icontains=self.postdoc_title)
-
-    #: student status codes from LDAP
-    student_pu_status = ['graduate', 'undergraduate']
 
     def student_affiliates(self):
         '''Return CDH student staff members and grantees based on Project Director
@@ -154,11 +163,6 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         project role.'''
         return self.filter(pu_status='fac',
                            user__membership__role__title='Project Director')
-
-    exec_member_title = 'Executive Committee Member'
-    with_exec_title = 'Sits with Executive Committee'
-
-    exec_committee_titles = [exec_member_title, with_exec_title]
 
     def executive_committee(self):
         '''Executive committee members; based on position title.'''
@@ -186,6 +190,13 @@ class ProfileQuerySet(PublishedQuerySetMixin):
                 models.When(user__membership__role__title='Project Director',
                             then='user__membership__grant__end_date'))))
 
+    def speakers(self):
+        '''Return external speakers at CDH events.'''
+        # Speakers are non-Princeton profiles (external) who are associated with
+        # at least one published event
+        return self.filter(user__event__isnull=False, pu_status='external',
+                           user__event__status=CONTENT_STATUS_PUBLISHED)
+
     def _current_position_query(self):
         # query to find a user with a current cdh position
         # user *has* a position and it has no end date or date after today
@@ -207,9 +218,8 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         )
 
     def current(self):
-        '''Return profiles for users with a current position *or*
-        a current grant, based on start and end dates: either no end date
-        set or an end date in the future.'''
+        '''Return profiles for users with a current position or current grant
+        based on start and end dates.'''
         return self.filter(models.Q(self._current_position_query()) |
                            models.Q(self._current_grant_query()))
 
@@ -225,8 +235,11 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         '''Return profiles for users with a current position, excluding
         executive committee positions.'''
         return self.filter(models.Q(self._current_position_query()) &
-                           ~models.Q(user__positions__title__title__in=self.exec_committee_titles) )
+                           ~models.Q(user__positions__title__title__in=self.exec_committee_titles))
 
+    def has_upcoming_events(self):
+        '''Filter profiles to only those with an event that has yet to start.'''
+        return self.filter(user__event__end_time__gte=timezone.now()).distinct()
 
     def order_by_position(self):
         '''order by job title sort order and then by start date'''
@@ -378,4 +391,3 @@ def init_profile_from_ldap(user, ldapinfo):
         # job title, organizational unit
         job_title = str(ldapinfo.title).split(',')[0]
         Title.objects.get_or_create(title=job_title)
-

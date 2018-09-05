@@ -1,9 +1,10 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from unittest.mock import Mock
 
 from django.urls import reverse
 from django.test import TestCase
 from django.utils.text import slugify
+from django.utils import timezone
 from mezzanine.core.models import CONTENT_STATUS_DRAFT, CONTENT_STATUS_PUBLISHED
 import pytest
 
@@ -12,6 +13,7 @@ from cdhweb.people.models import Title, Person, Position, \
 from cdhweb.people.sitemaps import ProfileSitemap
 from cdhweb.projects.models import Project, Grant, GrantType, Role, Membership
 from cdhweb.resources.models import ResourceType, UserResource
+from cdhweb.events.models import Event, EventType
 
 
 @pytest.mark.django_db
@@ -468,6 +470,51 @@ class TestViews(TestCase):
         assert fac.profile not in response.context['current']
         assert fac.profile in response.context['past']
 
+    def test_speakers_list(self):
+        # create a test event for an external person
+        speaker = Person.objects.get(username='billshakes')
+        workshop = EventType.objects.get(name='Workshop')
+        # use django timezone util for timezone-aware datetime
+        start_time = timezone.now() + timedelta(days=1) # starts tomorrow
+        end_time = start_time + timedelta(hours=2) # lasts 2 hours
+        event = Event.objects.create(start_time=start_time, end_time=end_time,
+                                     event_type=workshop, slug='workshop',
+                                     status=CONTENT_STATUS_DRAFT)
+        event.speakers.add(speaker)
+
+        response = self.client.get(reverse('people:speakers'))
+        # no speakers, since no published events exist
+        assert len(response.context['current']) == 0
+
+        # publish the event
+        event.status = CONTENT_STATUS_PUBLISHED
+        event.save()
+
+        response = self.client.get(reverse('people:speakers'))
+        # speaker's profile is listed as upcoming
+        assert speaker.profile in response.context['current']
+        # upcoming event month, day, and time is shown
+        self.assertContains(response, event.when())
+        # event type is shown
+        self.assertContains(response, event.event_type)
+        # speaker institutional affiliation is shown
+        self.assertContains(response, speaker.profile.institution)
+        # link to event is rendered
+        self.assertContains(response, speaker.event_set.first().get_absolute_url())
+
+        # move event to the past
+        new_start = timezone.now() - timedelta(days=2) # 2 days ago
+        event.start_time = new_start
+        event.end_time = new_start + timedelta(hours=2) # 2 hours long
+        event.save()
+
+        response = self.client.get(reverse('people:speakers'))
+        # speaker's profile is listed as past
+        assert speaker.profile in response.context['past']
+        # year of past event is shown
+        self.assertContains(response, new_start.strftime('%Y'))
+
+        
     def test_executive_committee_list(self):
         # former acting faculty directory is also exec
         rdelue = Person.objects.get(username='rdelue')

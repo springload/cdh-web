@@ -49,8 +49,10 @@ class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
 class ProfileListView(ProfileMixinView, ListView, LastModifiedListMixin):
     '''Base class for profile list views'''
 
-    #: page title for html and label for main people
+    #: title for this category of people
     page_title = ''
+    #: title for non-past people in this category of people
+    current_title = ''
     #: label for past people in this category of people
     past_title = ''
     #: show CDH position on profile card (true by default)
@@ -86,12 +88,14 @@ class ProfileListView(ProfileMixinView, ListView, LastModifiedListMixin):
             'past': past,
             'title': self.page_title,
             'past_title': self.past_title,
+            'current_title': self.current_title or self.page_title, # use main title as default
             'archive_nav_urls': [
                 ('Staff', reverse('people:staff')),
                 ('Postdoctoral Fellows', reverse('people:postdocs')),
                 ('Students', reverse('people:students')),
                 ('Faculty Affiliates', reverse('people:faculty')),
                 ('Executive Committee', reverse('people:exec-committee')),
+                ('Speakers', reverse('people:speakers')),
             ],
             # flags for profile card display
             'show_cdh_position': self.show_cdh_position,
@@ -128,7 +132,8 @@ class StaffListView(ProfileListView):
 class PostdocListView(ProfileListView):
     '''Display current and past postdoctoral fellows'''
     page_title = 'Postdoctoral Fellows'
-    past_title = 'Postoctoral Fellow Alumni'
+    past_title = 'Postdoctoral Fellow Alumni'
+    show_grant = False
 
     def get_queryset(self):
         # filter to just postdocs
@@ -195,3 +200,19 @@ class ExecListView(ProfileListView):
         return context
 
 
+class SpeakerListView(ProfileListView):
+    '''Display upcoming and past speakers.'''
+    page_title = 'Speakers'
+    current_title = 'Upcoming {}'.format(page_title)
+    past_title = 'Past {}'.format(page_title)
+    #: show affiliation and info about events
+    show_affiliation = True
+    show_events = True
+
+    def get_queryset(self):
+        # filter to just speakers
+        return super().get_queryset().speakers()
+
+    def get_current_profiles(self):
+        # return only speakers with upcoming events
+        return self.object_list.has_upcoming_events()
