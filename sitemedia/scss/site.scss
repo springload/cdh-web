@@ -521,7 +521,7 @@ $event-card-img-height: 240px;
 				padding: 15px;
 			}
         }
-        
+
         .image {
             grid-area: image;
             height: 100%;
@@ -1053,9 +1053,9 @@ $event-card-img-height: 240px;
 		}
 
 	  	.short_description {
-	  		font-style: italic;
 		    margin-left: 0;
 		    margin-right: 0;
+		    @include quote;
 
 			@media (min-width: $large-min-width) {
 				/* according to spec, should be 7 cols, but can't

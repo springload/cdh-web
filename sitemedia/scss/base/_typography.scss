@@ -108,13 +108,17 @@ h4 {
   font-stretch: normal;
 }
 
-/* NOTE: labeled as .quote in zeplin, used for blog excerpt/call out in design */
-q {
-  font-family: Georgia;
+/* quote style in zeplin; used for blog excerpt/callout in design */
+@mixin quote {
+  font-family: $font-stack-body-text;
   font-size: 21px;
   font-style: italic;
   line-height: 1.52;
   color: $dark-grey;
+}
+
+q {
+  @include quote;
 }
 
 /* Caption in zeplin */
