@@ -689,7 +689,8 @@ $event-card-img-height: 240px;
 			padding-top: 10px;
 			background-color: $light-grey;
 			font-family: $font-stack-headline-bold;
-			width: 100%;
+            width: 100%;
+            line-height: 1.4;
 
 			.title {
 				font-size: 18px;
@@ -703,7 +704,7 @@ $event-card-img-height: 240px;
 				margin: 0;
 				font-size: 18px;
 				color: black;
-			}
+            }
 		}
 
 		@media (max-width: $small-max-width) {
