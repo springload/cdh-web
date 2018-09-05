@@ -1395,7 +1395,12 @@ $event-card-img-height: 240px;
 	    	font-family: $font-stack-headline;
 	    	font-size: 18px;
 
-	    }
+        }
+        
+        .affiliation {
+            font-family: $font-stack-body-text;
+            font-style: italic;
+        }
 
     	.ical {
     		margin-top: 37px;
