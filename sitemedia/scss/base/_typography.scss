@@ -94,12 +94,21 @@ body {
 
 }
 
-h1, h2, h3, h4 {
-  font-family: $font-stack-headline-bold;
+h1 {
+    font-family: $font-stack-headline-bold;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+h2, h3, h4 {
+  font-family: $font-stack-headline;
+  font-weight: normal;
 }
 
 h3 {
-  font-size: 28px;
+  font-size: 24px;
   line-height: 1.29;
 }
 

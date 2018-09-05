@@ -1493,7 +1493,7 @@ body.blogpost {
 		> h1 {
             @include content-page;
         }
-	}
+    }
 }
 
 article.blogpost {
@@ -1537,7 +1537,7 @@ article.blogpost {
 		}
 
 		a {
-			color: $dark-grey;
+			color: $black;
 			text-decoration: none;
 		}
 	}
