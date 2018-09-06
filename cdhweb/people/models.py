@@ -186,12 +186,10 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         return self.annotate(
             first_start=models.Min(models.Case(
                 models.When(user__membership__role__title='Project Director',
-                            then='user__membership__grant__start_date')),
-                output_field=models.DateField()),
+                            then='user__membership__grant__start_date'))),
             last_end=models.Max(models.Case(
                 models.When(user__membership__role__title='Project Director',
-                            then='user__membership__grant__end_date')),
-                output_field=models.DateField()))
+                            then='user__membership__grant__end_date'))))
 
     def speakers(self):
         '''Return external speakers at CDH events.'''

@@ -22,8 +22,9 @@
             {% if show_grant %} {# display grant role #}
                 {% with grant=profile.user.latest_grant %}
                     {% if grant %}
+                    {# NOTE: for unknown reasons, on qa these are not returned as date objects; handle either date or YYYY-MM-DD string#}
                         {% if profile.first_start and profile.last_end %}
-                            {{ profile.first_start.year }}–{{ profile.last_end.year }}<br/>
+                            {% firstof profile.first_start.year profile.first_start|slice:":4" %}–{% firstof profile.last_end.year profile.last_end|slice:":4" %}<br/>
                         {% elif not grant.is_current %}{{ grant.years }}<br/>{% endif %}
                         {{ grant.grant_type }} Grant Recipient
                     {% endif %}
