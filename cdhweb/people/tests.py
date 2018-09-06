@@ -296,9 +296,10 @@ class ProfileQuerySetTest(TestCase):
         annotated = Profile.objects.filter(user__membership__isnull=False) \
                                    .grant_years()
         for profile in annotated:
-            assert profile.first_start == profile.user.grants.first().start_date
+            grants = Grant.objects.filter(membership__user=profile.user)
+            assert profile.first_start == grants.first().start_date
             assert isinstance(profile.first_start, date)
-            assert profile.last_end == profile.user.grants.last().end_date
+            assert profile.last_end == grants.last().end_date
             assert isinstance(profile.last_end, date)
 
 

@@ -44,10 +44,6 @@ class Person(User):
     # admin interface in one place without having to extend the django
     # default user model.
 
-    #: many to many relationship to Grants this person partipicated on, through
-    #: project membership
-    grants = models.ManyToManyField('projects.Grant', through='projects.Membership')
-
     class Meta:
         proxy = True
         verbose_name_plural = 'People'
