@@ -1562,24 +1562,7 @@ article.blogpost {
 			margin-bottom: 50px;
 
 			.authors {
-				display: inline-block;
-
-				/* commas after authors names except last author */
-				&::after {
-					content: ", ";
-				}
-				@media (max-width: $small-max-width) {
-					display: block;
-
-					/* no commas on mobile */
-					&::after {
-						content: "";
-					}
-				}
-
-				&:last-of-type::after {
-					content: "";
-				}
+                display: inline-block;
 			}
 		}
 
