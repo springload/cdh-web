@@ -1,7 +1,7 @@
 /**
  * This file overrides the default Mezzanine config for TinyMCE
  * (mezzanine/js/tinymce_setup.js) with some custom settings.
- * 
+ *
  * http://mezzanine.jupo.org/docs/configuration.html#tinymce-setup-js
  */
 
@@ -75,11 +75,11 @@
     // (templates/admin/change_form.html).
     function get_editor_stylesheet() {
         // We don't know what the name of the compressed stylesheet will be,
-        // but we know it will have "site" somewhere in the href attribute,
+        // but we know it will have "CACHE" somewhere in the href attribute,
         // because the base .scss file is sitemedia/scss/site.scss.
         var mainSheet;
         $.each(document.styleSheets, function(_, sheet) {
-            if (sheet.href && sheet.href.match(/site/g)) {
+            if (sheet.href && sheet.href.match(/CACHE/g)) {
                 mainSheet = sheet;
             }
         })
