@@ -289,6 +289,18 @@ class ProfileQuerySetTest(TestCase):
         jay = Person.objects.get(username='jdominick')
         assert jay.profile in Profile.objects.sits_with_exec()
 
+    def test_grant_years(self):
+        # no error for non-grantees
+        Profile.objects.filter(user__membership__isnull=True).grant_years()
+
+        annotated = Profile.objects.filter(user__membership__isnull=False) \
+                                   .grant_years()
+        for profile in annotated:
+            assert profile.first_start == profile.user.grants.first().start_date
+            assert isinstance(profile.first_start, date)
+            assert profile.last_end == profile.user.grants.last().end_date
+            assert isinstance(profile.last_end, date)
+
 
 class TestPosition(TestCase):
 
@@ -514,7 +526,7 @@ class TestViews(TestCase):
         # year of past event is shown
         self.assertContains(response, new_start.strftime('%Y'))
 
-        
+
     def test_executive_committee_list(self):
         # former acting faculty directory is also exec
         rdelue = Person.objects.get(username='rdelue')

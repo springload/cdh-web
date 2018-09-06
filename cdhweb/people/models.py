@@ -43,6 +43,11 @@ class Person(User):
     # NOTE: using a proxy model for User so we can customize the
     # admin interface in one place without having to extend the django
     # default user model.
+
+    #: many to many relationship to Grants this person partipicated on, through
+    #: project membership
+    grants = models.ManyToManyField('projects.Grant', through='projects.Membership')
+
     class Meta:
         proxy = True
         verbose_name_plural = 'People'
@@ -185,10 +190,12 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         return self.annotate(
             first_start=models.Min(models.Case(
                 models.When(user__membership__role__title='Project Director',
-                            then='user__membership__grant__start_date'))),
+                            then='user__membership__grant__start_date')),
+                output_field=models.DateField()),
             last_end=models.Max(models.Case(
                 models.When(user__membership__role__title='Project Director',
-                            then='user__membership__grant__end_date'))))
+                            then='user__membership__grant__end_date')),
+                output_field=models.DateField()))
 
     def speakers(self):
         '''Return external speakers at CDH events.'''
