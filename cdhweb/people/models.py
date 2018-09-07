@@ -239,8 +239,9 @@ class ProfileQuerySet(PublishedQuerySetMixin):
                            ~models.Q(user__positions__title__title__in=self.exec_committee_titles))
 
     def has_upcoming_events(self):
-        '''Filter profiles to only those with an event that has yet to start.'''
-        return self.filter(user__event__end_time__gte=timezone.now()).distinct()
+        '''Filter profiles to only those with an upcoming published event.'''
+        return self.filter(user__event__end_time__gte=timezone.now(),
+                           user__event__status=CONTENT_STATUS_PUBLISHED).distinct()
 
     def order_by_position(self):
         '''order by job title sort order and then by start date'''

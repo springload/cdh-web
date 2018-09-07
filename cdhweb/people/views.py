@@ -208,6 +208,9 @@ class SpeakerListView(ProfileListView):
     #: show affiliation and info about events
     show_affiliation = True
     show_events = True
+    # don't show non-speaker related info (shouldn't happen)
+    show_grant = False
+    show_cdh_position = False
 
     def get_queryset(self):
         # filter to just speakers
