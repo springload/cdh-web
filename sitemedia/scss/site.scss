@@ -194,6 +194,9 @@ article.landing-page {
 		background-size: cover;
 		background-position: 50% 50%;
 		background-repeat: no-repeat;
+		/* tint to darken the background images and make text readable */
+		background-color: rgba(0,0,0,.2);
+	    background-blend-mode: multiply;
 
 		&.no-background {
 			/* needs to be separate because otherwise image doesn't scale properly */
@@ -716,7 +719,7 @@ $event-card-img-height: 240px;
                 @include cdh-icon('cal');
             }
         }
-        
+
         .image {
             height: 240px;
 		    background-size: cover;
