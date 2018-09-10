@@ -870,6 +870,11 @@ $event-card-img-height: 240px;
 				@include cdh-icon('location');
 			}
 		}
+		&.convo {
+			a::after {
+				@include cdh-icon('convo');
+			}
+		}
 
 
 	}
