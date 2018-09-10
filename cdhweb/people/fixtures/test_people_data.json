@@ -125,7 +125,7 @@
       "pk": 2,
       "fields": {
         "title": "Lead Developer",
-        "sort_order": 2
+        "sort_order": 3
       }
     },
     {
@@ -133,7 +133,7 @@
       "pk": 3,
       "fields": {
         "title": "staff",
-        "sort_order": 3
+        "sort_order": 4
       }
     },
     {
@@ -141,7 +141,7 @@
       "pk": 4,
       "fields": {
         "title": "Associate",
-        "sort_order": 0
+        "sort_order": 5
       }
     },
     {
@@ -149,7 +149,7 @@
       "pk": 5,
       "fields": {
         "title": "Postdoctoral Fellow",
-        "sort_order": 0
+        "sort_order": 6
       }
     },
     {
@@ -157,7 +157,7 @@
       "pk": 6,
       "fields": {
         "title": "Graduate Assistant",
-        "sort_order": 0
+        "sort_order": 7
       }
     },
     {
@@ -165,7 +165,7 @@
       "pk": 7,
       "fields": {
         "title": "Undergraduate Assistant",
-        "sort_order": 0
+        "sort_order": 8
       }
     },
     {
@@ -197,7 +197,7 @@
       "pk": 11,
       "fields": {
         "title": "Acting Faculty Director",
-        "sort_order": 0
+        "sort_order": 2
       }
     },
     {
