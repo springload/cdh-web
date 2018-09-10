@@ -32,7 +32,7 @@ class ProjectQuerySet(PublishedQuerySetMixin):
 
     def current(self):
         '''Projects with a current grant, based on dates'''
-        return self.filter(self._current_grant_query())
+        return self.filter(self._current_grant_query()).distinct()
 
     def not_current(self):
         '''Projects with no current grant, based on dates'''
