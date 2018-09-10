@@ -188,7 +188,7 @@ class ExecListView(ProfileListView):
 
     def get_queryset(self):
         # filter to exec members
-        return super().get_queryset().executive_committee()
+        return super().get_queryset().executive_committee().order_by('user__last_name')
 
     def get_current_profiles(self):
         # we only care about current position, grant doesn't matter
