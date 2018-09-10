@@ -685,15 +685,11 @@ $event-card-img-height: 240px;
 		@include large-card;
 		display: block;
 		position: relative;
-		background: none; /* no blue stripes */
+        background: none; /* no blue stripes */
+        height: 305px;
 
         /* fallback display for people without a photo */
         @include dark-blue-gradient;
-
-		/* styles for image as photo */
-		background-size: contain;
-		background-repeat: no-repeat;
-		height: 305px;
 
 		a {
 			display: block;  /* make the whole card clickable */
@@ -719,10 +715,15 @@ $event-card-img-height: 240px;
 			&.event {
                 @include cdh-icon('cal');
             }
-		}
+        }
+        
+        .image {
+            height: 240px;
+		    background-size: cover;
+		    background-repeat: no-repeat;
+        }
 
 		.content {
-			margin-top: 240px;
 			padding-top: 10px;
 			background-color: $light-grey;
 			font-family: $font-stack-headline-bold;

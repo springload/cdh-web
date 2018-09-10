@@ -1,6 +1,5 @@
 {# display person profile card; expects profile object as profile #}
-<div class="card profile"
-    {% if profile.thumb %}style="background-image:url('{{ MEDIA_URL }}{{ profile.thumb }}')"{% endif %}>
+<div class="card profile">
     {% if show_events and profile.user.event_set.published.upcoming %} {# link to event, if speaker has upcoming one #}
         {% with profile.user.event_set.published.upcoming.first as event %}
         <a class="external event" title="{{ event.title }}" href="{{ event.get_absolute_url }}"></a>
@@ -9,6 +8,7 @@
     {% with profile.user.profile_url as profile_url %} {# local or external profile, if available #}
       {% with profile_url|yesno:"a,div" as tag %} {# link if we have a url, otherwise div #}
       <{{ tag }} {% if profile_url %}href="{{ profile_url }}"{% endif %} title="{{ profile.title }}">
+        <div class="image" {% if profile.thumb %}style="background-image:url('{{ MEDIA_URL }}{{ profile.thumb }}')"{% endif %}></div>
         <div class="content">
             <p class="name">{{ profile.title }}</p> {# profile page title = person's name #}
             <p class="title">
