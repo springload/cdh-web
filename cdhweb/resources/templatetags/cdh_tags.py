@@ -11,7 +11,7 @@ register = template.Library()
 #: options are checked first.
 URL_ICON_MAPPING = OrderedDict([
     ('/people/', 'ppl'),
-    ('/projects/', 'folder'),
+    ('/projects', 'folder'),
     ('/events/', 'cal'),
     ('/contact/', 'convo'),
     ('/consult/', 'convo'),
