@@ -39,6 +39,12 @@
 <div class="education">
 {{ profile.education|safe }}
 <a href="mailto:{{ profile.user.email }}">{{ profile.user.email }}</a>
+{% if profile.phone_number %}
+<p>{{ profile.phone_number }}</p>
+{% endif %}
+{% if profile.office_location %}
+<p>{{ profile.office_location }}</p>
+{% endif %}
 </div>
 
 <div class="bio">
