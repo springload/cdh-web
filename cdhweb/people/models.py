@@ -254,11 +254,11 @@ class ProfileQuerySet(PublishedQuerySetMixin):
     def order_by_position(self):
         '''order by job title sort order and then by start date'''
         # annotate to avoid duplicates in the queryset due to multiple positions
-        # sort on highest position title and earliest start date (may
+        # sort on highest position title (= lowest number) and earliest start date (may
         # not be from the same position)
-        return self.annotate(max_title=models.Max('user__positions__title__sort_order'),
+        return self.annotate(min_title=models.Min('user__positions__title__sort_order'),
                              min_start=models.Min('user__positions__start_date')) \
-                   .order_by('max_title', 'min_start', 'user__last_name')
+                   .order_by('min_title', 'min_start', 'user__last_name')
 
 
 class Profile(Displayable, AdminThumbMixin):
