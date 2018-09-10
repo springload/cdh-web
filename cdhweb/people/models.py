@@ -258,7 +258,7 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         # not be from the same position)
         return self.annotate(max_title=models.Max('user__positions__title__sort_order'),
                              min_start=models.Min('user__positions__start_date')) \
-                   .order_by('max_title', 'min_start', 'user__last_name')
+                   .order_by('-max_title', 'min_start', 'user__last_name')
 
 
 class Profile(Displayable, AdminThumbMixin):
