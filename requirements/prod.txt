@@ -1,8 +1,7 @@
 ## production requirements
 
 Django>=1.11,<2.0
-# manually pin a compatible version of pillow for mezzanine image preview
-pillow<4.2
+pillow
 mezzanine<=4.3
 django-compressor
 django-compressor-autoprefixer
