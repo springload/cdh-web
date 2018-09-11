@@ -11,7 +11,7 @@ multiple pages to display current and past people affiliated with CDH.
 This release includes numerous design fixes and improvements.
 
 Features
-^^^^^^^^
+~~~~~~~~
 * As a user, I want to easily read and use the main site navigation so I can get to the content that interests me.
 * As a user, I want to traverse the main navigation using a keyboard so that I can access site content more easily.
 * As a user, I want to see current, staff, and past projects so I can easily see which projects are active and know more about staff research.
@@ -28,7 +28,7 @@ Features
 * As a content admin, I want to document event attendance in the database so that it can be tracked and reported with other event information.
 
 Chores, fixes, and other items
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * bugfix: HTML entity rendering issues for blog post and page preview text
 * bugfix: home page carousel now respects draft status
 * Embedded consultation request form on user-editable page
