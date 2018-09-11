@@ -1502,6 +1502,10 @@ section.blogposts, section.people, section.events, section.projects {
 		}
     }
 
+    h2 {
+        margin-top: 50px;
+    }
+
     .message { /* displayed if there are no items in a section */
         margin-bottom: 3rem;
         grid-column: 1 / 12;
@@ -1588,7 +1592,11 @@ article.blogpost {
 	.keywords {
 		font-size: 90%;
 		color: $dark-grey;
-	}
+    }
+    
+    h2 {
+        margin-top: 50px;
+    }
 }
 
 .next-previous {
