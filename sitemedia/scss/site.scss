@@ -45,8 +45,11 @@ header, div, p, img, section, article {
 		img {
 			margin-bottom: 0;
 		}
-
 	}
+
+    h2 {
+        margin-top: 50px;
+    }
 
 }
 
@@ -1593,10 +1596,7 @@ article.blogpost {
 		font-size: 90%;
 		color: $dark-grey;
     }
-    
-    h2 {
-        margin-top: 50px;
-    }
+
 }
 
 .next-previous {
