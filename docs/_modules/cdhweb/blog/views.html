@@ -6,10 +6,10 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>cdhweb.blog.views &#8212; CDH website 2.3.0 documentation</title>
+    <title>cdhweb.blog.views &#8212; CDH website 2.4.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
@@ -27,6 +27,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>Source code for cdhweb.blog.views</h1><div class="highlight"><pre>
@@ -50,8 +52,8 @@
 
     <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># use displayable manager to find published events only</span>
-        <span class="c1"># (or draft profiles for logged in users with permission to view)</span></div>
-        <span class="k">return</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">published</span><span class="p">()</span> <span class="c1"># TODO: published(for_user=self.request.user)</span>
+        <span class="c1"># (or draft profiles for logged in users with permission to view)</span>
+        <span class="k">return</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">published</span><span class="p">()</span> <span class="c1"># TODO: published(for_user=self.request.user)</span></div>
 
 
 <div class="viewcode-block" id="BlogPostArchiveMixin"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogPostArchiveMixin">[docs]</a><span class="k">class</span> <span class="nc">BlogPostArchiveMixin</span><span class="p">(</span><span class="n">BlogPostMixinView</span><span class="p">,</span> <span class="n">LastModifiedListMixin</span><span class="p">):</span>
@@ -59,13 +61,13 @@
     <span class="n">date_field</span> <span class="o">=</span> <span class="s1">&#39;publish_date&#39;</span>
     <span class="n">context_object_name</span> <span class="o">=</span> <span class="s1">&#39;blogposts&#39;</span>
     <span class="n">make_object_list</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">12</span></div>
-    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;blog/blogpost_archive.html&#39;</span>
+    <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;blog/blogpost_archive.html&#39;</span></div>
 
 
 <div class="viewcode-block" id="BlogIndexView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogIndexView">[docs]</a><span class="k">class</span> <span class="nc">BlogIndexView</span><span class="p">(</span><span class="n">BlogPostArchiveMixin</span><span class="p">,</span> <span class="n">ArchiveIndexView</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Main blog post list view&#39;&#39;&#39;</span></div>
-    <span class="n">date_list_period</span> <span class="o">=</span> <span class="s1">&#39;month&#39;</span>
+    <span class="sd">&#39;&#39;&#39;Main blog post list view&#39;&#39;&#39;</span>
+    <span class="n">date_list_period</span> <span class="o">=</span> <span class="s1">&#39;month&#39;</span></div>
 
 
 <div class="viewcode-block" id="BlogYearArchiveView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogYearArchiveView">[docs]</a><span class="k">class</span> <span class="nc">BlogYearArchiveView</span><span class="p">(</span><span class="n">BlogPostArchiveMixin</span><span class="p">,</span> <span class="n">YearArchiveView</span><span class="p">):</span>
@@ -76,8 +78,8 @@
         <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
             <span class="s1">&#39;date_list&#39;</span><span class="p">:</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">dates</span><span class="p">(</span><span class="s1">&#39;publish_date&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;DESC&#39;</span><span class="p">),</span>
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
-        <span class="p">})</span></div></div>
-        <span class="k">return</span> <span class="n">context</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
 
 
 <div class="viewcode-block" id="BlogMonthArchiveView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogMonthArchiveView">[docs]</a><span class="k">class</span> <span class="nc">BlogMonthArchiveView</span><span class="p">(</span><span class="n">BlogPostArchiveMixin</span><span class="p">,</span> <span class="n">MonthArchiveView</span><span class="p">):</span>
@@ -91,8 +93,8 @@
         <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
             <span class="s1">&#39;date_list&#39;</span><span class="p">:</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">dates</span><span class="p">(</span><span class="s1">&#39;publish_date&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;DESC&#39;</span><span class="p">),</span>
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%B %Y&#39;</span><span class="p">)</span>
-        <span class="p">})</span></div></div>
-        <span class="k">return</span> <span class="n">context</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
 
 
 <div class="viewcode-block" id="BlogDetailView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogDetailView">[docs]</a><span class="k">class</span> <span class="nc">BlogDetailView</span><span class="p">(</span><span class="n">BlogPostMixinView</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">LastModifiedMixin</span><span class="p">):</span>
@@ -103,9 +105,11 @@
         <span class="c1"># also set object as page for common page display functionality</span>
         <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
             <span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">,</span>
-            <span class="s1">&#39;opengraph_type&#39;</span><span class="p">:</span> <span class="s1">&#39;article&#39;</span>
-        <span class="p">})</span></div></div>
-        <span class="k">return</span> <span class="n">context</span>
+            <span class="s1">&#39;opengraph_type&#39;</span><span class="p">:</span> <span class="s1">&#39;article&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;next&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">get_next_by_publish_date</span><span class="p">(),</span>
+            <span class="s1">&#39;previous&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">get_previous_by_publish_date</span><span class="p">(),</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
 
 
 <div class="viewcode-block" id="RssBlogPostFeed"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed">[docs]</a><span class="k">class</span> <span class="nc">RssBlogPostFeed</span><span class="p">(</span><span class="n">Feed</span><span class="p">):</span>
@@ -115,54 +119,55 @@
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Updates and news on work from the Center for Digital Humanities @ Princeton University&quot;</span>
 
 <div class="viewcode-block" id="RssBlogPostFeed.items"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;ten most recent blog posts, ordered by publish date&#39;&#39;&#39;</span></div>
-        <span class="k">return</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-publish_date&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
+        <span class="sd">&#39;&#39;&#39;ten most recent blog posts, ordered by publish date&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-publish_date&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_title"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_title">[docs]</a>    <span class="k">def</span> <span class="nf">item_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;blog post title&#39;&#39;&#39;</span></div>
-        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">title</span>
+        <span class="sd">&#39;&#39;&#39;blog post title&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">title</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_description"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_description">[docs]</a>    <span class="k">def</span> <span class="nf">item_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;blog post description, for feed content&#39;&#39;&#39;</span></div>
-        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">content</span>
+        <span class="sd">&#39;&#39;&#39;blog post description, for feed content&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">content</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_link"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_link">[docs]</a>    <span class="k">def</span> <span class="nf">item_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;absolute link to blog post&#39;&#39;&#39;</span></div>
-        <span class="k">return</span> <span class="n">absolutize_url</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span>
+        <span class="sd">&#39;&#39;&#39;absolute link to blog post&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">absolutize_url</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_author_name"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_author_name">[docs]</a>    <span class="k">def</span> <span class="nf">item_author_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;author of the blog post; comma-separated list for multiple&#39;&#39;&#39;</span></div>
-        <span class="k">return</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span> <span class="k">for</span> <span class="n">auth</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">all</span><span class="p">()])</span>
+        <span class="sd">&#39;&#39;&#39;author of the blog post; comma-separated list for multiple&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span> <span class="k">for</span> <span class="n">auth</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">all</span><span class="p">()])</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_author_link"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_author_link">[docs]</a>    <span class="k">def</span> <span class="nf">item_author_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;link to author profile page, if there is only one author and</span>
 <span class="sd">        the author has a published profile&#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">author</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">author</span><span class="o">.</span><span class="n">published</span><span class="p">():</span></div>
-                <span class="k">return</span> <span class="n">absolutize_url</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">author</span><span class="o">.</span><span class="n">published</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">absolutize_url</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_pubdate"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_pubdate">[docs]</a>    <span class="k">def</span> <span class="nf">item_pubdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;publication date&#39;&#39;&#39;</span></div>
-        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">publish_date</span>
+        <span class="sd">&#39;&#39;&#39;publication date&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">publish_date</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_updatedate"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_updatedate">[docs]</a>    <span class="k">def</span> <span class="nf">item_updatedate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;last modified date&#39;&#39;&#39;</span></div>
-        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">updated</span>
+        <span class="sd">&#39;&#39;&#39;last modified date&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">updated</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_categories"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_categories">[docs]</a>    <span class="k">def</span> <span class="nf">item_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;keyword category terms&#39;&#39;&#39;</span></div></div>
-        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">kw</span><span class="p">)</span> <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
+        <span class="sd">&#39;&#39;&#39;keyword category terms&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">kw</span><span class="p">)</span> <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span></div></div>
 
 
 <div class="viewcode-block" id="AtomBlogPostFeed"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.AtomBlogPostFeed">[docs]</a><span class="k">class</span> <span class="nc">AtomBlogPostFeed</span><span class="p">(</span><span class="n">RssBlogPostFeed</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Blog post Atom feed&#39;&#39;&#39;</span>
 
-    <span class="n">feed_type</span> <span class="o">=</span> <span class="n">Atom1Feed</span></div>
-    <span class="n">subtitle</span> <span class="o">=</span> <span class="n">RssBlogPostFeed</span><span class="o">.</span><span class="n">description</span>
+    <span class="n">feed_type</span> <span class="o">=</span> <span class="n">Atom1Feed</span>
+    <span class="n">subtitle</span> <span class="o">=</span> <span class="n">RssBlogPostFeed</span><span class="o">.</span><span class="n">description</span></div>
 </pre></div>
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -245,8 +250,8 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
     </div>
 

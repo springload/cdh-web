@@ -6,10 +6,10 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Code Documentation &#8212; CDH website 2.3.0 documentation</title>
+    <title>Code Documentation &#8212; CDH website 2.4.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -29,6 +29,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="code-documentation">
@@ -58,6 +60,47 @@ a custom landing page RichText content page.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="cdhweb.resources.models.DateRange">
+<em class="property">class </em><code class="descclassname">cdhweb.resources.models.</code><code class="descname">DateRange</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#DateRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.resources.models.DateRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract model with start and end dates. Includes
+validation that requires end date falls after start date (if set),
+and custom properties to check if dates are current/active and to
+display years.</p>
+<dl class="method">
+<dt id="cdhweb.resources.models.DateRange.clean_fields">
+<code class="descname">clean_fields</code><span class="sig-paren">(</span><em>exclude=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#DateRange.clean_fields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.resources.models.DateRange.clean_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans all fields and raises a ValidationError containing a dict
+of all validation errors if any occur.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.resources.models.DateRange.end_date">
+<code class="descname">end_date</code><a class="headerlink" href="#cdhweb.resources.models.DateRange.end_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>end date (optional)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.resources.models.DateRange.is_current">
+<code class="descname">is_current</code><a class="headerlink" href="#cdhweb.resources.models.DateRange.is_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>is current: start date before today and end date
+in the future or not set</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.resources.models.DateRange.start_date">
+<code class="descname">start_date</code><a class="headerlink" href="#cdhweb.resources.models.DateRange.start_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>start date</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.resources.models.DateRange.years">
+<code class="descname">years</code><a class="headerlink" href="#cdhweb.resources.models.DateRange.years" title="Permalink to this definition">¶</a></dt>
+<dd><p>year or year range for display</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="cdhweb.resources.models.LandingPage">
 <em class="property">class </em><code class="descclassname">cdhweb.resources.models.</code><code class="descname">LandingPage</code><span class="sig-paren">(</span><em>id</em>, <em>keywords_string</em>, <em>site</em>, <em>title</em>, <em>slug</em>, <em>_meta_title</em>, <em>description</em>, <em>gen_description</em>, <em>created</em>, <em>updated</em>, <em>status</em>, <em>publish_date</em>, <em>expiry_date</em>, <em>short_url</em>, <em>in_sitemap</em>, <em>_order</em>, <em>content_model</em>, <em>parent</em>, <em>in_menus</em>, <em>titles</em>, <em>login_required</em>, <em>page_ptr</em>, <em>content</em>, <em>tagline</em>, <em>image</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#LandingPage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.resources.models.LandingPage" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="exception">
@@ -69,6 +112,22 @@ a custom landing page RichText content page.</p>
 <dt id="cdhweb.resources.models.LandingPage.MultipleObjectsReturned">
 <em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#cdhweb.resources.models.LandingPage.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cdhweb.resources.models.PublishedQuerySetMixin">
+<em class="property">class </em><code class="descclassname">cdhweb.resources.models.</code><code class="descname">PublishedQuerySetMixin</code><span class="sig-paren">(</span><em>model=None</em>, <em>query=None</em>, <em>using=None</em>, <em>hints=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#PublishedQuerySetMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.resources.models.PublishedQuerySetMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>QuerySet mixin. Adds a filter to find published content.
+Uses the published check from
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mezzanine.core.managers.PublishedManager</span></code>.</p>
+<dl class="method">
+<dt id="cdhweb.resources.models.PublishedQuerySetMixin.published">
+<code class="descname">published</code><span class="sig-paren">(</span><em>for_user=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#PublishedQuerySetMixin.published"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.resources.models.PublishedQuerySetMixin.published" title="Permalink to this definition">¶</a></dt>
+<dd><p>For non-staff users, return items with a published status and
+whose publish and expiry dates fall before and after the
+current date when specified.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -140,10 +199,28 @@ position information.</p>
 <dd><p>‘Display url for user profile</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="cdhweb.people.models.Person.latest_grant">
+<code class="descname">latest_grant</code><a class="headerlink" href="#cdhweb.people.models.Person.latest_grant" title="Permalink to this definition">¶</a></dt>
+<dd><p>most recent grants where this person is project director</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.models.Person.profile_url">
+<code class="descname">profile_url</code><a class="headerlink" href="#cdhweb.people.models.Person.profile_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>local profile url, user has a profile, or website url if there is one</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="cdhweb.people.models.Person.published">
 <code class="descname">published</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#Person.published"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.Person.published" title="Permalink to this definition">¶</a></dt>
 <dd><p>person has a published profile page</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.models.Person.website_url">
+<code class="descname">website_url</code><a class="headerlink" href="#cdhweb.people.models.Person.website_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>personal website url, if set</p>
 </dd></dl>
 
 </dd></dl>
@@ -163,24 +240,11 @@ and titles.  Adds start and end dates to the join table.</p>
 <em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#cdhweb.people.models.Position.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="cdhweb.people.models.Position.is_current">
-<code class="descname">is_current</code><a class="headerlink" href="#cdhweb.people.models.Position.is_current" title="Permalink to this definition">¶</a></dt>
-<dd><p>is position current - start date before today and end date
-in the future or not set</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="cdhweb.people.models.Position.years">
-<code class="descname">years</code><a class="headerlink" href="#cdhweb.people.models.Position.years" title="Permalink to this definition">¶</a></dt>
-<dd><p>year or year range for display</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
 <dt id="cdhweb.people.models.Profile">
-<em class="property">class </em><code class="descclassname">cdhweb.people.models.</code><code class="descname">Profile</code><span class="sig-paren">(</span><em>id</em>, <em>keywords_string</em>, <em>site</em>, <em>title</em>, <em>slug</em>, <em>_meta_title</em>, <em>description</em>, <em>gen_description</em>, <em>created</em>, <em>updated</em>, <em>status</em>, <em>publish_date</em>, <em>expiry_date</em>, <em>short_url</em>, <em>in_sitemap</em>, <em>user</em>, <em>is_staff</em>, <em>education</em>, <em>bio</em>, <em>phone_number</em>, <em>office_location</em>, <em>image</em>, <em>thumb</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#Profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.Profile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">cdhweb.people.models.</code><code class="descname">Profile</code><span class="sig-paren">(</span><em>id</em>, <em>keywords_string</em>, <em>site</em>, <em>title</em>, <em>slug</em>, <em>_meta_title</em>, <em>description</em>, <em>gen_description</em>, <em>created</em>, <em>updated</em>, <em>status</em>, <em>publish_date</em>, <em>expiry_date</em>, <em>short_url</em>, <em>in_sitemap</em>, <em>user</em>, <em>is_staff</em>, <em>education</em>, <em>bio</em>, <em>phone_number</em>, <em>office_location</em>, <em>job_title</em>, <em>department</em>, <em>institution</em>, <em>pu_status</em>, <em>image</em>, <em>thumb</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#Profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.Profile" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="exception">
 <dt id="cdhweb.people.models.Profile.DoesNotExist">
 <em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#cdhweb.people.models.Profile.DoesNotExist" title="Permalink to this definition">¶</a></dt>
@@ -202,38 +266,143 @@ contains a URL.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="cdhweb.people.models.ProfileManager">
-<em class="property">class </em><code class="descclassname">cdhweb.people.models.</code><code class="descname">ProfileManager</code><span class="sig-paren">(</span><em>field_name=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileManager" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="cdhweb.people.models.ProfileManager.get_queryset">
-<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileManager.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileManager.get_queryset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new QuerySet object.  Subclasses can override this method to
-easily customize the behavior of the Manager.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="cdhweb.people.models.ProfileQuerySet">
 <em class="property">class </em><code class="descclassname">cdhweb.people.models.</code><code class="descname">ProfileQuerySet</code><span class="sig-paren">(</span><em>model=None</em>, <em>query=None</em>, <em>using=None</em>, <em>hints=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="cdhweb.people.models.ProfileQuerySet.current">
 <code class="descname">current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.current" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return profiles for users with a current position, either
-with no end date set or an end date in the future.</p>
+<dd><p>Return profiles for users with a current position or current grant
+based on start and end dates.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cdhweb.people.models.ProfileQuerySet.not_current">
-<code class="descname">not_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.not_current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.not_current" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return profiles for users without a current position, based on
-no end date set or an end date in the future.</p>
+<dt id="cdhweb.people.models.ProfileQuerySet.current_grant">
+<code class="descname">current_grant</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.current_grant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.current_grant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return profiles for users with a current grant.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.current_position">
+<code class="descname">current_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.current_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.current_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return profiles for users with a current position.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.current_position_nonexec">
+<code class="descname">current_position_nonexec</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.current_position_nonexec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.current_position_nonexec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return profiles for users with a current position, excluding
+executive committee positions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.exec_member">
+<code class="descname">exec_member</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.exec_member"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.exec_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executive committee members</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.models.ProfileQuerySet.exec_member_title">
+<code class="descname">exec_member_title</code><em class="property"> = 'Executive Committee Member'</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.exec_member_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>executive committee member titles</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.executive_committee">
+<code class="descname">executive_committee</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.executive_committee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.executive_committee" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executive committee members; based on position title.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.faculty_affiliates">
+<code class="descname">faculty_affiliates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.faculty_affiliates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.faculty_affiliates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Faculty affiliates based on PU status and Project Director
+project role.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.grant_years">
+<code class="descname">grant_years</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.grant_years"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.grant_years" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotate with first start and last end grant year for grants
+that a person was project director.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.has_upcoming_events">
+<code class="descname">has_upcoming_events</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.has_upcoming_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.has_upcoming_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter profiles to only those with an upcoming published event.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.not_postdocs">
+<code class="descname">not_postdocs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.not_postdocs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.not_postdocs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exclude CDH Postdoctoral Fellows, based on role title</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.not_students">
+<code class="descname">not_students</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.not_students"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.not_students" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter out graduate and undergraduates based on PU status</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.order_by_event">
+<code class="descname">order_by_event</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.order_by_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.order_by_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Order by earliest published event associated with profile.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.order_by_position">
+<code class="descname">order_by_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.order_by_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.order_by_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>order by job title sort order and then by start date</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.models.ProfileQuerySet.postdoc_title">
+<code class="descname">postdoc_title</code><em class="property"> = 'Postdoctoral Fellow'</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.postdoc_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>position titles that indicate a person is a postdoc</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.postdocs">
+<code class="descname">postdocs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.postdocs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.postdocs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return CDH Postdoctoral Fellows, based on role title</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.sits_with_exec">
+<code class="descname">sits_with_exec</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.sits_with_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.sits_with_exec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Non-faculty Executive committee members</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.speakers">
+<code class="descname">speakers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.speakers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.speakers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return external speakers at CDH events.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cdhweb.people.models.ProfileQuerySet.staff">
 <code class="descname">staff</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.staff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.staff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return only CDH staff members</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.student_affiliates">
+<code class="descname">student_affiliates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.student_affiliates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.student_affiliates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return CDH student staff members and grantees based on Project Director
+role.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.models.ProfileQuerySet.student_pu_status">
+<code class="descname">student_pu_status</code><em class="property"> = ['graduate', 'undergraduate']</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.student_pu_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>student status codes from LDAP</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.models.ProfileQuerySet.student_titles">
+<code class="descname">student_titles</code><em class="property"> = ['Graduate Fellow', 'Graduate Assistant', 'Undergraduate Assistant']</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.student_titles" title="Permalink to this definition">¶</a></dt>
+<dd><p>position titles that indicate a staff person is a student</p>
 </dd></dl>
 
 </dd></dl>
@@ -278,17 +447,82 @@ particular user.</p>
 <div class="section" id="module-cdhweb.people.views">
 <span id="views"></span><h3>Views<a class="headerlink" href="#module-cdhweb.people.views" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="cdhweb.people.views.AlumniListView">
-<em class="property">class </em><code class="descclassname">cdhweb.people.views.</code><code class="descname">AlumniListView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#AlumniListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.AlumniListView" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="cdhweb.people.views.AlumniListView.get_context_data">
-<code class="descname">get_context_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#AlumniListView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.AlumniListView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.people.views.ExecListView">
+<em class="property">class </em><code class="descclassname">cdhweb.people.views.</code><code class="descname">ExecListView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ExecListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ExecListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display current and past executive committee members.</p>
+<dl class="method">
+<dt id="cdhweb.people.views.ExecListView.get_context_data">
+<code class="descname">get_context_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ExecListView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ExecListView.get_context_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the context for this view.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cdhweb.people.views.AlumniListView.get_queryset">
-<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#AlumniListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.AlumniListView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.people.views.ExecListView.get_current_profiles">
+<code class="descname">get_current_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ExecListView.get_current_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ExecListView.get_current_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current profiles from the queryset. Override to customize
+which filter is used. By default, uses generic current logic that
+checks both positions and grants.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.ExecListView.get_queryset">
+<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ExecListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ExecListView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.views.ExecListView.show_cdh_position">
+<code class="descname">show_cdh_position</code><em class="property"> = False</em><a class="headerlink" href="#cdhweb.people.views.ExecListView.show_cdh_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>do not CDH positions or grants; show job title</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cdhweb.people.views.FacultyListView">
+<em class="property">class </em><code class="descclassname">cdhweb.people.views.</code><code class="descname">FacultyListView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#FacultyListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.FacultyListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display current and past faculty affiliates</p>
+<dl class="method">
+<dt id="cdhweb.people.views.FacultyListView.get_current_profiles">
+<code class="descname">get_current_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#FacultyListView.get_current_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.FacultyListView.get_current_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current profiles from the queryset. Override to customize
+which filter is used. By default, uses generic current logic that
+checks both positions and grants.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.FacultyListView.get_queryset">
+<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#FacultyListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.FacultyListView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.views.FacultyListView.show_cdh_position">
+<code class="descname">show_cdh_position</code><em class="property"> = False</em><a class="headerlink" href="#cdhweb.people.views.FacultyListView.show_cdh_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>do not show person positions; want grant information instead</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cdhweb.people.views.PostdocListView">
+<em class="property">class </em><code class="descclassname">cdhweb.people.views.</code><code class="descname">PostdocListView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#PostdocListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.PostdocListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display current and past postdoctoral fellows</p>
+<dl class="method">
+<dt id="cdhweb.people.views.PostdocListView.get_current_profiles">
+<code class="descname">get_current_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#PostdocListView.get_current_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.PostdocListView.get_current_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current profiles from the queryset. Override to customize
+which filter is used. By default, uses generic current logic that
+checks both positions and grants.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.PostdocListView.get_queryset">
+<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#PostdocListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.PostdocListView.get_queryset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the list of items for this view.</p>
 <p>The return value must be an iterable and may be an instance of
 <cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
@@ -303,6 +537,97 @@ particular user.</p>
 <dt id="cdhweb.people.views.ProfileDetailView.get_context_data">
 <code class="descname">get_context_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ProfileDetailView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ProfileDetailView.get_context_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert the single object into the context dict.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.ProfileDetailView.get_queryset">
+<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ProfileDetailView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ProfileDetailView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <cite>QuerySet</cite> that will be used to look up the object.</p>
+<p>Note that this method is called by the default implementation of
+<cite>get_object</cite> and may not be called if <cite>get_object</cite> is overridden.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cdhweb.people.views.ProfileListView">
+<em class="property">class </em><code class="descclassname">cdhweb.people.views.</code><code class="descname">ProfileListView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ProfileListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ProfileListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for profile list views</p>
+<dl class="attribute">
+<dt id="cdhweb.people.views.ProfileListView.current_title">
+<code class="descname">current_title</code><em class="property"> = ''</em><a class="headerlink" href="#cdhweb.people.views.ProfileListView.current_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>title for non-past people in this category of people</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.ProfileListView.get_context_data">
+<code class="descname">get_context_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ProfileListView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ProfileListView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the context for this view.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.ProfileListView.get_current_profiles">
+<code class="descname">get_current_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ProfileListView.get_current_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ProfileListView.get_current_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current profiles from the queryset. Override to customize
+which filter is used. By default, uses generic current logic that
+checks both positions and grants.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.ProfileListView.get_past_profiles">
+<code class="descname">get_past_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ProfileListView.get_past_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ProfileListView.get_past_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get past profiles. Override to customize filters and ordering. By
+default, assumes any profiles that aren’t current are past.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.ProfileListView.get_queryset">
+<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#ProfileListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.ProfileListView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.views.ProfileListView.page_title">
+<code class="descname">page_title</code><em class="property"> = ''</em><a class="headerlink" href="#cdhweb.people.views.ProfileListView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>title for this category of people</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.views.ProfileListView.past_title">
+<code class="descname">past_title</code><em class="property"> = ''</em><a class="headerlink" href="#cdhweb.people.views.ProfileListView.past_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>label for past people in this category of people</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.views.ProfileListView.show_affiliation">
+<code class="descname">show_affiliation</code><em class="property"> = False</em><a class="headerlink" href="#cdhweb.people.views.ProfileListView.show_affiliation" title="Permalink to this definition">¶</a></dt>
+<dd><p>show departmental or instutional affiliation (false by default)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.views.ProfileListView.show_cdh_position">
+<code class="descname">show_cdh_position</code><em class="property"> = True</em><a class="headerlink" href="#cdhweb.people.views.ProfileListView.show_cdh_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>show CDH position on profile card (true by default)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.views.ProfileListView.show_events">
+<code class="descname">show_events</code><em class="property"> = False</em><a class="headerlink" href="#cdhweb.people.views.ProfileListView.show_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>show related events (i.e. for speakers)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.views.ProfileListView.show_grant">
+<code class="descname">show_grant</code><em class="property"> = True</em><a class="headerlink" href="#cdhweb.people.views.ProfileListView.show_grant" title="Permalink to this definition">¶</a></dt>
+<dd><p>show grant recepient information on profle card (true by default)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.views.ProfileListView.show_job_title">
+<code class="descname">show_job_title</code><em class="property"> = False</em><a class="headerlink" href="#cdhweb.people.views.ProfileListView.show_job_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>show official job title (false by default)</p>
 </dd></dl>
 
 </dd></dl>
@@ -321,17 +646,70 @@ published Profile queryset.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="cdhweb.people.views.SpeakerListView">
+<em class="property">class </em><code class="descclassname">cdhweb.people.views.</code><code class="descname">SpeakerListView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#SpeakerListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.SpeakerListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display upcoming and past speakers.</p>
+<dl class="method">
+<dt id="cdhweb.people.views.SpeakerListView.get_current_profiles">
+<code class="descname">get_current_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#SpeakerListView.get_current_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.SpeakerListView.get_current_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current profiles from the queryset. Override to customize
+which filter is used. By default, uses generic current logic that
+checks both positions and grants.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.SpeakerListView.get_past_profiles">
+<code class="descname">get_past_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#SpeakerListView.get_past_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.SpeakerListView.get_past_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get past profiles. Override to customize filters and ordering. By
+default, assumes any profiles that aren’t current are past.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.SpeakerListView.get_queryset">
+<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#SpeakerListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.SpeakerListView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.views.SpeakerListView.show_affiliation">
+<code class="descname">show_affiliation</code><em class="property"> = True</em><a class="headerlink" href="#cdhweb.people.views.SpeakerListView.show_affiliation" title="Permalink to this definition">¶</a></dt>
+<dd><p>show affiliation and info about events</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="cdhweb.people.views.StaffListView">
 <em class="property">class </em><code class="descclassname">cdhweb.people.views.</code><code class="descname">StaffListView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#StaffListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.StaffListView" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="cdhweb.people.views.StaffListView.get_context_data">
-<code class="descname">get_context_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#StaffListView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.StaffListView.get_context_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the context for this view.</p>
+<dd><p>Display current and past CDH staff</p>
+<dl class="method">
+<dt id="cdhweb.people.views.StaffListView.get_current_profiles">
+<code class="descname">get_current_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#StaffListView.get_current_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.StaffListView.get_current_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current profiles from the queryset. Override to customize
+which filter is used. By default, uses generic current logic that
+checks both positions and grants.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cdhweb.people.views.StaffListView.get_queryset">
 <code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#StaffListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.StaffListView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cdhweb.people.views.StudentListView">
+<em class="property">class </em><code class="descclassname">cdhweb.people.views.</code><code class="descname">StudentListView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#StudentListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.StudentListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display current and past graduate fellows, graduate and undergraduate
+assistants.</p>
+<dl class="method">
+<dt id="cdhweb.people.views.StudentListView.get_queryset">
+<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#StudentListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.StudentListView.get_queryset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the list of items for this view.</p>
 <p>The return value must be an iterable and may be an instance of
 <cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
@@ -457,33 +835,49 @@ contains a URL.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="cdhweb.projects.models.ProjectManager">
-<em class="property">class </em><code class="descclassname">cdhweb.projects.models.</code><code class="descname">ProjectManager</code><span class="sig-paren">(</span><em>field_name=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Custom manager for <a class="reference internal" href="#cdhweb.projects.models.Project" title="cdhweb.projects.models.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>.  Extends
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mezzanine.core.managers.DisplayableManager</span></code> to preserve
-capability to find published items.</p>
-<dl class="method">
-<dt id="cdhweb.projects.models.ProjectManager.get_queryset">
-<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectManager.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectManager.get_queryset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new QuerySet object.  Subclasses can override this method to
-easily customize the behavior of the Manager.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="cdhweb.projects.models.ProjectQuerySet">
 <em class="property">class </em><code class="descclassname">cdhweb.projects.models.</code><code class="descname">ProjectQuerySet</code><span class="sig-paren">(</span><em>model=None</em>, <em>query=None</em>, <em>using=None</em>, <em>hints=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectQuerySet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="cdhweb.projects.models.ProjectQuerySet.current">
 <code class="descname">current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectQuerySet.current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet.current" title="Permalink to this definition">¶</a></dt>
-<dd><p>current projects with an active grant</p>
+<dd><p>Projects with a current grant, based on dates</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cdhweb.projects.models.ProjectQuerySet.highlighted">
 <code class="descname">highlighted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectQuerySet.highlighted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet.highlighted" title="Permalink to this definition">¶</a></dt>
 <dd><p>return projects that are marked as highlighted</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.projects.models.ProjectQuerySet.not_current">
+<code class="descname">not_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectQuerySet.not_current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet.not_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>Projects with no current grant, based on dates</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.projects.models.ProjectQuerySet.not_staff_or_postdoc">
+<code class="descname">not_staff_or_postdoc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectQuerySet.not_staff_or_postdoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet.not_staff_or_postdoc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exclude staff and postdoc projects, based on grant type</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.projects.models.ProjectQuerySet.order_by_newest_grant">
+<code class="descname">order_by_newest_grant</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectQuerySet.order_by_newest_grant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet.order_by_newest_grant" title="Permalink to this definition">¶</a></dt>
+<dd><p>order by grant start date, most recent grants first; secondary
+sort by project title</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.projects.models.ProjectQuerySet.staff_or_postdoc">
+<code class="descname">staff_or_postdoc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectQuerySet.staff_or_postdoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet.staff_or_postdoc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Staff and postdoc projects, based on grant type</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.projects.models.ProjectQuerySet.staff_postdoc_grants">
+<code class="descname">staff_postdoc_grants</code><em class="property"> = ['Staff R&amp;D', 'Postdoctoral Research Project']</em><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet.staff_postdoc_grants" title="Permalink to this definition">¶</a></dt>
+<dd><p>grant types that indicate staff or postdoc project</p>
 </dd></dl>
 
 </dd></dl>
@@ -502,6 +896,12 @@ URLs</p>
 <dt id="cdhweb.projects.models.ProjectResource.MultipleObjectsReturned">
 <em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#cdhweb.projects.models.ProjectResource.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.projects.models.ProjectResource.display_url">
+<code class="descname">display_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectResource.display_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectResource.display_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>url cleaned up for display, with leading http(s):// removed</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -536,9 +936,30 @@ URLs</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="cdhweb.projects.views.ProjectListMixinView">
+<em class="property">class </em><code class="descclassname">cdhweb.projects.views.</code><code class="descname">ProjectListMixinView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/views.html#ProjectListMixinView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.views.ProjectListMixinView" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="cdhweb.projects.views.ProjectListMixinView.get_context_data">
+<code class="descname">get_context_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/views.html#ProjectListMixinView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.views.ProjectListMixinView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the context for this view.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="cdhweb.projects.views.ProjectListView">
 <em class="property">class </em><code class="descclassname">cdhweb.projects.views.</code><code class="descname">ProjectListView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/views.html#ProjectListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.views.ProjectListView" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Current and past projects, based on grant dates. (Does not include
+staff and postdoc projects.)</p>
+<dl class="method">
+<dt id="cdhweb.projects.views.ProjectListView.get_queryset">
+<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/views.html#ProjectListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.views.ProjectListView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="class">
 <dt id="cdhweb.projects.views.ProjectMixinView">
@@ -549,6 +970,20 @@ published Project queryset.</p>
 <dt id="cdhweb.projects.views.ProjectMixinView.model">
 <code class="descname">model</code><a class="headerlink" href="#cdhweb.projects.views.ProjectMixinView.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#cdhweb.projects.models.Project" title="cdhweb.projects.models.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdhweb.projects.models.Project</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cdhweb.projects.views.StaffProjectListView">
+<em class="property">class </em><code class="descclassname">cdhweb.projects.views.</code><code class="descname">StaffProjectListView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/views.html#StaffProjectListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.views.StaffProjectListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Staff projects, based on special staff R&amp;D grant</p>
+<dl class="method">
+<dt id="cdhweb.projects.views.StaffProjectListView.get_queryset">
+<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/views.html#StaffProjectListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.views.StaffProjectListView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
 </dd></dl>
 
 </dd></dl>
@@ -578,7 +1013,7 @@ Provides event types, locations, and events</p>
 <dl class="method">
 <dt id="cdhweb.events.models.Event.duration">
 <code class="descname">duration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#Event.duration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.models.Event.duration" title="Permalink to this definition">¶</a></dt>
-<dd><p>duration between start and end time as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.timedelta</span></code></a></p>
+<dd><p>duration between start and end time as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.timedelta</span></code></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -611,31 +1046,6 @@ inclusion in a <code class="xref py py-class docutils literal notranslate"><span
 <code class="descname">when</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#Event.when"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.models.Event.when" title="Permalink to this definition">¶</a></dt>
 <dd><p>Event start/end date and time, formatted for display.
 Removes leading zeros from hours and converts am/pm to lower case.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="cdhweb.events.models.EventManager">
-<em class="property">class </em><code class="descclassname">cdhweb.events.models.</code><code class="descname">EventManager</code><span class="sig-paren">(</span><em>field_name=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#EventManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.models.EventManager" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="cdhweb.events.models.EventManager.get_queryset">
-<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#EventManager.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.models.EventManager.get_queryset" title="Permalink to this definition">¶</a></dt>
-<dd><p>return default queryset <a class="reference internal" href="#cdhweb.events.models.EventQuerySet" title="cdhweb.events.models.EventQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventQuerySet</span></code></a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="cdhweb.events.models.EventManager.recent">
-<code class="descname">recent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#EventManager.recent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.models.EventManager.recent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find past events, most recent first.  Only includes events
-with end date in the past.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="cdhweb.events.models.EventManager.upcoming">
-<code class="descname">upcoming</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#EventManager.upcoming"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.models.EventManager.upcoming" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find upcoming events. Includes events that end on the current
-day even if the start time is past.</p>
 </dd></dl>
 
 </dd></dl>
@@ -790,6 +1200,14 @@ along the way for empty lists that aren’t allowed.</p>
 <em class="property">class </em><code class="descclassname">cdhweb.events.views.</code><code class="descname">EventSemesterDates</code><a class="reference internal" href="_modules/cdhweb/events/views.html#EventSemesterDates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.views.EventSemesterDates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mixin to return list of event semester dates based on
 event dates in the system.</p>
+<dl class="method">
+<dt id="cdhweb.events.views.EventSemesterDates.get_semester_date_list">
+<code class="descname">get_semester_date_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/views.html#EventSemesterDates.get_semester_date_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.views.EventSemesterDates.get_semester_date_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of semester labels (semester and year) for published
+events. Semesters are Spring (through May), Summer (through
+August), and Fall.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -801,6 +1219,12 @@ event dates in the system.</p>
 <dt id="cdhweb.events.views.UpcomingEventsView.get_context_data">
 <code class="descname">get_context_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/views.html#UpcomingEventsView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.views.UpcomingEventsView.get_context_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the context for this view.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.events.views.UpcomingEventsView.last_modified">
+<code class="descname">last_modified</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/views.html#UpcomingEventsView.last_modified"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.views.UpcomingEventsView.last_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the recent last modified date from included events.</p>
 </dd></dl>
 
 </dd></dl>
@@ -847,29 +1271,6 @@ contains a URL.</p>
 <dt id="cdhweb.blog.models.BlogPost.short_title">
 <code class="descname">short_title</code><a class="headerlink" href="#cdhweb.blog.models.BlogPost.short_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>shorter title with ellipsis</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="cdhweb.blog.models.BlogPostManager">
-<em class="property">class </em><code class="descclassname">cdhweb.blog.models.</code><code class="descname">BlogPostManager</code><span class="sig-paren">(</span><em>field_name=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/models.html#BlogPostManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.blog.models.BlogPostManager" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="cdhweb.blog.models.BlogPostManager.featured">
-<code class="descname">featured</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/models.html#BlogPostManager.featured"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.blog.models.BlogPostManager.featured" title="Permalink to this definition">¶</a></dt>
-<dd><p>return blog posts that are marked as featured</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="cdhweb.blog.models.BlogPostManager.get_queryset">
-<code class="descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/models.html#BlogPostManager.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.blog.models.BlogPostManager.get_queryset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return default queryset <a class="reference internal" href="#cdhweb.blog.models.BlogPostQuerySet" title="cdhweb.blog.models.BlogPostQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlogPostQuerySet</span></code></a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="cdhweb.blog.models.BlogPostManager.recent">
-<code class="descname">recent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/models.html#BlogPostManager.recent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.blog.models.BlogPostManager.recent" title="Permalink to this definition">¶</a></dt>
-<dd><p>sort blog posts by publication date</p>
 </dd></dl>
 
 </dd></dl>
@@ -1054,6 +1455,7 @@ the author has a published profile</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -1174,8 +1576,8 @@ the author has a published profile</p>
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="_sources/codedocs.rst.txt"
