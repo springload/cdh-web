@@ -1,6 +1,44 @@
 CHANGELOG
 =========
 
+2.4
+---
+
+Accessibility updates and new features to display projects in different groupings
+with indicators for projects build by CDH and those with live websites, and
+multiple pages to display current and past people affiliated with CDH.
+
+This release includes numerous design fixes and improvements.
+
+Features
+^^^^^^^^
+* As a user, I want to easily read and use the main site navigation so I can get to the content that interests me.
+* As a user, I want to traverse the main navigation using a keyboard so that I can access site content more easily.
+* As a user, I want to see current, staff, and past projects so I can easily see which projects are active and know more about staff research.
+* As a user, I want to see which projects were developed by CDH so that I can get a better sense of CDH involvement in the projects.
+* As a user, I want to see which projects in the project list have a live website so that I can see which projects are accessible and get to them.
+* As a user, I want to easily find project URLs so I can get to the actual websites and see projects that are live.
+* As a user, I want to see CDH staff, postdocs, and students on separate pages so I can see current and past people associated with CDH grouped by category.
+* As a user, I want to see photos and brief details for faculty affiliates and executive committee members so I can see the faces of people associated with CDH.
+* As a user, I want to see upcoming and past speakers at CDH events so I can see what kind of scholars CDH is bringing to campus.
+* As a user, I want to see recent blog posts by a CDH staff member or other affiliate on their profile page so that I can read more about their work.
+* As a user, I want to easily find the subscribe link so I know there is a newsletter and how to subscribe to it.
+* As an admin, I want to edit text content on the home page so that I can manage and update brief introductory content for site visitors.
+* As a content admin, I want to add and edit text to be included on people pages so that I can describe faculty affiliation or other groups.
+* As a content admin, I want to document event attendance in the database so that it can be tracked and reported with other event information.
+
+Chores, fixes, and other items
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* bugfix: HTML entity rendering issues for blog post and page preview text
+* bugfix: home page carousel now respects draft status
+* Embedded consultation request form on user-editable page
+* Customize XML Sitemap with last modification dates for all content
+* Display phone number and office location on profile detail page
+* Use CDH icons for related page attachment cards and open graph/twitter previews
+* Set up automated accessibility testing with pa11y-ci
+* Removed data import script written for migration from CDH web 1.0
+* Upgraded to Mezzanine 4.3
+
 2.3.1
 ---
 
