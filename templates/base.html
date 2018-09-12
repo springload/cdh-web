@@ -12,10 +12,10 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments)};
       gtag('js', new Date());
-      gtag('config', 'UA-87887700-1');
+      gtag('config', 'UA-87887700-1', {'anonymize_ip': true});
     </script>
     {% endif %}
-    <title>{% block page-subtitle %}{% if page %}{{ page.meta_title|add:" | "}}{% endif %}{% endblock %}CDH @ Princeton</title>
+    <title>{% block page-title %}{% block page-subtitle %}{% if page %}{{ page.meta_title|add:" | "}}{% endif %}{% endblock %}The Center for Digital Humanities at Princeton{% endblock %}</title>
     {% if SHOW_TEST_WARNING %} {# test variant favicon to help differentiate test/prod sites #}
     <link rel="shortcut icon" href="{%  static 'favicon-test.ico' %}">
     {% else %}
@@ -30,7 +30,6 @@
     {# <link rel='stylesheet' type='text/css' href='{% static "css/base-prefixed.css" %}'> #}
     {% endcompress %}
 
-    <script src="https://use.fontawesome.com/46070f4452.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
     crossorigin="anonymous"></script>
@@ -45,17 +44,19 @@
     <a href='#maincontent' aria-label='Main Content'></a>
     <a href='#footermenu' aria-label='Footer Menu'></a>
     <header class="nav">
-        <nav class='mobile-nav'>
-            <a class="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a>
-        </nav>
-        <nav id='mainmenu'>
-            <a href='{% url 'home' %}' class='home-page'>
-              <img
-              alt='The Center for Digital Humanities @ Princeton'
-              src='{% static "img/CDH_logo.svg" %}' />
-            </a>
-            {% page_menu "snippets/primary_navigation.html" %}
-        </nav>
+        <div class="nav-wrap">
+            <nav class='mobile-nav'>
+                <a class="menu-toggle" name="menu"><i class="fa fa-bars" aria-hidden="true"></i></a>
+            </nav>
+            <nav id='mainmenu'>
+                <a href='{% url 'home' %}' class='home-page'>
+                  <img
+                  alt='The Center for Digital Humanities @ Princeton'
+                  src='{% static "img/CDH_logo.svg" %}' />
+                </a>
+                {% page_menu "snippets/primary_navigation.html" %}
+            </nav>
+        </div>
     </header>
     {% include 'snippets/test_banner.html' %}
 
@@ -68,6 +69,11 @@
         {% block main %}{% endblock %}
     </div>
 
+    {# display child pages as attachments if this page has any children #}
+    {% if page.children.exists %}
+        {% page_menu page 'snippets/child_pages.html' %}
+    {% endif %}
+
     {% if page.attachments.exists %}
         {% include 'snippets/attachments.html' with attachments=page.attachments.all %}
     {% endif %}
@@ -76,7 +82,10 @@
         {% endblock %}
     {% endblock content %}
 
+
     <footer>
+        {% include 'snippets/subscribe.html' %}
+
         <section class="footer-menu" id="footermenu">
             {% page_menu "snippets/footer_menu.html" %}
         </section>
@@ -84,42 +93,54 @@
         <section class="contact" typeof="schema:Organization">
         {# RDFa markup for organization and address #}
 
-            <div class='contact-info'>
-                <span property="schema:name">Center for Digital Humanities</span><br />
-                <span property="schema:address" typeof="schema:PostalAddress">
-                <span property="schema:streetAddress">Firestone Library Floor B<br />
-                Princeton University</span><br />
-                <span property="schema:addressLocality">Princeton</span>, <span property="schema:addressRegion">NJ</span> <span property="schema:postalCode">08544</span><br />
-                </span>
 
-                <meta property="schema:alternateName" content="Center for Digital Humanities @ Princeton University" />
-                <meta property="schema:alternateName" content="CDH @ Princeton University" />
-                <meta property="schema:url" content="{% fullurl 'home' %}"/>
+            <div class="cdh-info">
+                {# cdh contact #}
+                <div class='contact-info'>
+                    <span property="schema:name">Center for Digital Humanities</span><br />
+                    <span property="schema:address" typeof="schema:PostalAddress">
+                    <span property="schema:streetAddress">Firestone Library Floor B<br />
+                    Princeton University</span><br />
+                    <span property="schema:addressLocality">Princeton</span>, <span property="schema:addressRegion">NJ</span> <span property="schema:postalCode">08544</span><br />
+                    </span>
 
-                <meta property="schema:logo" content='{% fullstatic "img/CDH_logo.svg" %}' />
-                <meta property="schema:logo" content='{% fullstatic "img/CDH_logo.svg" %}' />
+                    <meta property="schema:alternateName" content="Center for Digital Humanities @ Princeton University" />
+                    <meta property="schema:alternateName" content="CDH @ Princeton University" />
+                    <meta property="schema:url" content="{% fullurl 'home' %}"/>
+
+                    <meta property="schema:logo" content='{% fullstatic "img/CDH_logo.svg" %}' />
+                    <meta property="schema:logo" content='{% fullstatic "img/CDH_logo.svg" %}' />
+                </div>
+                {# social links #}
+                <div class="social">
+                    <ul>
+                    <li><a href='https://www.facebook.com/princetoncdh/' property="schema:sameAs" title="Facebook"><span class='fab fa-facebook-square fa-2x'
+                        aria-label='CDH Facebook' title="Facebook"></span></a>
+                        <a href='https://twitter.com/PrincetonDH' property="schema:sameAs" title="Twitter"><span class='fab fa-twitter fa-2x' title="Twitter"
+                         aria-label='CDH Twitter'></span></a>
+                        <a href='https://github.com/Princeton-CDH' property="schema:sameAs" title="GitHub"><span class='fab fa-github fa-2x' title="Twitter"
+                         aria-label='Princeton-CDH GitHub Organization'></span></a>
+
+                         <a href="https://www.instagram.com/claus.the.chicken/" title="Instagram">
+                            <span class="fab fa-instagram fa-2x" title="Instagram" aria-label="CDH Instagram"></span></a>
+                    </li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="copyright">
-                ©2017 Trustees of <span property="schema:parentOrganization" typeof="schema:Organization">
-                <a href="https://www.princeton.edu" property="schema:url"><span property="schema:name">Princeton University</span></a></span>
+            <div class="pu-info">
+                <div class="pulogo">
+                    <img src="{% fullstatic 'img/PUsig1-bw-bs.svg' %}" alt="Princeton University"/>
+                </div>
+                <div class="copyright">
+                    ©2017 Trustees of <span property="schema:parentOrganization" typeof="schema:Organization">
+                    <a href="https://www.princeton.edu" property="schema:url"><span property="schema:name">Princeton University</span></a></span>
+                </div>
+                <a class="a11y" href="https://accessibility.princeton.edu/">Accessibility</a>
+                <a class="a11y" href="https://accessibility.princeton.edu/accessibility-assistance">Accessibility Assistance</a>
+                <div class="sw-version">v. {{ SW_VERSION }}</div>
             </div>
 
-            {# social links #}
-            <div class="social">
-                <ul>
-                <li><a href='https://www.facebook.com/princetoncdh/' property="schema:sameAs" title="Facebook"><span class='fa fa-facebook-square'
-                    aria-label='CDH Facebook' title="Facebook"></span></a>
-                    <a href='https://twitter.com/PrincetonDH' property="schema:sameAs" title="Twitter"><span class='fa fa-twitter' title="Twitter"
-                     aria-label='CDH Twitter'></span></a>
-                     <a href="https://www.instagram.com/claus.the.chicken/" title="Instagram">
-                        <span class="fa fa-instagram" title="Instagram" aria-label="CDH Instagram"></span></a>
-                </li>
-                </ul>
-
-            </div>
-
-            <div class="sw-version">v. {{ SW_VERSION }}</div>
         </section>
 
     </footer>

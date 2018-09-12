@@ -30,8 +30,12 @@ class EventSemesterDates(object):
     event dates in the system.'''
 
     def get_semester_date_list(self):
+        '''Get a list of semester labels (semester and year) for published
+        events. Semesters are Spring (through May), Summer (through
+        August), and Fall.'''
         date_list = []
-        dates = Event.objects.dates('start_time', 'month', order='ASC')
+        dates = Event.objects.published() \
+                     .dates('start_time', 'month', order='ASC')
         for date in dates:
             # determine semester based on the month
             if date.month <= 5:
@@ -73,6 +77,7 @@ class UpcomingEventsView(EventMixinView, ArchiveIndexView, EventSemesterDates,
         return context
 
     def last_modified(self):
+        '''Get the recent last modified date from included events.'''
         upcoming = self.get_queryset().upcoming()
         # don't error if there are no upcoming events
         if upcoming.exists():

@@ -5,15 +5,20 @@ from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from mezzanine.pages.models import Page
+from mezzanine.core.models import CONTENT_STATUS_DRAFT
 import pytest
 
 from cdhweb.blog.models import BlogPost
 from cdhweb.events.models import Event, EventType
 from cdhweb.projects.models import Project, GrantType, Grant
+from cdhweb.resources.models import LandingPage
+from cdhweb.resources.sitemaps import PageSitemap
 from cdhweb.resources.utils import absolutize_url
 
 
 class TestViews(TestCase):
+    fixtures = ['test_pages.json']
 
     def test_site_index(self):
         index_url = reverse('home')
@@ -124,9 +129,46 @@ class TestViews(TestCase):
             self.assertContains(response, event.title)
             # TODO: date/time
 
+        # test editable page content displayed
+        page = Page.objects.get(slug='/')
+        self.assertContains(response, page.richtextpage.content)
+
         # TODO: not yet testing speakers displayed
 
         # not yet testing published/unpublished
+
+    def test_child_pages_attachment(self):
+        about = Page.objects.get(title='About')
+        annual_report = Page.objects.get(title='Annual Report')
+        response = self.client.get(about.get_absolute_url())
+        # page-children attachment section should be present
+        self.assertContains(response, '<div class="attachments page-children">')
+        # child page title and url should be present
+        self.assertContains(response, annual_report.title)
+        self.assertContains(response, annual_report.get_absolute_url())
+
+        # delete child page to check behavior without
+        annual_report.delete()
+        response = self.client.get(about.get_absolute_url())
+        # should not error, should not contain page-children attachment section
+        self.assertNotContains(response, '<div class="attachments page-children">')
+
+    def test_sitemap(self):
+        # basic test of sitemap url config, override from mezzanine
+        response = self.client.get(reverse('sitemap'))
+        assert response.status_code == 200
+
+        # both fixture items are published
+        for page in Page.objects.all():
+            self.assertContains(response, page.get_absolute_url())
+            self.assertContains(response, page.updated.strftime('%Y-%m-%d'))
+
+        # set to unpublished - should not be included
+        pages = Page.objects.exclude(slug='/')  # check all but home page
+        pages.update(status=CONTENT_STATUS_DRAFT)
+        response = self.client.get(reverse('sitemap'))
+        for page in pages.all():
+            self.assertNotContains(response, page.get_absolute_url())
 
 
 @pytest.mark.django_db
@@ -153,4 +195,31 @@ def test_absolutize_url():
     # site with https:// included
     current_site.domain = 'https://example.org'
     assert absolutize_url(local_path) == 'https://example.org/sub/foo/bar/'
+
+
+
+class TestPageSitemap(TestCase):
+    fixtures = ['test_pages.json']
+
+    def test_items(self):
+        # all fixture items should be included (published, in menus)
+        sitemap_items = PageSitemap().items()
+        for page in Page.objects.all():
+            assert page in sitemap_items
+
+        # set to not in sitemap - should not be included
+        pages = Page.objects.exclude(slug='/')  # check all but home page
+        pages.update(in_sitemap=False)
+        sitemap_items = PageSitemap().items()
+        for page in pages.all():
+            assert page not in sitemap_items
+
+    def test_priority(self):
+        # generic page = default priority
+        page = Page.objects.first()
+        assert PageSitemap().priority(page) is None
+
+        # landing page = slightly higher
+        landingpage = LandingPage.objects.create()
+        assert PageSitemap().priority(landingpage.page_ptr) == 0.6
 

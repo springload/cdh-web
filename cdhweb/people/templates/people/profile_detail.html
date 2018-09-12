@@ -33,17 +33,30 @@
 </div>
 
 {% if profile.image %}
-<img src="{{ MEDIA_URL }}{{ profile.image }}" alt="photo of {{ profile.title }}"/>
+<img src="{{ MEDIA_URL }}{{ profile.image }}" alt="{{ profile.title }}"/>
 {% endif %}
 
 <div class="education">
 {{ profile.education|safe }}
 <a href="mailto:{{ profile.user.email }}">{{ profile.user.email }}</a>
+{% if profile.phone_number %}
+<p>{{ profile.phone_number }}</p>
+{% endif %}
+{% if profile.office_location %}
+<p>{{ profile.office_location }}</p>
+{% endif %}
 </div>
 
 <div class="bio">
 {{ profile.bio|safe }}
 </div>
+
+{% if recent_posts %}
+<div class="recent-posts">
+    <h2>Recent Posts</h2>
+    {% include 'blog/blogpost_list.html' with blogposts=recent_posts %}
+</div>
+{% endif %}
 
 </div>
 {% endblock %}

@@ -1,0 +1,56 @@
+{# display person profile card; expects profile object as profile #}
+<div class="card profile">
+    {% if show_events and profile.user.event_set.published.upcoming %} {# link to event, if speaker has upcoming one #}
+        {% with profile.user.event_set.published.upcoming.first as event %}
+        <a class="external event" title="{{ event.title }}" href="{{ event.get_absolute_url }}"></a>
+        {% endwith %}
+    {% endif %}
+    {% with profile.user.profile_url as profile_url %} {# local or external profile, if available #}
+      {% with profile_url|yesno:"a,div" as tag %} {# link if we have a url, otherwise div #}
+      <{{ tag }} {% if profile_url %}href="{{ profile_url }}"{% endif %} title="{{ profile.title }}">
+        <div class="image" {% if profile.thumb %}style="background-image:url('{{ MEDIA_URL }}{{ profile.thumb }}')"{% endif %}></div>
+        <div class="content">
+            <p class="name">{{ profile.title }}</p> {# profile page title = person's name #}
+            <div class="title">
+            {% with position=profile.user.positions.first %}
+                {% if show_cdh_position and position %} {# show position within the cdh #}
+                    <p>{% if not position.is_current %}{{ position.years }}{% if show_grant and profile.user.latest_grant %}{% else %}<br/>{% endif %}{% endif %}
+                    {# when showing both position and grant, if person has both omit line breaks #}
+                    {{ profile.user.positions.first.title|default:'' }}</p>
+                {% endif %}
+            {% endwith %}
+            {# NOTE: right now, if someone has both grant and cdh staff role, both will show #}
+            {% if show_grant %} {# display grant role #}
+                {% with grant=profile.user.latest_grant %}
+                    {% if grant %}
+                    {# NOTE: for unknown reasons, on qa these are not returned as date objects; handle either date or YYYY-MM-DD string#}
+                        <p>{% if profile.first_start and profile.last_end %}
+                            {% firstof profile.first_start.year profile.first_start|slice:":4" %}–{% firstof profile.last_end.year profile.last_end|slice:":4" %}{% if show_cdh_position and profile.user.positions.first %}{% else %}<br/>{% endif %}
+                        {# when showing both position and grant, if person has both omit line breaks #}
+                        {% elif not grant.is_current %}{{ grant.years }}{% endif %}
+                        {{ grant.grant_type }} Grant Recipient</p>
+                    {% endif %}
+                {% endwith %}
+            {% endif %}
+            {% if show_affiliation and profile.institution %} {# show institutional affiliation #}
+                {{ profile.institution }}<br/>
+            {% endif %}
+            {% if show_job_title and profile.job_title %} {# show job title (e.g. for faculty) #}
+                {{ profile.job_title }}<br/>
+            {% endif %}
+            {% if show_events %} {# show associated events #}
+                {% if profile.user.event_set.published.upcoming %}
+                    {% with profile.user.event_set.published.upcoming.first as event %}
+                    {{ event.event_type }}: {{ event.when }} {# type and time of event #}
+                    {% endwith %}
+                {% else %}
+                {{ profile.user.event_set.published.first.start_time|date:"Y" }} {# most recent year of past event #}
+                {% endif %}
+                <br/>
+            {% endif %}
+            </div>
+        </div>
+      </{{ tag }}>
+      {% endwith %}
+    {% endwith %}
+</div>

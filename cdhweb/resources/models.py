@@ -1,8 +1,12 @@
+from datetime import date
+
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.utils.timezone import now
 
 from mezzanine.core.fields import FileField
-from mezzanine.core.models import RichText
+from mezzanine.core.models import RichText, CONTENT_STATUS_PUBLISHED
 from mezzanine.pages.models import Page
 from mezzanine.utils.models import upload_to
 
@@ -81,3 +85,68 @@ class LandingPage(Page, RichText):
         upload_to=upload_to("resources.landing_pages.image", "resources"),
         format="Image", max_length=255, null=True, blank=True)
 
+
+class PublishedQuerySetMixin(models.QuerySet):
+    '''QuerySet mixin. Adds a filter to find published content.
+    Uses the published check from
+    :class:`mezzanine.core.managers.PublishedManager`.'''
+
+    def published(self, for_user=None):
+        """
+        For non-staff users, return items with a published status and
+        whose publish and expiry dates fall before and after the
+        current date when specified.
+        """
+        if for_user is not None and for_user.is_staff:
+            return self.all()
+        return self.filter(
+            models.Q(publish_date__lte=now()) | models.Q(publish_date__isnull=True),
+            models.Q(expiry_date__gte=now()) | models.Q(expiry_date__isnull=True),
+            models.Q(status=CONTENT_STATUS_PUBLISHED))
+
+
+class DateRange(models.Model):
+    '''Abstract model with start and end dates. Includes
+    validation that requires end date falls after start date (if set),
+    and custom properties to check if dates are current/active and to
+    display years.'''
+
+    #: start date
+    start_date = models.DateField()
+    #: end date (optional)
+    end_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    @property
+    def is_current(self):
+        '''is current: start date before today and end date
+        in the future or not set'''
+        today = date.today()
+        return self.start_date <= today and \
+            (not self.end_date or self.end_date >= today)
+
+    @property
+    def years(self):
+        '''year or year range for display'''
+        val = str(self.start_date.year)
+
+        if self.end_date:
+            # start and end the same year - return single year only
+            if self.start_date.year == self.end_date.year:
+                return val
+
+            return '%s–%s' % (val, self.end_date.year)
+
+        return '%s–' % val
+
+    def clean_fields(self, exclude=None):
+        if exclude is None:
+            exclude = []
+        if 'start_date' in exclude or 'end_date' in exclude:
+            return
+        # require end date to be greater than start date
+        if self.start_date and self.end_date and \
+                not self.end_date >= self.start_date:
+            raise ValidationError('End date must be after start date')

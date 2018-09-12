@@ -1,9 +1,23 @@
+/* enables font antialiasing */
+@mixin font-smooth() {
+    font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* disables font antialiasing */
+@mixin no-font-smooth() {
+    font-smoothing: never;
+    -moz-osx-font-smoothing: auto;
+    -webkit-font-smoothing: auto;
+}
+
 html {
   color: $base-font-color;
   font-family: $base-font-family;
   font-size: 100%;
   line-height: $base-line-height;
-
+  @include font-smooth();
 }
 
 h1,
@@ -22,7 +36,8 @@ p {
   margin: 0 0 $small-spacing;
 }
 
-#maincontent p a {
+/* mixin for body link style*/
+@mixin body-link-style {
   color: black;
   text-decoration: none;
   text-decoration-skip: ink;
@@ -51,6 +66,12 @@ p {
   }
 }
 
+/* link style for links in content paragraphs, rich text content links,
+  and blogpost description links (but not blogpost sidebare links) */
+#maincontent p a, .description li a, .richtextpage #maincontent li a {
+  @include body-link-style;
+}
+
 body {
   background-color: white;
   font-family: $font-stack-body-text;
@@ -73,13 +94,21 @@ body {
 
 }
 
-h1, h2, h3, h4 {
-  font-family: $font-stack-headline-bold;
-  font-weight: bold;
+h1 {
+    font-family: $font-stack-headline-bold;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+h2, h3, h4 {
+  font-family: $font-stack-headline;
+  font-weight: normal;
 }
 
 h3 {
-  font-size: 28px;
+  font-size: 24px;
   line-height: 1.29;
 }
 
@@ -88,13 +117,17 @@ h4 {
   font-stretch: normal;
 }
 
-/* NOTE: labeled as .quote in zeplin, used for blog excerpt/call out in design */
-q {
-  font-family: Georgia;
+/* quote style in zeplin; used for blog excerpt/callout in design */
+@mixin quote {
+  font-family: $font-stack-body-text;
   font-size: 21px;
   font-style: italic;
   line-height: 1.52;
   color: $dark-grey;
+}
+
+q {
+  @include quote;
 }
 
 /* Caption in zeplin */

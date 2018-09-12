@@ -35,14 +35,12 @@
         {% if blogpost.users.exists %}
         <div class="authors">
         {% for author in blogpost.users.all %}
-            <span property="schema:author">
-              <span typeof="schema:Person">
+            <span property="schema:author" typeof="schema:Person">
                 <a {% if author.published %}property="schema:url" href="{{ author.get_absolute_url }}"{% endif %}>
                 <span property="schema:name">{{ author }}</span></a>{% if not forloop.last %}, {% endif %}
-              </span>
             </span>
         {% endfor %}
-        </div>
+        </div><br/>
         {% endif %}
         <span class="date-published">{{ blogpost.publish_date|date:"F j, Y" }}</span>
         {# NOTE: google structured data testing tool claims publisher and image are required #}
@@ -63,6 +61,22 @@
     <div class="keywords">Keywords: {{ blogpost.keywords.all|join:', ' }}</div>
     {% endif %}
 
-</article>
 
+</article>
+{% endblock %}
+
+{% block content-footer %}
+    {# display next & previous blog post links #}
+    {% if next or previous %}
+    <div class="next-previous">
+        {% if previous %}
+        <p class="prev"><a rel="prev" href="{{ previous.get_absolute_url }}">{{ previous }}</a></p>
+        {% endif %}
+        {% if next %}
+        <p class="next"><a rel="next" href="{{ next.get_absolute_url }}">{{ next }}</a></p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {{ block.super }}
 {% endblock %}
