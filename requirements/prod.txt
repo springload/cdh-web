@@ -1,7 +1,7 @@
 ## production requirements
 
 Django>=1.11,<2.0
-pillow
+pillow>=5.2.0
 mezzanine<=4.3
 django-compressor
 django-compressor-autoprefixer
