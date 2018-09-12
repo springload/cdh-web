@@ -10,9 +10,9 @@
     <meta name="article.modified_time" content="{{ blogpost.updated.isoformat }}"/>
     {% if blogpost.users.exists %}
       {% for author in blogpost.users.all %}
-        {% if author.published %}
-        {# facebook requires url; for now, only link users with local profile #}
-    <meta name="article.author" content="{{ author.get_absolute_url }}"/>
+        {% if author.profile_url %}
+        {# facebook requires url; provide local or external if we have it #}
+    <meta name="article.author" content="{{ author.profile_url }}"/>
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -36,7 +36,7 @@
         <div class="authors">
         {% for author in blogpost.users.all %}
             <span property="schema:author" typeof="schema:Person">
-                <a {% if author.published %}property="schema:url" href="{{ author.get_absolute_url }}"{% endif %}>
+                <a {% if author.profile_url %}property="schema:url" href="{{ author.profile_url }}"{% endif %}>
                 <span property="schema:name">{{ author }}</span></a>{% if not forloop.last %}, {% endif %}
             </span>
         {% endfor %}

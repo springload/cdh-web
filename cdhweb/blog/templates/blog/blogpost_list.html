@@ -20,7 +20,7 @@
                     {# on profile page, we don't need to show author if it's the profile user #}
                     {% if not profile or author.id is not profile.user.id %}
                     <span property="schema:author" typeof="schema:Person">
-                        <a {% if author.profile %}property="schema:url" href="{{ author.profile.get_absolute_url }}"{% endif %}>
+                        <a {% if author.profile_url %}property="schema:url" href="{{ author.profile_url }}"{% endif %}>
                         <span property="schema:name">{{ author }}</span></a>{% if not forloop.last %}, {% endif %}
                     </span>
                     {% endif %}
