@@ -26,7 +26,7 @@ before_script:
 - python manage.py migrate
 - python manage.py loaddata pa11y_test_site
 - python manage.py compress -f -v0 # compress static assets
-- python manage.py runserver --insecure &  # run in insecure mode for static assets
+- python manage.py runserver --insecure --nobanner &  # run in insecure mode for static assets
 script:
 - py.test --cov=cdhweb
 - npm run pa11y
