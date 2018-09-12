@@ -15,7 +15,7 @@
       gtag('config', 'UA-87887700-1', {'anonymize_ip': true});
     </script>
     {% endif %}
-    <title>{% block page-subtitle %}{% if page %}{{ page.meta_title|add:" | "}}{% endif %}{% endblock %}CDH @ Princeton</title>
+    <title>{% block page-title %}{% block page-subtitle %}{% if page %}{{ page.meta_title|add:" | "}}{% endif %}{% endblock %}The Center for Digital Humanities at Princeton{% endblock %}</title>
     {% if SHOW_TEST_WARNING %} {# test variant favicon to help differentiate test/prod sites #}
     <link rel="shortcut icon" href="{%  static 'favicon-test.ico' %}">
     {% else %}

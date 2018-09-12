@@ -89,7 +89,7 @@ class LandingPage(Page, RichText):
 class PublishedQuerySetMixin(models.QuerySet):
     '''QuerySet mixin. Adds a filter to find published content.
     Uses the published check from
-     :class:`mezzanine.core.managers.PublishedManager`.'''
+    :class:`mezzanine.core.managers.PublishedManager`.'''
 
     def published(self, for_user=None):
         """

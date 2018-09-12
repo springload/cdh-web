@@ -116,7 +116,7 @@ class ProfileListView(ProfileMixinView, ListView, LastModifiedListMixin):
 class StaffListView(ProfileListView):
     '''Display current and past CDH staff'''
     page_title = 'Staff'
-    past_title = 'Staff Alumni'
+    past_title = 'Past Staff'
     # don't show grant recipient info
     show_grant = False
 
@@ -127,7 +127,7 @@ class StaffListView(ProfileListView):
         return super().get_queryset().staff().not_postdocs().not_students()
         # NOTE: this won't filter correctly if we ever have someone who
         # goes from a postdoc or student role to a staff position, however
-        # filtering only on current role messes up staff alumni
+        # filtering only on current role messes up past staff
 
     def get_current_profiles(self):
         # we only care about current position, grant doesn't matter;
@@ -138,7 +138,7 @@ class StaffListView(ProfileListView):
 class PostdocListView(ProfileListView):
     '''Display current and past postdoctoral fellows'''
     page_title = 'Postdoctoral Fellows'
-    past_title = 'Postdoctoral Fellow Alumni'
+    past_title = 'Past Postdoctoral Fellows'
     show_grant = False
 
     def get_queryset(self):
@@ -154,7 +154,7 @@ class StudentListView(ProfileListView):
     '''Display current and past graduate fellows, graduate and undergraduate
     assistants.'''
     page_title = 'Students'
-    past_title = 'Student Alumni'
+    past_title = 'Alumni'
 
     def get_queryset(self):
         # filter to just students
@@ -180,7 +180,7 @@ class FacultyListView(ProfileListView):
 class ExecListView(ProfileListView):
     '''Display current and past executive committee members.'''
     page_title = 'Executive Committee'
-    past_title = 'Former {}'.format(page_title)
+    past_title = 'Past members of {}'.format(page_title)
     #: do not CDH positions or grants; show job title
     show_cdh_position = False
     show_grant = False

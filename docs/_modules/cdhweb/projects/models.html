@@ -6,10 +6,10 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>cdhweb.projects.models &#8212; CDH website 2.3.0 documentation</title>
+    <title>cdhweb.projects.models &#8212; CDH website 2.4.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
@@ -27,52 +27,69 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>Source code for cdhweb.projects.models</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">date</span>
+
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
 
 <span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="k">import</span> <span class="n">RichTextField</span><span class="p">,</span> <span class="n">FileField</span>
 <span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="k">import</span> <span class="n">Displayable</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.managers</span> <span class="k">import</span> <span class="n">DisplayableManager</span>
 <span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="k">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
 <span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="k">import</span> <span class="n">TaggableManager</span>
 
 <span class="kn">from</span> <span class="nn">cdhweb.people.models</span> <span class="k">import</span> <span class="n">Person</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="k">import</span> <span class="n">ResourceType</span><span class="p">,</span> <span class="n">Attachment</span><span class="p">,</span> <span class="n">ExcerptMixin</span>
+<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="k">import</span> <span class="n">ResourceType</span><span class="p">,</span> <span class="n">Attachment</span><span class="p">,</span> <span class="n">ExcerptMixin</span><span class="p">,</span> \
+    <span class="n">PublishedQuerySetMixin</span><span class="p">,</span> <span class="n">DateRange</span>
 
 
-<div class="viewcode-block" id="ProjectQuerySet"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectQuerySet">[docs]</a><span class="k">class</span> <span class="nc">ProjectQuerySet</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">QuerySet</span><span class="p">):</span>
+<div class="viewcode-block" id="ProjectQuerySet"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectQuerySet">[docs]</a><span class="k">class</span> <span class="nc">ProjectQuerySet</span><span class="p">(</span><span class="n">PublishedQuerySetMixin</span><span class="p">):</span>
 
 <div class="viewcode-block" id="ProjectQuerySet.highlighted"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectQuerySet.highlighted">[docs]</a>    <span class="k">def</span> <span class="nf">highlighted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;return projects that are marked as highlighted&#39;&#39;&#39;</span></div>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">highlight</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="sd">&#39;&#39;&#39;return projects that are marked as highlighted&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">highlight</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_current_grant_query</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;QuerySet filter to find projects with a current grant,</span>
+<span class="sd">        based on start date before current date and end date after current</span>
+<span class="sd">        date or not set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">today</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">grant__start_date__lt</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">&amp;</span>
+                <span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">grant__end_date__gt</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">|</span>
+                 <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">grant__end_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
 
 <div class="viewcode-block" id="ProjectQuerySet.current"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectQuerySet.current">[docs]</a>    <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;current projects with an active grant&#39;&#39;&#39;</span>
-        <span class="n">today</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-        <span class="c1"># current projects means an active grant</span>
-        <span class="c1"># filter for projects with grants where start and end date</span>
-        <span class="c1"># come before and after the current date</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">grant__start_date__lt</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> \</div></div>
-            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">grant__end_date__gt</span><span class="o">=</span><span class="n">today</span><span class="p">)</span>
+        <span class="sd">&#39;&#39;&#39;Projects with a current grant, based on dates&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_grant_query</span><span class="p">())</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="ProjectQuerySet.not_current"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectQuerySet.not_current">[docs]</a>    <span class="k">def</span> <span class="nf">not_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Projects with no current grant, based on dates&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_grant_query</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="ProjectManager"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectManager">[docs]</a><span class="k">class</span> <span class="nc">ProjectManager</span><span class="p">(</span><span class="n">DisplayableManager</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Custom manager for :class:`Project`.  Extends</span>
-<span class="sd">    :class:`mezzanine.core.managers.DisplayableManager` to preserve</span>
-<span class="sd">    capability to find published items.&#39;&#39;&#39;</span>
+    <span class="c1">#: grant types that indicate staff or postdoc project</span>
+    <span class="n">staff_postdoc_grants</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Staff R&amp;D&#39;</span><span class="p">,</span> <span class="s1">&#39;Postdoctoral Research Project&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="ProjectManager.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectManager.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
-        <span class="k">return</span> <span class="n">ProjectQuerySet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">)</span>
+<div class="viewcode-block" id="ProjectQuerySet.staff_or_postdoc"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectQuerySet.staff_or_postdoc">[docs]</a>    <span class="k">def</span> <span class="nf">staff_or_postdoc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Staff and postdoc projects, based on grant type&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">grant__grant_type__grant_type__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">staff_postdoc_grants</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">highlighted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">highlighted</span><span class="p">()</span>
+<div class="viewcode-block" id="ProjectQuerySet.not_staff_or_postdoc"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectQuerySet.not_staff_or_postdoc">[docs]</a>    <span class="k">def</span> <span class="nf">not_staff_or_postdoc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Exclude staff and postdoc projects, based on grant type&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">grant__grant_type__grant_type__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">staff_postdoc_grants</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">current</span><span class="p">()</span>
+<div class="viewcode-block" id="ProjectQuerySet.order_by_newest_grant"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectQuerySet.order_by_newest_grant">[docs]</a>    <span class="k">def</span> <span class="nf">order_by_newest_grant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;order by grant start date, most recent grants first; secondary</span>
+<span class="sd">        sort by project title&#39;&#39;&#39;</span>
+        <span class="c1"># NOTE: using annotation to get just the most recent start date</span>
+        <span class="c1"># to avoid issues with projects appearing multiple times.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">last_start</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Max</span><span class="p">(</span><span class="s1">&#39;grant__start_date&#39;</span><span class="p">))</span> \
+                   <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-last_start&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Project"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Project">[docs]</a><span class="k">class</span> <span class="nc">Project</span><span class="p">(</span><span class="n">Displayable</span><span class="p">,</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">ExcerptMixin</span><span class="p">):</span>
@@ -83,6 +100,8 @@
     <span class="n">long_description</span> <span class="o">=</span> <span class="n">RichTextField</span><span class="p">()</span>
     <span class="n">highlight</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Include in randomized project display on the home page.&#39;</span><span class="p">)</span>
+    <span class="n">cdh_built</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="s1">&#39;CDH Built&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Project built by CDH Development &amp; Design team.&#39;</span><span class="p">)</span>
 
     <span class="n">members</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">through</span><span class="o">=</span><span class="s1">&#39;Membership&#39;</span><span class="p">)</span>
     <span class="n">resources</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">ResourceType</span><span class="p">,</span> <span class="n">through</span><span class="o">=</span><span class="s1">&#39;ProjectResource&#39;</span><span class="p">)</span>
@@ -103,7 +122,7 @@
     <span class="n">attachments</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Attachment</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># custom manager and queryset</span>
-    <span class="n">objects</span> <span class="o">=</span> <span class="n">ProjectManager</span><span class="p">()</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">ProjectQuerySet</span><span class="o">.</span><span class="n">as_manager</span><span class="p">()</span>
 
     <span class="n">admin_thumb_field</span> <span class="o">=</span> <span class="s2">&quot;thumb&quot;</span>
 
@@ -114,8 +133,8 @@
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
 
-<div class="viewcode-block" id="Project.get_absolute_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Project.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
-        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;project:detail&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;slug&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">})</span>
+<div class="viewcode-block" id="Project.get_absolute_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Project.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;project:detail&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;slug&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">})</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">website_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -126,38 +145,37 @@
             <span class="k">return</span> <span class="n">website</span><span class="o">.</span><span class="n">url</span>
 
 <div class="viewcode-block" id="Project.latest_grant"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Project.latest_grant">[docs]</a>    <span class="k">def</span> <span class="nf">latest_grant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Most recent :class:`Grant`&#39;&#39;&#39;</span></div>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_set</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-start_date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="sd">&#39;&#39;&#39;Most recent :class:`Grant`&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_set</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_set</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-start_date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Project.current_membership"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Project.current_membership">[docs]</a>    <span class="k">def</span> <span class="nf">current_membership</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Project members associated with the most recent grant.</span>
-<span class="sd">        Returns :class:`Membership` queryset.&#39;&#39;&#39;</span></div>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">membership_set</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">grant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">latest_grant</span><span class="p">())</span>
+<span class="sd">        Returns :class:`Membership` queryset.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">membership_set</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">grant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">latest_grant</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Project.alumni_members"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Project.alumni_members">[docs]</a>    <span class="k">def</span> <span class="nf">alumni_members</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Project alumni returns only project members who are</span>
-<span class="sd">        not associated with the latest grant.&#39;&#39;&#39;</span></div></div>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">membership__grant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">latest_grant</span><span class="p">())</span>
+<span class="sd">        not associated with the latest grant.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">membership__grant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">latest_grant</span><span class="p">())</span></div></div>
 
 
 <div class="viewcode-block" id="GrantType"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.GrantType">[docs]</a><span class="k">class</span> <span class="nc">GrantType</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Model to track kinds of grants&#39;&#39;&#39;</span>
     <span class="n">grant_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_type</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_type</span></div>
 
 
-<div class="viewcode-block" id="Grant"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Grant">[docs]</a><span class="k">class</span> <span class="nc">Grant</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<div class="viewcode-block" id="Grant"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Grant">[docs]</a><span class="k">class</span> <span class="nc">Grant</span><span class="p">(</span><span class="n">DateRange</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A specific grant associated with a project&#39;&#39;&#39;</span>
     <span class="n">project</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Project</span><span class="p">)</span>
     <span class="n">grant_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">GrantType</span><span class="p">)</span>
-    <span class="n">start_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">()</span>
-    <span class="n">end_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_type</span><span class="o">.</span><span class="n">grant_type</span><span class="p">,</span></div>
-            <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_type</span><span class="o">.</span><span class="n">grant_type</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">year</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span></div>
 
 
 <span class="c1"># fixme: where does resource type go, for associated links?</span>
@@ -171,8 +189,8 @@
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_order&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span></div>
 
 
 <div class="viewcode-block" id="MembershipQuerySet"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.MembershipQuerySet">[docs]</a><span class="k">class</span> <span class="nc">MembershipQuerySet</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">QuerySet</span><span class="p">):</span>
@@ -183,8 +201,8 @@
         <span class="c1"># current projects means an active grant</span>
         <span class="c1"># filter for projects with grants where start and end date</span>
         <span class="c1"># come before and after the current date</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">grant__start_date__lt</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> \</div></div>
-            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">grant__end_date__gt</span><span class="o">=</span><span class="n">today</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">grant__start_date__lt</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">grant__end_date__gt</span><span class="o">=</span><span class="n">today</span><span class="p">)</span></div></div>
 
     <span class="c1"># TODO: find members from the *last* grant</span>
 
@@ -201,19 +219,28 @@
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;role__sort_order&#39;</span><span class="p">,</span> <span class="s1">&#39;user__last_name&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> - </span><span class="si">%s</span><span class="s1"> on </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> - </span><span class="si">%s</span><span class="s1"> on </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProjectResource"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectResource">[docs]</a><span class="k">class</span> <span class="nc">ProjectResource</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Through-model for associating projects with resource types and</span>
 <span class="sd">    URLs&#39;&#39;&#39;</span>
     <span class="n">resource_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ResourceType</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span></div>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
     <span class="n">url</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ProjectResource.display_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectResource.display_url">[docs]</a>    <span class="k">def</span> <span class="nf">display_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;url cleaned up for display, with leading http(s):// removed&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;https://&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;http://&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="mi">7</span><span class="p">:]</span></div></div>
+
 </pre></div>
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -296,8 +323,8 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
     </div>
 
