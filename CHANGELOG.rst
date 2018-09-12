@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+2.4.1
+-----
+
+* bugfix: blog post list author and event detail speaker link to unpublished
+  profiles
+* Require Pillow v 5.2
+* Style fix for h2 padding on project and event cards
+
 2.4
 ---
 
