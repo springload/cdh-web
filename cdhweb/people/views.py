@@ -169,8 +169,10 @@ class FacultyListView(ProfileListView):
     show_cdh_position = False
 
     def get_queryset(self):
-        # filter to faculty affiliates
-        return super().get_queryset().faculty_affiliates().grant_years()
+        # filter to faculty affiliates, annotate with grant years, and order by
+        # name
+        return super().get_queryset().faculty_affiliates().grant_years() \
+                      .order_by('user__last_name')
 
     def get_current_profiles(self):
         # we only care about current grants, position doesn't matter
