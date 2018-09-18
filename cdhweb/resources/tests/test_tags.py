@@ -20,4 +20,4 @@ def test_url_to_icon():
 def test_url_to_icon_path():
     domain = Site.objects.get_current().domain
     assert cdh_tags.url_to_icon_path('/people/staff/') == \
-        'https://{}/static/img/cdh-icons/png@2X/ppl@2X.png'.format(domain)
+        'https://{}/static/img/cdh-icons/png@2X/ppl@2x.png'.format(domain)
