@@ -19,9 +19,9 @@ URL_ICON_MAPPING = OrderedDict([
     ('fellowship', 'medal'),
     ('prize', 'medal'),
     ('grant', 'grant'),
-    ('funding', 'grant')
+    ('funding', 'grant'),
+    ('year', 'cal'),
 ])
-
 
 
 @register.filter
@@ -39,5 +39,5 @@ def url_to_icon_path(value):
     '''Return absolute path to CDH icon name based on URL.'''
     img = url_to_icon(value)
     if img:
-        return absolutize_url('{}img/cdh-icons/{}.svg'.format(settings.STATIC_URL, img))
+        return absolutize_url('{}img/cdh-icons/png@2X/{}@2x.png'.format(settings.STATIC_URL, img))
     return ''
