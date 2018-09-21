@@ -12,10 +12,12 @@ register = template.Library()
 URL_ICON_MAPPING = OrderedDict([
     ('/people/', 'ppl'),
     ('/projects', 'folder'),
+    ('reading', 'book'),
     ('/events/', 'cal'),
     ('/contact/', 'convo'),
     ('/consult/', 'convo'),
     ('seed-grant', 'seed'),
+    ('travel', 'location'),
     ('fellowship', 'medal'),
     ('prize', 'medal'),
     ('grant', 'grant'),
