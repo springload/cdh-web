@@ -28,7 +28,9 @@
                             {% firstof profile.first_start.year profile.first_start|slice:":4" %}–{% firstof profile.last_end.year profile.last_end|slice:":4" %}{% if show_cdh_position and profile.user.positions.first %}{% else %}<br/>{% endif %}
                         {# when showing both position and grant, if person has both omit line breaks #}
                         {% elif not grant.is_current %}{{ grant.years }}{% endif %}
-                        {{ grant.grant_type }} Grant Recipient</p>
+                        {# special case for faculty fellowship display #}
+                        {% if grant.grant_type.grant_type == 'Faculty Fellowship' %}Faculty Fellow{% else %}
+                        {{ grant.grant_type }} Grant Recipient{% endif %}</p>
                     {% endif %}
                 {% endwith %}
             {% endif %}
