@@ -70,6 +70,8 @@ class ProfileAdmin(DisplayableAdmin):
 class PositionAdmin(admin.ModelAdmin):
     list_display = ('user', 'title', 'start_date', 'end_date')
     date_hierarchy = 'start_date'
+    search_fields = ('user__username', 'user__first_name', 'user__last_name',
+                     'title__title', 'start_date', 'end_date')
 
 
 admin.site.register(Title, TitleAdmin)
