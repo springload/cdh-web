@@ -123,6 +123,8 @@ class ProfileQuerySet(PublishedQuerySetMixin):
 
     #: position titles that indicate a person is a postdoc
     postdoc_title = 'Postdoctoral Fellow'
+    #: variant postdoc title for Princeton PGRA
+    postgrad_title = 'Postgraduate Research Associate'
 
     #: position titles that indicate a staff person is a student
     student_titles = ['Graduate Fellow', 'Graduate Assistant',
@@ -141,11 +143,15 @@ class ProfileQuerySet(PublishedQuerySetMixin):
 
     def postdocs(self):
         '''Return CDH Postdoctoral Fellows, based on role title'''
-        return self.filter(user__positions__title__title__icontains=self.postdoc_title)
+        return self.filter(
+            models.Q(user__positions__title__title__icontains=self.postdoc_title)
+            | models.Q(user__positions__title__title=self.postgrad_title))
 
     def not_postdocs(self):
         '''Exclude CDH Postdoctoral Fellows, based on role title'''
-        return self.exclude(user__positions__title__title__icontains=self.postdoc_title)
+        return self.exclude(
+            models.Q(user__positions__title__title__icontains=self.postdoc_title)
+            | models.Q(user__positions__title__title=self.postgrad_title))
 
     def student_affiliates(self):
         '''Return CDH student staff members and grantees based on Project Director
