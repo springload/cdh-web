@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from . import views
 
-
+app_name = 'events'
 urlpatterns = [
     url('^$', views.UpcomingEventsView.as_view(), name='upcoming'),
     url('^(?P<pk>\d{1,2})/$', views.EventRedirectView.as_view(),
