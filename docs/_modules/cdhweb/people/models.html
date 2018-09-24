@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>cdhweb.people.models &#8212; CDH website 2.4.0 documentation</title>
+    <title>cdhweb.people.models &#8212; CDH website 2.4.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -157,6 +157,8 @@
 
     <span class="c1">#: position titles that indicate a person is a postdoc</span>
     <span class="n">postdoc_title</span> <span class="o">=</span> <span class="s1">&#39;Postdoctoral Fellow&#39;</span>
+    <span class="c1">#: variant postdoc title for Princeton PGRA</span>
+    <span class="n">postgrad_title</span> <span class="o">=</span> <span class="s1">&#39;Postgraduate Research Associate&#39;</span>
 
     <span class="c1">#: position titles that indicate a staff person is a student</span>
     <span class="n">student_titles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Graduate Fellow&#39;</span><span class="p">,</span> <span class="s1">&#39;Graduate Assistant&#39;</span><span class="p">,</span>
@@ -175,11 +177,15 @@
 
 <div class="viewcode-block" id="ProfileQuerySet.postdocs"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.postdocs">[docs]</a>    <span class="k">def</span> <span class="nf">postdocs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return CDH Postdoctoral Fellows, based on role title&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user__positions__title__title__icontains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postdoc_title</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title__icontains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postdoc_title</span><span class="p">)</span>
+            <span class="o">|</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postgrad_title</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.not_postdocs"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.not_postdocs">[docs]</a>    <span class="k">def</span> <span class="nf">not_postdocs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Exclude CDH Postdoctoral Fellows, based on role title&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">user__positions__title__title__icontains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postdoc_title</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title__icontains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postdoc_title</span><span class="p">)</span>
+            <span class="o">|</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postgrad_title</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.student_affiliates"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.student_affiliates">[docs]</a>    <span class="k">def</span> <span class="nf">student_affiliates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return CDH student staff members and grantees based on Project Director</span>
