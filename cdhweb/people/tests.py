@@ -215,6 +215,10 @@ class ProfileQuerySetTest(TestCase):
         assert staffer2.profile not in Profile.objects.postdocs()
         assert postdoc.profile in Profile.objects.postdocs()
 
+        # PGRA also included in postdocs
+        pgra = Person.objects.get(username='pgra')
+        assert pgra.profile in Profile.objects.postdocs()
+
     def test_not_postdocs(self):
         # staff with a position
         staffer = Person.objects.get(username='staff')
@@ -420,12 +424,15 @@ class TestViews(TestCase):
 
     def test_postdoc_list(self):
         postdoc = Person.objects.get(username='postdoc')
+        pgra = Person.objects.get(username='pgra')
 
         response = self.client.get(reverse('people:postdocs'))
         # person should only appear once even if they have multiple positions
-        assert len(response.context['current']) == 1
+        assert len(response.context['current']) == 2
         # postdoc profile should be included
         assert postdoc.profile in response.context['current']
+        # pgra profile also
+        assert pgra.profile in response.context['current']
 
         self.assertContains(response, postdoc.profile.title)
         self.assertContains(response, postdoc.profile.current_title)

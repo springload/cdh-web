@@ -882,6 +882,11 @@ $event-card-img-height: 240px;
 				@include cdh-icon('convo');
 			}
 		}
+		&.book {
+			a::after {
+				@include cdh-icon('book');
+			}
+		}
 
 
 	}
