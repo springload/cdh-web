@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from . import views
 
-
+app_name = 'blog'
 urlpatterns = [
     url('^$', views.BlogIndexView.as_view(), name='list'),
     url('^(?P<year>\d{4})/$', views.BlogYearArchiveView.as_view(),

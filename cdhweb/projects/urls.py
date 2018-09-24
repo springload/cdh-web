@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from cdhweb.projects import views
 
-
+app_name = 'projects'
 urlpatterns = [
     url('^$', views.ProjectListView.as_view(), name='list'),
     url('^staff/$', views.StaffProjectListView.as_view(), name='staff'),

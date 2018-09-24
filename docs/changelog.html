@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CHANGELOG &#8212; CDH website 2.4.0 documentation</title>
+    <title>CHANGELOG &#8212; CDH website 2.4.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -36,7 +36,28 @@
   <div class="section" id="changelog">
 <h1>CHANGELOG<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>2.4<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>2.4.2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Order faculty affiliates by last name</li>
+<li>Use png instead of svg for social media / opengraph preview icon images,
+since svg is not supported</li>
+<li>Tweak profile card display logic for faculty fellowship</li>
+<li>Include Postgraduate Research Assistants on the postdocs page</li>
+<li>Configure admin search for position list</li>
+<li>Use book icon for reading group, location marker for travel grants</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>2.4.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>bugfix: blog post list author and event detail speaker link to unpublished
+profiles</li>
+<li>Require Pillow v 5.2</li>
+<li>Style fix for h2 padding on project and event cards</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h2>2.4<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>Accessibility updates and new features to display projects in different groupings
 with indicators for projects build by CDH and those with live websites, and
 multiple pages to display current and past people affiliated with CDH.</p>
@@ -78,8 +99,8 @@ multiple pages to display current and past people affiliated with CDH.</p>
 <p>Sets a null href attribute on carousel links to prevent reloading the page but keep them accessible to screen readers.</p>
 </div>
 </div>
-<div class="section" id="id2">
-<h2>2.3<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>2.3<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>As a Content Editor, I want my rich text editor preview to match the way the content will display on the site so that I don’t have to check the published version myself.</li>
 <li>As a Content Editor, I should only be able to use supported formatting and tags when I edit site content so that the CDH has a uniform web presence.</li>
@@ -88,17 +109,17 @@ multiple pages to display current and past people affiliated with CDH.</p>
 </ul>
 <p>Upgrade tinyMCE to v4.7.9.</p>
 </div>
-<div class="section" id="id3">
-<h2>2.2.2<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>2.2.2<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <p>Downgrade Django to 1.10.x (and latest released version of Mezzanine)
 to avoid a Django compatibility issue with filebrowser_safe.</p>
 </div>
-<div class="section" id="id4">
-<h2>2.2.1<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h2>2.2.1<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>Minor Sphinx documentation and README cleanup.</p>
 </div>
-<div class="section" id="id5">
-<h2>2.2<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h2>2.2<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>As a user, I want to see past CDH positions on a staff member profile page so I can learn about a person’s history with CDH.</li>
 <li>As a user I want to view a list of alumni so I can get learn about people who have worked with CDH in the past.</li>
@@ -123,8 +144,8 @@ to avoid a Django compatibility issue with filebrowser_safe.</p>
 </li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h2>2.1<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h2>2.1<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>As a content editor, I want to associate people with projects more efficiently so I don’t have to enter repeating information.</li>
 <li>bug fix: Resource links on user profile page don’t work</li>
@@ -136,8 +157,8 @@ to avoid a Django compatibility issue with filebrowser_safe.</p>
 <li>Many improvements and clean up in design implementation</li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h2>2.0<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h2>2.0<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <p><strong>CDH web 2.0 is a completely new implementation of the functionality in the
 previous version, with a restructured database and site templates based on
 bourbon+neat rather than bootstrap.</strong></p>
@@ -263,13 +284,15 @@ bourbon+neat rather than bootstrap.</strong></p>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="codedocs.html">Code Documentation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">2.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">2.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">2.2.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">2.2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">2.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id6">2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id7">2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">2.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">2.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">2.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">2.2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">2.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">2.0</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="deploynotes.html">Deploy Notes</a></li>
@@ -279,17 +302,19 @@ bourbon+neat rather than bootstrap.</strong></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">CHANGELOG</a><ul>
-<li><a class="reference internal" href="#id1">2.4</a><ul>
+<li><a class="reference internal" href="#id1">2.4.2</a></li>
+<li><a class="reference internal" href="#id2">2.4.1</a></li>
+<li><a class="reference internal" href="#id3">2.4</a><ul>
 <li><a class="reference internal" href="#features">Features</a></li>
 <li><a class="reference internal" href="#chores-fixes-and-other-items">Chores, fixes, and other items</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id2">2.3</a></li>
-<li><a class="reference internal" href="#id3">2.2.2</a></li>
-<li><a class="reference internal" href="#id4">2.2.1</a></li>
-<li><a class="reference internal" href="#id5">2.2</a></li>
-<li><a class="reference internal" href="#id6">2.1</a></li>
-<li><a class="reference internal" href="#id7">2.0</a><ul>
+<li><a class="reference internal" href="#id4">2.3</a></li>
+<li><a class="reference internal" href="#id5">2.2.2</a></li>
+<li><a class="reference internal" href="#id6">2.2.1</a></li>
+<li><a class="reference internal" href="#id7">2.2</a></li>
+<li><a class="reference internal" href="#id8">2.1</a></li>
+<li><a class="reference internal" href="#id9">2.0</a><ul>
 <li><a class="reference internal" href="#profiles">Profiles</a></li>
 <li><a class="reference internal" href="#events">Events</a></li>
 <li><a class="reference internal" href="#projects">Projects</a></li>

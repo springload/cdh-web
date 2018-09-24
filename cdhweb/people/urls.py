@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from cdhweb.people import views
 
-
+app_name = 'people'
 urlpatterns = [
     # for now, no generic people list page exists
     # url('^$', views.ProfileListView.as_view(), name='list'),
