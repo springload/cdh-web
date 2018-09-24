@@ -7,7 +7,7 @@ CHANGELOG
 * Order faculty affiliates by last name
 * Use png instead of svg for social media / opengraph preview icon images,
   since svg is not supported
-* Tweak profile card display case to display faculty fellowship
+* Tweak profile card display logic for faculty fellowship
 * Include Postgraduate Research Assistants on the postdocs page
 * Configure admin search for position list
 * Use book icon for reading group, location marker for travel grants
