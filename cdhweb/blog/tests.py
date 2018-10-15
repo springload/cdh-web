@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.urls import resolve, reverse
 from django.utils import timezone
 from django.utils.html import escape
+from mezzanine.core.models import CONTENT_STATUS_DRAFT
 
 from cdhweb.blog.models import BlogPost
 from cdhweb.blog.views import RssBlogPostFeed
@@ -61,6 +62,12 @@ class TestViews(TestCase):
         # post with author
         authorpost = BlogPost.objects.filter(users__isnull=False).first()
         self.assertContains(response, str(authorpost.users.first()))
+
+        # draft post should *NOT* be included
+        post.status = CONTENT_STATUS_DRAFT
+        post.save()
+        response = self.client.get(reverse('blog:rss'))
+        self.assertNotContains(response, post.get_absolute_url())
 
         # TODO: author with published profile page, multiple authors
 

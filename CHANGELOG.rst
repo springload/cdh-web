@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+2.4.3
+-----
+
+* bugfix: blogpost RSS feed does not respect draft status
+* Configure admin search fields for projects, grants, and blog posts
+* Display event attendance in admin list view
+
 2.4.2
 -----
 

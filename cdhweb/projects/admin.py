@@ -36,6 +36,9 @@ class ProjectAdmin(DisplayableAdmin):
     date_hierarchy = "publish_date"
     prepopulated_fields = {"slug": ("title",)}
     filter_horizontal = ('attachments', )
+    search_fields = ('title', 'short_description', 'long_description',
+                     'members__username', 'members__first_name',
+                     'members__last_name')
 
     # fieldset based on displayaable admin with project fields added
     fieldsets = (
@@ -82,6 +85,11 @@ class GrantMemberInline(admin.TabularInline):
 class GrantAdmin(admin.ModelAdmin):
     list_display = ('project', 'grant_type', 'start_date', 'end_date')
     date_hierarchy = 'start_date'
+    search_fields = ('project__title', 'grant_type__grant_type',
+                     'start_date', 'end_date', 'project__long_description',
+                     'project__short_description',
+                     'membership__user__username', 'membership__user__first_name',
+                     'membership__user__last_name')
 
     def get_form(self, request, obj=None, **kwargs):
         # save object reference for filtering grants in membership Inline
