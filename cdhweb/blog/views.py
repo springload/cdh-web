@@ -86,7 +86,7 @@ class RssBlogPostFeed(Feed):
 
     def items(self):
         '''ten most recent blog posts, ordered by publish date'''
-        return BlogPost.objects.order_by('-publish_date')[:10]
+        return BlogPost.objects.published().order_by('-publish_date')[:10]
 
     def item_title(self, item):
         '''blog post title'''

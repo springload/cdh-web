@@ -20,6 +20,8 @@ class BlogPostAdmin(TweetableAdminMixin, DisplayableAdmin, OwnableAdmin):
     radio_fields = {"status": admin.HORIZONTAL}
     # filter_horizontal = ("categories", "related_posts",)
     filter_horizontal = ("related_posts", 'attachments', 'users')
+    search_fields = ('title', 'users__username', 'users__first_name',
+                     'users__last_name', 'content')
 
     prepopulated_fields = {"slug": ("title",)}
     # based on Displayable fieldset

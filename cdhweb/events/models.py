@@ -40,7 +40,7 @@ class Location(models.Model):
         help_text='Name of the location')
     short_name = models.CharField(max_length=80, blank=True)
     address = models.CharField(max_length=255,
-        help_text='Addres of the location (will not display if same as name)')
+        help_text='Address of the location (will not display if same as name)')
 
     def __str__(self):
         return self.short_name or self.name
