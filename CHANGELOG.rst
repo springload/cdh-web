@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+2.5
+---
+
+* bugfix: event card doesn't display names from person, only from profile
+* Document installation and use of timezone files for MariaDB/MySQL
+* Update social media links
+* Add links to profile urls for project alums
+
+
 2.4.3
 -----
 
