@@ -47,6 +47,7 @@ class Location(models.Model):
 
     @property
     def display_name(self):
+        '''A name for template display'''
         if self.name and self.address and self.name != self.address:
             return ', '.join([self.name, self.address])
         return self.name

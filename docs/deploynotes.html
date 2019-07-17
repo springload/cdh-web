@@ -1,18 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Deploy Notes &#8212; CDH website 2.4.2 documentation</title>
+    <meta charset="utf-8" />
+    <title>Deploy Notes &#8212; CDH website 2.5.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="CHANGELOG" href="changelog.html" />
@@ -37,28 +36,28 @@
 <div class="section" id="id1">
 <h2>2.2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Adds an alumni page, parallel to current staff.  Existing profile pages
-for past staff should be republished.</li>
-<li>Fixes rich text page template to include page title as an H1.  Existing
-content with the title repeated will need to be edited.</li>
+<li><p>Adds an alumni page, parallel to current staff.  Existing profile pages
+for past staff should be republished.</p></li>
+<li><p>Fixes rich text page template to include page title as an H1.  Existing
+content with the title repeated will need to be edited.</p></li>
 </ul>
 </div>
 <div class="section" id="id2">
 <h2>2.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Resource names have been changed to store proper case in the database.
-Existing installations should update the three pre-populated items manually.</li>
-<li>Update local settings to turn on Google Analytics.</li>
+<li><p>Resource names have been changed to store proper case in the database.
+Existing installations should update the three pre-populated items manually.</p></li>
+<li><p>Update local settings to turn on Google Analytics.</p></li>
 </ul>
 </div>
 <div class="section" id="id3">
 <h2>2.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Update default site in Django admin to match deployed site url</li>
-<li>Initialize admin and other users with createcasuser before running
-the data import.</li>
-<li>Import data from the previous version of the site (exported via Django
-dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></li>
+<li><p>Update default site in Django admin to match deployed site url</p></li>
+<li><p>Initialize admin and other users with createcasuser before running
+the data import.</p></li>
+<li><p>Import data from the previous version of the site (exported via Django
+dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></p></li>
 </ul>
 </div>
 </div>
@@ -91,7 +90,7 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></l
     
 
 <p>
-<a href="https://travis-ci.org/Princeton-CDH/cdh-web">
+<a class="badge" href="https://travis-ci.org/Princeton-CDH/cdh-web">
     <img
         alt="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
         src="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
@@ -105,7 +104,7 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></l
     
 
 <p>
-<a href="https://codecov.io/github/Princeton-CDH/cdh-web">
+<a class="badge" href="https://codecov.io/github/Princeton-CDH/cdh-web">
     <img
     alt="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
     src="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
@@ -127,7 +126,7 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></l
 </ul>
 
 
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Deploy Notes</a><ul>
 <li><a class="reference internal" href="#id1">2.2</a></li>
@@ -138,13 +137,11 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></l
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -163,8 +160,8 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></l
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/deploynotes.rst.txt"

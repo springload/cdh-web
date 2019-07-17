@@ -1,18 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>cdhweb.projects.models &#8212; CDH website 2.4.2 documentation</title>
+    <meta charset="utf-8" />
+    <title>cdhweb.projects.models &#8212; CDH website 2.5.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -157,7 +156,8 @@
 <div class="viewcode-block" id="Project.alumni_members"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Project.alumni_members">[docs]</a>    <span class="k">def</span> <span class="nf">alumni_members</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Project alumni returns only project members who are</span>
 <span class="sd">        not associated with the latest grant.&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">membership__grant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">latest_grant</span><span class="p">())</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">membership__grant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">latest_grant</span><span class="p">())</span> \
+                   <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;last_name&#39;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="GrantType"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.GrantType">[docs]</a><span class="k">class</span> <span class="nc">GrantType</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
@@ -266,7 +266,7 @@
     
 
 <p>
-<a href="https://travis-ci.org/Princeton-CDH/cdh-web">
+<a class="badge" href="https://travis-ci.org/Princeton-CDH/cdh-web">
     <img
         alt="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
         src="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
@@ -280,7 +280,7 @@
     
 
 <p>
-<a href="https://codecov.io/github/Princeton-CDH/cdh-web">
+<a class="badge" href="https://codecov.io/github/Princeton-CDH/cdh-web">
     <img
     alt="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
     src="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
@@ -298,13 +298,11 @@
 
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -323,8 +321,8 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 
