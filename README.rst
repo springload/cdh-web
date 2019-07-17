@@ -19,6 +19,7 @@ CDH Website
    :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=master
    :alt: Requirements Status
 
+Python 3.5 / Django 1.11 / Node 8.16.0 / MariaDB (MySQL) 5.5 w/ timezone info
 
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.
@@ -29,7 +30,6 @@ for the current release.
 This repository uses `git-flow <https://github.com/nvie/gitflow>`_ conventions; master
 contains the most recent release, and work in progress will be on the develop branch.
 Pull requests should be made against develop.
-
 
 
 Development instructions
@@ -63,6 +63,20 @@ Initial setup and installation:
   Globally install `postcss-cli` and `autoprefixer`, i.e.
   `npm -g postcss-cli autoprefixer`. You may need `sudo` for these operations.
 
+- If running this application on MariaDB/MySQL, you must make sure that
+  time zone definitions are installed. On most flavors of Linux/MacOS,
+  you may use the following command, which will prompt
+  for the database server's root password::
+
+    mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql -p
+
+  If this command does not work, make sure you have the command line utilities
+  for MariaDB/MySQL installed and consult the documentation for your OS for
+  timezone info. Windows users will need to install a copy of the zoneinfo
+  files.
+
+  See `MariaDB <https://mariadb.com/kb/en/library/mysql_tzinfo_to_sql/>`_'s
+  info on the utility for more information.
 
 Unit Testing
 ------------

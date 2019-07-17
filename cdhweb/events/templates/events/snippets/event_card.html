@@ -9,7 +9,7 @@
             <div class="presenter">
                 {% for person in event.speakers.all %}
                 <div property="schema:performer" typeof="schema:Person">
-                    <span property="schema:name">{{ person.profile.title }}</span>
+                    <span property="schema:name">{{ person }}</span>
                 </div>
                 {% endfor %}
             </div>

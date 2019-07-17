@@ -10,7 +10,7 @@ cache:
   - downloads
   - node_modules
 before_install:
-- rvm install 2.0
+- rvm install 2.2
 - gem install sass
 - npm install -g postcss-cli autoprefixer
 install:

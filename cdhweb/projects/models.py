@@ -123,7 +123,8 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
     def alumni_members(self):
         '''Project alumni returns only project members who are
         not associated with the latest grant.'''
-        return self.members.distinct().exclude(membership__grant=self.latest_grant())
+        return self.members.distinct().exclude(membership__grant=self.latest_grant()) \
+                   .order_by('last_name')
 
 
 class GrantType(models.Model):

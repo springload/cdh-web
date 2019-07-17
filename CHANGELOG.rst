@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+2.5
+---
+
+* bugfix: event card doesn't display names from person, only from profile
+* Document installation and use of timezone files for MariaDB/MySQL
+* Update social media links
+* Add links to profile urls for project alums
+
+
 2.4.3
 -----
 
@@ -66,7 +75,7 @@ Chores, fixes, and other items
 * Upgraded to Mezzanine 4.3
 
 2.3.1
----
+-----
 
 Sets a null href attribute on carousel links to prevent reloading the page but keep them accessible to screen readers.
 
