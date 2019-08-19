@@ -8,9 +8,7 @@ django-compressor-autoprefixer
 mysqlclient
 django-admin-sortable2
 django-taggit
-# pin to 3.5.x for django 1.11 compatibility
-django-cas-ng<3.6
-pucas>=0.5
+pucas>=0.6
 python-dateutil
 icalendar
 attrdict
