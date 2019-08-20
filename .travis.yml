@@ -23,6 +23,7 @@ before_script:
 - sudo chown root /opt/google/chrome/chrome-sandbox
 - sudo chmod 4755 /opt/google/chrome/chrome-sandbox
 - mysql -u root -e "create database test";  # load and run site for pa11y to check
+- mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
 - python manage.py migrate
 - python manage.py loaddata pa11y_test_site
 - python manage.py compress -f -v0 # compress static assets
@@ -30,6 +31,8 @@ before_script:
 script:
 - py.test --cov=cdhweb
 - npm run pa11y
+services:
+- mysql
 after_success:
 - codecov
 notifications:
