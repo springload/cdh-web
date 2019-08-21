@@ -212,10 +212,12 @@ article.landing-page {
 
 		div {
 			@extend .responsive-container;
-			padding-top: 336px;
+            padding-top: 336px;
 		    @media (max-width: $small-max-width) {
-  				padding-top: 88px;
-	  	    }
+                padding-top: 88px;
+            }
+              
+            text-shadow: 0 0 50px rgba(0, 0, 0, 0.5); 
 		}
 		a.home {
 			color: $cdh-blue;
