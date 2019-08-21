@@ -1683,7 +1683,40 @@ body.richtextpage {
 			}
 		}
 
-	}
+    }
+    
+    /* triangular indicator/watermark for draft pages */
+    &.draft {
+        &::before,
+        &::after {
+            position: absolute;
+            right: 0;
+            top: 65px;
+            z-index: 1;
+        }
+
+        &::before {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-top: 150px solid $cdh-blue;
+        }
+
+        &::after {
+            width: 150px;
+            height: 150px;
+            color: white;
+            content: '\0270F   draft';
+            font-family: $font-stack-headline;
+            transform: rotate(45deg);
+            text-align: center;
+            margin-top: 10px;
+            margin-right: 10px;
+            font-size: 32px;
+            text-shadow: 1px 1px 1px black;
+        }
+    }
 }
 
 

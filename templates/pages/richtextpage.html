@@ -1,6 +1,6 @@
 {% extends "pages/richtextpage.html" %}
 
-{% block bodyattrs %}class="richtextpage"{% endblock %}
+{% block bodyattrs %}class="richtextpage{% if not page.published %} draft{% endif %}"{% endblock %}
 
 
 {% block main %}
