@@ -14,7 +14,7 @@
                     aria-haspopup="true"
                     aria-expanded="false"
                     href="{{ page.get_absolute_url }}"
-                    {% if page.is_current_or_ascendant %}class="current-page"{% endif %}>{{ page.title }}</a>
+                    {% if page.is_current_or_ascendant %} aria-current="page"{% endif %}>{{ page.title }}</a>
             </li>
             {% endif %}
         {% endfor %}

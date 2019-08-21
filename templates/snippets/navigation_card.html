@@ -9,7 +9,8 @@
                     id="{{ page.html_id }}"
                     role="menuitem"
                     href="{{ page.get_absolute_url }}"
-                    {% if page.has_children_in_menu %} aria-owns="{{ page.html_id }}-tertiary" {% endif %}>{{ page.title }}</a>
+                    {% if page.has_children_in_menu %} aria-owns="{{ page.html_id }}-tertiary"{% endif %}
+                    {% if page.is_current %} aria-current="page"{% endif %}>{{ page.title }}</a>
                 {% if page.has_children_in_menu %}
                     {% page_menu page "snippets/tertiary_navigation.html" %}
                 {% endif %}

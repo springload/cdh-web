@@ -32,7 +32,8 @@ header.nav {
             text-decoration: none;
             color: #000000;
         }
-        &.current-page {
+
+        &[aria-current=page] {
             border-bottom: 4px;
             border-bottom-color: $cdh-blue;
             border-bottom-style: solid;
