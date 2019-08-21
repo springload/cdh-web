@@ -1,0 +1,13 @@
+{% extends "pages/richtextpage.html" %}
+
+{% block bodyattrs %}class="richtextpage cosponsor"{% endblock %}
+
+{% block main %}
+{{ block.super }}
+
+{# embed google form for cosponsorship request at bottom of page #}
+<div>
+<iframe title="Cosponsorship Request Form"
+ src="https://docs.google.com/forms/d/e/1FAIpQLSd_4G9SEquDyAbxz0tE7ieIgYaXIKS4fY9yT5M9oMV2j9pclQ/viewform?embedded=true">Loading...</iframe>
+</div>
+{% endblock %}
