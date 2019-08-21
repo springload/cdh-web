@@ -4,6 +4,7 @@
     <div class="inner">
         <ul id="{{ page.html_id }}-secondary" class="secondary-nav" role="menubar" aria-labelledby="{{ page.html_id }}">
         {% for page in page_branch %}
+            {% if page.in_menu %}
             <li role="none">
                 <a
                     id="{{ page.html_id }}"
@@ -15,6 +16,7 @@
                     {% page_menu page "snippets/tertiary_navigation.html" %}
                 {% endif %}
             </li>
+            {% endif %}
         {% endfor %}
         </ul>
     </div>
