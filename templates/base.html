@@ -42,7 +42,7 @@
 <body {% block bodyattrs %}{% endblock %}>
     <ul class="skip-links">
         <li><a href='#maincontent'>Skip to main content</a></li>
-        <li><a href='#footermenu' aria-label='Footer Menu'>Skip to footer</a></li>
+        <li><a href='#footermenu'>Skip to footer</a></li>
     </ul>
     <header class="nav">
         <div class="nav-wrap">
@@ -51,9 +51,7 @@
             </nav>
             <nav id='mainmenu'>
                 <a href='{% url 'home' %}' class='home-page'>
-                  <img
-                  alt='The Center for Digital Humanities @ Princeton'
-                  src='{% static "img/CDH_logo.svg" %}' />
+                  <img alt="home" src='{% static "img/CDH_logo.svg" %}' />
                 </a>
                 {% page_menu "snippets/primary_navigation.html" %}
             </nav>
