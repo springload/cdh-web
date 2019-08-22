@@ -40,9 +40,10 @@
 </head>
 
 <body {% block bodyattrs %}{% endblock %}>
-    <a href='#mainmenu' aria-label='Main Menu'></a>
-    <a href='#maincontent' aria-label='Main Content'></a>
-    <a href='#footermenu' aria-label='Footer Menu'></a>
+    <ul class="skip-links">
+        <li><a href='#maincontent'>Skip to main content</a></li>
+        <li><a href='#footermenu' aria-label='Footer Menu'>Skip to footer</a></li>
+    </ul>
     <header class="nav">
         <div class="nav-wrap">
             <nav class='mobile-nav'>

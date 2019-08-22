@@ -1,6 +1,33 @@
 /* header and footer styles */
 @import "variables";
 
+// skip links
+.skip-links {
+    width: 100%;
+    position: absolute;
+    top: -$header-nav-height;
+    z-index: 11;
+    list-style-type: none;
+    margin: 0;
+
+    a {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        font-family: $font-stack-headline;
+        color: $black;
+
+        &:focus,
+        &:hover {
+            top: $header-nav-height;
+            box-shadow: 3px 3px 5px $dark-grey;
+        }
+    }
+}
+
 header.nav {
     height: $header-nav-height;
     width: 100%;
