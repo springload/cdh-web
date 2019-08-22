@@ -6,14 +6,17 @@
         {# top-level pages #}
         {% for page in page_branch %}
             {% if page.in_menu %}
-            <li>
+            <li role="none">
                 <a
                     id="{{ page.html_id }}"
                     role="menuitem"
+                    href="{{ page.get_absolute_url }}"
+                    {% if forloop.first %} tabindex="0"{% else %} tabindex="-1"{% endif %}
+                    {% if page.has_childen_in_menu %}
                     aria-owns="{{ page.html_id }}-secondary"
                     aria-haspopup="true"
                     aria-expanded="false"
-                    href="{{ page.get_absolute_url }}"
+                    {% endif %}
                     {% if page.is_current_or_ascendant %} aria-current="page"{% endif %}>{{ page.title }}</a>
             </li>
             {% endif %}
