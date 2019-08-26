@@ -265,9 +265,7 @@ header.nav {
     .nav-main ul,
     .nav-card ul {
         /* add indicator for section of menu being viewed */
-        a:hover,
-        a:focus {
-            outline: none;
+        a:hover {
             border-bottom: 4px;
             border-bottom-color: $cdh-blue;
             border-bottom-style: solid;
