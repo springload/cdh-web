@@ -56,24 +56,26 @@ $(document).ready(function () {
      * Main navigation
      */
 
-    // keybindings for primary nav
-    // see https://www.w3.org/TR/wai-aria-practices-1.1/examples/menubar/menubar-1/menubar-1.html
+    // keybindings for primary nav (people, projects, research, etc.)
     $('.primary-nav > li > a')
         .keydown(function (e) {
             switch (e.which) {
                 case 35: { // home
+                    e.preventDefault()
                     hideCard(e.target.id)
                     var firstCard = $('.primary-nav > li > a').first()
                     firstCard.focus()
                     break
                 }
                 case 36: { // end
+                    e.preventDefault()
                     hideCard(e.target.id)
                     var lastCard = $('.primary-nav > li > a').last()
                     lastCard.focus()
                     break
                 }
                 case 37: { // left arrow
+                    e.preventDefault()
                     hideCard(e.target.id)
                     var prevCard = $(e.target).parent().prev('li').find('a')
                     prevCard.focus()
@@ -87,6 +89,7 @@ $(document).ready(function () {
                     break
                 }
                 case 39: { // right arrow
+                    e.preventDefault()
                     hideCard(e.target.id)
                     var nextCard = $(e.target).parent().next('li').find('a')
                     nextCard.focus()
@@ -101,54 +104,128 @@ $(document).ready(function () {
                 }
                 case 13: // enter
                 case 32: { // spacebar
-                    $(e.target).click()
+                    e.preventDefault()
+                    e.target.click()
                     break
                 }
             }
         })
 
-    // keybindings for secondary nav (cards)
-    // see https://www.w3.org/TR/wai-aria-practices-1.1/examples/menubar/menubar-1/menubar-1.html
+    // keybindings for secondary nav (flyout cards)
     $('.secondary-nav > li > a')
         .keydown(function (e) {
             switch (e.which) {
+                case 38: // up arrow
                 case 27: { // escape
+                    e.preventDefault()
                     var parentMenu = $(e.target).parents('.secondary-nav').get()[0]
                     var parentMenuName = parentMenu.id.split('-secondary')[0]
                     hideCard(parentMenuName)
                     $('#' + parentMenuName).focus()
+                    break
                 }
                 case 35: { // home
+                    e.preventDefault()
                     var firstLink = $(e.target).parent().first('li').find('a')
                     firstLink.focus()
                     break
                 }
                 case 36: { // end
+                    e.preventDefault()
                     var lastLink = $(e.target).parent().last('li').find('a')
                     lastLink.focus()
                     break
                 }
                 case 37: { // left arrow
-                    var prevLink = $(e.target).parent().prev('li').find('a')
+                    e.preventDefault()
+                    var prevLink = $(e.target).parent().prev('li').find('a').first()
                     prevLink.focus()
                     break
                 }
-                case 38: { // up arrow
-                    e.preventDefault()
-                    break
-                }
                 case 39: { // right arrow
-                    var nextLink = $(e.target).parent().next('li').find('a')
+                    e.preventDefault()
+                    var nextLink = $(e.target).parent().next('li').find('a').first()
                     nextLink.focus()
                     break
                 }
                 case 40: { // down arrow
                     e.preventDefault()
+                    var associatedList = $(e.target).siblings('.tertiary-nav')
+                    if (associatedList.length > 0) {
+                        associatedList.find('a').first().focus()
+                    }
                     break
                 }
                 case 13: // enter
                 case 32: { // spacebar
-                    $(e.target).click()
+                    e.preventDefault()
+                    e.target.click()
+                    break
+                }
+            }
+        })
+
+    // keybindings for tertiary nav (lists on cards)
+    $('.tertiary-nav > li > a')
+        .keydown(function (e) {
+            switch (e.which) {
+                case 27: { // escape
+                    e.preventDefault()
+                    var parentCard = $(e.target).parents('.secondary-nav').get()[0]
+                    var parentCardName = parentCard.id.split('-secondary')[0]
+                    hideCard(parentCardName)
+                    $('#' + parentCardName).focus()
+                    break
+                }
+                case 35: { // home
+                    e.preventDefault()
+                    var firstLink = $(e.target).parent().first('li').find('a')
+                    firstLink.focus()
+                    break
+                }
+                case 36: { // end
+                    e.preventDefault()
+                    var lastLink = $(e.target).parent().last('li').find('a')
+                    lastLink.focus()
+                    break
+                }
+                case 37: {// left arrow
+                    e.preventDefault()
+                    var parentSecondary = $(e.target).parents('.tertiary-nav').siblings('a')
+                    var prevSecondary = parentSecondary.parent().prev('li').find('a').first()
+                    prevSecondary.focus()
+                    break
+                }
+                case 38: { // up arrow
+                    e.preventDefault()
+                    var prevLink = $(e.target).parent().prev('li').find('a')
+                    if (prevLink.length > 0) {
+                        prevLink.focus()
+                    }
+                    else {
+                        var parentMenu = $(e.target).parents('.tertiary-nav')
+                        var parentSecondary = parentMenu.siblings('a')
+                        parentSecondary.focus()
+                    }
+                    break
+                }
+                case 39: { // right arrow
+                    e.preventDefault()
+                    var parentSecondary = $(e.target).parents('.tertiary-nav').siblings('a')
+                    var nextSecondary = parentSecondary.parent().next('li').find('a').first()
+                    nextSecondary.focus()
+                    break
+                }
+                case 40: { // down arrow
+                    e.preventDefault()
+                    var nextLink = $(e.target).parent().next('li').find('a')
+                    nextLink.focus()
+                    break
+                }
+                case 13: // enter
+                case 32: { // spacebar
+                    e.preventDefault()
+                    e.target.click()
                     break
                 }
             }
