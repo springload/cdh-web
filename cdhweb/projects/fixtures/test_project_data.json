@@ -1,0 +1,157 @@
+[
+    {
+        "model": "projects.project",
+        "pk": 1,
+        "fields": {
+            "keywords_string": "",
+            "site": 1,
+            "title": "Derrida's Margins",
+            "slug": "derridas-margins",
+            "_meta_title": null,
+            "description": "Derrida's Margins",
+            "gen_description": true,
+            "created": "2018-08-30T18:45:41.568Z",
+            "updated": "2018-08-30T18:45:41.568Z",
+            "status": 2,
+            "publish_date": "2018-08-30T18:45:41.565Z",
+            "expiry_date": null,
+            "short_url": null,
+            "in_sitemap": true,
+            "short_description": "",
+            "long_description": "",
+            "highlight": false,
+            "cdh_built": false,
+            "image": "",
+            "thumb": "",
+            "attachments": []
+        }
+    },
+    {
+        "model": "projects.granttype",
+        "pk": 1,
+        "fields": {
+            "grant_type": "Sponsored Project"
+        }
+    },
+    {
+        "model": "projects.grant",
+        "pk": 1,
+        "fields": {
+            "start_date": "2015-01-01",
+            "end_date": "2016-01-01",
+            "project": 1,
+            "grant_type": 1
+        }
+    },
+    {
+        "model": "projects.role",
+        "pk": 1,
+        "fields": {
+            "title": "Project Director",
+            "sort_order": 0
+        }
+    },
+    {
+        "model": "projects.role",
+        "pk": 2,
+        "fields": {
+            "title": "Lead Developer",
+            "sort_order": 1
+        }
+    },
+    {
+        "model": "projects.role",
+        "pk": 3,
+        "fields": {
+            "title": "Project Manager",
+            "sort_order": 2
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "password": "",
+            "last_login": "2016-11-11T22:28:04.930Z",
+            "is_superuser": true,
+            "username": "director",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2016-11-11T20:25:33.169Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 2,
+        "fields": {
+            "password": "",
+            "last_login": "2016-11-11T22:28:04.930Z",
+            "is_superuser": true,
+            "username": "developer",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2016-11-11T20:25:33.169Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 3,
+        "fields": {
+            "password": "",
+            "last_login": "2016-11-11T22:28:04.930Z",
+            "is_superuser": true,
+            "username": "pm",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2016-11-11T20:25:33.169Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "projects.membership",
+        "pk": 1,
+        "fields": {
+            "project": 1,
+            "user": 1,
+            "grant": 1,
+            "role": 1,
+            "status_override": ""
+        }
+    },
+    {
+        "model": "projects.membership",
+        "pk": 2,
+        "fields": {
+            "project": 1,
+            "user": 2,
+            "grant": 1,
+            "role": 2,
+            "status_override": "current"
+        }
+    },
+    {
+        "model": "projects.membership",
+        "pk": 3,
+        "fields": {
+            "project": 1,
+            "user": 3,
+            "grant": 1,
+            "role": 3,
+            "status_override": "past"
+        }
+    }
+]
