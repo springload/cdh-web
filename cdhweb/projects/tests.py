@@ -62,12 +62,12 @@ class TestProject(TestCase):
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
         # first grant
         Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=today - timedelta(days=2),
-            end_date=today - timedelta(days=1))
+                             start_date=today - timedelta(days=2),
+                             end_date=today - timedelta(days=1))
         # second grant
         grant2 = Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=today + timedelta(days=5),
-            end_date=today + timedelta(days=6))
+                                      start_date=today + timedelta(days=5),
+                                      end_date=today + timedelta(days=6))
 
         assert proj.latest_grant() == grant2
 
@@ -77,12 +77,12 @@ class TestProject(TestCase):
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
         # older  grant
         grant1 = Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=today - timedelta(days=2),
-            end_date=today - timedelta(days=1))
+                                      start_date=today - timedelta(days=2),
+                                      end_date=today - timedelta(days=1))
         # second grant
         grant2 = Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=today + timedelta(days=5),
-            end_date=today + timedelta(days=6))
+                                      start_date=today + timedelta(days=5),
+                                      end_date=today + timedelta(days=6))
 
         # add project members
         lead = get_user_model().objects.create(username='leader')
@@ -90,12 +90,12 @@ class TestProject(TestCase):
         role = Role.objects.create(title='consultant', sort_order=1)
         # lead is on both grant1 and grant 2
         Membership.objects.create(project=proj,
-            user=lead, grant=grant1, role=role)
+                                  user=lead, grant=grant1, role=role)
         Membership.objects.create(project=proj,
-            user=lead, grant=grant2, role=role)
+                                  user=lead, grant=grant2, role=role)
         # consult is only on grant2
         Membership.objects.create(project=proj,
-            user=consult, grant=grant2, role=role)
+                                  user=consult, grant=grant2, role=role)
 
         current_members = [mship.user for mship in proj.current_membership()]
         assert lead in current_members
@@ -114,12 +114,12 @@ class TestProject(TestCase):
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
         # older grant
         grant1 = Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=today - timedelta(days=2),
-            end_date=today - timedelta(days=1))
+                                      start_date=today - timedelta(days=2),
+                                      end_date=today - timedelta(days=1))
         # second grant
         grant2 = Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=today + timedelta(days=5),
-            end_date=today + timedelta(days=6))
+                                      start_date=today + timedelta(days=5),
+                                      end_date=today + timedelta(days=6))
 
         # add project members
         lead = get_user_model().objects.create(username='leader')
@@ -127,12 +127,12 @@ class TestProject(TestCase):
         role = Role.objects.create(title='consultant', sort_order=1)
         # lead is on both grant1 and grant 2
         Membership.objects.create(project=proj,
-            user=lead, grant=grant1, role=role)
+                                  user=lead, grant=grant1, role=role)
         Membership.objects.create(project=proj,
-            user=lead, grant=grant2, role=role)
+                                  user=lead, grant=grant2, role=role)
         # consult is only on grant1
         Membership.objects.create(project=proj,
-            user=consult, grant=grant1, role=role)
+                                  user=consult, grant=grant1, role=role)
 
         assert consult in proj.alumni_members()
         assert lead not in proj.alumni_members()
@@ -155,8 +155,8 @@ class TestProjectQuerySet(TestCase):
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
         # asocciated grant has ended
         grant = Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=today - timedelta(days=2),
-            end_date=today - timedelta(days=1))
+                                     start_date=today - timedelta(days=2),
+                                     end_date=today - timedelta(days=1))
 
         assert not Project.objects.current().exists()
 
@@ -170,15 +170,14 @@ class TestProjectQuerySet(TestCase):
         grant.save()
         assert Project.objects.current().exists()
 
-
     def test_not_current(self):
         today = datetime.today()
         proj = Project.objects.create(title="Derrida's Margins")
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
         # asocciated grant has ended
         grant = Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=today - timedelta(days=2),
-            end_date=today - timedelta(days=1))
+                                     start_date=today - timedelta(days=2),
+                                     end_date=today - timedelta(days=1))
 
         assert Project.objects.not_current().exists()
 
@@ -199,8 +198,10 @@ class TestProjectQuerySet(TestCase):
         staff_rd = GrantType.objects.get_or_create(grant_type='Staff R&D')[0]
         Grant.objects.create(project=staff_proj, grant_type=staff_rd,
                              start_date=start)
-        postdoc_proj = Project.objects.create(title="Linked Global Networks of Cultural Production")
-        postdoc_grant = GrantType.objects.get_or_create(grant_type='Postdoctoral Research Project')[0]
+        postdoc_proj = Project.objects.create(
+            title="Linked Global Networks of Cultural Production")
+        postdoc_grant = GrantType.objects.get_or_create(
+            grant_type='Postdoctoral Research Project')[0]
         Grant.objects.create(project=postdoc_proj, grant_type=postdoc_grant,
                              start_date=start)
         other_proj = Project.objects.create(title="Derrida's Margins")
@@ -217,8 +218,10 @@ class TestProjectQuerySet(TestCase):
         staff_rd = GrantType.objects.get_or_create(grant_type='Staff R&D')[0]
         Grant.objects.create(project=staff_proj, grant_type=staff_rd,
                              start_date=start)
-        postdoc_proj = Project.objects.create(title="Linked Global Networks of Cultural Production")
-        postdoc_grant = GrantType.objects.get_or_create(grant_type='Postdoctoral Research Project')[0]
+        postdoc_proj = Project.objects.create(
+            title="Linked Global Networks of Cultural Production")
+        postdoc_grant = GrantType.objects.get_or_create(
+            grant_type='Postdoctoral Research Project')[0]
         Grant.objects.create(project=postdoc_proj, grant_type=postdoc_grant,
                              start_date=start)
         other_proj = Project.objects.create(title="Derrida's Margins")
@@ -230,7 +233,8 @@ class TestProjectQuerySet(TestCase):
 
     def test_order_by_newest_grant(self):
         # create three test projects with grants in successive years
-        sponsored = GrantType.objects.get_or_create(grant_type='Sponsored Project')[0]
+        sponsored = GrantType.objects.get_or_create(
+            grant_type='Sponsored Project')[0]
         p1 = Project.objects.create(title="One")
         Grant.objects.create(project=p1, grant_type=sponsored,
                              start_date=date(2015, 9, 1))
@@ -261,8 +265,7 @@ class TestProjectQuerySet(TestCase):
         staffer = get_user_model().objects.create(username='staffer',
                                                   is_staff=True)
         nonstaffer = get_user_model().objects.create(username='nonstaffer',
-                                                    is_staff=False)
-
+                                                     is_staff=False)
 
         # careate project in draft status
         proj = Project.objects.create(title="Derrida's Margins",
@@ -311,9 +314,10 @@ class TestGrant(TestCase):
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
         start_year, end_year = (2016, 2017)
         grant = Grant(project=proj, grant_type=grtype,
-            start_date=datetime(start_year, 1, 1),
-            end_date=datetime(end_year, 1, 1))
-        assert str(grant) == '%s: %s (2016-2017)' % (proj.title, grtype.grant_type)
+                      start_date=datetime(start_year, 1, 1),
+                      end_date=datetime(end_year, 1, 1))
+        assert str(grant) == '%s: %s (2016-2017)' % (proj.title,
+                                                     grtype.grant_type)
 
 
 class TestMembership(TestCase):
@@ -323,40 +327,56 @@ class TestMembership(TestCase):
         proj = Project.objects.create(title="Derrida's Margins")
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
         grant = Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=datetime(2016, 1, 1),
-            end_date=datetime(2017, 1, 1))
+                                     start_date=datetime(2016, 1, 1),
+                                     end_date=datetime(2017, 1, 1))
         user = get_user_model().objects.create(username='contributor')
         role = Role.objects.create(title='Data consultant', sort_order=1)
         membership = Membership.objects.create(project=proj,
-            user=user, grant=grant, role=role)
+                                               user=user, grant=grant, role=role)
 
         assert str(membership) == '%s - %s on %s' % (user, role, grant)
 
 
 class TestMembershipQuerySet(TestCase):
+    fixtures = ['test_project_data.json']
+
+    def setUp(self):
+        # project director is a normal membership
+        self.membership = Membership.objects.get(pk=1)
+        # lead developer has status override set to 'current'
+        self.current_membership = Membership.objects.get(pk=2)
+        # project mgr has status override set to 'past'
+        self.past_membership = Membership.objects.get(pk=3)
 
     def test_current(self):
-        # create test objects needed for a membership
-        proj = Project.objects.create(title="Derrida's Margins")
-        grtype = GrantType.objects.create(grant_type='Sponsored Project')
-        today = datetime.today()
-        # asocciated grant has ended
-        grant = Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=today - timedelta(days=2),
-            end_date=today - timedelta(days=1))
-        user = get_user_model().objects.create(username='contributor')
-        role = Role.objects.create(title='Data consultant', sort_order=1)
-        membership = Membership.objects.create(project=proj,
-            user=user, grant=grant, role=role)
+        # should show only forced current member
+        current = Membership.objects.current()
+        assert self.current_membership in current
+        assert self.membership not in current
+        assert self.past_membership not in current
+        # update grant so date is after today (current)
+        self.membership.grant.end_date = datetime.today() + timedelta(days=1)
+        self.membership.grant.save()
+        # should show normal member along with forced current member
+        current = Membership.objects.current()
+        assert self.current_membership in current
+        assert self.membership in current
+        assert self.past_membership not in current
 
-        # should be empty
-        assert not Membership.objects.current().exists()
-
-        # update grant so date is after today
-        membership.grant.end_date = today + timedelta(days=1)
-        membership.grant.save()
-        # should not be empty
-        assert Membership.objects.current().exists()
+    def test_past(self):
+        # should show forced past member and normal member, since grant ended
+        past = Membership.objects.past()
+        assert self.current_membership not in past
+        assert self.membership in past
+        assert self.past_membership in past
+        # update grant so date is after today (current)
+        self.membership.grant.end_date = datetime.today() + timedelta(days=1)
+        self.membership.grant.save()
+        # should show only forced past member
+        past = Membership.objects.past()
+        assert self.current_membership not in past
+        assert self.membership not in past
+        assert self.past_membership in past
 
 
 class TestProjectResource(TestCase):
@@ -393,7 +413,8 @@ class TestViews(TestCase):
         self.assertContains(response, proj.get_absolute_url())
         self.assertContains(response, proj.short_description)
         # no external link
-        self.assertNotContains(response, '<a class="external" title="Project Website"')
+        self.assertNotContains(
+            response, '<a class="external" title="Project Website"')
         # no 'built by cdh' flag
         self.assertNotContains(response, 'Built by CDH')
 
@@ -405,7 +426,8 @@ class TestViews(TestCase):
         proj.cdh_built = True
         proj.save()
         response = self.client.get(reverse('project:list'))
-        self.assertContains(response, '<a class="external" title="Project Website"')
+        self.assertContains(
+            response, '<a class="external" title="Project Website"')
         self.assertContains(response, project_url)
         self.assertContains(response, 'Built by CDH')
 
@@ -424,8 +446,10 @@ class TestViews(TestCase):
         staff_rd = GrantType.objects.get_or_create(grant_type='Staff R&D')[0]
         Grant.objects.create(project=staff_proj, grant_type=staff_rd,
                              start_date=start)
-        postdoc_proj = Project.objects.create(title="Linked Global Networks of Cultural Production")
-        postdoc_grant = GrantType.objects.get_or_create(grant_type='Postdoctoral Research Project')[0]
+        postdoc_proj = Project.objects.create(
+            title="Linked Global Networks of Cultural Production")
+        postdoc_grant = GrantType.objects.get_or_create(
+            grant_type='Postdoctoral Research Project')[0]
         Grant.objects.create(project=postdoc_proj, grant_type=postdoc_grant,
                              start_date=start)
         other_proj = Project.objects.create(title="Derrida's Margins")
@@ -444,13 +468,13 @@ class TestViews(TestCase):
 
     def test_detail(self):
         proj = Project.objects.create(title="Derrida's Margins",
-            slug='derrida', short_description='Citations and interventions',
-            long_description='<p>an annotation project</p>')
+                                      slug='derrida', short_description='Citations and interventions',
+                                      long_description='<p>an annotation project</p>')
         today = datetime.today()
         grtype = GrantType.objects.create(grant_type='Sponsored Project')
         grant = Grant.objects.create(project=proj, grant_type=grtype,
-            start_date=today - timedelta(days=2),
-            end_date=today + timedelta(days=1))
+                                     start_date=today - timedelta(days=2),
+                                     end_date=today + timedelta(days=1))
         # add project members to test contributor display
         contrib1 = get_user_model().objects.create(username='contributor one')
         contrib2 = get_user_model().objects.create(username='contributor two')
@@ -475,16 +499,16 @@ class TestViews(TestCase):
                                        url=project_url)
 
         response = self.client.get(reverse('project:detail',
-            kwargs={'slug':  proj.slug}))
+                                           kwargs={'slug':  proj.slug}))
         assert response.context['project'] == proj
         self.assertContains(response, escape(proj.title))
         self.assertContains(response, proj.short_description)
         self.assertContains(response, proj.long_description)
         # contributors
         self.assertContains(response, consult.title, count=1,
-            msg_prefix='contributor roles should only show up once')
+                            msg_prefix='contributor roles should only show up once')
         self.assertContains(response, pi.title, count=1,
-            msg_prefix='contributor roles should only show up once')
+                            msg_prefix='contributor roles should only show up once')
         for contributor in [contrib1, contrib2, contrib3]:
             self.assertContains(response, contributor.profile.title)
         self.assertContains(response, project_url)
