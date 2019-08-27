@@ -62,12 +62,12 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
     '''A CDH sponsored project'''
 
     short_description = models.CharField(max_length=255, blank=True,
-        help_text='Brief tagline for display on project card in browse view')
+                                         help_text='Brief tagline for display on project card in browse view')
     long_description = RichTextField()
     highlight = models.BooleanField(default=False,
-        help_text='Include in randomized project display on the home page.')
+                                    help_text='Include in randomized project display on the home page.')
     cdh_built = models.BooleanField('CDH Built', default=False,
-        help_text='Project built by CDH Development & Design team.')
+                                    help_text='Project built by CDH Development & Design team.')
 
     members = models.ManyToManyField(Person, through='Membership')
     resources = models.ManyToManyField(ResourceType, through='ProjectResource')
@@ -78,12 +78,13 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
     # are used (size?); add language about putting large images in the
     # body of the project description, when we have styles for that.
     image = FileField(verbose_name="Image",
-        upload_to=upload_to("projects.image", "projects"),
-        format="Image", max_length=255, null=True, blank=True)
+                      upload_to=upload_to("projects.image", "projects"),
+                      format="Image", max_length=255, null=True, blank=True)
 
     thumb = FileField(verbose_name="Thumbnail",
-        upload_to=upload_to("projects.image", "projects/thumbnails"),
-        format="Image", max_length=255, null=True, blank=True)
+                      upload_to=upload_to(
+                          "projects.image", "projects/thumbnails"),
+                      format="Image", max_length=255, null=True, blank=True)
 
     attachments = models.ManyToManyField(Attachment, blank=True)
 
@@ -123,6 +124,8 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
     def alumni_members(self):
         '''Project alumni returns only project members who are
         not associated with the latest grant.'''
+        # NOTE: don't need to return Membership queryset here since roles
+        # are irrelevant; everyone is shown as "alum"
         return self.members.distinct().exclude(membership__grant=self.latest_grant()) \
                    .order_by('last_name')
 
@@ -142,7 +145,7 @@ class Grant(DateRange):
 
     def __str__(self):
         return '%s: %s (%s-%s)' % (self.project.title, self.grant_type.grant_type,
-            self.start_date.year, self.end_date.year if self.end_date else '')
+                                   self.start_date.year, self.end_date.year if self.end_date else '')
 
 
 # fixme: where does resource type go, for associated links?
@@ -151,7 +154,7 @@ class Role(models.Model):
     '''A role on a project'''
     title = models.CharField(max_length=255, unique=True)
     sort_order = models.PositiveIntegerField(default=0, blank=False,
-        null=False)
+                                             null=False)
 
     class Meta:
         ordering = ['sort_order']
@@ -163,15 +166,28 @@ class Role(models.Model):
 class MembershipQuerySet(models.QuerySet):
 
     def current(self):
-        '''Filter to memebers of the current grant'''
+        '''Filter to members of the current grant'''
         today = timezone.now()
-        # current projects means an active grant
+        override_current = self.filter(status_override='current')
         # filter for projects with grants where start and end date
         # come before and after the current date
+        # also include memberships with 'current' status override
+        # and exclude memberships with 'past' status override
         return self.filter(grant__start_date__lt=today) \
-            .filter(grant__end_date__gt=today)
+            .filter(grant__end_date__gt=today) \
+            .exclude(status_override='past') \
+            .union(override_current)
 
-    # TODO: find members from the *last* grant
+    def past(self):
+        '''Filter to members from past grants'''
+        today = timezone.now()
+        override_past = self.filter(status_override='past')
+        # projects where grant end date is in the past
+        # also include memberships with 'past' status override
+        # and exclude membership with 'current' status override
+        return self.filter(grant__end_date__lt=today) \
+            .exclude(status_override='current') \
+            .union(override_past)
 
 
 class Membership(models.Model):
@@ -180,6 +196,16 @@ class Membership(models.Model):
     user = models.ForeignKey(Person)
     grant = models.ForeignKey(Grant)
     role = models.ForeignKey(Role)
+
+    # allows forcing certain memberships to show as current or alum
+    STATUS_OVERRIDE_CHOICES = (
+        ('current', 'Show member as current'),
+        ('past', 'Show member as alum'),
+    )
+
+    status_override = models.CharField(
+        'Status Override', choices=STATUS_OVERRIDE_CHOICES, default='',
+        blank=True, max_length=7)
 
     objects = MembershipQuerySet.as_manager()
 
@@ -203,4 +229,3 @@ class ProjectResource(models.Model):
             return self.url[8:]
         elif self.url.startswith('http://'):
             return self.url[7:]
-
