@@ -28,14 +28,14 @@
 
     <ul>
     {# display project members for the current (or most recent) grant #}
-    {% for membership in project.membership_set.current %}
+    {% for membership in project.current_memberships %}
         {% ifchanged %}<li class="role"><h3>{{ membership.role }}</h3></li>{% endifchanged %}
-        {% include 'projects/snippets/project_membership.html' %}
+        {% include 'projects/snippets/project_membership.html' with member=membership.user %}
     {% endfor %}
     {# include project alumni  #}
     {% if project.alums %}
         <li class="role"><h3>Project Alum{{ project.alums|pluralize }}</h3></li>
-        {% for membership in project.alums %}
+        {% for member in project.alums %}
             {% include 'projects/snippets/project_membership.html' %}
         {% endfor %}
     {% endif %}

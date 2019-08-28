@@ -116,9 +116,25 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         if self.grant_set.count():
             return self.grant_set.order_by('-start_date').first()
 
+    def current_memberships(self):
+        ''':class:`MembershipQueryset` of current members sorted by role'''
+        # uses memberships rather than members so that we can retain role
+        # information attached to the membership
+        return self.membership_set.filter(
+            Q(grant=self.latest_grant()) | Q(status_override='current')) \
+            .exclude(status_override='past') \
+
+
     def alums(self):
-        ''':class:`MembershipQueryset` of past members sorted by last name'''
-        return self.membership_set.past().order_by('user__last_name')
+        ''':class:`PersonQueryset` of past members sorted by last name'''
+        # uses people rather than memberships so that we can use distinct()
+        # to ensure people aren't counted multiple times for each grant
+        # and because we don't care about role (always 'alum')
+        return self.members \
+            .distinct() \
+            .exclude(Q(membership__grant=self.latest_grant()) & ~Q(membership__status_override='past')) \
+            .exclude(membership__status_override='current') \
+            .order_by('last_name')
 
 
 class GrantType(models.Model):
@@ -154,33 +170,6 @@ class Role(models.Model):
         return self.title
 
 
-class MembershipQuerySet(models.QuerySet):
-
-    def current(self):
-        '''Filter to members of the current grant'''
-        today = timezone.now()
-        override_current = self.filter(status_override='current')
-        # filter for projects with grants where start and end date
-        # come before and after the current date
-        # also include memberships with 'current' status override
-        # and exclude memberships with 'past' status override
-        return self.filter(
-            Q(grant__start_date__lt=today) | Q(status_override='current')).filter(
-            Q(grant__end_date__gt=today) | Q(status_override='current')) \
-            .exclude(status_override='past')
-
-    def past(self):
-        '''Filter to members from past grants'''
-        today = timezone.now()
-        override_past = self.filter(status_override='past')
-        # projects where grant end date is in the past
-        # also include memberships with 'past' status override
-        # and exclude membership with 'current' status override
-        return self.filter(
-            Q(grant__end_date__lt=today) | Q(status_override='past')) \
-            .exclude(status_override='current')
-
-
 class Membership(models.Model):
     '''Project membership - joins project, grant, user, and role.'''
     project = models.ForeignKey(Project)
@@ -197,8 +186,6 @@ class Membership(models.Model):
     status_override = models.CharField(
         'Status Override', choices=STATUS_OVERRIDE_CHOICES, default='',
         blank=True, max_length=7)
-
-    objects = MembershipQuerySet.as_manager()
 
     class Meta:
         ordering = ('role__sort_order', 'user__last_name')

@@ -32,70 +32,95 @@ class TestRole(TestCase):
 
 
 class TestProject(TestCase):
+    fixtures = ['test_project_data.json']
+
+    def setUp(self):
+        # project
+        self.project = Project.objects.get(title="Derrida's Margins")
+        # grants
+        self.grant1 = Grant.objects.get(
+            end_date=date(year=2016, month=1, day=1))
+        self.grant2 = Grant.objects.get(
+            end_date=date(year=2017, month=1, day=1))
+        # users
+        self.katie = get_user_model().objects.get(username='kac3')
+        self.koeser = get_user_model().objects.get(username='rkoeser')
+        self.munson = get_user_model().objects.get(username='rmunson')
+        self.chloe = get_user_model().objects.get(username='cvettier')
 
     def test_str(self):
-        proj = Project(title="Derrida's Margins")
-        assert str(proj) == proj.title
+        assert str(self.project) == self.project.title
 
     def test_get_absolute_url(self):
-        proj = Project(title="Mapping Expatriate Paris", slug="mep")
-        resolved_url = resolve(proj.get_absolute_url())
+        resolved_url = resolve(self.project.get_absolute_url())
         assert resolved_url.namespace == 'project'
         assert resolved_url.url_name == 'detail'
-        assert resolved_url.kwargs['slug'] == proj.slug
+        assert resolved_url.kwargs['slug'] == self.project.slug
 
     def test_website_url(self):
-        proj = Project.objects.create(title="Mapping Expatriate Paris",
-                                      slug="mep")
         # no website resource url
-        assert proj.website_url is None
-
+        assert self.project.website_url is None
         # add a website url
         website = ResourceType.objects.get(name='Website')
-        mep_url = 'http://mep.princeton.edu'
-        ProjectResource.objects.create(project=proj, resource_type=website,
-                                       url=mep_url)
-        assert proj.website_url == mep_url
+        derrida_url = 'http://derridas-margins.princeton.edu'
+        ProjectResource.objects.create(project=self.project, resource_type=website,
+                                       url=derrida_url)
+        assert self.project.website_url == derrida_url
 
     def test_latest_grant(self):
-        today = datetime.today()
-        proj = Project.objects.create(title="Derrida's Margins")
-        grtype = GrantType.objects.create(grant_type='Sponsored Project')
-        # first grant
-        Grant.objects.create(project=proj, grant_type=grtype,
-                             start_date=today - timedelta(days=2),
-                             end_date=today - timedelta(days=1))
-        # second grant
-        grant2 = Grant.objects.create(project=proj, grant_type=grtype,
-                                      start_date=today + timedelta(days=5),
-                                      end_date=today + timedelta(days=6))
+        assert self.project.latest_grant() == self.grant2
 
-        assert proj.latest_grant() == grant2
+    def test_current_memberships(self):
+        # should get memberships from newest grant (2016-2017) by default
+        current_members = [m.user for m in self.project.current_memberships()]
+        assert self.katie in current_members        # katie is director on both grants
+        assert self.chloe in current_members        # chloe is on this grant only
+        assert self.munson not in current_members   # rm was on older grant only
+        assert self.koeser not in current_members   # rsk was on older grant only
+        # memberships with 'current' status override should be included
+        m = Membership.objects.get(user=self.munson)
+        m.status_override = 'current'
+        m.save()
+        current_members = [m.user for m in self.project.current_memberships()]
+        assert self.katie in current_members        # unchanged
+        assert self.chloe in current_members        # unchanged
+        assert self.munson in current_members       # now forced current
+        assert self.koeser not in current_members   # unchanged
+        # memberships with 'past' status override should not be included
+        m = Membership.objects.get(user=self.chloe)
+        m.status_override = 'past'
+        m.save()
+        current_members = [m.user for m in self.project.current_memberships()]
+        assert self.katie in current_members        # unchanged
+        assert self.chloe not in current_members    # forced past
+        assert self.munson in current_members       # forced current
+        assert self.koeser not in current_members   # unchanged
 
     def test_alums(self):
-        today = datetime.today()
-        proj = Project.objects.create(title="Derrida's Margins")
-        grtype = GrantType.objects.create(grant_type='Sponsored Project')
-        # past grant
-        grant = Grant.objects.create(project=proj, grant_type=grtype,
-                                     start_date=today - timedelta(days=2),
-                                     end_date=today - timedelta(days=1))
-        # add project members
-        lead = get_user_model().objects.create(username='leader', last_name='leader')
-        contrib = get_user_model().objects.create(
-            username='contributor', last_name='contributor')
-        role = Role.objects.create(title='director', sort_order=0)
-        role2 = Role.objects.create(title='consultant', sort_order=1)
-        Membership.objects.create(project=proj,
-                                  user=lead, grant=grant, role=role)
-        Membership.objects.create(project=proj,
-                                  user=contrib, grant=grant, role=role2)
-
-        # 'contributor' should be listed before 'leader' since alums() sorts
-        # alpha by last name, even though their role would ordinarily be
-        # sorted later
-        assert proj.alums()[0].user == contrib
-        assert proj.alums()[1].user == lead
+        # should get members from older grant (2015-2016) by default
+        alums = self.project.alums()
+        assert self.katie not in alums      # not an alum since on both grants
+        assert self.chloe not in alums  # chloe is on newer grant only
+        assert self.munson in alums     # rm is on this grant
+        assert self.koeser in alums     # rsk is on this grant
+        # memberships with 'past' status override should be included
+        m = Membership.objects.get(user=self.chloe)
+        m.status_override = 'past'
+        m.save()
+        alums = self.project.alums()
+        assert self.katie not in alums   # unchanged
+        assert self.chloe in alums   # now forced past
+        assert self.munson in alums  # unchanged
+        assert self.koeser in alums  # unchanged
+        # memberships with 'current' status override should not be included
+        m = Membership.objects.get(user=self.koeser)
+        m.status_override = 'current'
+        m.save()
+        alums = self.project.alums()
+        assert self.katie not in alums   # unchanged
+        assert self.chloe in alums       # forced past
+        assert self.munson in alums      # unchanged
+        assert self.koeser not in alums  # forced current
 
 
 class TestProjectQuerySet(TestCase):
@@ -295,48 +320,6 @@ class TestMembership(TestCase):
                                                user=user, grant=grant, role=role)
 
         assert str(membership) == '%s - %s on %s' % (user, role, grant)
-
-
-class TestMembershipQuerySet(TestCase):
-    fixtures = ['test_project_data.json']
-
-    def setUp(self):
-        # project director is a normal membership
-        self.membership = Membership.objects.get(pk=1)
-        # lead developer has status override set to 'current'
-        self.current_membership = Membership.objects.get(pk=2)
-        # project mgr has status override set to 'past'
-        self.past_membership = Membership.objects.get(pk=3)
-
-    def test_current(self):
-        # should show only forced current member
-        current = Membership.objects.current()
-        assert self.current_membership in current
-        assert self.membership not in current
-        assert self.past_membership not in current
-        # update grant so date is after today (current)
-        self.membership.grant.end_date = datetime.today() + timedelta(days=1)
-        self.membership.grant.save()
-        # should show normal member along with forced current member
-        current = Membership.objects.current()
-        assert self.current_membership in current
-        assert self.membership in current
-        assert self.past_membership not in current
-
-    def test_past(self):
-        # should show forced past member and normal member, since grant ended
-        past = Membership.objects.past()
-        assert self.current_membership not in past
-        assert self.membership in past
-        assert self.past_membership in past
-        # update grant so date is after today (current)
-        self.membership.grant.end_date = datetime.today() + timedelta(days=1)
-        self.membership.grant.save()
-        # should show only forced past member
-        past = Membership.objects.past()
-        assert self.current_membership not in past
-        assert self.membership not in past
-        assert self.past_membership in past
 
 
 class TestProjectResource(TestCase):
