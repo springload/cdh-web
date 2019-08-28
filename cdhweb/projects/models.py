@@ -1,17 +1,17 @@
 from datetime import date
 
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
-
-from mezzanine.core.fields import RichTextField, FileField
+from mezzanine.core.fields import FileField, RichTextField
 from mezzanine.core.models import Displayable
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
 from cdhweb.people.models import Person
-from cdhweb.resources.models import ResourceType, Attachment, ExcerptMixin, \
-    PublishedQuerySetMixin, DateRange
+from cdhweb.resources.models import (Attachment, DateRange, ExcerptMixin,
+                                     PublishedQuerySetMixin, ResourceType)
 
 
 class ProjectQuerySet(PublishedQuerySetMixin):
@@ -116,18 +116,9 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         if self.grant_set.count():
             return self.grant_set.order_by('-start_date').first()
 
-    def current_membership(self):
-        '''Project members associated with the most recent grant.
-        Returns :class:`Membership` queryset.'''
-        return self.membership_set.filter(grant=self.latest_grant())
-
-    def alumni_members(self):
-        '''Project alumni returns only project members who are
-        not associated with the latest grant.'''
-        # NOTE: don't need to return Membership queryset here since roles
-        # are irrelevant; everyone is shown as "alum"
-        return self.members.distinct().exclude(membership__grant=self.latest_grant()) \
-                   .order_by('last_name')
+    def alums(self):
+        ''':class:`MembershipQueryset` of past members sorted by last name'''
+        return self.membership_set.past().order_by('user__last_name')
 
 
 class GrantType(models.Model):
@@ -173,10 +164,10 @@ class MembershipQuerySet(models.QuerySet):
         # come before and after the current date
         # also include memberships with 'current' status override
         # and exclude memberships with 'past' status override
-        return self.filter(grant__start_date__lt=today) \
-            .filter(grant__end_date__gt=today) \
-            .exclude(status_override='past') \
-            .union(override_current)
+        return self.filter(
+            Q(grant__start_date__lt=today) | Q(status_override='current')).filter(
+            Q(grant__end_date__gt=today) | Q(status_override='current')) \
+            .exclude(status_override='past')
 
     def past(self):
         '''Filter to members from past grants'''
@@ -185,9 +176,9 @@ class MembershipQuerySet(models.QuerySet):
         # projects where grant end date is in the past
         # also include memberships with 'past' status override
         # and exclude membership with 'current' status override
-        return self.filter(grant__end_date__lt=today) \
-            .exclude(status_override='current') \
-            .union(override_past)
+        return self.filter(
+            Q(grant__end_date__lt=today) | Q(status_override='past')) \
+            .exclude(status_override='current')
 
 
 class Membership(models.Model):
