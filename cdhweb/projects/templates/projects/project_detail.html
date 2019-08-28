@@ -28,21 +28,15 @@
 
     <ul>
     {# display project members for the current (or most recent) grant #}
-    {% for membership in project.current_membership %}
+    {% for membership in project.membership_set.current %}
         {% ifchanged %}<li class="role"><h3>{{ membership.role }}</h3></li>{% endifchanged %}
-           {% with membership.user.profile_url as profile_url %} {# local or external profile, if available #}
-           {% with profile_url|yesno:"a,span" as tag %} {# link if we have a url, otherwise span #}
-            <li><{{ tag }} {% if profile_url %}href="{{ profile_url }}"{% endif %}>{{ membership.user }}</{{ tag }}></li>
-           {% endwith %}{% endwith %}
+        {% include 'projects/snippets/project_membership.html' %}
     {% endfor %}
     {# include project alumni  #}
-    {% if project.alumni_members %}
-        <li class="role"><h3>Project Alum{{ project.alumni_members|pluralize }}</h3></li>
-        {% for alum in project.alumni_members %}
-           {% with alum.profile_url as profile_url %} {# local or external profile, if available #}
-           {% with profile_url|yesno:"a,span" as tag %} {# link if we have a url, otherwise span #}
-            <li><{{ tag }} {% if profile_url %}href="{{ profile_url }}"{% endif %}>{{ alum }}</{{ tag }}></li>
-           {% endwith %}{% endwith %}
+    {% if project.alums %}
+        <li class="role"><h3>Project Alum{{ project.alums|pluralize }}</h3></li>
+        {% for membership in project.alums %}
+            {% include 'projects/snippets/project_membership.html' %}
         {% endfor %}
     {% endif %}
     </ul>
