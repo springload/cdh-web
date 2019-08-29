@@ -90,6 +90,7 @@ class GrantMemberInline(admin.TabularInline):
 
 class GrantAdmin(admin.ModelAdmin):
     list_display = ('project', 'grant_type', 'start_date', 'end_date')
+    list_filter = ('start_date', 'end_date')
     date_hierarchy = 'start_date'
     search_fields = ('project__title', 'grant_type__grant_type',
                      'start_date', 'end_date', 'project__long_description',
