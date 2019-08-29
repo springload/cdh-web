@@ -6,11 +6,13 @@ from mezzanine.core.admin import DisplayableAdmin
 from .models import Project, GrantType, Grant, Membership, Role, \
     ProjectResource
 
+
 class ProjectMemberInline(admin.TabularInline):
     model = Membership
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        field = super(ProjectMemberInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        field = super(ProjectMemberInline, self).formfield_for_foreignkey(
+            db_field, request, **kwargs)
         # restrict only to grants associated with the current project
         if db_field.name == 'grant':
             if request.object is not None:
@@ -21,6 +23,7 @@ class ProjectMemberInline(admin.TabularInline):
 class ResourceInline(admin.TabularInline):
     model = ProjectResource
 
+
 class GrantInline(admin.TabularInline):
     model = Grant
 
@@ -28,10 +31,11 @@ class GrantInline(admin.TabularInline):
 class ProjectAdmin(DisplayableAdmin):
     # extend displayable list to add highlight and make it editable
     list_display = ("title", "status", "highlight", "admin_link", "admin_thumb",
-        "tag_list")
+                    "tag_list")
     list_editable = ("status", "highlight")
 
-    list_filter = ("status", "cdh_built", "grant__grant_type", "keywords__keyword")
+    list_filter = ("status", "cdh_built",
+                   "grant__grant_type", "keywords__keyword")
     # displayable date hierarchy is publish date, does that make sense here?
     date_hierarchy = "publish_date"
     prepopulated_fields = {"slug": ("title",)}
@@ -50,7 +54,7 @@ class ProjectAdmin(DisplayableAdmin):
         ("Meta data", {
             "fields": ["_meta_title", "slug",
                        ("description", "gen_description"),
-                        "keywords", "in_sitemap"],
+                       "keywords", "in_sitemap"],
             "classes": ("collapse-closed",)
         }),
     )
@@ -72,12 +76,14 @@ class GrantMemberInline(admin.TabularInline):
     fields = ['user', 'role', 'project']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        field = super(GrantMemberInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        field = super(GrantMemberInline, self).formfield_for_foreignkey(
+            db_field, request, **kwargs)
         # restrict only to project associated with the current grant
         # and *DEFAULT* to current project so it does not have to be selected
         if db_field.name == 'project':
             if request.object is not None:
-                field.queryset = field.queryset.filter(pk=request.object.project.pk)
+                field.queryset = field.queryset.filter(
+                    pk=request.object.project.pk)
                 field.initial = request.object.project.pk
         return field
 
@@ -100,14 +106,15 @@ class GrantAdmin(admin.ModelAdmin):
 
 
 class MembershipAdmin(admin.ModelAdmin):
-    list_display = ('project', 'user', 'grant', 'role')
-    list_filter = ('project', 'role')
+    list_display = ('project', 'user', 'grant', 'role', 'status_override')
+    list_filter = ('project', 'role', 'status_override')
+    list_editable = ('status_override',)
     search_fields = ('user__first_name', 'user__last_name', 'project__title')
 
 
 class RoleAdmin(admin.ModelAdmin):
     # TODO: drag and drop to set sort order in future
-# class RoleAdmin(SortableAdminMixin, admin.ModelAdmin):
+    # class RoleAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'sort_order')
     list_editable = ('sort_order', )
 
