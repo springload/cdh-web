@@ -185,6 +185,7 @@ class Membership(models.Model):
 
     status_override = models.CharField(
         'Status Override', choices=STATUS_OVERRIDE_CHOICES, default='',
+        help_text='Only use when displaying current or past project members based on grant dates is incorrect.',
         blank=True, max_length=7)
 
     class Meta:
