@@ -25,13 +25,3 @@ class PageSitemap(PublishedItemSitemap):
 
     def items(self):
         return super().items().filter(in_sitemap=True)
-
-    def priority(self, item):
-        # set landing pages at slightly higher priority
-        try:
-            if item.landingpage:
-                return 0.6
-        except ObjectDoesNotExist:
-            # default priority is 0.5
-            return
-
