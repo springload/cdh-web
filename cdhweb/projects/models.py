@@ -179,13 +179,15 @@ class Membership(models.Model):
 
     # allows forcing certain memberships to show as current or alum
     STATUS_OVERRIDE_CHOICES = (
-        ('current', 'Show member as current'),
-        ('past', 'Show member as alum'),
+        ('current', 'Current'),
+        ('past', 'Alum'),
     )
 
     status_override = models.CharField(
         'Status Override', choices=STATUS_OVERRIDE_CHOICES, default='',
-        help_text='Only use when displaying current or past project members based on grant dates is incorrect.',
+        help_text='Show the member as current or as an alum regardless of \
+            associated project grant dates. Only use when displaying current \
+                or past project members based on grant dates is incorrect.',
         blank=True, max_length=7)
 
     class Meta:
