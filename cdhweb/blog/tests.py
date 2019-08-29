@@ -50,7 +50,7 @@ class TestViews(TestCase):
     fixtures = ['test_blogposts.json']
 
     def test_rss_feed(self):
-        post = BlogPost.objects.first()
+        post = BlogPost.objects.get(pk=1)
 
         response = self.client.get(reverse('blog:rss'))
         assert response['content-type'] == 'application/rss+xml; charset=utf-8'
@@ -85,7 +85,7 @@ class TestViews(TestCase):
         # title displays
         self.assertContains(response, 'Latest Updates')
 
-        for post in BlogPost.objects.all():
+        for post in BlogPost.objects.published():
             self.assertContains(response, post.title)
             self.assertContains(response, post.get_absolute_url())
             self.assertContains(response, post.description)
@@ -151,11 +151,11 @@ class TestViews(TestCase):
 
         # date filtering is really django logic, this is just
         # a sanity check for display
-        for post in BlogPost.objects.filter(publish_date__year=2017):
+        for post in BlogPost.objects.published().filter(publish_date__year=2017):
             self.assertContains(response, post.title)
             self.assertContains(response, post.get_absolute_url())
 
-        for post in BlogPost.objects.exclude(publish_date__year=2017):
+        for post in BlogPost.objects.published().exclude(publish_date__year=2017):
             self.assertNotContains(response, post.title)
             self.assertNotContains(response, post.get_absolute_url())
 
