@@ -43,10 +43,10 @@ class TestProject(TestCase):
         self.grant2 = Grant.objects.get(
             end_date=date(year=2017, month=1, day=1))
         # users
-        self.katie = get_user_model().objects.get(username='kac3')
-        self.koeser = get_user_model().objects.get(username='rkoeser')
-        self.munson = get_user_model().objects.get(username='rmunson')
-        self.chloe = get_user_model().objects.get(username='cvettier')
+        self.katie = get_user_model().objects.get(username='katie')
+        self.koeser = get_user_model().objects.get(username='koeser')
+        self.munson = get_user_model().objects.get(username='munson')
+        self.chloe = get_user_model().objects.get(username='vettier')
 
     def test_str(self):
         assert str(self.project) == self.project.title
