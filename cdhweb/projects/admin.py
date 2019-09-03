@@ -90,7 +90,7 @@ class GrantMemberInline(admin.TabularInline):
 
 class GrantAdmin(admin.ModelAdmin):
     list_display = ('project', 'grant_type', 'start_date', 'end_date')
-    list_filter = ('start_date', 'end_date')
+    list_filter = ('start_date', 'end_date', 'grant_type')
     date_hierarchy = 'start_date'
     search_fields = ('project__title', 'grant_type__grant_type',
                      'start_date', 'end_date', 'project__long_description',
@@ -98,12 +98,14 @@ class GrantAdmin(admin.ModelAdmin):
                      'membership__user__username', 'membership__user__first_name',
                      'membership__user__last_name')
 
+    inlines = [GrantMemberInline]
+    # override model ordering to show most recent first
+    ordering = ['-start_date', 'project']
+
     def get_form(self, request, obj=None, **kwargs):
         # save object reference for filtering grants in membership Inline
         request.object = obj
         return super(GrantAdmin, self).get_form(request, obj, **kwargs)
-
-    inlines = [GrantMemberInline]
 
 
 class MembershipAdmin(admin.ModelAdmin):

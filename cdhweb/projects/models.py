@@ -151,11 +151,11 @@ class Grant(DateRange):
     grant_type = models.ForeignKey(GrantType)
 
     class Meta:
-        ordering = ['project', '-start_date']
+        ordering = ['start_date', 'project']
 
     def __str__(self):
-        return '%s: %s (%s-%s)' % (self.project.title, self.grant_type.grant_type,
-                                   self.start_date.year, self.end_date.year if self.end_date else '')
+        return '%s: %s (%s)' % (self.project.title, self.grant_type.grant_type,
+                                self.years)
 
 
 # fixme: where does resource type go, for associated links?
