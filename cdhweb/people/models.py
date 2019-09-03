@@ -350,15 +350,6 @@ class Profile(Displayable, AdminThumbMixin):
         return self.user.current_title
 
 
-def workshops_taught(user):
-    '''Return a QuerySet for the list of workshop events taught by a
-    particular user.'''
-    return user.event_set.filter(event_type__name='Workshop')
-
-# patch in to user for convenience  (may want to change)
-User.workshops_taught = workshops_taught
-
-
 class Position(DateRange):
     '''Through model for many-to-many relation between people
     and titles.  Adds start and end dates to the join table.'''
