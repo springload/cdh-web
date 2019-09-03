@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.db.models import Max
+from django.db.models.functions import Coalesce, Greatest
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.urls import reverse
@@ -167,12 +169,20 @@ class StudentListView(ProfileListView):
             .grant_years().project_manager_years()
 
     def get_past_profiles(self):
-        # show most recent first
-        return super().get_past_profiles()\
-            .order_by('-user__positions__end_date')
+        # show most recent first based on grant or position end date
 
-    # def get_past_profiles(self):
-    #     return super().get_past_profiles.order_by()
+        # order by most recent grant end date and then position
+        # end date (if a student ever has a staff position *after*
+        # working on a grant this will use the wrong date)
+
+        # NOTE: Greatest would be better than Coalesce, but on mysql
+        # it returns None of any values are null
+        return super().get_past_profiles() \
+            .annotate(most_recent=Coalesce(
+                Max('user__membership__grant__end_date'),
+                Max('user__positions__end_date')
+            )) \
+            .order_by('-most_recent')
 
 
 class FacultyListView(ProfileListView):
