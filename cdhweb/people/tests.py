@@ -236,15 +236,19 @@ class ProfileQuerySetTest(TestCase):
         grad = Person.objects.get(username='grad')
         undergrad = Person.objects.get(username='undergrad')
         grad_pi = Person.objects.get(username='tom')
+        grad_pm = Person.objects.get(username='mary')
 
         assert staffer.profile not in Profile.objects.student_affiliates()
         assert grad.profile in Profile.objects.student_affiliates()
         assert undergrad.profile in Profile.objects.student_affiliates()
         assert grad_pi.profile in Profile.objects.student_affiliates()
+        assert grad_pm.profile in Profile.objects.student_affiliates()
 
-        # grad pi affiliation based on project membership
+        # grad pi & pm affiliation based on project membership
         grad_pi.membership_set.all().delete()
+        grad_pm.membership_set.all().delete()
         assert grad_pi.profile not in Profile.objects.student_affiliates()
+        assert grad_pm.profile not in Profile.objects.student_affiliates()
 
     def test_faculty_affiliates(self):
         # faculty person who is also project director
@@ -297,7 +301,7 @@ class ProfileQuerySetTest(TestCase):
         # no error for non-grantees
         Profile.objects.filter(user__membership__isnull=True).grant_years()
 
-        annotated = Profile.objects.filter(user__membership__isnull=False) \
+        annotated = Profile.objects.filter(user__membership__role__title='Project Director') \
                                    .grant_years()
         for profile in annotated:
             grants = Grant.objects.filter(membership__user=profile.user)

@@ -113,6 +113,14 @@
         }
     },
     {
+        "model": "projects.role",
+        "pk": 2,
+        "fields": {
+            "title": "Project Manager",
+            "sort_order": 1
+        }
+    },
+    {
         "model": "people.title",
         "pk": 1,
         "fields": {
@@ -539,6 +547,24 @@
             "user_permissions": []
         }
     },
+     {
+        "model": "auth.user",
+        "pk": 14,
+        "fields": {
+            "password": "",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "mary",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2018-08-30T18:43:22.973Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
     {
         "model": "people.profile",
         "pk": 1,
@@ -936,6 +962,39 @@
         }
     },
     {
+        "model": "people.profile",
+        "pk": 14,
+        "fields": {
+            "keywords_string": "",
+            "site": 1,
+            "title": "Mary N.",
+            "slug": "mary",
+            "_meta_title": null,
+            "description": " ",
+            "gen_description": true,
+            "created": "2018-08-30T18:45:21.258Z",
+            "updated": "2018-08-30T18:45:21.258Z",
+            "status": 2,
+            "publish_date": "2018-08-30T18:45:21.258Z",
+            "expiry_date": null,
+            "short_url": null,
+            "in_sitemap": true,
+            "user": 14,
+            "is_staff": false,
+            "education": "",
+            "bio": "",
+            "phone_number": "",
+            "office_location": "",
+            "job_title": "",
+            "department": "",
+            "institution": "",
+            "pu_status": "graduate",
+            "image": "",
+            "thumb": "",
+            "attachments": []
+        }
+    },
+    {
         "model": "people.position",
         "pk": 1,
         "fields": {
@@ -1159,6 +1218,16 @@
             "user": 7,
             "grant": 3,
             "role": 1
+        }
+    },
+    {
+        "model": "projects.membership",
+        "pk": 4,
+        "fields": {
+            "project": 2,
+            "user": 14,
+            "grant": 3,
+            "role": 2
         }
     }
 ]
