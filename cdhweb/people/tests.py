@@ -184,6 +184,28 @@ class ProfileQuerySetTest(TestCase):
         grant.save()
         assert grad_pi.profile in Profile.objects.current()
 
+        # grad pm on current grant based on dates
+        grad_pm = Person.objects.get(username='mary')
+        assert grad_pm.profile in Profile.objects.current()
+        # check status override
+        pm_membership = grad_pm.membership_set.first()
+        pm_membership.status_override = 'past'
+        pm_membership.save()
+        # past should make not current even though grant is active
+        assert grad_pm.profile not in Profile.objects.current()
+        grant = grad_pm.membership_set.first().grant
+        # set end in the past
+        grant.end_date = date.today() - timedelta(days=30)
+        grant.save()
+        # remove the status override
+        pm_membership.status_override = ""
+        pm_membership.save()
+        assert grad_pm.profile not in Profile.objects.current()
+        # override to set as current even though grant is past
+        pm_membership.status_override = 'current'
+        pm_membership.save()
+        assert grad_pm.profile in Profile.objects.current()
+
     def test_order_by_position(self):
         director = Person.objects.get(username='Meredith')
         staff = Person.objects.get(username='staff')

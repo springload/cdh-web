@@ -232,11 +232,21 @@ class ProfileQuerySet(PublishedQuerySetMixin):
     def _current_grant_query(self):
         today = timezone.now()
         return (
+            # in one of the allowed roles (project director/project manager)
             models.Q(user__membership__role__title__in=self.project_roles) &
-            (models.Q(user__membership__grant__start_date__lte=today) &
-             (models.Q(user__membership__grant__end_date__gte=today) |
-              models.Q(user__membership__grant__end_date__isnull=True))
-            )
+            # current grant
+            (
+                # current based on grant dates
+                (
+                    models.Q(user__membership__grant__start_date__lte=today) &
+                    (models.Q(user__membership__grant__end_date__gte=today) |
+                     models.Q(user__membership__grant__end_date__isnull=True))
+                ) |
+                # OR current based on status override
+                models.Q(user__membership__status_override='current')
+            ) & ~
+            # but not override set to past
+            models.Q(user__membership__status_override='past')
         )
 
     def current(self):
@@ -338,8 +348,9 @@ class Profile(Displayable, AdminThumbMixin):
     objects = ProfileQuerySet.as_manager()
 
     def __str__(self):
-        # FIXME: should this be self.title instead?
-        return ' '.join([self.user.first_name, self.user.last_name])
+        # use title if set
+        return self.title or \
+            ' '.join([self.user.first_name, self.user.last_name])
 
     def get_absolute_url(self):
         return reverse('people:profile', kwargs={'slug': self.slug})
