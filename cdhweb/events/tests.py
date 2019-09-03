@@ -365,6 +365,12 @@ class TestViews(TestCase):
         response = self.client.get(reverse('event:upcoming'))
         self.assertContains(response, 'An event blurb')
 
+        # should skip blurb if content is empty
+        page.content = '<p>&nbsp;&nbsp;</p>'
+        page.save()
+        response = self.client.get(reverse('event:upcoming'))
+        self.assertNotContains(response, '&nbsp;&nbsp')
+
     def test_events_by_semester(self):
         response = self.client.get(
             reverse('event:by-semester', args=['spring', 2017]))

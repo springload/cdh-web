@@ -21,9 +21,8 @@
   </ul>
 </div>
 
-
-{# display editable page content; wrapped for formatting reasons #}
-{% if page.richtextpage.content %}
+{# display editable page content; wrapped for formatting reasons; skip if whitespace only #}
+{% if page.richtextpage.content and page.richtextpage.content|striptags|slugify != 'nbspnbsp' %}
 <section class="textcontent">
     <div class="richtext">
     {{ page.richtextpage.content|richtext_filters }}

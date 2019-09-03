@@ -9,8 +9,8 @@
 
 <section class="events">
 
-    {# display editable page content; wrapped for formatting reasons #}
-    {% if page.richtextpage.content %}
+    {# display editable page content; wrapped for formatting reasons; skip if whitespace only #}
+    {% if page.richtextpage.content and page.richtextpage.content|striptags|slugify != 'nbspnbsp' %}
     <div class="textcontent">
         <div class="richtext">
         {{ page.richtextpage.content|richtext_filters }}
