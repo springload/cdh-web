@@ -2,6 +2,7 @@
 {# tertiary navigation, where applicable #}
 <ul id="{{ page.html_id }}-tertiary" class="tertiary-nav" role="menubar" aria-labelledby="{{ page.html_id }}">
     {% for page in page_branch %}
+    {% if '1' in page.in_menus %} {# workaround pages_tags limitation: explicitly check for primary nav option #}
     <li role="none">
         <a
             role="menuitem"
@@ -10,5 +11,6 @@
             {{ page.title }}
         </a>
     </li>
+    {% endif %}
     {% endfor %}
 </ul>

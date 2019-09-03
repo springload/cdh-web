@@ -4,7 +4,7 @@
     <div class="inner">
         <ul id="{{ page.html_id }}-secondary" class="secondary-nav" role="menubar" aria-labelledby="{{ page.html_id }}">
         {% for page in page_branch %}
-            {% if page.in_menu %}
+            {% if '1' in page.in_menus %} {# workaround pages_tags limitation: explicitly check for primary nav option #}
             <li role="none">
                 <a
                     id="{{ page.html_id }}"
