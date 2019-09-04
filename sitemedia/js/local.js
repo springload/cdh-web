@@ -62,44 +62,40 @@ $(document).ready(function () {
             switch (e.key) {
                 case 'Home': {
                     e.preventDefault()
-                    hideCard(e.target.id)
-                    var firstCard = $('.primary-nav > li > a').first()
-                    firstCard.focus()
+                    var firstLink = $('.primary-nav > li > a').first()
+                    firstLink.focus()
                     break
                 }
                 case 'End': {
                     e.preventDefault()
-                    hideCard(e.target.id)
-                    var lastCard = $('.primary-nav > li > a').last()
-                    lastCard.focus()
+                    var lastLink = $('.primary-nav > li > a').last()
+                    lastLink.focus()
                     break
                 }
                 case 'ArrowLeft': {
                     e.preventDefault()
-                    hideCard(e.target.id)
-                    var prevCard = $(e.target).parent().prev('li').find('a')
-                    prevCard.focus()
+                    var prevLink = $(e.target).parent().prev('li').find('a')
+                    prevLink.focus()
                     break
                 }
                 case 'ArrowUp': {
                     e.preventDefault()
                     showCard(e.target.id)
-                    var lastLink = $('#' + e.target.id + '-secondary > li > a').last()
-                    lastLink.focus()
+                    var lastCardLink = $('#' + e.target.id + '-secondary > li > a').last()
+                    lastCardLink.focus()
                     break
                 }
                 case 'ArrowRight': {
                     e.preventDefault()
-                    hideCard(e.target.id)
-                    var nextCard = $(e.target).parent().next('li').find('a')
-                    nextCard.focus()
+                    var nextLink = $(e.target).parent().next('li').find('a')
+                    nextLink.focus()
                     break
                 }
                 case 'ArrowDown': {
                     e.preventDefault()
                     showCard(e.target.id)
-                    var firstLink = $('#' + e.target.id + '-secondary > li > a').first()
-                    firstLink.focus()
+                    var firstCardLink = $('#' + e.target.id + '-secondary > li > a').first()
+                    firstCardLink.focus()
                     break
                 }
                 case 'Enter':
@@ -120,7 +116,7 @@ $(document).ready(function () {
                     e.preventDefault()
                     var parentMenu = $(e.target).parents('.secondary-nav').get()[0]
                     var parentMenuName = parentMenu.id.split('-secondary')[0]
-                    hideCard(parentMenuName)
+                    hideCards()
                     $('#' + parentMenuName).focus()
                     break
                 }
@@ -175,7 +171,7 @@ $(document).ready(function () {
                     e.preventDefault()
                     var parentCard = $(e.target).parents('.secondary-nav').get()[0]
                     var parentCardName = parentCard.id.split('-secondary')[0]
-                    hideCard(parentCardName)
+                    hideCards()
                     $('#' + parentCardName).focus()
                     break
                 }
@@ -242,11 +238,6 @@ $(document).ready(function () {
     // hide all nav cards when we leave the nav
     $('.nav-wrap')
         .mouseleave(function () { hideCards() })
-
-    function hideCard(id) {
-        $('.nav-card.menu-' + id).hide()
-        $('#' + id).attr('aria-expanded', false)
-    }
 
     function showCard(id) {
         hideCards() // hide others
