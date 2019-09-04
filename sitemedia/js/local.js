@@ -59,51 +59,51 @@ $(document).ready(function () {
     // keybindings for primary nav (people, projects, research, etc.)
     $('.primary-nav > li > a')
         .keydown(function (e) {
-            switch (e.which) {
-                case 35: { // home
+            switch (e.key) {
+                case 'Home': {
                     e.preventDefault()
                     hideCard(e.target.id)
                     var firstCard = $('.primary-nav > li > a').first()
                     firstCard.focus()
                     break
                 }
-                case 36: { // end
+                case 'End': {
                     e.preventDefault()
                     hideCard(e.target.id)
                     var lastCard = $('.primary-nav > li > a').last()
                     lastCard.focus()
                     break
                 }
-                case 37: { // left arrow
+                case 'ArrowLeft': {
                     e.preventDefault()
                     hideCard(e.target.id)
                     var prevCard = $(e.target).parent().prev('li').find('a')
                     prevCard.focus()
                     break
                 }
-                case 38: { // up arrow
+                case 'ArrowUp': {
                     e.preventDefault()
                     showCard(e.target.id)
                     var lastLink = $('#' + e.target.id + '-secondary > li > a').last()
                     lastLink.focus()
                     break
                 }
-                case 39: { // right arrow
+                case 'ArrowRight': {
                     e.preventDefault()
                     hideCard(e.target.id)
                     var nextCard = $(e.target).parent().next('li').find('a')
                     nextCard.focus()
                     break
                 }
-                case 40: { // down arrow
+                case 'ArrowDown': {
                     e.preventDefault()
                     showCard(e.target.id)
                     var firstLink = $('#' + e.target.id + '-secondary > li > a').first()
                     firstLink.focus()
                     break
                 }
-                case 13: // enter
-                case 32: { // spacebar
+                case 'Enter':
+                case ' ': { // spacebar
                     e.preventDefault()
                     e.target.click()
                     break
@@ -114,9 +114,9 @@ $(document).ready(function () {
     // keybindings for secondary nav (flyout cards)
     $('.secondary-nav > li > a')
         .keydown(function (e) {
-            switch (e.which) {
-                case 38: // up arrow
-                case 27: { // escape
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'Escape': {
                     e.preventDefault()
                     var parentMenu = $(e.target).parents('.secondary-nav').get()[0]
                     var parentMenuName = parentMenu.id.split('-secondary')[0]
@@ -124,31 +124,33 @@ $(document).ready(function () {
                     $('#' + parentMenuName).focus()
                     break
                 }
-                case 35: { // home
+                case 'Home': {
                     e.preventDefault()
-                    var firstLink = $(e.target).parent().first('li').find('a')
+                    var parentMenu = $(e.target).parents('.secondary-nav').first()
+                    var firstLink = parentMenu.find('li').first().find('a')
                     firstLink.focus()
                     break
                 }
-                case 36: { // end
+                case 'End': {
                     e.preventDefault()
-                    var lastLink = $(e.target).parent().last('li').find('a')
+                    var parentMenu = $(e.target).parents('.secondary-nav').first()
+                    var lastLink = parentMenu.find('li').last().find('a')
                     lastLink.focus()
                     break
                 }
-                case 37: { // left arrow
+                case 'ArrowLeft': {
                     e.preventDefault()
                     var prevLink = $(e.target).parent().prev('li').find('a').first()
                     prevLink.focus()
                     break
                 }
-                case 39: { // right arrow
+                case 'ArrowRight': {
                     e.preventDefault()
                     var nextLink = $(e.target).parent().next('li').find('a').first()
                     nextLink.focus()
                     break
                 }
-                case 40: { // down arrow
+                case 'ArrowDown': {
                     e.preventDefault()
                     var associatedList = $(e.target).siblings('.tertiary-nav')
                     if (associatedList.length > 0) {
@@ -156,8 +158,8 @@ $(document).ready(function () {
                     }
                     break
                 }
-                case 13: // enter
-                case 32: { // spacebar
+                case 'Enter':
+                case ' ': { // spacebar
                     e.preventDefault()
                     e.target.click()
                     break
@@ -168,8 +170,8 @@ $(document).ready(function () {
     // keybindings for tertiary nav (lists on cards)
     $('.tertiary-nav > li > a')
         .keydown(function (e) {
-            switch (e.which) {
-                case 27: { // escape
+            switch (e.key) {
+                case 'Escape': {
                     e.preventDefault()
                     var parentCard = $(e.target).parents('.secondary-nav').get()[0]
                     var parentCardName = parentCard.id.split('-secondary')[0]
@@ -177,26 +179,28 @@ $(document).ready(function () {
                     $('#' + parentCardName).focus()
                     break
                 }
-                case 35: { // home
+                case 'Home': {
                     e.preventDefault()
-                    var firstLink = $(e.target).parent().first('li').find('a')
+                    var parentMenu = $(e.target).parents('.tertiary-nav').first()
+                    var firstLink = parentMenu.find('li').first().find('a')
                     firstLink.focus()
                     break
                 }
-                case 36: { // end
+                case 'End': {
                     e.preventDefault()
-                    var lastLink = $(e.target).parent().last('li').find('a')
+                    var parentMenu = $(e.target).parents('.tertiary-nav').first()
+                    var lastLink = parentMenu.find('li').last().find('a')
                     lastLink.focus()
                     break
                 }
-                case 37: {// left arrow
+                case 'ArrowLeft': {
                     e.preventDefault()
                     var parentSecondary = $(e.target).parents('.tertiary-nav').siblings('a')
                     var prevSecondary = parentSecondary.parent().prev('li').find('a').first()
                     prevSecondary.focus()
                     break
                 }
-                case 38: { // up arrow
+                case 'ArrowUp': {
                     e.preventDefault()
                     var prevLink = $(e.target).parent().prev('li').find('a')
                     if (prevLink.length > 0) {
@@ -209,21 +213,21 @@ $(document).ready(function () {
                     }
                     break
                 }
-                case 39: { // right arrow
+                case 'ArrowRight': {
                     e.preventDefault()
                     var parentSecondary = $(e.target).parents('.tertiary-nav').siblings('a')
                     var nextSecondary = parentSecondary.parent().next('li').find('a').first()
                     nextSecondary.focus()
                     break
                 }
-                case 40: { // down arrow
+                case 'ArrowDown': {
                     e.preventDefault()
                     var nextLink = $(e.target).parent().next('li').find('a')
                     nextLink.focus()
                     break
                 }
-                case 13: // enter
-                case 32: { // spacebar
+                case 'Enter':
+                case ' ': { // spacebar
                     e.preventDefault()
                     e.target.click()
                     break
