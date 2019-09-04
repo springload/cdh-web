@@ -7,11 +7,13 @@
         {% for page in page_branch %}
             {% if page.in_menu %}
             <li role="none">
+                {# first item will always be 'home', second item after that should be #}
+                {# tab-focusable (tabindex 0), all others only focusable via js (-1) #}
                 <a
                     id="{{ page.html_id }}"
                     role="menuitem"
                     href="{{ page.get_absolute_url }}"
-                    {% if forloop.first %} tabindex="0"{% else %} tabindex="-1"{% endif %}
+                    {% if forloop.counter == 2 %} tabindex="0"{% else %} tabindex="-1"{% endif %}
                     {% if page.has_childen_in_menu %}
                     aria-owns="{{ page.html_id }}-secondary"
                     aria-haspopup="true"
