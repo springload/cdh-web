@@ -4,28 +4,28 @@
 <div class="nav-main">
     <ul class='primary-nav' role="menubar" aria-label="main navigation">
         {# top-level pages #}
-        {% for page in page_branch %}
+        {# first item will always be home ('/') #}
+        {% for page in page_branch|slice:"1:" %}
             {% if page.in_menu %}
             <li role="none">
-                {# first item will always be 'home', second item after that should be #}
-                {# tab-focusable (tabindex 0), all others only focusable via js (-1) #}
                 <a
                     id="{{ page.html_id }}"
                     role="menuitem"
                     href="{{ page.get_absolute_url }}"
-                    {% if forloop.counter == 2 %} tabindex="0"{% else %} tabindex="-1"{% endif %}
+                    {% if forloop.first %} tabindex="0"{% else %} tabindex="-1"{% endif %}
                     {% if page.has_childen_in_menu %}
                     aria-owns="{{ page.html_id }}-secondary"
                     aria-haspopup="true"
                     aria-expanded="false"
                     {% endif %}
-                    {% if page.is_current_or_ascendant %} aria-current="page"{% endif %}>{{ page.title }}</a>
+                    {% if page.is_current_or_ascendant %} aria-current="page"{% endif %}>{{ page.title }}
+                </a>
             </li>
             {% endif %}
         {% endfor %}
     </ul>
 </div>
-{% for page in page_branch %}
+{% for page in page_branch|slice:"1:" %}
     {% if page.has_children_in_menu %}
         {% page_menu page "snippets/navigation_card.html" %}
     {% endif %}
