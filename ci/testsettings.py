@@ -8,13 +8,21 @@ import os
 # immediately.
 
 # NOTE: setting debug = true to avoid pa11y-ci timeouts
-DEBUG = True
+DEBUG = False
 
 DATABASES = {
-    "default": {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'cdhweb.db'
-    }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cdhweb',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
+        'PORT': '',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'read_default_file': '~travis/.my.cnf'
+        },
+    },
 }
 
 # required with django 1.11 when debug is false, even for tests
@@ -29,4 +37,3 @@ COMPRESS_ROOT = os.path.join(BASE_DIR, 'sitemedia')
 
 # run a full compress before e2e/a11y tests to serve statically
 COMPRESS_OFFLINE = True
-
