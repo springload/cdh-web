@@ -1276,9 +1276,30 @@ $event-card-img-height: 240px;
 		p {
 			margin-top: 0;
 		}
-	}
+    }
+    
+    .grant-history {
+        margin-top: 2rem;
 
+        @media (min-width: $large-min-width) {
+            margin-top: 4rem;
+        }
 
+        ul {
+            list-style: none;
+            padding: 0;
+            font-family: $font-stack-headline;
+            color: $dark-grey;
+        }
+
+        li {
+            padding: 0.25rem 0;
+
+            @media (min-width: $large-min-width) {
+                padding: 0.5rem 0;
+            }
+        }
+    }
 }
 
 

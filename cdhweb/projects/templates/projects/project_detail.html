@@ -51,6 +51,16 @@
     <img src="{{ MEDIA_URL }}{{ project.image }}"/>
     {% endif %}
     {{ project.long_description|safe }}
+    {% if project.grant_set.exists %}
+    <section class="grant-history">
+        <h2>CDH Grant History</h2>
+        <ul>
+            {% for grant in project.grant_set.reverse %}
+            <li>{{ grant.years }} {{ grant.grant_type }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
 </div>
 
 </div>

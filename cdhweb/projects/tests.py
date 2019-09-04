@@ -301,8 +301,8 @@ class TestGrant(TestCase):
         grant = Grant(project=proj, grant_type=grtype,
                       start_date=datetime(start_year, 1, 1),
                       end_date=datetime(end_year, 1, 1))
-        assert str(grant) == '%s: %s (2016-2017)' % (proj.title,
-                                                     grtype.grant_type)
+        assert str(grant) == '%s: %s (2016–2017)' % \
+            (proj.title, grtype.grant_type)
 
 
 class TestMembership(TestCase):
@@ -316,8 +316,8 @@ class TestMembership(TestCase):
                                      end_date=datetime(2017, 1, 1))
         user = get_user_model().objects.create(username='contributor')
         role = Role.objects.create(title='Data consultant', sort_order=1)
-        membership = Membership.objects.create(project=proj,
-                                               user=user, grant=grant, role=role)
+        membership = Membership.objects.create(
+            project=proj, user=user, grant=grant, role=role)
 
         assert str(membership) == '%s - %s on %s' % (user, role, grant)
 
@@ -442,7 +442,7 @@ class TestViews(TestCase):
                                        url=project_url)
 
         response = self.client.get(reverse('project:detail',
-                                           kwargs={'slug':  proj.slug}))
+                                           kwargs={'slug': proj.slug}))
         assert response.context['project'] == proj
         self.assertContains(response, escape(proj.title))
         self.assertContains(response, proj.short_description)
@@ -455,6 +455,18 @@ class TestViews(TestCase):
         for contributor in [contrib1, contrib2, contrib3]:
             self.assertContains(response, contributor.profile.title)
         self.assertContains(response, project_url)
+
+        # test grant dates displayed
+        self.assertContains(response, '<h2>CDH Grant History</h2>')
+        self.assertContains(response,
+                            '%s %s' % (grant.years, grant.grant_type))
+
+        # if for some reason a project has no grants, should not display grants
+        proj.grant_set.all().delete()
+        response = self.client.get(reverse('project:detail',
+                                           kwargs={'slug': proj.slug}))
+        self.assertNotContains(response, '<h2>CDH Grant History</h2>')
+
         # TODO: test large image included
 
 
