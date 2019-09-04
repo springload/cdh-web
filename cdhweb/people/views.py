@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models import Max
+from django.db.models import Max, Q, Case, When, Value
 from django.db.models.functions import Coalesce, Greatest
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -20,7 +20,7 @@ class ProfileMixinView(object):
     def get_queryset(self):
         # use displayable manager to find published profiles only
         # (or draft profiles for logged in users with permission to view)
-        return Profile.objects.published() # TODO: published(for_user=self.request.user)
+        return Profile.objects.published()  # TODO: published(for_user=self.request.user)
 
 
 class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
@@ -30,10 +30,12 @@ class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
         return super().get_queryset().staff()
 
     def get_context_data(self, *args, **kwargs):
-        context = super(ProfileDetailView, self).get_context_data(*args, **kwargs)
+        context = super(ProfileDetailView, self).get_context_data(
+            *args, **kwargs)
 
         # retrieve 3 most recent published blog posts with the current user as author
-        recent_posts = BlogPost.objects.filter(users__id=self.object.user.id).published()[:3]
+        recent_posts = BlogPost.objects.filter(
+            users__id=self.object.user.id).published()[:3]
 
         # also set object as page for common page display functionality
         context.update({
@@ -43,7 +45,7 @@ class ProfileDetailView(ProfileMixinView, DetailView, LastModifiedMixin):
         })
         if self.object.thumb:
             context['preview_image'] = absolutize_url(''.join([settings.MEDIA_URL,
-                str(self.object.thumb)]))
+                                                               str(self.object.thumb)]))
 
         return context
 
@@ -96,7 +98,7 @@ class ProfileListView(ProfileMixinView, ListView, LastModifiedListMixin):
             'past': past,
             'title': self.page_title,
             'past_title': self.past_title,
-            'current_title': self.current_title or self.page_title, # use main title as default
+            'current_title': self.current_title or self.page_title,  # use main title as default
             'archive_nav_urls': [
                 ('Staff', reverse('people:staff')),
                 ('Postdoctoral Fellows', reverse('people:postdocs')),
@@ -170,17 +172,23 @@ class StudentListView(ProfileListView):
 
     def get_past_profiles(self):
         # show most recent first based on grant or position end date
-
-        # order by most recent grant end date and then position
-        # end date (if a student ever has a staff position *after*
-        # working on a grant this will use the wrong date)
-
-        # NOTE: Greatest would be better than Coalesce, but on mysql
-        # it returns None of any values are null
+        # NOTE the use of Case/When here is to avoid Greatest() returning NULL
+        # if any of its arguments are NULL, which is mysql behavior:
+        # https://docs.djangoproject.com/en/2.2/ref/models/database-functions/#django.db.models.functions.Greatest
+        # see also the django docs on conditional aggregation:
+        # https://docs.djangoproject.com/en/1.11/ref/models/conditional-expressions/#conditional-aggregation
         return super().get_past_profiles() \
-            .annotate(most_recent=Coalesce(
-                Max('user__membership__grant__end_date'),
-                Max('user__positions__end_date')
+            .annotate(most_recent=Greatest(
+                Case(
+                    When(user__membership__grant__end_date__isnull=False,
+                         then=Max('user__membership__grant__end_date')),
+                    default=Value('0')
+                ),
+                Case(
+                    When(user__positions__end_date__isnull=False,
+                         then=Max('user__positions__end_date')),
+                    default=Value('0')
+                )
             )) \
             .order_by('-most_recent')
 
