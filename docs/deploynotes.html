@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Deploy Notes &#8212; CDH website 2.6.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="CHANGELOG" href="changelog.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="deploy-notes">
+<h1>Deploy Notes<a class="headerlink" href="#deploy-notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>2.6<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Adds a cosponsorship request form embed template similar to the consult form.
+A <cite>RichTextPage</cite> needs to be created with its url set to <cite>/events/cosponsor</cite>
+in order to automatically embed the form.</p></li>
+<li><p>The events page needs to be recreated as a <cite>RichTextPage</cite> to support adding
+text at the top of the page. To disable the text at the top, enter two non-
+breaking spaces in the text field. Make sure the url remains <cite>/events</cite>.</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>2.2<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Adds an alumni page, parallel to current staff.  Existing profile pages
+for past staff should be republished.</p></li>
+<li><p>Fixes rich text page template to include page title as an H1.  Existing
+content with the title repeated will need to be edited.</p></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h2>2.1<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Resource names have been changed to store proper case in the database.
+Existing installations should update the three pre-populated items manually.</p></li>
+<li><p>Update local settings to turn on Google Analytics.</p></li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h2>2.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Update default site in Django admin to match deployed site url</p></li>
+<li><p>Initialize admin and other users with createcasuser before running
+the data import.</p></li>
+<li><p>Import data from the previous version of the site (exported via Django
+dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">CDH website</a></h1>
+
+
+
+<p class="blurb">Django/Mezzanine website that powers cdh.princeton.edu</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=Princeton-CDH&repo=cdh-web&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/Princeton-CDH/cdh-web">
+    <img
+        alt="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
+        src="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://codecov.io/github/Princeton-CDH/cdh-web">
+    <img
+    alt="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
+    src="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codedocs.html">Code Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deploy Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">2.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">2.0</a></li>
+</ul>
+</li>
+</ul>
+
+
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Deploy Notes</a><ul>
+<li><a class="reference internal" href="#id1">2.6</a></li>
+<li><a class="reference internal" href="#id2">2.2</a></li>
+<li><a class="reference internal" href="#id3">2.1</a></li>
+<li><a class="reference internal" href="#id4">2.0</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="powered_by">
+<p>Powered by:</p>
+<a href="http://cdh.princeton.edu/">
+<img src="https://cdh.princeton.edu/static/img/CDH_logo.svg"
+    alt="Center for Digital Humanities @ Princeton" />
+</a>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, CDH @ Princeton & Trustees of Princeton University.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/deploynotes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
