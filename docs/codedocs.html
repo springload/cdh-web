@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Code Documentation &#8212; CDH website 2.5.0 documentation</title>
+    <title>Code Documentation &#8212; CDH website 2.6.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -374,6 +374,19 @@ that a person was project director.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="cdhweb.people.models.ProfileQuerySet.project_manager_years">
+<code class="sig-name descname">project_manager_years</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.project_manager_years"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.project_manager_years" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotate with first start and last end grant year for grants
+that a person was project manager.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cdhweb.people.models.ProfileQuerySet.project_roles">
+<code class="sig-name descname">project_roles</code><em class="property"> = ['Project Director', 'Project Manager']</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.project_roles" title="Permalink to this definition">¶</a></dt>
+<dd><p>memebership roles that indicate someone is an affiliate</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="cdhweb.people.models.ProfileQuerySet.sits_with_exec">
 <code class="sig-name descname">sits_with_exec</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.sits_with_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.sits_with_exec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Non-faculty Executive committee members</p>
@@ -394,8 +407,8 @@ that a person was project director.</p>
 <dl class="method">
 <dt id="cdhweb.people.models.ProfileQuerySet.student_affiliates">
 <code class="sig-name descname">student_affiliates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.student_affiliates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.student_affiliates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return CDH student staff members and grantees based on Project Director
-role.</p>
+<dd><p>Return CDH student staff members and grantees based on
+Project Director or Project Manager role.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -439,13 +452,6 @@ role.</p>
 <code class="sig-prename descclassname">cdhweb.people.models.</code><code class="sig-name descname">init_profile_from_ldap</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">ldapinfo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#init_profile_from_ldap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.init_profile_from_ldap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extra user/profile init logic for auto-populating people
 profile fields with data available in LDAP.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="cdhweb.people.models.workshops_taught">
-<code class="sig-prename descclassname">cdhweb.people.models.</code><code class="sig-name descname">workshops_taught</code><span class="sig-paren">(</span><em class="sig-param">user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#workshops_taught"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.workshops_taught" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a QuerySet for the list of workshop events taught by a
-particular user.</p>
 </dd></dl>
 
 </div>
@@ -523,6 +529,13 @@ checks both positions and grants.</p>
 <dd><p>Get current profiles from the queryset. Override to customize
 which filter is used. By default, uses generic current logic that
 checks both positions and grants.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cdhweb.people.views.PostdocListView.get_past_profiles">
+<code class="sig-name descname">get_past_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#PostdocListView.get_past_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.PostdocListView.get_past_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get past profiles. Override to customize filters and ordering. By
+default, assumes any profiles that aren’t current are past.</p>
 </dd></dl>
 
 <dl class="method">
@@ -713,6 +726,13 @@ checks both positions and grants.</p>
 <dd><p>Display current and past graduate fellows, graduate and undergraduate
 assistants.</p>
 <dl class="method">
+<dt id="cdhweb.people.views.StudentListView.get_past_profiles">
+<code class="sig-name descname">get_past_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#StudentListView.get_past_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.StudentListView.get_past_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get past profiles. Override to customize filters and ordering. By
+default, assumes any profiles that aren’t current are past.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="cdhweb.people.views.StudentListView.get_queryset">
 <code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#StudentListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.StudentListView.get_queryset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the list of items for this view.</p>
@@ -779,17 +799,6 @@ Handles project data and members associated with projects.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="cdhweb.projects.models.MembershipQuerySet">
-<em class="property">class </em><code class="sig-prename descclassname">cdhweb.projects.models.</code><code class="sig-name descname">MembershipQuerySet</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">query=None</em>, <em class="sig-param">using=None</em>, <em class="sig-param">hints=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#MembershipQuerySet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.MembershipQuerySet" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="cdhweb.projects.models.MembershipQuerySet.current">
-<code class="sig-name descname">current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#MembershipQuerySet.current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.MembershipQuerySet.current" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter to memebers of the current grant</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="cdhweb.projects.models.Project">
 <em class="property">class </em><code class="sig-prename descclassname">cdhweb.projects.models.</code><code class="sig-name descname">Project</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#Project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.Project" title="Permalink to this definition">¶</a></dt>
 <dd><p>A CDH sponsored project</p>
@@ -804,17 +813,15 @@ Handles project data and members associated with projects.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="cdhweb.projects.models.Project.alumni_members">
-<code class="sig-name descname">alumni_members</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#Project.alumni_members"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.Project.alumni_members" title="Permalink to this definition">¶</a></dt>
-<dd><p>Project alumni returns only project members who are
-not associated with the latest grant.</p>
+<dt id="cdhweb.projects.models.Project.alums">
+<code class="sig-name descname">alums</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#Project.alums"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.Project.alums" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PersonQueryset</span></code> of past members sorted by last name</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cdhweb.projects.models.Project.current_membership">
-<code class="sig-name descname">current_membership</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#Project.current_membership"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.Project.current_membership" title="Permalink to this definition">¶</a></dt>
-<dd><p>Project members associated with the most recent grant.
-Returns <a class="reference internal" href="#cdhweb.projects.models.Membership" title="cdhweb.projects.models.Membership"><code class="xref py py-class docutils literal notranslate"><span class="pre">Membership</span></code></a> queryset.</p>
+<dt id="cdhweb.projects.models.Project.current_memberships">
+<code class="sig-name descname">current_memberships</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#Project.current_memberships"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.Project.current_memberships" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MembershipQueryset</span></code> of current members sorted by role</p>
 </dd></dl>
 
 <dl class="method">
@@ -1585,7 +1592,7 @@ the author has a published profile</p>
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -184,6 +184,28 @@ class ProfileQuerySetTest(TestCase):
         grant.save()
         assert grad_pi.profile in Profile.objects.current()
 
+        # grad pm on current grant based on dates
+        grad_pm = Person.objects.get(username='mary')
+        assert grad_pm.profile in Profile.objects.current()
+        # check status override
+        pm_membership = grad_pm.membership_set.first()
+        pm_membership.status_override = 'past'
+        pm_membership.save()
+        # past should make not current even though grant is active
+        assert grad_pm.profile not in Profile.objects.current()
+        grant = grad_pm.membership_set.first().grant
+        # set end in the past
+        grant.end_date = date.today() - timedelta(days=30)
+        grant.save()
+        # remove the status override
+        pm_membership.status_override = ""
+        pm_membership.save()
+        assert grad_pm.profile not in Profile.objects.current()
+        # override to set as current even though grant is past
+        pm_membership.status_override = 'current'
+        pm_membership.save()
+        assert grad_pm.profile in Profile.objects.current()
+
     def test_order_by_position(self):
         director = Person.objects.get(username='Meredith')
         staff = Person.objects.get(username='staff')
@@ -236,15 +258,19 @@ class ProfileQuerySetTest(TestCase):
         grad = Person.objects.get(username='grad')
         undergrad = Person.objects.get(username='undergrad')
         grad_pi = Person.objects.get(username='tom')
+        grad_pm = Person.objects.get(username='mary')
 
         assert staffer.profile not in Profile.objects.student_affiliates()
         assert grad.profile in Profile.objects.student_affiliates()
         assert undergrad.profile in Profile.objects.student_affiliates()
         assert grad_pi.profile in Profile.objects.student_affiliates()
+        assert grad_pm.profile in Profile.objects.student_affiliates()
 
-        # grad pi affiliation based on project membership
+        # grad pi & pm affiliation based on project membership
         grad_pi.membership_set.all().delete()
+        grad_pm.membership_set.all().delete()
         assert grad_pi.profile not in Profile.objects.student_affiliates()
+        assert grad_pm.profile not in Profile.objects.student_affiliates()
 
     def test_faculty_affiliates(self):
         # faculty person who is also project director
@@ -268,36 +294,36 @@ class ProfileQuerySetTest(TestCase):
         assert fac.profile not in Profile.objects.executive_committee()
 
         # former acting faculty directory is also exec
-        rdelue = Person.objects.get(username='rdelue')
-        assert rdelue.profile in Profile.objects.executive_committee()
+        delue = Person.objects.get(username='delue')
+        assert delue.profile in Profile.objects.executive_committee()
 
         # sits with committe is also in main exec filter
-        jay = Person.objects.get(username='jdominick')
+        jay = Person.objects.get(username='dominick')
         assert jay.profile in Profile.objects.executive_committee()
 
     def test_exec_member(self):
         # exec committee member
-        rdelue = Person.objects.get(username='rdelue')
-        assert rdelue.profile in Profile.objects.exec_member()
+        delue = Person.objects.get(username='delue')
+        assert delue.profile in Profile.objects.exec_member()
 
         # sits with committe is not exec member
-        jay = Person.objects.get(username='jdominick')
+        jay = Person.objects.get(username='dominick')
         assert jay.profile not in Profile.objects.exec_member()
 
     def test_sits_with_exec(self):
         # exec committee member
-        rdelue = Person.objects.get(username='rdelue')
-        assert rdelue.profile not in Profile.objects.sits_with_exec()
+        delue = Person.objects.get(username='delue')
+        assert delue.profile not in Profile.objects.sits_with_exec()
 
         # sits with committe
-        jay = Person.objects.get(username='jdominick')
+        jay = Person.objects.get(username='dominick')
         assert jay.profile in Profile.objects.sits_with_exec()
 
     def test_grant_years(self):
         # no error for non-grantees
         Profile.objects.filter(user__membership__isnull=True).grant_years()
 
-        annotated = Profile.objects.filter(user__membership__isnull=False) \
+        annotated = Profile.objects.filter(user__membership__role__title='Project Director') \
                                    .grant_years()
         for profile in annotated:
             grants = Grant.objects.filter(membership__user=profile.user)
@@ -577,36 +603,36 @@ class TestViews(TestCase):
 
     def test_executive_committee_list(self):
         # former acting faculty directory is also exec
-        rdelue = Person.objects.get(username='rdelue')
-        assert rdelue.profile in Profile.objects.executive_committee()
+        delue = Person.objects.get(username='delue')
+        assert delue.profile in Profile.objects.executive_committee()
 
         # sits with committe is also in main exec filter
-        jay = Person.objects.get(username='jdominick')
+        jay = Person.objects.get(username='dominick')
         assert jay.profile in Profile.objects.executive_committee()
 
         response = self.client.get(reverse('people:exec-committee'))
         # current committee member - in current
-        assert rdelue.profile in response.context['current']
+        assert delue.profile in response.context['current']
         # current member, sits with committee - in sits with
         assert jay.profile in response.context['sits_with']
         # alumni currently empty
         assert response.context['past'].count() is 0
 
         # should show job title, not cdh affiliation
-        self.assertContains(response, rdelue.profile.job_title)
+        self.assertContains(response, delue.profile.job_title)
         self.assertContains(response, jay.profile.job_title)
-        # should not show rdelue's cdh position
+        # should not show delue's cdh position
         self.assertNotContains(response, "Acting Faculty Director")
 
         # set past end dates on position memberships
         yesterday = date.today() - timedelta(days=1)
-        rdelue.positions.filter(end_date__isnull=True).update(end_date=yesterday)
+        delue.positions.filter(end_date__isnull=True).update(end_date=yesterday)
         jay.positions.update(end_date=yesterday)
         response = self.client.get(reverse('people:exec-committee'))
         assert response.context['current'].count() is 0
         assert response.context['sits_with'].count() is 0
         # both committee member and sits with in past
-        assert rdelue.profile in response.context['past']
+        assert delue.profile in response.context['past']
         assert jay.profile in response.context['past']
         # sits with section not shown when empty
         self.assertNotContains(response, 'Sits with Executive Committee')

@@ -1,6 +1,16 @@
 Deploy Notes
 ============
 
+2.6
+---
+
+- Adds a cosponsorship request form embed template similar to the consult form.
+  A `RichTextPage` needs to be created with its url set to `/events/cosponsor`
+  in order to automatically embed the form.
+- The events page needs to be recreated as a `RichTextPage` to support adding
+  text at the top of the page. To disable the text at the top, enter two non-
+  breaking spaces in the text field. Make sure the url remains `/events`.
+
 2.2
 ---
 

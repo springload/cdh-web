@@ -28,21 +28,15 @@
 
     <ul>
     {# display project members for the current (or most recent) grant #}
-    {% for membership in project.current_membership %}
+    {% for membership in project.current_memberships %}
         {% ifchanged %}<li class="role"><h3>{{ membership.role }}</h3></li>{% endifchanged %}
-           {% with membership.user.profile_url as profile_url %} {# local or external profile, if available #}
-           {% with profile_url|yesno:"a,span" as tag %} {# link if we have a url, otherwise span #}
-            <li><{{ tag }} {% if profile_url %}href="{{ profile_url }}"{% endif %}>{{ membership.user }}</{{ tag }}></li>
-           {% endwith %}{% endwith %}
+        {% include 'projects/snippets/project_membership.html' with member=membership.user %}
     {% endfor %}
     {# include project alumni  #}
-    {% if project.alumni_members %}
-        <li class="role"><h3>Project Alum{{ project.alumni_members|pluralize }}</h3></li>
-        {% for alum in project.alumni_members %}
-           {% with alum.profile_url as profile_url %} {# local or external profile, if available #}
-           {% with profile_url|yesno:"a,span" as tag %} {# link if we have a url, otherwise span #}
-            <li><{{ tag }} {% if profile_url %}href="{{ profile_url }}"{% endif %}>{{ alum }}</{{ tag }}></li>
-           {% endwith %}{% endwith %}
+    {% if project.alums %}
+        <li class="role"><h3>Project Alum{{ project.alums|pluralize }}</h3></li>
+        {% for member in project.alums %}
+            {% include 'projects/snippets/project_membership.html' %}
         {% endfor %}
     {% endif %}
     </ul>
@@ -57,6 +51,16 @@
     <img src="{{ MEDIA_URL }}{{ project.image }}"/>
     {% endif %}
     {{ project.long_description|safe }}
+    {% if project.grant_set.exists %}
+    <section class="grant-history">
+        <h2>CDH Grant History</h2>
+        <ul>
+            {% for grant in project.grant_set.reverse %}
+            <li>{{ grant.years }} {{ grant.grant_type }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
 </div>
 
 </div>

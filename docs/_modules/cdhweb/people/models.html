@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>cdhweb.people.models &#8212; CDH website 2.5.0 documentation</title>
+    <title>cdhweb.people.models &#8212; CDH website 2.6.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -138,7 +138,6 @@
         <span class="k">if</span> <span class="n">mship</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">mship</span><span class="o">.</span><span class="n">grant</span>
 
-
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Custom person display to make it easier to choose people</span>
 <span class="sd">        in admin menus.  Uses profile title if available, otherwise combines</span>
@@ -162,6 +161,9 @@
     <span class="c1">#: position titles that indicate a staff person is a student</span>
     <span class="n">student_titles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Graduate Fellow&#39;</span><span class="p">,</span> <span class="s1">&#39;Graduate Assistant&#39;</span><span class="p">,</span>
                       <span class="s1">&#39;Undergraduate Assistant&#39;</span><span class="p">]</span>
+    <span class="c1">#: memebership roles that indicate someone is an affiliate</span>
+    <span class="n">project_roles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Project Director&#39;</span><span class="p">,</span> <span class="s1">&#39;Project Manager&#39;</span><span class="p">]</span>
+
     <span class="c1">#: student status codes from LDAP</span>
     <span class="n">student_pu_status</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;graduate&#39;</span><span class="p">,</span> <span class="s1">&#39;undergraduate&#39;</span><span class="p">]</span>
 
@@ -177,22 +179,21 @@
 <div class="viewcode-block" id="ProfileQuerySet.postdocs"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.postdocs">[docs]</a>    <span class="k">def</span> <span class="nf">postdocs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return CDH Postdoctoral Fellows, based on role title&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title__icontains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postdoc_title</span><span class="p">)</span>
-            <span class="o">|</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postgrad_title</span><span class="p">))</span></div>
+            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title__icontains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postdoc_title</span><span class="p">)</span> <span class="o">|</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postgrad_title</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.not_postdocs"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.not_postdocs">[docs]</a>    <span class="k">def</span> <span class="nf">not_postdocs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Exclude CDH Postdoctoral Fellows, based on role title&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title__icontains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postdoc_title</span><span class="p">)</span>
-            <span class="o">|</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postgrad_title</span><span class="p">))</span></div>
+            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title__icontains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postdoc_title</span><span class="p">)</span> <span class="o">|</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postgrad_title</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.student_affiliates"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.student_affiliates">[docs]</a>    <span class="k">def</span> <span class="nf">student_affiliates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Return CDH student staff members and grantees based on Project Director</span>
-<span class="sd">        role.&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">pu_status__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">student_pu_status</span><span class="p">)</span> <span class="o">&amp;</span>
-            <span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">|</span>
-             <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Director&#39;</span><span class="p">)))</span></div>
+        <span class="sd">&#39;&#39;&#39;Return CDH student staff members and grantees based on</span>
+<span class="sd">        Project Director or Project Manager role.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pu_status__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">student_pu_status</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">|</span>
+                    <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__role__title__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_roles</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.not_students"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.not_students">[docs]</a>    <span class="k">def</span> <span class="nf">not_students</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Filter out graduate and undergraduates based on PU status&#39;&#39;&#39;</span>
@@ -230,6 +231,20 @@
                 <span class="n">models</span><span class="o">.</span><span class="n">When</span><span class="p">(</span><span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Director&#39;</span><span class="p">,</span>
                             <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__grant__end_date&#39;</span><span class="p">))))</span></div>
 
+<div class="viewcode-block" id="ProfileQuerySet.project_manager_years"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.project_manager_years">[docs]</a>    <span class="k">def</span> <span class="nf">project_manager_years</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Annotate with first start and last end grant year for grants</span>
+<span class="sd">        that a person was project manager.&#39;&#39;&#39;</span>
+        <span class="c1"># NOTE: filters within the aggregation query on project manager</span>
+        <span class="c1"># but not on the entire query so that e.g. on the students</span>
+        <span class="c1"># page student staff without grants are still included</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+            <span class="n">pm_start</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Min</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Case</span><span class="p">(</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">When</span><span class="p">(</span><span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Manager&#39;</span><span class="p">,</span>
+                            <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__grant__start_date&#39;</span><span class="p">))),</span>
+            <span class="n">pm_end</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Max</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Case</span><span class="p">(</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">When</span><span class="p">(</span><span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Manager&#39;</span><span class="p">,</span>
+                            <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__grant__end_date&#39;</span><span class="p">))))</span></div>
+
 <div class="viewcode-block" id="ProfileQuerySet.speakers"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.speakers">[docs]</a>    <span class="k">def</span> <span class="nf">speakers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return external speakers at CDH events.&#39;&#39;&#39;</span>
         <span class="c1"># Speakers are non-Princeton profiles (external) who are associated with</span>
@@ -250,18 +265,32 @@
     <span class="k">def</span> <span class="nf">_current_grant_query</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">today</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Director&#39;</span><span class="p">)</span> <span class="o">&amp;</span>
-            <span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__grant__start_date__lte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">&amp;</span>
-             <span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__grant__end_date__gte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">|</span>
-              <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__grant__end_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-            <span class="p">)</span>
+            <span class="c1"># in one of the allowed roles (project director/project manager)</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__role__title__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_roles</span><span class="p">)</span> <span class="o">&amp;</span>
+            <span class="c1"># current grant</span>
+            <span class="p">(</span>
+                <span class="c1"># current based on grant dates</span>
+                <span class="p">(</span>
+                    <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__grant__start_date__lte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">&amp;</span>
+                    <span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__grant__end_date__gte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">|</span>
+                     <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__grant__end_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                <span class="p">)</span> <span class="o">|</span>
+                <span class="c1"># OR current based on status override</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__status_override</span><span class="o">=</span><span class="s1">&#39;current&#39;</span><span class="p">)</span>
+            <span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span>
+            <span class="c1"># but not override set to past</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__status_override</span><span class="o">=</span><span class="s1">&#39;past&#39;</span><span class="p">)</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="ProfileQuerySet.current"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.current">[docs]</a>    <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return profiles for users with a current position or current grant</span>
 <span class="sd">        based on start and end dates.&#39;&#39;&#39;</span>
+        <span class="c1"># annotate with an is_current flag to make template logic simpler</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_position_query</span><span class="p">())</span> <span class="o">|</span>
-                           <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_grant_query</span><span class="p">()))</span></div>
+                           <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_grant_query</span><span class="p">()))</span> \
+                   <span class="o">.</span><span class="n">extra</span><span class="p">(</span><span class="n">select</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;is_current&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span></div>
+        <span class="c1"># NOTE: couldn&#39;t get annotate to work</span>
+        <span class="c1"># .annotate(is_current=models.Value(True, output_field=models.BooleanField))</span>
 
 <div class="viewcode-block" id="ProfileQuerySet.current_grant"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.current_grant">[docs]</a>    <span class="k">def</span> <span class="nf">current_grant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return profiles for users with a current grant.&#39;&#39;&#39;</span>
@@ -352,8 +381,9 @@
     <span class="n">objects</span> <span class="o">=</span> <span class="n">ProfileQuerySet</span><span class="o">.</span><span class="n">as_manager</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># FIXME: should this be self.title instead?</span>
-        <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">last_name</span><span class="p">])</span>
+        <span class="c1"># use title if set</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> \
+            <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">last_name</span><span class="p">])</span>
 
 <div class="viewcode-block" id="Profile.get_absolute_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.Profile.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;people:profile&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;slug&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">})</span></div>
@@ -362,15 +392,6 @@
     <span class="k">def</span> <span class="nf">current_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># FIXME: dowe actually need this here?</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">current_title</span></div>
-
-
-<div class="viewcode-block" id="workshops_taught"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.workshops_taught">[docs]</a><span class="k">def</span> <span class="nf">workshops_taught</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Return a QuerySet for the list of workshop events taught by a</span>
-<span class="sd">    particular user.&#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="n">event_set</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">event_type__name</span><span class="o">=</span><span class="s1">&#39;Workshop&#39;</span><span class="p">)</span></div>
-
-<span class="c1"># patch in to user for convenience  (may want to change)</span>
-<span class="n">User</span><span class="o">.</span><span class="n">workshops_taught</span> <span class="o">=</span> <span class="n">workshops_taught</span>
 
 
 <div class="viewcode-block" id="Position"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.Position">[docs]</a><span class="k">class</span> <span class="nc">Position</span><span class="p">(</span><span class="n">DateRange</span><span class="p">):</span>
@@ -524,7 +545,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

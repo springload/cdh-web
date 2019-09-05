@@ -1,6 +1,33 @@
 /* header and footer styles */
 @import "variables";
 
+// skip links
+.skip-links {
+    width: 100%;
+    position: absolute;
+    top: -$header-nav-height;
+    z-index: 11;
+    list-style-type: none;
+    margin: 0;
+
+    a {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        font-family: $font-stack-headline;
+        color: $black;
+
+        &:focus,
+        &:hover {
+            top: $header-nav-height;
+            box-shadow: 3px 3px 5px $dark-grey;
+        }
+    }
+}
+
 header.nav {
     height: $header-nav-height;
     width: 100%;
@@ -32,7 +59,8 @@ header.nav {
             text-decoration: none;
             color: #000000;
         }
-        &.current-page {
+
+        &[aria-current=page] {
             border-bottom: 4px;
             border-bottom-color: $cdh-blue;
             border-bottom-style: solid;
@@ -133,16 +161,6 @@ header.nav {
                     @media (max-width: $small-max-width) {
                         margin-bottom: 5px;
                     }
-
-                    &:hover {
-                        /* add indicator for section of menu being viewed */
-                        > a {
-                            border-bottom: 4px;
-                            border-bottom-color: $cdh-blue;
-                            border-bottom-style: solid;
-                        }
-
-                    }
                 }
 
                 > li > a {
@@ -241,6 +259,16 @@ header.nav {
             a {
                 color: $dark-grey;
             }
+        }
+    }
+    
+    .nav-main ul,
+    .nav-card ul {
+        /* add indicator for section of menu being viewed */
+        a:hover {
+            border-bottom: 4px;
+            border-bottom-color: $cdh-blue;
+            border-bottom-style: solid;
         }
     }
 }

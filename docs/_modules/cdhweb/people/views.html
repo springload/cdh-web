@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>cdhweb.people.views &#8212; CDH website 2.5.0 documentation</title>
+    <title>cdhweb.people.views &#8212; CDH website 2.6.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -32,6 +32,8 @@
             
   <h1>Source code for cdhweb.people.views</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="k">import</span> <span class="n">Max</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">Case</span><span class="p">,</span> <span class="n">When</span><span class="p">,</span> <span class="n">Value</span>
+<span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="k">import</span> <span class="n">Coalesce</span><span class="p">,</span> <span class="n">Greatest</span>
 <span class="kn">from</span> <span class="nn">django.views.generic.detail</span> <span class="k">import</span> <span class="n">DetailView</span>
 <span class="kn">from</span> <span class="nn">django.views.generic.list</span> <span class="k">import</span> <span class="n">ListView</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
@@ -51,7 +53,7 @@
     <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># use displayable manager to find published profiles only</span>
         <span class="c1"># (or draft profiles for logged in users with permission to view)</span>
-        <span class="k">return</span> <span class="n">Profile</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">published</span><span class="p">()</span> <span class="c1"># TODO: published(for_user=self.request.user)</span></div>
+        <span class="k">return</span> <span class="n">Profile</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">published</span><span class="p">()</span>  <span class="c1"># TODO: published(for_user=self.request.user)</span></div>
 
 
 <div class="viewcode-block" id="ProfileDetailView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.ProfileDetailView">[docs]</a><span class="k">class</span> <span class="nc">ProfileDetailView</span><span class="p">(</span><span class="n">ProfileMixinView</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">LastModifiedMixin</span><span class="p">):</span>
@@ -61,10 +63,12 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">staff</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ProfileDetailView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.ProfileDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ProfileDetailView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ProfileDetailView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># retrieve 3 most recent published blog posts with the current user as author</span>
-        <span class="n">recent_posts</span> <span class="o">=</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">users__id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">published</span><span class="p">()[:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">recent_posts</span> <span class="o">=</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">users__id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">published</span><span class="p">()[:</span><span class="mi">3</span><span class="p">]</span>
 
         <span class="c1"># also set object as page for common page display functionality</span>
         <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
@@ -74,7 +78,7 @@
         <span class="p">})</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">thumb</span><span class="p">:</span>
             <span class="n">context</span><span class="p">[</span><span class="s1">&#39;preview_image&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">absolutize_url</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_URL</span><span class="p">,</span>
-                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">thumb</span><span class="p">)]))</span>
+                                                               <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">thumb</span><span class="p">)]))</span>
 
         <span class="k">return</span> <span class="n">context</span></div></div>
 
@@ -127,7 +131,7 @@
             <span class="s1">&#39;past&#39;</span><span class="p">:</span> <span class="n">past</span><span class="p">,</span>
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_title</span><span class="p">,</span>
             <span class="s1">&#39;past_title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">past_title</span><span class="p">,</span>
-            <span class="s1">&#39;current_title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_title</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_title</span><span class="p">,</span> <span class="c1"># use main title as default</span>
+            <span class="s1">&#39;current_title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_title</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_title</span><span class="p">,</span>  <span class="c1"># use main title as default</span>
             <span class="s1">&#39;archive_nav_urls&#39;</span><span class="p">:</span> <span class="p">[</span>
                 <span class="p">(</span><span class="s1">&#39;Staff&#39;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;people:staff&#39;</span><span class="p">)),</span>
                 <span class="p">(</span><span class="s1">&#39;Postdoctoral Fellows&#39;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;people:postdocs&#39;</span><span class="p">)),</span>
@@ -180,7 +184,12 @@
 
 <div class="viewcode-block" id="PostdocListView.get_current_profiles"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.PostdocListView.get_current_profiles">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># we only care about current position, grant doesn&#39;t matter</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">current_position</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">current_position</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PostdocListView.get_past_profiles"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.PostdocListView.get_past_profiles">[docs]</a>    <span class="k">def</span> <span class="nf">get_past_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># show most recent first</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_past_profiles</span><span class="p">()</span>\
+            <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-user__positions__end_date&#39;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="StudentListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.StudentListView">[docs]</a><span class="k">class</span> <span class="nc">StudentListView</span><span class="p">(</span><span class="n">ProfileListView</span><span class="p">):</span>
@@ -191,7 +200,32 @@
 
 <div class="viewcode-block" id="StudentListView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.StudentListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># filter to just students</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">student_affiliates</span><span class="p">()</span><span class="o">.</span><span class="n">grant_years</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">student_affiliates</span><span class="p">()</span> \
+            <span class="o">.</span><span class="n">grant_years</span><span class="p">()</span><span class="o">.</span><span class="n">project_manager_years</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="StudentListView.get_past_profiles"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.StudentListView.get_past_profiles">[docs]</a>    <span class="k">def</span> <span class="nf">get_past_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># show most recent first based on grant or position end date</span>
+        <span class="c1"># NOTE the use of Case/When here is to avoid Greatest() returning NULL</span>
+        <span class="c1"># if any of its arguments are NULL, which is mysql behavior:</span>
+        <span class="c1"># https://docs.djangoproject.com/en/2.2/ref/models/database-functions/#django.db.models.functions.Greatest</span>
+        <span class="c1"># see also the django docs on conditional aggregation:</span>
+        <span class="c1"># https://docs.djangoproject.com/en/1.11/ref/models/conditional-expressions/#conditional-aggregation</span>
+        <span class="c1"># NOTE also that this causes dates to be interpreted as strings in QA;</span>
+        <span class="c1"># relevant ticket: https://code.djangoproject.com/ticket/30224</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_past_profiles</span><span class="p">()</span> \
+            <span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">most_recent</span><span class="o">=</span><span class="n">Greatest</span><span class="p">(</span>
+                <span class="n">Case</span><span class="p">(</span>
+                    <span class="n">When</span><span class="p">(</span><span class="n">user__membership__grant__end_date__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                         <span class="n">then</span><span class="o">=</span><span class="n">Max</span><span class="p">(</span><span class="s1">&#39;user__membership__grant__end_date&#39;</span><span class="p">)),</span>
+                    <span class="n">default</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="n">Case</span><span class="p">(</span>
+                    <span class="n">When</span><span class="p">(</span><span class="n">user__positions__end_date__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                         <span class="n">then</span><span class="o">=</span><span class="n">Max</span><span class="p">(</span><span class="s1">&#39;user__positions__end_date&#39;</span><span class="p">)),</span>
+                    <span class="n">default</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">))</span> \
+            <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-most_recent&#39;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="FacultyListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.FacultyListView">[docs]</a><span class="k">class</span> <span class="nc">FacultyListView</span><span class="p">(</span><span class="n">ProfileListView</span><span class="p">):</span>
@@ -348,7 +382,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

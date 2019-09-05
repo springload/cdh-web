@@ -1,9 +1,17 @@
 {% load pages_tags %}
 {# tertiary navigation, where applicable #}
-<ul id="{{ page.html_id }}-tertiary" class="tertiary-nav" role="menubar" aria-labelledby="{{ page.html_id }}">
+<ul id="{{ page.html_id }}-tertiary" class="tertiary-nav" aria-labelledby="{{ page.html_id }}">
     {% for page in page_branch %}
+    {% if '1' in page.in_menus %} {# workaround pages_tags limitation: explicitly check for primary nav option #}
     <li role="none">
-        <a role="menuitem" href="{{ page.get_absolute_url }}">{{ page.title }}</a>
+        <a
+            role="menuitem"
+            href="{{ page.get_absolute_url }}"
+            tabindex="-1"
+            {% if page.is_current %} aria-current="page"{% endif %}>
+            {{ page.title }}
+        </a>
     </li>
+    {% endif %}
     {% endfor %}
 </ul>

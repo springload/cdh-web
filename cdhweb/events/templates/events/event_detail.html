@@ -65,7 +65,7 @@
 
 <div class="description">
     {% if event.image %}
-    <img property="schema:image" src="{{ MEDIA_URL }}{{ event.image }}"/>
+    <img property="schema:image" src="{{ MEDIA_URL }}{{ event.image }}" alt=""/>
     {% endif %}
     <meta property="schema:url" content="{{ event.full_url }}"/>
 

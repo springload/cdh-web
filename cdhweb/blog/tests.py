@@ -8,6 +8,7 @@ from mezzanine.core.models import CONTENT_STATUS_DRAFT
 
 from cdhweb.blog.models import BlogPost
 from cdhweb.blog.views import RssBlogPostFeed
+from cdhweb.blog.sitemaps import BlogPostSitemap
 
 
 class TestBlog(TestCase):
@@ -26,7 +27,8 @@ class TestBlog(TestCase):
     def test_short_title(self):
         '''test that truncated titles are correctly generated'''
         # truncate with ellipsis for titles > 75char
-        post = BlogPost(title="Congratulations to Valedictorian Jin Yun Chow '17 and Salutatorian Grant Storey '17")
+        post = BlogPost(
+            title="Congratulations to Valedictorian Jin Yun Chow '17 and Salutatorian Grant Storey '17")
         assert len(post.short_title) == 65
         assert post.short_title.endswith('...')
         # do nothing for titles < 75char
@@ -48,7 +50,7 @@ class TestViews(TestCase):
     fixtures = ['test_blogposts.json']
 
     def test_rss_feed(self):
-        post = BlogPost.objects.first()
+        post = BlogPost.objects.get(pk=1)
 
         response = self.client.get(reverse('blog:rss'))
         assert response['content-type'] == 'application/rss+xml; charset=utf-8'
@@ -83,7 +85,7 @@ class TestViews(TestCase):
         # title displays
         self.assertContains(response, 'Latest Updates')
 
-        for post in BlogPost.objects.all():
+        for post in BlogPost.objects.published():
             self.assertContains(response, post.title)
             self.assertContains(response, post.get_absolute_url())
             self.assertContains(response, post.description)
@@ -92,8 +94,8 @@ class TestViews(TestCase):
 
             # links to blog archive by montth
             self.assertContains(response,
-                reverse('blog:by-month', kwargs={'year': post.publish_date.year,
-                        'month': post.publish_date.strftime('%m')}))
+                                reverse('blog:by-month', kwargs={'year': post.publish_date.year,
+                                                                 'month': post.publish_date.strftime('%m')}))
 
         # feed links should occur twice: once in header, once in body
         self.assertContains(response, reverse('blog:rss'), count=2)
@@ -114,9 +116,9 @@ class TestViews(TestCase):
 
         # keywords & description in header
         self.assertContains(response,
-            '<meta name="keywords" content="%s"/>' % ', '.join(post.keywords.all()))
+                            '<meta name="keywords" content="%s"/>' % ', '.join(post.keywords.all()))
         self.assertContains(response,
-            '<meta name="description" content="%s"/>' % post.description)
+                            '<meta name="description" content="%s"/>' % post.description)
 
         # feed links should occur twice: once in header, once in body
         self.assertContains(response, reverse('blog:rss'), count=2)
@@ -136,30 +138,30 @@ class TestViews(TestCase):
         self.assertContains(response, 'rel="prev"')
         self.assertNotContains(response, 'rel="next"')
 
-
     def test_blogs_by_year(self):
-        response = self.client.get(reverse('blog:by-year', kwargs={'year': 2017}))
+        response = self.client.get(
+            reverse('blog:by-year', kwargs={'year': 2017}))
 
         assert response.context['title'] == '2017'
         # date-specific title displays
         self.assertContains(response, '2017 Updates')
         # links to blog archive by montth
         self.assertContains(response,
-            reverse('blog:by-month', kwargs={'year': 2017, 'month': '09'}))
+                            reverse('blog:by-month', kwargs={'year': 2017, 'month': '09'}))
 
         # date filtering is really django logic, this is just
         # a sanity check for display
-        for post in BlogPost.objects.filter(publish_date__year=2017):
+        for post in BlogPost.objects.published().filter(publish_date__year=2017):
             self.assertContains(response, post.title)
             self.assertContains(response, post.get_absolute_url())
 
-        for post in BlogPost.objects.exclude(publish_date__year=2017):
+        for post in BlogPost.objects.published().exclude(publish_date__year=2017):
             self.assertNotContains(response, post.title)
             self.assertNotContains(response, post.get_absolute_url())
 
     def test_blogs_by_month(self):
         response = self.client.get(reverse('blog:by-month',
-            kwargs={'year': 2017, 'month': '09'}))
+                                           kwargs={'year': 2017, 'month': '09'}))
 
         assert response.context['title'] == 'September 2017'
         # date-specific title displays
@@ -202,3 +204,27 @@ class TestBlogPostQuerySet(TestCase):
         assert today_post == recent[0]
         assert yesterday_post == recent[1]
         assert oldest_post == recent[2]
+
+
+class TestBlogPostSitemap(TestCase):
+    fixtures = ['test_blogposts.json']
+
+    def test_items(self):
+        sitemap = BlogPostSitemap()
+        items = sitemap.items()
+
+        # all published posts are present
+        for post in BlogPost.objects.published():
+            assert post in items
+
+        # draft post is not present
+        draft_post = BlogPost.objects.get(pk=3)
+        assert draft_post not in items
+
+        # featured posts have priority 0.6
+        featured_post = BlogPost.objects.get(pk=1)
+        assert sitemap.priority(featured_post) == 0.6
+
+        # non-featured posts have default priority
+        non_featured_post = BlogPost.objects.get(pk=23)
+        assert sitemap.priority(non_featured_post) is None

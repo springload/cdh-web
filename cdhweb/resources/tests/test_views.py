@@ -27,11 +27,11 @@ class TestViews(TestCase):
         response = self.client.get(index_url)
         assert response.status_code == 200
         self.assertContains(response, "Next semester's events are being scheduled.",
-            msg_prefix='should display a message when there are no upcoming events')
+                            msg_prefix='should display a message when there are no upcoming events')
         self.assertContains(response, reverse('event:upcoming'),
-            msg_prefix='should link to upcoming events (in lieue of an archive)')
+                            msg_prefix='should link to upcoming events (in lieue of an archive)')
 
-        ### test the carousel display
+        # test the carousel display
         # shouldn't display without any blog posts
         self.assertTemplateNotUsed(response, 'snippets/carousel.html')
         # add some posts but don't feature any yet; should display most recent 3
@@ -42,7 +42,8 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, 'snippets/carousel.html')
         self.assertContains(response, '<div id="carousel')
         # one "active" slide, the rest are normal
-        self.assertContains(response, '<div class="post-update active">', count=1)
+        self.assertContains(
+            response, '<div class="post-update active">', count=1)
         self.assertContains(response, '<div class="post-update">', count=2)
         # feature all of the posts; should display most recent 6
         for post in BlogPost.objects.all():
@@ -52,7 +53,8 @@ class TestViews(TestCase):
         assert len(response.context['updates']) == 6
         self.assertTemplateUsed(response, 'snippets/carousel.html')
         self.assertContains(response, '<div id="carousel')
-        self.assertContains(response, '<div class="post-update active">', count=1)
+        self.assertContains(
+            response, '<div class="post-update active">', count=1)
         self.assertContains(response, '<div class="post-update">', count=5)
 
         # ensure all displayed posts have a title and link
@@ -60,7 +62,7 @@ class TestViews(TestCase):
             self.assertContains(response, post.get_absolute_url())
             self.assertContains(response, post.title)
 
-        ### test how projects are displayed on the home page
+        # test how projects are displayed on the home page
         today = timezone.now()
         site = Site.objects.first()
         projects = Project.objects.bulk_create(
@@ -106,12 +108,12 @@ class TestViews(TestCase):
             self.assertContains(response, proj.short_description)
             # NOTE: currently not testing thumbnail included
 
-        ### test how projects are displayed on the home page
+        # test how projects are displayed on the home page
         event_type = EventType.objects.first()
         yesterday = today - timedelta(days=1)
         tomorrow = today + timedelta(days=1)
         past_event = Event.objects.create(start_time=yesterday,
-            end_time=yesterday, event_type=event_type, title='Old News')
+                                          end_time=yesterday, event_type=event_type, title='Old News')
         Event.objects.bulk_create(
             [Event(start_time=tomorrow, end_time=tomorrow, title='event %s' % a,
                    slug=a, event_type=event_type, site=site)
@@ -142,7 +144,8 @@ class TestViews(TestCase):
         annual_report = Page.objects.get(title='Annual Report')
         response = self.client.get(about.get_absolute_url())
         # page-children attachment section should be present
-        self.assertContains(response, '<div class="attachments page-children">')
+        self.assertContains(
+            response, '<div class="attachments page-children">')
         # child page title and url should be present
         self.assertContains(response, annual_report.title)
         self.assertContains(response, annual_report.get_absolute_url())
@@ -151,7 +154,8 @@ class TestViews(TestCase):
         annual_report.delete()
         response = self.client.get(about.get_absolute_url())
         # should not error, should not contain page-children attachment section
-        self.assertNotContains(response, '<div class="attachments page-children">')
+        self.assertNotContains(
+            response, '<div class="attachments page-children">')
 
     def test_sitemap(self):
         # basic test of sitemap url config, override from mezzanine
@@ -197,7 +201,6 @@ def test_absolutize_url():
     assert absolutize_url(local_path) == 'https://example.org/sub/foo/bar/'
 
 
-
 class TestPageSitemap(TestCase):
     fixtures = ['test_pages.json']
 
@@ -213,13 +216,3 @@ class TestPageSitemap(TestCase):
         sitemap_items = PageSitemap().items()
         for page in pages.all():
             assert page not in sitemap_items
-
-    def test_priority(self):
-        # generic page = default priority
-        page = Page.objects.first()
-        assert PageSitemap().priority(page) is None
-
-        # landing page = slightly higher
-        landingpage = LandingPage.objects.create()
-        assert PageSitemap().priority(landingpage.page_ptr) == 0.6
-
