@@ -177,6 +177,8 @@ class StudentListView(ProfileListView):
         # https://docs.djangoproject.com/en/2.2/ref/models/database-functions/#django.db.models.functions.Greatest
         # see also the django docs on conditional aggregation:
         # https://docs.djangoproject.com/en/1.11/ref/models/conditional-expressions/#conditional-aggregation
+        # NOTE also that this causes dates to be interpreted as strings in QA;
+        # relevant ticket: https://code.djangoproject.com/ticket/30224
         return super().get_past_profiles() \
             .annotate(most_recent=Greatest(
                 Case(
