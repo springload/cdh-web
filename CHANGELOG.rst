@@ -1,6 +1,24 @@
 CHANGELOG
 =========
 
+2.6
+---
+
+* As a Content Editor, I want a visual indicator when I'm viewing a page that is not yet published so that I can distinguish between published and unpublished content.
+* As a Content Editor, I want to add text content to the events page so that I can add context to the list of events.
+* display grant history on project pages
+* add a 'status override' flag to always show grant memberships as current or past
+* add a template for embedding the event cosponsorship form
+* add a visual indicator when viewing a draft page
+* bugfix: second-level navigation pages don't respect "show in nav" setting
+* bugfix: links in lists don't get body link style
+* chore: adjust content priority values in sitemap
+* accessibility: make main navigation usable with a keyboard
+* accessibility: make "skip to" links visible when focused via keyboard
+* accessibility: add text-shadow to landing page headings
+* accessibility: add empty alt for event featured images
+* accessibility: add link titles for event cards
+
 2.5
 ---
 
