@@ -122,8 +122,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         # information attached to the membership
         return self.membership_set.filter(
             Q(grant=self.latest_grant()) | Q(status_override='current')) \
-            .exclude(status_override='past') \
-
+            .exclude(status_override='past')
 
     def alums(self):
         ''':class:`PersonQueryset` of past members sorted by last name'''
@@ -131,9 +130,10 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         # to ensure people aren't counted multiple times for each grant
         # and because we don't care about role (always 'alum')
         return self.members \
-            .distinct() \
-            .exclude(Q(membership__grant=self.latest_grant()) & ~Q(membership__status_override='past')) \
+            .exclude(Q(membership__grant=self.latest_grant()) & ~
+                     Q(membership__status_override='past')) \
             .exclude(membership__status_override='current') \
+            .distinct() \
             .order_by('last_name')
 
 
