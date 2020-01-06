@@ -108,6 +108,22 @@ RICHTEXT_ALLOWED_TAGS = ('a', 'abbr', 'acronym', 'address', 'area', 'article',
                         'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', '',
                         'ul', 'var', 'wbr', 'iframe')
 
+####################
+# WAGTAIL SETTINGS #
+####################
+
+# Human-readable name of your Wagtail site shown on login to the Wagtail admin.
+# https://docs.wagtail.io/en/latest/reference/settings.html#site-name
+WAGTAIL_SITE_NAME = 'CDH Website'
+
+# Tags are case-sensitive by default. In many cases the reverse is preferable.
+# https://docs.wagtail.io/en/latest/reference/settings.html#case-insensitive-tags
+TAGGIT_CASE_INSENSITIVE = True
+
+# Shows where a particular image, document or snippet is being used on your site.
+# Generates a query which may run slowly on sites with large numbers of pages.
+# https://docs.wagtail.io/en/latest/reference/settings.html#usage-for-images-documents-and-snippets
+WAGTAIL_USAGE_COUNT_ENABLED = True
 
 ########################
 # MAIN DJANGO SETTINGS #
@@ -317,7 +333,20 @@ INSTALLED_APPS = [
     # "mezzanine.twitter",
     # "mezzanine.accounts",
     # "mezzanine.mobile",
-    "taggit",
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.contrib.search_promotions', # required to avoid https://github.com/wagtail/wagtail/issues/1824
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail.core',
+    'modelcluster',
+    'taggit',
     'adminsortable2',
     "compressor",
     "fullurl",
@@ -356,6 +385,7 @@ MIDDLEWARE = (
     # "mezzanine.core.middleware.SitePermissionMiddleware",
     "mezzanine.pages.middleware.PageMiddleware",
     "mezzanine.core.middleware.FetchFromCacheMiddleware",
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 )
 
 # Store these package names here as they may change in the future since
@@ -422,15 +452,6 @@ if os.path.exists(f):
     module.__file__ = f
     sys.modules[module_name] = module
     exec(open(f, "rb").read())
-
-# if in debug mode and django-debug-toolbar is available, add to installed apps
-if DEBUG:
-    try:
-        import debug_toolbar
-        INSTALLED_APPS.append('debug_toolbar')
-    except ImportError:
-        pass
-
 
 ####################
 # DYNAMIC SETTINGS #

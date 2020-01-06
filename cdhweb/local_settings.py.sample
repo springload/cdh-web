@@ -91,6 +91,11 @@ PUCAS_LDAP.update({
 #     },
 # }
 
+# Wagtail sends email notifications when content is submitted for moderation,
+# and when the content is accepted or rejected.
+# https://docs.wagtail.io/en/latest/reference/settings.html#email-notifications
+WAGTAILADMIN_NOTIFICATION_FROM_EMAIL = 'admin@cdh.princeton.edu'
+WAGTAILADMIN_NOTIFICATION_USE_HTML = True
 
 
 ###################
