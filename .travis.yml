@@ -9,16 +9,12 @@ cache:
   directories:
   - downloads
   - node_modules
-before_install:
-- rvm install 2.2
-- gem install sass
-- npm install -g postcss-cli autoprefixer
 install:
 - pip install -r requirements/test.txt
 - pip install codecov
+- npm install
 - cp ci/testsettings.py cdhweb/local_settings.py
 - python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
-- npm install
 before_script:
 - sudo chown root /opt/google/chrome/chrome-sandbox
 - sudo chmod 4755 /opt/google/chrome/chrome-sandbox
