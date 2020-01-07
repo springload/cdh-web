@@ -116,12 +116,6 @@ RICHTEXT_ALLOWED_TAGS = ('a', 'abbr', 'acronym', 'address', 'area', 'article',
 # https://docs.wagtail.io/en/latest/reference/settings.html#site-name
 WAGTAIL_SITE_NAME = 'CDH Website'
 
-# Wagtail sends email notifications when content is submitted for moderation,
-# and when the content is accepted or rejected.
-# https://docs.wagtail.io/en/latest/reference/settings.html#email-notifications
-WAGTAILADMIN_NOTIFICATION_FROM_EMAIL = 'admin@cdh.princeton.edu'
-WAGTAILADMIN_NOTIFICATION_USE_HTML = True
-
 # Tags are case-sensitive by default. In many cases the reverse is preferable.
 # https://docs.wagtail.io/en/latest/reference/settings.html#case-insensitive-tags
 TAGGIT_CASE_INSENSITIVE = True
