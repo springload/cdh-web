@@ -357,6 +357,7 @@ INSTALLED_APPS = [
     # mezzanine.blog; there are good and bad aspects to this; we certainly
     # don't want users to create the wrong kind of blog posts.
     "cdhweb.blog",
+    'cdhweb.pages',
 ]
 
 # Add django debug toolbar to installed_apps if available
