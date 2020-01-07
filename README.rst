@@ -51,17 +51,17 @@ Initial setup and installation:
 
     pip install -r requirements/dev.txt
 
+- Install django-compressor dependencies::
+
+    npm install
+
 - Copy sample local settings and configure for your environment::
 
     cp cdhweb/local_settings.py.sample cdhweb/local_settings.py
 
-- Download licensed fonts and install locally under /sitemedia/fonts/
+Remember to add a ``SECRET_KEY`` setting!
 
-- django-compressor dependencies: install `sass <http://sass-lang.com/install>`_
-  for your operating system as appropriate. If you have Ruby gems installed,
-  `gem install sass`. Also install `Node.js <https://nodejs.org/en/>`_ and `npm`.
-  Globally install `postcss-cli` and `autoprefixer`, i.e.
-  `npm -g postcss-cli autoprefixer`. You may need `sudo` for these operations.
+- Download licensed fonts and install locally under /sitemedia/fonts/
 
 - If running this application on MariaDB/MySQL, you must make sure that
   time zone definitions are installed. On most flavors of Linux/MacOS,
