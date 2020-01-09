@@ -651,12 +651,10 @@ class TestViews(TestCase):
         coauth_post = staffer2.blogposts.first()
         self.assertContains(response, solo_post.title)  # show both blog posts
         self.assertContains(response, solo_post.title)
-        # indicate that one post has another author
-        self.assertContains(response, staffer2.profile.title)
+        self.assertContains(response, staffer2.profile.title)  # indicate that one post has another author
 
         response = self.client.get(staffer2.get_absolute_url())
-        # only posts from this author
-        self.assertNotContains(response, solo_post.title)
+        self.assertNotContains(response, solo_post.title)  # only posts from this author
         self.assertContains(response, coauth_post.title)
         self.assertContains(response, staffer.profile.title)
 
