@@ -12,7 +12,7 @@ cache:
 install:
 - pip install -r requirements/test.txt
 - pip install codecov
-- npm install
+- npm ci
 - cp ci/testsettings.py cdhweb/local_settings.py
 - python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
 before_script:
