@@ -3,14 +3,10 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
-from django.conf.urls.static import serve
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
-from django.views.generic.base import RedirectView, TemplateView
 from django.views.i18n import set_language
-from wagtail.admin import urls as wagtailadmin_urls
-from wagtail.core import urls as wagtail_urls
-from wagtail.documents import urls as wagtaildocs_urls
+from django.views.generic.base import RedirectView, TemplateView
 
 from cdhweb.blog.sitemaps import BlogPostSitemap
 from cdhweb.events.sitemaps import EventSitemap
@@ -78,24 +74,10 @@ urlpatterns += [
     # may complicate testing with pa11y-ci
     url(r"^sitemap\.xml$", sitemap, {'sitemaps': sitemaps}, name='sitemap'),
 
-    # wagtail paths
-    # NOTE temporarily make wagtail pages available at pages/ so that they can
-    # coexist with mezzanine urls
-    url(r'^cms/', include(wagtailadmin_urls)),
-    url(r'^documents/', include(wagtaildocs_urls)),
-    url(r'^pages/', include(wagtail_urls)),
-
     # let mezzanine handle everything else
     url("^", include("mezzanine.urls")),
-]
 
-if settings.DEBUG:
-    # serve user-uploaded media in debug mode
-    urlpatterns += [
-        url(r'^media/(?P<path>.*)$', serve, {
-            'document_root': settings.MEDIA_ROOT,
-        }),
-    ]
+]
 
 # Adds ``STATIC_URL`` to the context of error pages, so that error
 # pages can use JS, CSS and images.
