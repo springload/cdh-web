@@ -297,7 +297,7 @@ class ProfileQuerySet(PublishedQuerySetMixin):
 
 
 class Profile(Displayable, AdminThumbMixin):
-    user = models.OneToOneField(Person)
+    user = models.OneToOneField(Person, on_delete=models.CASCADE)
     is_staff = models.BooleanField(
         default=False,
         help_text='CDH staff or Postdoctoral Fellow. If checked, person ' +
