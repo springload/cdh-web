@@ -3,6 +3,7 @@
 Django>=2.2,<3.0
 pillow>=5.2.0
 git+https://github.com/stephenmcd/mezzanine.git@58aea59#egg=mezzanine
+git+https://github.com/stephenmcd/filebrowser-safe.git@c7eceb0#egg=filebrowser_safe
 django-compressor
 django-compressor-autoprefixer
 mysqlclient
