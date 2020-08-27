@@ -1,11 +1,11 @@
-{% load static pages_tags mezzanine_tags fullurl wagtailuserbar %}
+{% load static pages_tags mezzanine_tags fullurl %}
 <!DOCTYPE html>
 <html lang='en' xmlns:schema="http://schema.org/" prefix="og: http://ogp.me/ns# profile: http://ogp.me/ns/profile#" {% block headattrs %}{% endblock %}>
 <head>
     <meta charset='UTF-8'/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     {# Google Analytics recommends this implementation now #}
-    {% if INCLUDE_ANALYTICS and not request.is_preview %}
+    {% if INCLUDE_ANALYTICS %}
     <!-- Global Site Tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-87887700-1"></script>
     <script>
@@ -142,7 +142,7 @@
 
     </footer>
 
-    {% wagtailuserbar %}
+
 </body>
 
 </html>
