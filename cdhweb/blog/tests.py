@@ -30,7 +30,7 @@ class TestBlog(TestCase):
         post = BlogPost(
             title="Congratulations to Valedictorian Jin Yun Chow '17 and Salutatorian Grant Storey '17")
         assert len(post.short_title) == 65
-        assert post.short_title.endswith('...')
+        assert post.short_title.endswith('…')
         # do nothing for titles < 75char
         post = BlogPost(title="Congratulations!")
         assert post.short_title == post.title
@@ -40,7 +40,7 @@ class TestBlog(TestCase):
         # truncate with ellipsis for descriptions > 250char
         post = BlogPost(description="The CDH is hiring! \u00a0We are looking for a curious, committed, and collegial colleague to join our Development and Design Team as our second Digital Humanities\u00a0Developer. You will work with database designers, UX designers, project managers, fellow programmers\u00a0and the faculty, students and staff of Princeton University to create innovating\u00a0projects and contribute back to the Open Source software community. \u00a0")
         assert len(post.short_description) == 250
-        assert post.short_description.endswith('...')
+        assert post.short_description.endswith('…')
         # do nothing for descriptions < 250char
         post = BlogPost(description="The CDH is hiring!")
         assert post.short_description == post.description
