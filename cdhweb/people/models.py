@@ -347,6 +347,9 @@ class Profile(Displayable, AdminThumbMixin):
     # custom manager for additional queryset filters
     objects = ProfileQuerySet.as_manager()
 
+    class Meta:
+        ordering = ["-user__last_name"]
+
     def __str__(self):
         # use title if set
         return self.title or \
