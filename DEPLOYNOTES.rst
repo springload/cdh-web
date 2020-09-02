@@ -1,14 +1,6 @@
 Deploy Notes
 ============
 
-2.7
----
-
-- To avoid an ImproperlyConfiguredError in Django 2.2, media must now be stored
-  outside static/. Web servers (Apache) will need to be reconfigured to look 
-  for media in a new location, and a redirect should be created so that links 
-  pointing to /static/media/ are not broken.
-
 2.6
 ---
 
