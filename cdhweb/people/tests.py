@@ -22,7 +22,8 @@ class TestTitle(TestCase):
 
     def test_num_people(self):
         # test counts against fixture data
-        faculty_director = Title.objects.filter(title='Faculty Director').first()
+        faculty_director = Title.objects.filter(
+            title='Faculty Director').first()
         assert faculty_director.num_people() == 1
         lead_developer = Title.objects.filter(title='Lead Developer').first()
         assert lead_developer.num_people() == 1
@@ -117,7 +118,8 @@ class TestProfile(TestCase):
             reverse('people:profile', kwargs={'slug': profile.slug})
 
     def test_current_title(self):
-        pers = Person.objects.create(username='foo', first_name='Jean', last_name='Jones')
+        pers = Person.objects.create(
+            username='foo', first_name='Jean', last_name='Jones')
         profile = Profile.objects.create(user=pers, slug='jean-jones')
         # no position
         assert profile.current_title is None
@@ -126,13 +128,13 @@ class TestProfile(TestCase):
         fellow = Title.objects.create(title='fellow')
         postdoc = Title.objects.create(title='post-doc')
         prev_post = Position.objects.create(user=pers, title=postdoc,
-            start_date='2015-01-01', end_date='2015-12-31')
+                                            start_date='2015-01-01', end_date='2015-12-31')
         assert profile.current_title is None
 
         # current position
         staff_title = Title.objects.create(title='staff')
         cur_post = Position.objects.create(user=pers, title=staff_title,
-            start_date=date(2016, 6, 1))
+                                           start_date=date(2016, 6, 1))
         assert profile.current_title == cur_post.title
 
 
@@ -321,10 +323,11 @@ class ProfileQuerySetTest(TestCase):
 
     def test_grant_years(self):
         # no error for non-grantees
-        Profile.objects.filter(user__membership__isnull=True).grant_years()
+        Profile.objects.filter(
+            user__membership__isnull=True).grant_years().order_by('-user__last_name')
 
         annotated = Profile.objects.filter(user__membership__role__title='Project Director') \
-                                   .grant_years()
+                                   .grant_years().order_by('-user__last_name')
         for profile in annotated:
             grants = Grant.objects.filter(membership__user=profile.user)
             assert profile.first_start == grants.first().start_date
@@ -339,7 +342,7 @@ class TestPosition(TestCase):
         staff_title = Title.objects.create(title='staff', sort_order=2)
         director = Person.objects.create(username='director')
         pos = Position.objects.create(user=director, title=staff_title,
-            start_date=date.today())
+                                      start_date=date.today())
 
         assert str(pos) == '%s %s (%s)' % (director, staff_title,
                                            pos.start_date.year)
@@ -349,15 +352,15 @@ class TestPosition(TestCase):
 def test_init_profile_from_ldap():
     # create user to test with
     staffer = Person.objects.create(username='staff',
-        email='STAFF@EXAMPLE.com')
+                                    email='STAFF@EXAMPLE.com')
 
     # use Mock to simulate ldap data provided by pucas
     ldapinfo = Mock(displayName='Joe E. Schmoe',
-        # no telephone or office set
-        telephoneNumber=[], street=[],
-        title='Freeloader, World at large', pustatus='stf',
-        ou='English')
-        # job title, organizational unit
+                    # no telephone or office set
+                    telephoneNumber=[], street=[],
+                    title='Freeloader, World at large', pustatus='stf',
+                    ou='English')
+    # job title, organizational unit
 
     init_profile_from_ldap(staffer, ldapinfo)
     updated_staffer = Person.objects.get(username='staff')
@@ -505,7 +508,8 @@ class TestViews(TestCase):
         # should display grant role, not cdh role
         self.assertNotContains(response, 'Faculty Director')
         grant = fac.latest_grant
-        self.assertContains(response, '{} Grant Recipient'.format(grant.grant_type.grant_type))
+        self.assertContains(response, '{} Grant Recipient'.format(
+            grant.grant_type.grant_type))
         # should display date range from start of earliest to end of last grant
         self.assertContains(response, '2015–{}'.format(grant.end_date.year))
 
@@ -521,8 +525,8 @@ class TestViews(TestCase):
         bill = Person.objects.get(username='billshakes')
         workshop = EventType.objects.get(name='Workshop')
         # use django timezone util for timezone-aware datetime
-        start_time = timezone.now() + timedelta(days=1) # starts tomorrow
-        end_time = start_time + timedelta(hours=2) # lasts 2 hours
+        start_time = timezone.now() + timedelta(days=1)  # starts tomorrow
+        end_time = start_time + timedelta(hours=2)  # lasts 2 hours
         bill_workshop = Event.objects.create(start_time=start_time,
                                              end_time=end_time,
                                              event_type=workshop,
@@ -532,8 +536,8 @@ class TestViews(TestCase):
         # create another event to test ordering
         rms = Person.objects.get(username='rms')
         lecture = EventType.objects.get(name='Guest Lecture')
-        start_time = timezone.now() + timedelta(weeks=1) # starts in a week
-        end_time = start_time + timedelta(hours=1) # lasts 1 hour
+        start_time = timezone.now() + timedelta(weeks=1)  # starts in a week
+        end_time = start_time + timedelta(hours=1)  # lasts 1 hour
         rms_lecture = Event.objects.create(start_time=start_time,
                                            end_time=end_time,
                                            event_type=lecture,
@@ -561,7 +565,8 @@ class TestViews(TestCase):
         # speaker institutional affiliation is shown
         self.assertContains(response, bill.profile.institution)
         # link to event is rendered
-        self.assertContains(response, bill.event_set.first().get_absolute_url())
+        self.assertContains(
+            response, bill.event_set.first().get_absolute_url())
 
         # publish another event
         rms_lecture.status = CONTENT_STATUS_PUBLISHED
@@ -576,9 +581,9 @@ class TestViews(TestCase):
         assert response.context['current'][1] == rms.profile
 
         # move an event to the past
-        new_start = timezone.now() - timedelta(weeks=52) # ~1 year ago
+        new_start = timezone.now() - timedelta(weeks=52)  # ~1 year ago
         bill_workshop.start_time = new_start
-        bill_workshop.end_time = new_start + timedelta(hours=2) # 2 hours long
+        bill_workshop.end_time = new_start + timedelta(hours=2)  # 2 hours long
         bill_workshop.save()
 
         # should be one profile in each category
@@ -590,16 +595,15 @@ class TestViews(TestCase):
         self.assertContains(response, bill_workshop.start_time.strftime('%Y'))
 
         # move both events to past to test ordering
-        new_start = timezone.now() - timedelta(weeks=104) # ~2 years ago
+        new_start = timezone.now() - timedelta(weeks=104)  # ~2 years ago
         rms_lecture.start_time = new_start
-        rms_lecture.end_time = new_start + timedelta(hours=2) # 2 hours long
+        rms_lecture.end_time = new_start + timedelta(hours=2)  # 2 hours long
         rms_lecture.save()
 
         # speakers should be sorted with latest event year first
         response = self.client.get(reverse('people:speakers'))
         assert response.context['past'][0] == bill.profile
         assert response.context['past'][1] == rms.profile
-
 
     def test_executive_committee_list(self):
         # former acting faculty directory is also exec
@@ -626,7 +630,8 @@ class TestViews(TestCase):
 
         # set past end dates on position memberships
         yesterday = date.today() - timedelta(days=1)
-        delue.positions.filter(end_date__isnull=True).update(end_date=yesterday)
+        delue.positions.filter(
+            end_date__isnull=True).update(end_date=yesterday)
         jay.positions.update(end_date=yesterday)
         response = self.client.get(reverse('people:exec-committee'))
         assert response.context['current'].count() is 0
@@ -637,9 +642,8 @@ class TestViews(TestCase):
         # sits with section not shown when empty
         self.assertNotContains(response, 'Sits with Executive Committee')
 
-
     def test_profile_detail(self):
-         # create test person and add two positions
+        # create test person and add two positions
         staffer = Person.objects.get(username='staff')
 
         response = self.client.get(staffer.get_absolute_url())
@@ -655,12 +659,14 @@ class TestViews(TestCase):
         staffer2 = Person.objects.get(username='staff2')
         solo_post = staffer.blogposts.last()
         coauth_post = staffer2.blogposts.first()
-        self.assertContains(response, solo_post.title) # show both blog posts
+        self.assertContains(response, solo_post.title)  # show both blog posts
         self.assertContains(response, solo_post.title)
-        self.assertContains(response, staffer2.profile.title) # indicate that one post has another author
+        # indicate that one post has another author
+        self.assertContains(response, staffer2.profile.title)
 
         response = self.client.get(staffer2.get_absolute_url())
-        self.assertNotContains(response, solo_post.title) # only posts from this author
+        # only posts from this author
+        self.assertNotContains(response, solo_post.title)
         self.assertContains(response, coauth_post.title)
         self.assertContains(response, staffer.profile.title)
 
@@ -686,6 +692,7 @@ class TestProfileSitemap(TestCase):
         for profile in published_staff:
             assert profile in sitemap_items
 
-        published_non_staff = Profile.objects.filter(is_staff=False).published()
+        published_non_staff = Profile.objects.filter(
+            is_staff=False).published()
         for profile in published_non_staff:
             assert profile not in sitemap_items

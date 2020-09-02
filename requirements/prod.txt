@@ -1,9 +1,9 @@
 ## production requirements
 
-Django>=1.11.15,<2.0
+Django>=2.2,<3.0
 pillow>=5.2.0
-wagtail<=2.3
-mezzanine<=4.3
+git+https://github.com/stephenmcd/mezzanine.git@58aea59#egg=mezzanine # mezzanine 4.3.1 for Django 2.2
+git+https://github.com/stephenmcd/filebrowser-safe.git@c7eceb0#egg=filebrowser_safe # filebrowser_safe 1.0.0-alpha.1 for Django 2.2
 django-compressor
 django-compressor-autoprefixer
 mysqlclient

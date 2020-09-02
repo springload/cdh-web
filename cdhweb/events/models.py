@@ -84,8 +84,9 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
     end_time = models.DateTimeField()
     # all day flag todo
     # all_day = models.BooleanField(default=False, blank=True)
-    location = models.ForeignKey(Location, null=True, blank=True)
-    event_type = models.ForeignKey(EventType)
+    location = models.ForeignKey(Location, null=True, blank=True,
+                                 on_delete=models.SET_NULL)
+    event_type = models.ForeignKey(EventType, on_delete=models.CASCADE)
     speakers = models.ManyToManyField(Person,
         help_text='Guest lecturer(s) or Workshop leader(s)',
         blank=True)
