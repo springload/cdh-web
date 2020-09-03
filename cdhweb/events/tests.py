@@ -153,6 +153,20 @@ class TestEvent(TestCase):
                                            args=[1999, '01', event.slug]))
         assert response.status_code == 404
 
+    def test_is_virtual(self):
+        jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
+
+        # event in non-virtual location isn't virtual
+        place = Location(name="Firestone Library")
+        event = Event(title='Learning', start_time=jan15, end_time=jan15,
+                                     slug='some-workshop', location=place)
+        assert not event.is_virtual
+        # event in virtual location is virtual
+        zoom = Location(name="Zoom", is_virtual=True)
+        event2 = Event(title='Talking', start_time=jan15, end_time=jan15,
+                                      slug='some-workshop', location=zoom)
+        assert event2.is_virtual
+
 
 class TestEventQueryset(TestCase):
 

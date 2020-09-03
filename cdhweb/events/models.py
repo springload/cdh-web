@@ -37,10 +37,12 @@ class EventType(models.Model):
 
 class Location(models.Model):
     name = models.CharField(max_length=255,
-        help_text='Name of the location')
+                            help_text='Name of the location')
     short_name = models.CharField(max_length=80, blank=True)
     address = models.CharField(max_length=255,
-        help_text='Address of the location (will not display if same as name)')
+                               help_text='Address of the location (will not display if same as name)')
+    is_virtual = models.BooleanField(
+        default=False, help_text='Virtual platforms, i.e. Zoom or Google Hangouts')
 
     def __str__(self):
         return self.short_name or self.name
@@ -61,7 +63,7 @@ class EventQuerySet(PublishedQuerySetMixin):
         now = timezone.now()
         # construct a datetime based on now but with zero hour/minute/second
         today = datetime(now.year, now.month, now.day,
-            tzinfo=timezone.get_default_timezone())
+                         tzinfo=timezone.get_default_timezone())
         return self.filter(end_time__gte=today)
 
     def recent(self):
@@ -70,7 +72,7 @@ class EventQuerySet(PublishedQuerySetMixin):
         now = timezone.now()
         # construct a datetime based on now but with zero hour/minute/second
         today = datetime(now.year, now.month, now.day,
-            tzinfo=timezone.get_default_timezone())
+                         tzinfo=timezone.get_default_timezone())
         return self.filter(end_time__lt=today).order_by('-start_time')
 
 
@@ -88,22 +90,25 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
                                  on_delete=models.SET_NULL)
     event_type = models.ForeignKey(EventType, on_delete=models.CASCADE)
     speakers = models.ManyToManyField(Person,
-        help_text='Guest lecturer(s) or Workshop leader(s)',
-        blank=True)
+                                      help_text='Guest lecturer(s) or Workshop leader(s)',
+                                      blank=True)
 
     attendance = models.PositiveIntegerField(null=True, blank=True,
-        help_text='Total number of people who attended the event. (Internal only, for reporting purposes.)')
+                                             help_text='Total number of people who attended the event. (Internal only, for reporting purposes.)')
+
+    url = models.URLField(
+        null=True, blank=True, help_text='URL for virtual events, e.g. Zoom meetings.')
 
     # TODO: include expected size? (required size?)
     image = FileField(verbose_name="Image",
-        upload_to=upload_to("events.image", "events"),
-        format="Image", max_length=255, null=True, blank=True,
-        help_text='Image for display on event detail page (optional)')
+                      upload_to=upload_to("events.image", "events"),
+                      format="Image", max_length=255, null=True, blank=True,
+                      help_text='Image for display on event detail page (optional)')
 
     thumb = FileField(verbose_name="Thumbnail",
-        upload_to=upload_to("events.thumb", "events/thumbnails"),
-        format="Image", max_length=255, null=True, blank=True,
-        help_text='Image for display on event card (optional)')
+                      upload_to=upload_to("events.thumb", "events/thumbnails"),
+                      format="Image", max_length=255, null=True, blank=True,
+                      help_text='Image for display on event card (optional)')
 
     attachments = models.ManyToManyField(Attachment, blank=True)
 
@@ -121,6 +126,13 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
     class Meta:
         ordering = ("start_time",)
 
+    @property
+    def is_virtual(self):
+        '''If an event takes place in a virtual location, it is virtual'''
+        if self.location:
+            return self.location.is_virtual
+        return False
+
     def get_absolute_url(self):
         '''event detail url on this site'''
         # we don't have to worry about the various url config options
@@ -131,7 +143,6 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
             # force two-digit month
             'month': '%02d' % self.start_time.month,
             'slug': self.slug})
-
 
     def full_url(self):
         '''Absolute url, including site address'''
@@ -191,6 +202,5 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         if self.location:
             event.add('location', self.location.display_name)
         event.add('description',
-            '\n'.join([strip_tags(self.content), '', absurl]))
+                  '\n'.join([strip_tags(self.content), '', absurl]))
         return event
-
