@@ -3,8 +3,6 @@ python:
 - '3.5'
 cache:
   pip: true
-  directories:
-  - node_modules
 install:
 - pip install -r requirements/test.txt
 - pip install codecov
@@ -12,6 +10,7 @@ install:
 - cp ci/testsettings.py cdhweb/local_settings.py
 - python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
 before_script:
+- mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
 - python manage.py compress -f -v0
 script:
 - py.test --cov=cdhweb
