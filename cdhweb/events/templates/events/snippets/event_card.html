@@ -16,9 +16,13 @@
             <meta property="schema:startDate" content="{{ event.start_time|date:'c' }}"/>
             <meta property="schema:endDate" content="{{ event.end_time|date:'c' }}"/>
             {# location is required for schema.org #}
-            <div property="schema:location" typeof="schema:Place">
+            <div property="schema:location" typeof="{% if event.is_virtual %}schema:VirtualLocation{% else %}schema:Place{% endif %}">
                 <meta property="schema:name" content="{{ event.location.name }}"/>
-                <meta property="schema:address" content="{{ event.location.address}}"/>
+                {% if not event.is_virtual %}
+                <meta property="schema:address" content="{{ event.location.address }}"/>
+                {% elif event.url %}
+                <meta property="schema:url" content="{{ event.url }}"/>
+                {% endif %}
             </div>
         </div>
         <div class="when">

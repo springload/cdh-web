@@ -50,11 +50,15 @@
     <div>{{ event.when }}</div>
 
     {% if event.location %}
-    <div property="schema:location" typeof="schema:Place" class="location">
+    <div property="schema:location" typeof="{% if event.is_virtual %}schema:VirtualLocation{% else %}schema:Place{% endif %}" class="location">
         <span property="schema:name">{{ event.location.name }}</span>
+        {% if not event.is_virtual %}
         <div property="schema:address"
         {% if event.location.name == event.location.address %}style="display:none"{% endif %}>
         {{ event.location.address}}</div>
+        {% elif event.url %}
+        <div property="schema:url" style="display:none">{{ event.url }}</div>
+        {% endif %}
     </div>
     {% endif %}
 
