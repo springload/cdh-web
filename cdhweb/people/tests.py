@@ -274,21 +274,33 @@ class ProfileQuerySetTest(TestCase):
         assert grad_pi.profile not in Profile.objects.student_affiliates()
         assert grad_pm.profile not in Profile.objects.student_affiliates()
 
-    def test_faculty_affiliates(self):
-        # faculty person who is also project director
-        fac = Person.objects.get(username='Meredith')
-        assert fac.profile in Profile.objects.faculty_affiliates()
+    def test_affiliates(self):
+        # faculty person who is also project director should be affiliate
+        # (josh is already a project director for s&co)
+        faculty = Person.objects.get(username='jk2')
+        assert faculty.profile in Profile.objects.affiliates()
 
-        # non-faculty project director != faculty affiliate
-        fac.profile.pu_status = 'graduate'
-        fac.profile.save()
-        assert fac.profile not in Profile.objects.faculty_affiliates()
+        # staff project director is also an affiliate
+        # (make jay dominick a project director on s&co)
+        staff = Person.objects.get(username='dominick')
+        s_co = Project.objects.get(slug='sco')
+        s_co_grant = Grant.objects.get(pk=4)
+        proj_director = Role.objects.get(title='Project Director')
+        Membership.objects.create(
+            user=staff, project=s_co, grant=s_co_grant, role=proj_director)
+        assert staff.profile in Profile.objects.affiliates()
 
-        # faculty without project membership
-        fac.profile.pu_status = 'fac'
-        fac.profile.save()
-        fac.membership_set.all().delete()
-        assert fac.profile not in Profile.objects.faculty_affiliates()
+        # student project director is not an affiliate
+        # (promote "tom", grad PI, to project director)
+        grad_pi = Person.objects.get(username='tom')
+        Membership.objects.create(
+            user=grad_pi, project=s_co, grant=s_co_grant, role=proj_director)
+        assert grad_pi.profile not in Profile.objects.affiliates()
+
+        # CDH staff are not affiliates
+        # (meredith is already project director for PPA)
+        cdh_staff = Person.objects.get(username='Meredith')
+        assert cdh_staff.profile not in Profile.objects.affiliates()
 
     def test_executive_committee(self):
         # faculty director is not exec
@@ -419,7 +431,7 @@ class TestViews(TestCase):
 
         response = self.client.get(reverse('people:staff'))
         # person should only appear once even if they have multiple positions
-        assert len(response.context['current']) == 1
+        assert response.context['current'].filter(user__username='staff').count() == 1
 
         # staffer profile should be included
         assert staffer.profile in response.context['current']
@@ -499,26 +511,35 @@ class TestViews(TestCase):
         response = self.client.get(reverse('people:students'))
         self.assertContains(response, grad_pi.website_url)
 
-    def test_faculty_affiliates_list(self):
-        # faculty person has cdh position and is a project director
-        fac = Person.objects.get(username='Meredith')
-
-        response = self.client.get(reverse('people:faculty'))
+    def test_affiliates_list(self):
+        # faculty person is a project director
+        fac = Person.objects.get(username='jk2')
+        response = self.client.get(reverse('people:affiliates'))
         assert fac.profile in response.context['current']
-        # should display grant role, not cdh role
-        self.assertNotContains(response, 'Faculty Director')
+
+        # should display name and date range from latest grant
         grant = fac.latest_grant
         self.assertContains(response, '{} Grant Recipient'.format(
             grant.grant_type.grant_type))
-        # should display date range from start of earliest to end of last grant
-        self.assertContains(response, '2015–{}'.format(grant.end_date.year))
+        self.assertContains(response, '{}–{}'.format(
+            grant.start_date.year, grant.end_date.year))
 
         # non current grant - should shift to past list
         grant.end_date = date(2018, 1, 1)
         grant.save()
-        response = self.client.get(reverse('people:faculty'))
+        response = self.client.get(reverse('people:affiliates'))
         assert fac.profile not in response.context['current']
         assert fac.profile in response.context['past']
+
+        # promote a staff person to faculty director; they should also appear
+        staff = Person.objects.get(username='dominick')
+        s_co = Project.objects.get(slug='sco')
+        s_co_grant = Grant.objects.get(pk=4)
+        proj_director = Role.objects.get(title='Project Director')
+        Membership.objects.create(
+            user=staff, project=s_co, grant=s_co_grant, role=proj_director)
+        response = self.client.get(reverse('people:affiliates'))
+        assert staff.profile in response.context['past']
 
     def test_speakers_list(self):
         # create a test event for an external person
