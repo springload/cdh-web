@@ -166,11 +166,12 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         '''Filter out graduate and undergraduates based on PU status'''
         return self.exclude(pu_status__in=self.student_pu_status)
 
-    def faculty_affiliates(self):
-        '''Faculty affiliates based on PU status and Project Director
-        project role.'''
-        return self.filter(pu_status='fac',
-                           user__membership__role__title='Project Director')
+    def affiliates(self):
+        '''Faculty and staff affiliates based on PU status and Project Director
+        project role. Excludes CDH staff.'''
+        return self.filter(pu_status__in=('fac', 'stf'),
+                           user__membership__role__title='Project Director') \
+                    .exclude(is_staff=True)
 
     def executive_committee(self):
         '''Executive committee members; based on position title.'''
