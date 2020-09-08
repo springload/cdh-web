@@ -14,6 +14,6 @@ urlpatterns = [
     url(r'^speakers/$', views.SpeakerListView.as_view(), name='speakers'),
     url(r'^executive-committee/$', views.ExecListView.as_view(), name='exec-committee'),
     # redirect from /people/faculty -> /people/affiliates
-    url(r'^faculty/$', RedirectView.as_view(url='/people/affiliates', permanent=True)),
+    url(r'^faculty/$', RedirectView.as_view(url='/people/affiliates/', permanent=True)),
     url(r'^(?P<slug>[\w-]+)/$', views.ProfileDetailView.as_view(), name='profile'),
 ]
