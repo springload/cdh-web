@@ -291,6 +291,14 @@ class TestViews(TestCase):
         self.assertContains(response, str(speaker),
                             msg_prefix='event speaker name should display without profile')
 
+        # test usage of virtual URL
+        zoom, _ = Location.objects.get_or_create(name="Zoom", is_virtual=True)
+        event.join_url = "princeton.zoom.us/my/zoomroom"
+        event.location = zoom
+        event.save()
+        response = self.client.get(event.get_absolute_url())
+        self.assertContains(response, "princeton.zoom.us/my/zoomroom")
+
         # TODO: how to test with image associated?
 
         # get by slug with wrong dates - should not be found
@@ -337,6 +345,14 @@ class TestViews(TestCase):
         self.assertContains(response, next_event.title)
         self.assertContains(response, next_event.get_absolute_url())
         # (not testing all fields)
+
+        # test usage of virtual URL for upcoming event
+        zoom, _ = Location.objects.get_or_create(name="Zoom", is_virtual=True)
+        next_event.join_url = "princeton.zoom.us/my/zoomroom"
+        next_event.location = zoom
+        next_event.save()
+        response = self.client.get(reverse('event:upcoming'))
+        self.assertContains(response, "princeton.zoom.us/my/zoomroom")
 
         # should not include past events
         past_event = Event.objects.filter(end_time__lte=today).first()
