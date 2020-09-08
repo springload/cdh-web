@@ -54,6 +54,33 @@
         }
     },
     {
+        "model": "projects.project",
+        "pk": 3,
+        "fields": {
+            "keywords_string": "",
+            "site": 1,
+            "title": "Shakespeare & Company Project",
+            "slug": "sco",
+            "_meta_title": null,
+            "description": "Shakespeare & Company Project",
+            "gen_description": true,
+            "created": "2018-08-30T18:48:02.917Z",
+            "updated": "2018-08-30T18:48:02.917Z",
+            "status": 2,
+            "publish_date": "2018-08-30T18:48:02.913Z",
+            "expiry_date": null,
+            "short_url": null,
+            "in_sitemap": true,
+            "short_description": "",
+            "long_description": "",
+            "highlight": false,
+            "cdh_built": true,
+            "image": "",
+            "thumb": "",
+            "attachments": []
+        }
+    },
+    {
         "model": "projects.granttype",
         "pk": 1,
         "fields": {
@@ -101,6 +128,16 @@
             "start_date": "2017-01-01",
             "end_date": "2218-09-29",
             "project": 2,
+            "grant_type": 3
+        }
+    },
+    {
+        "model": "projects.grant",
+        "pk": 4,
+        "fields": {
+            "start_date": "2018-01-01",
+            "end_date": "2019-05-29",
+            "project": 3,
             "grant_type": 3
         }
     },
@@ -566,6 +603,24 @@
         }
     },
     {
+        "model": "auth.user",
+        "pk": 15,
+        "fields": {
+            "password": "",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "jk2",
+            "first_name": "Joshua",
+            "last_name": "Kotin",
+            "email": "",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2018-08-30T18:45:15.960Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
         "model": "people.profile",
         "pk": 1,
         "fields": {
@@ -736,7 +791,7 @@
         "fields": {
             "keywords_string": "",
             "site": 1,
-            "title": "",
+            "title": "Meredith Martin",
             "slug": "-1",
             "_meta_title": null,
             "description": " ",
@@ -749,7 +804,7 @@
             "short_url": null,
             "in_sitemap": true,
             "user": 7,
-            "is_staff": false,
+            "is_staff": true,
             "education": "",
             "bio": "",
             "phone_number": "",
@@ -995,6 +1050,72 @@
         }
     },
     {
+        "model": "people.profile",
+        "pk": 15,
+        "fields": {
+            "keywords_string": "",
+            "site": 1,
+            "title": "Joshua Kotin",
+            "slug": "josh",
+            "_meta_title": null,
+            "description": " ",
+            "gen_description": true,
+            "created": "2018-08-30T18:45:21.258Z",
+            "updated": "2018-08-30T18:45:21.258Z",
+            "status": 2,
+            "publish_date": "2018-08-30T18:45:21.258Z",
+            "expiry_date": null,
+            "short_url": null,
+            "in_sitemap": true,
+            "user": 15,
+            "is_staff": false,
+            "education": "",
+            "bio": "",
+            "phone_number": "",
+            "office_location": "",
+            "job_title": "",
+            "department": "",
+            "institution": "",
+            "pu_status": "fac",
+            "image": "",
+            "thumb": "",
+            "attachments": []
+        }
+    },
+    {
+        "model": "people.profile",
+        "pk": 16,
+        "fields": {
+            "keywords_string": "",
+            "site": 1,
+            "title": "CDH Developer",
+            "slug": "dev",
+            "_meta_title": null,
+            "description": " ",
+            "gen_description": true,
+            "created": "2018-08-30T18:45:21.258Z",
+            "updated": "2018-08-30T18:45:21.258Z",
+            "status": 2,
+            "publish_date": "2018-08-30T18:45:21.258Z",
+            "expiry_date": null,
+            "short_url": null,
+            "in_sitemap": true,
+            "user": 1,
+            "is_staff": true,
+            "education": "",
+            "bio": "",
+            "phone_number": "",
+            "office_location": "",
+            "job_title": "Developer",
+            "department": "",
+            "institution": "",
+            "pu_status": "stf",
+            "image": "",
+            "thumb": "",
+            "attachments": []
+        }
+    },
+    {
         "model": "people.position",
         "pk": 1,
         "fields": {
@@ -1228,6 +1349,16 @@
             "user": 14,
             "grant": 3,
             "role": 2
+        }
+    },
+    {
+        "model": "projects.membership",
+        "pk": 5,
+        "fields": {
+            "project": 3,
+            "user": 15,
+            "grant": 3,
+            "role": 1
         }
     }
 ]

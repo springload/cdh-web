@@ -103,7 +103,7 @@ class ProfileListView(ProfileMixinView, ListView, LastModifiedListMixin):
                 ('Staff', reverse('people:staff')),
                 ('Postdoctoral Fellows', reverse('people:postdocs')),
                 ('Students', reverse('people:students')),
-                ('Faculty Affiliates', reverse('people:faculty')),
+                ('Affiliates', reverse('people:affiliates')),
                 ('Executive Committee', reverse('people:exec-committee')),
                 ('Speakers', reverse('people:speakers')),
             ],
@@ -195,17 +195,16 @@ class StudentListView(ProfileListView):
             .order_by('-most_recent')
 
 
-class FacultyListView(ProfileListView):
-    '''Display current and past faculty affiliates'''
-    page_title = 'Faculty Affiliates'
+class AffiliateListView(ProfileListView):
+    '''Display current and past faculty & staff affiliates'''
+    page_title = 'Affiliates'
     past_title = 'Past {}'.format(page_title)
     #: do not show person positions; want grant information instead
     show_cdh_position = False
 
     def get_queryset(self):
-        # filter to faculty affiliates, annotate with grant years, and order by
-        # name
-        return super().get_queryset().faculty_affiliates().grant_years() \
+        # filter to affiliates, annotate with grant years, and order by name
+        return super().get_queryset().affiliates().grant_years() \
                       .order_by('user__last_name')
 
     def get_current_profiles(self):
