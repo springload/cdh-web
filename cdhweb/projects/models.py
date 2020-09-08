@@ -132,8 +132,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         # and because we don't care about role (always 'alum')
         return self.members \
             .distinct() \
-            .exclude(Q(membership__grant=self.latest_grant()) & ~Q(membership__status_override='past')) \
-            .exclude(membership__status_override='current') \
+            .exclude(membership__in=self.current_memberships()) \
             .order_by('last_name')
 
 
