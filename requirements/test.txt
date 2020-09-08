@@ -2,6 +2,6 @@
 
 -r prod.txt
 
-pytest>=3.6 # required for pytest-django
+pytest>=4.6 # required for pytest-cov
 pytest-django
 pytest-cov
