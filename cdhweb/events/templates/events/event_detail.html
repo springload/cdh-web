@@ -57,7 +57,7 @@
         {% if event.location.name == event.location.address %}style="display:none"{% endif %}>
         {{ event.location.address}}</div>
         {% elif event.join_url %}
-        <div property="schema:url" style="display:none">{{ event.url }}</div>
+        <div property="schema:url" style="display:none">{{ event.join_url }}</div>
         {% endif %}
     </div>
     {% endif %}
