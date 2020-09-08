@@ -1,6 +1,12 @@
 Deploy Notes
 ============
 
+2.7
+---
+
+- The "Faculty Affiliates" page has changed to show both Faculty and Staff, and
+  thus its title and content should be updated accordingly in Mezzanine.
+
 2.6
 ---
 
