@@ -3,6 +3,8 @@ python:
 - '3.5'
 cache:
   pip: true
+before_install:
+- nvm install 10 # ensure we use node v10
 install:
 - pip install -r requirements/test.txt
 - pip install codecov
