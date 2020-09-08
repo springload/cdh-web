@@ -20,7 +20,7 @@
                 <meta property="schema:name" content="{{ event.location.name }}"/>
                 {% if not event.is_virtual %}
                 <meta property="schema:address" content="{{ event.location.address }}"/>
-                {% elif event.url %}
+                {% elif event.join_url %}
                 <meta property="schema:url" content="{{ event.url }}"/>
                 {% endif %}
             </div>

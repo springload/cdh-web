@@ -4,7 +4,7 @@ from .models import EventType, Location, Event
 
 class EventAdmin(admin.ModelAdmin):
     list_display = ('title', 'event_type', 'is_virtual', 'start_time', 'admin_thumb',
-        'attendance', 'url', 'tag_list')
+        'attendance', 'join_url', 'tag_list')
     prepopulated_fields = {"slug": ("title",)}
     date_hierarchy = 'start_time'
     search_fields = ('title', 'content')
@@ -15,10 +15,6 @@ class EventAdmin(admin.ModelAdmin):
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.tags.all())
     tag_list.short_description = 'Tags'
-
-    def is_virtual(self, obj):
-        return "Yes" if obj.is_virtual else "No"
-    is_virtual.short_description = 'Virtual'
 
     # use inline fields for titles and resources
     # also: suppress management/auth fields like password, username, permissions,

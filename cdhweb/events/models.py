@@ -41,8 +41,8 @@ class Location(models.Model):
     short_name = models.CharField(max_length=80, blank=True)
     address = models.CharField(max_length=255,
                                help_text='Address of the location (will not display if same as name)')
-    is_virtual = models.BooleanField(
-        default=False, help_text='Virtual platforms, i.e. Zoom or Google Hangouts')
+    is_virtual = models.BooleanField(verbose_name="Virtual",
+                                     default=False, help_text='Virtual platforms, i.e. Zoom or Google Hangouts')
 
     def __str__(self):
         return self.short_name or self.name
@@ -96,8 +96,8 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
     attendance = models.PositiveIntegerField(null=True, blank=True,
                                              help_text='Total number of people who attended the event. (Internal only, for reporting purposes.)')
 
-    url = models.URLField(
-        null=True, blank=True, help_text='URL for virtual events, e.g. Zoom meetings.')
+    join_url = models.URLField(verbose_name="Join URL", null=True, blank=True,
+                                  help_text='Join URL for virtual events, e.g. Zoom meetings.')
 
     # TODO: include expected size? (required size?)
     image = FileField(verbose_name="Image",
@@ -126,12 +126,13 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
     class Meta:
         ordering = ("start_time",)
 
-    @property
     def is_virtual(self):
         '''If an event takes place in a virtual location, it is virtual'''
         if self.location:
             return self.location.is_virtual
         return False
+    is_virtual.boolean = True
+    is_virtual.short_description = "Virtual"
 
     def get_absolute_url(self):
         '''event detail url on this site'''
@@ -200,7 +201,10 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
         event.add('dtstart', self.start_time)
         event.add('dtend', self.end_time)
         if self.location:
-            event.add('location', self.location.display_name)
+            if self.is_virtual() and self.join_url:
+                event.add('location', self.join_url)
+            else:
+                event.add('location', self.location.display_name)
         event.add('description',
                   '\n'.join([strip_tags(self.content), '', absurl]))
         return event

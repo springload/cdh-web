@@ -12,12 +12,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='event',
-            name='url',
-            field=models.URLField(blank=True, help_text='URL for virtual events, e.g. Zoom meetings.', null=True),
+            name='join_url',
+            field=models.URLField(blank=True, help_text='Join URL for virtual events, e.g. Zoom meetings.', null=True, verbose_name='Join URL'),
         ),
         migrations.AddField(
             model_name='location',
             name='is_virtual',
-            field=models.BooleanField(default=False, help_text='Virtual platforms, i.e. Zoom or Google Hangouts'),
+            field=models.BooleanField(default=False, help_text='Virtual platforms, i.e. Zoom or Google Hangouts', verbose_name='Virtual'),
         ),
     ]
