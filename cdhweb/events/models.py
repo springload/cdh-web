@@ -40,7 +40,7 @@ class Location(models.Model):
     name = models.CharField(max_length=255,
                             help_text='Name of the location')
     short_name = models.CharField(max_length=80, blank=True)
-    address = models.CharField(max_length=255, null=True,
+    address = models.CharField(max_length=255, null=True, blank=True,
                                help_text='Address of the location (will not display if same as name)')
     is_virtual = models.BooleanField(verbose_name="Virtual",
                                      default=False, help_text='Virtual platforms, i.e. Zoom or Google Hangouts')

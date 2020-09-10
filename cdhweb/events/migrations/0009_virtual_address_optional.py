@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='location',
             name='address',
-            field=models.CharField(help_text='Address of the location (will not display if same as name)', max_length=255, null=True),
+            field=models.CharField(help_text='Address of the location (will not display if same as name)', max_length=255, null=True, blank=True),
         ),
     ]
