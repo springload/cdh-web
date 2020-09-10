@@ -2,13 +2,15 @@
 
 from datetime import datetime, timedelta
 
+import icalendar
+import pytest
+import pytz
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import resolve, reverse
 from django.utils import timezone
-import icalendar
 from mezzanine.core.models import CONTENT_STATUS_DRAFT
 from mezzanine.pages.models import RichTextPage
-import pytz
 
 from cdhweb.events.models import Event, EventType, Location
 from cdhweb.people.models import Person
@@ -39,6 +41,16 @@ class TestLocation(TestCase):
         # name and address thesame
         loc = Location(name='101 East Pyne', address='101 East Pyne')
         assert str(loc.display_name) == loc.name
+
+    def test_clean(self):
+        # location with no address raises ValidationError
+        loc = Location(name='Center for Finger Studies')
+        with pytest.raises(ValidationError):
+            loc.clean()
+
+        # virtual location with no address is fine
+        loc.is_virtual = True
+        loc.clean()
 
 
 class TestEvent(TestCase):

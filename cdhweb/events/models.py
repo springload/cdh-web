@@ -2,19 +2,20 @@
 
 from datetime import datetime
 
+import icalendar
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import strip_tags
-import icalendar
-
 from mezzanine.core.fields import FileField
 from mezzanine.core.models import Displayable, RichText
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
 from cdhweb.people.models import Person
-from cdhweb.resources.models import Attachment, ExcerptMixin, PublishedQuerySetMixin
+from cdhweb.resources.models import (Attachment, ExcerptMixin,
+                                     PublishedQuerySetMixin)
 from cdhweb.resources.utils import absolutize_url
 
 
@@ -39,7 +40,7 @@ class Location(models.Model):
     name = models.CharField(max_length=255,
                             help_text='Name of the location')
     short_name = models.CharField(max_length=80, blank=True)
-    address = models.CharField(max_length=255,
+    address = models.CharField(max_length=255, null=True,
                                help_text='Address of the location (will not display if same as name)')
     is_virtual = models.BooleanField(verbose_name="Virtual",
                                      default=False, help_text='Virtual platforms, i.e. Zoom or Google Hangouts')
@@ -53,6 +54,11 @@ class Location(models.Model):
         if self.name and self.address and self.name != self.address:
             return ', '.join([self.name, self.address])
         return self.name
+
+    def clean(self):
+        # address is required for non-virtual events
+        if not self.is_virtual and not self.address:
+            raise ValidationError("Address is required for non-virtual events")
 
 
 class EventQuerySet(PublishedQuerySetMixin):
@@ -97,7 +103,7 @@ class Event(Displayable, RichText, AdminThumbMixin, ExcerptMixin):
                                              help_text='Total number of people who attended the event. (Internal only, for reporting purposes.)')
 
     join_url = models.URLField(verbose_name="Join URL", null=True, blank=True,
-                                  help_text='Join URL for virtual events, e.g. Zoom meetings.')
+                               help_text='Join URL for virtual events, e.g. Zoom meetings.')
 
     # TODO: include expected size? (required size?)
     image = FileField(verbose_name="Image",
