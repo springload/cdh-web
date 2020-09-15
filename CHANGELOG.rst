@@ -1,6 +1,16 @@
 CHANGELOG
 =========
 
+2.7
+---
+
+* As an admin, I want to add a virtual location to events so that people know they can join remotely.
+* show staff affiliates on affiliates page
+* bugfix: project alums display incorrectly lists members of most recent grant 
+* bugfix: blog post links not inside `<div>` don't get link style
+* chore: upgrade django + mezzanine
+* chore: remove pa11y-ci
+
 2.6
 ---
 
