@@ -1,30 +1,31 @@
 from datetime import date
 
-from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
-from mezzanine.core.fields import RichTextField, FileField
-from mezzanine.core.models import Displayable, CONTENT_STATUS_PUBLISHED, \
-    CONTENT_STATUS_DRAFT
+from mezzanine.core.fields import FileField, RichTextField
+from mezzanine.core.models import (CONTENT_STATUS_DRAFT,
+                                   CONTENT_STATUS_PUBLISHED, Displayable)
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
-from cdhweb.resources.models import Attachment, PublishedQuerySetMixin, \
-    DateRange
+from cdhweb.projects.models import Role
+from cdhweb.resources.models import (Attachment, DateRange,
+                                     PublishedQuerySetMixin)
 
 
 class Title(models.Model):
     '''Job titles for people'''
     title = models.CharField(max_length=255, unique=True)
     sort_order = models.PositiveIntegerField(default=0, blank=False,
-        null=False)
+                                             null=False)
     # NOTE: defining relationship here because we can't add it to User
     # directly
     positions = models.ManyToManyField(User, through='Position',
-        related_name='titles')
+                                       related_name='titles')
 
     class Meta:
         ordering = ['sort_order']
@@ -99,8 +100,8 @@ class Person(User):
 
     @property
     def latest_grant(self):
-        '''most recent grants where this person is project director'''
-        mship = self.membership_set.filter(role__title='Project Director') \
+        '''most recent grants where this person has director role'''
+        mship = self.membership_set.filter(role__title__in=Role.DIRECTOR_ROLES) \
                     .order_by('-grant__start_date').first()
         if mship:
             return mship.grant
@@ -129,7 +130,8 @@ class ProfileQuerySet(PublishedQuerySetMixin):
     student_titles = ['Graduate Fellow', 'Graduate Assistant',
                       'Undergraduate Assistant']
     #: memebership roles that indicate someone is an affiliate
-    project_roles = ['Project Director', 'Project Manager']
+    project_roles = ['Project Director',
+                     'Project Manager', 'Co-PI: Research Lead']
 
     #: student status codes from LDAP
     student_pu_status = ['graduate', 'undergraduate']
@@ -170,8 +172,8 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         '''Faculty and staff affiliates based on PU status and Project Director
         project role. Excludes CDH staff.'''
         return self.filter(pu_status__in=('fac', 'stf'),
-                           user__membership__role__title='Project Director') \
-                    .exclude(is_staff=True)
+                           user__membership__role__title__in=Role.DIRECTOR_ROLES) \
+            .exclude(is_staff=True)
 
     def executive_committee(self):
         '''Executive committee members; based on position title.'''
@@ -193,10 +195,10 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         # page student staff without grants are still included
         return self.annotate(
             first_start=models.Min(models.Case(
-                models.When(user__membership__role__title='Project Director',
+                models.When(user__membership__role__title__in=Role.DIRECTOR_ROLES,
                             then='user__membership__grant__start_date'))),
             last_end=models.Max(models.Case(
-                models.When(user__membership__role__title='Project Director',
+                models.When(user__membership__role__title__in=Role.DIRECTOR_ROLES,
                             then='user__membership__grant__end_date'))))
 
     def project_manager_years(self):
@@ -227,7 +229,7 @@ class ProfileQuerySet(PublishedQuerySetMixin):
             models.Q(user__positions__isnull=False) &
             (models.Q(user__positions__end_date__isnull=True) |
              models.Q(user__positions__end_date__gte=date.today())
-            )
+             )
         )
 
     def _current_grant_query(self):
@@ -285,7 +287,7 @@ class ProfileQuerySet(PublishedQuerySetMixin):
             earliest_event=models.Min(models.Case(
                 models.When(user__event__status=CONTENT_STATUS_PUBLISHED,
                             then='user__event__start_time')))
-            ).order_by('earliest_event')
+        ).order_by('earliest_event')
 
     def order_by_position(self):
         '''order by job title sort order and then by start date'''
@@ -294,7 +296,7 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         # not be from the same position)
         return self.annotate(min_title=models.Min('user__positions__title__sort_order'),
                              min_start=models.Min('user__positions__start_date')) \
-                   .order_by('min_title', 'min_start', 'user__last_name')
+            .order_by('min_title', 'min_start', 'user__last_name')
 
 
 class Profile(Displayable, AdminThumbMixin):
@@ -332,12 +334,12 @@ class Profile(Displayable, AdminThumbMixin):
                                  max_length=15, blank=True, default='')
 
     image = FileField(verbose_name="Image",
-        upload_to=upload_to("people.image", "people"),
-        format="Image", max_length=255, null=True, blank=True)
+                      upload_to=upload_to("people.image", "people"),
+                      format="Image", max_length=255, null=True, blank=True)
 
     thumb = FileField(verbose_name="Thumbnail",
-        upload_to=upload_to("people.image", "people/thumbnails"),
-        format="Image", max_length=255, null=True, blank=True)
+                      upload_to=upload_to("people.image", "people/thumbnails"),
+                      format="Image", max_length=255, null=True, blank=True)
 
     admin_thumb_field = "thumb"
 
