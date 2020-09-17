@@ -159,6 +159,9 @@ class Grant(DateRange):
 
 # fixme: where does resource type go, for associated links?
 
+
+
+
 class Role(models.Model):
     '''A role on a project'''
     title = models.CharField(max_length=255, unique=True)
