@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>cdhweb.people.models &#8212; CDH website 2.6.0 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cdhweb.people.models &#8212; CDH website 2.7.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -31,21 +32,21 @@
           <div class="body" role="main">
             
   <h1>Source code for cdhweb.people.models</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">date</span>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
 
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="k">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ObjectDoesNotExist</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="k">import</span> <span class="n">slugify</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="k">import</span> <span class="n">RichTextField</span><span class="p">,</span> <span class="n">FileField</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="k">import</span> <span class="n">Displayable</span><span class="p">,</span> <span class="n">CONTENT_STATUS_PUBLISHED</span><span class="p">,</span> \
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
+<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="kn">import</span> <span class="n">RichTextField</span><span class="p">,</span> <span class="n">FileField</span>
+<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="kn">import</span> <span class="n">Displayable</span><span class="p">,</span> <span class="n">CONTENT_STATUS_PUBLISHED</span><span class="p">,</span> \
     <span class="n">CONTENT_STATUS_DRAFT</span>
-<span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="k">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
-<span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="k">import</span> <span class="n">TaggableManager</span>
+<span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="kn">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
+<span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="kn">import</span> <span class="n">TaggableManager</span>
 
-<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="k">import</span> <span class="n">Attachment</span><span class="p">,</span> <span class="n">PublishedQuerySetMixin</span><span class="p">,</span> \
+<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="kn">import</span> <span class="n">Attachment</span><span class="p">,</span> <span class="n">PublishedQuerySetMixin</span><span class="p">,</span> \
     <span class="n">DateRange</span>
 
 
@@ -62,7 +63,7 @@
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_order&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
 
 <div class="viewcode-block" id="Title.num_people"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.Title.num_people">[docs]</a>    <span class="k">def</span> <span class="nf">num_people</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -138,7 +139,7 @@
         <span class="k">if</span> <span class="n">mship</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">mship</span><span class="o">.</span><span class="n">grant</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Custom person display to make it easier to choose people</span>
 <span class="sd">        in admin menus.  Uses profile title if available, otherwise combines</span>
 <span class="sd">        first and last names.  Returns username as last resort if no</span>
@@ -199,11 +200,12 @@
         <span class="sd">&#39;&#39;&#39;Filter out graduate and undergraduates based on PU status&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">pu_status__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">student_pu_status</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ProfileQuerySet.faculty_affiliates"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.faculty_affiliates">[docs]</a>    <span class="k">def</span> <span class="nf">faculty_affiliates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Faculty affiliates based on PU status and Project Director</span>
-<span class="sd">        project role.&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pu_status</span><span class="o">=</span><span class="s1">&#39;fac&#39;</span><span class="p">,</span>
-                           <span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Director&#39;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="ProfileQuerySet.affiliates"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.affiliates">[docs]</a>    <span class="k">def</span> <span class="nf">affiliates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Faculty and staff affiliates based on PU status and Project Director</span>
+<span class="sd">        project role. Excludes CDH staff.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pu_status__in</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;fac&#39;</span><span class="p">,</span> <span class="s1">&#39;stf&#39;</span><span class="p">),</span>
+                           <span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Director&#39;</span><span class="p">)</span> \
+                    <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.executive_committee"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.executive_committee">[docs]</a>    <span class="k">def</span> <span class="nf">executive_committee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Executive committee members; based on position title.&#39;&#39;&#39;</span>
@@ -330,7 +332,7 @@
 
 
 <div class="viewcode-block" id="Profile"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.Profile">[docs]</a><span class="k">class</span> <span class="nc">Profile</span><span class="p">(</span><span class="n">Displayable</span><span class="p">,</span> <span class="n">AdminThumbMixin</span><span class="p">):</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">OneToOneField</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">OneToOneField</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
     <span class="n">is_staff</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;CDH staff or Postdoctoral Fellow. If checked, person &#39;</span> <span class="o">+</span>
@@ -380,7 +382,10 @@
     <span class="c1"># custom manager for additional queryset filters</span>
     <span class="n">objects</span> <span class="o">=</span> <span class="n">ProfileQuerySet</span><span class="o">.</span><span class="n">as_manager</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-user__last_name&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># use title if set</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> \
             <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">last_name</span><span class="p">])</span>
@@ -404,7 +409,7 @@
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-start_date&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">year</span><span class="p">)</span></div>
 
 
@@ -530,7 +535,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script><div class="powered_by">
+<script>$('#searchbox').show(0);</script><div class="powered_by">
 <p>Powered by:</p>
 <a href="http://cdh.princeton.edu/">
 <img src="https://cdh.princeton.edu/static/img/CDH_logo.svg"
@@ -545,7 +550,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

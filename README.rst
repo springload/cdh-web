@@ -109,3 +109,11 @@ directory::
 When building documentation for a production release, use `make docs` to
 update the published documentation on GitHub Pages.
 
+License
+-------
+This project is licensed under the `Apache 2.0 License <https://github.com/Princeton-CDH/ppa-django/blob/master/LICENSE>`_.
+
+©2019 Trustees of Princeton University.  Permission granted via
+Princeton Docket #20-2634 for distribution online under a standard Open Source
+license. Ownership rights transferred to Rebecca Koeser provided software
+is distributed online via open source.

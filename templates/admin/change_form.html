@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block extrahead %}
+    {{ block.super }}
     <script>
     // We use "compress" above because we need django-compressor to generate a
     // stylesheet for us to apply to the tinyMCE preview. Once that happens, we

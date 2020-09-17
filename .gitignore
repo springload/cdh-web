@@ -4,7 +4,7 @@ db.sqlite3
 
 # Media ignores
 static
-static/media/
+media
 static/CACHE
 sitemedia/fonts
 **/.sass-cache/

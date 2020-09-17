@@ -2,13 +2,15 @@
 
 from datetime import datetime, timedelta
 
+import icalendar
+import pytest
+import pytz
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import resolve, reverse
 from django.utils import timezone
-import icalendar
 from mezzanine.core.models import CONTENT_STATUS_DRAFT
 from mezzanine.pages.models import RichTextPage
-import pytz
 
 from cdhweb.events.models import Event, EventType, Location
 from cdhweb.people.models import Person
@@ -39,6 +41,16 @@ class TestLocation(TestCase):
         # name and address thesame
         loc = Location(name='101 East Pyne', address='101 East Pyne')
         assert str(loc.display_name) == loc.name
+
+    def test_clean(self):
+        # location with no address raises ValidationError
+        loc = Location(name='Center for Finger Studies')
+        with pytest.raises(ValidationError):
+            loc.clean()
+
+        # virtual location with no address is fine
+        loc.is_virtual = True
+        loc.clean()
 
 
 class TestEvent(TestCase):
@@ -147,11 +159,31 @@ class TestEvent(TestCase):
         # description should have tags stripped
         assert description in ical['description'].to_ical().decode()
         assert absurl in ical['description'].to_ical().decode()
-
+        # change event to a virtual location
+        zoom = Location(name="Zoom", is_virtual=True)
+        event.join_url = "princeton.zoom.us/my/zoomroom"
+        event.location = zoom
+        # ical event should have join URL set as location
+        ical = event.ical_event()
+        assert ical['location'] == "princeton.zoom.us/my/zoomroom"
         # get by slug with wrong dates - should not be found
         response = self.client.get(reverse('event:detail',
                                            args=[1999, '01', event.slug]))
         assert response.status_code == 404
+
+    def test_is_virtual(self):
+        jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
+
+        # event in non-virtual location isn't virtual
+        place = Location(name="Firestone Library")
+        event = Event(title='Learning', start_time=jan15, end_time=jan15,
+                                     slug='some-workshop', location=place)
+        assert not event.is_virtual()
+        # event in virtual location is virtual
+        zoom = Location(name="Zoom", is_virtual=True)
+        event2 = Event(title='Talking', start_time=jan15, end_time=jan15,
+                                      slug='some-workshop', location=zoom)
+        assert event2.is_virtual()
 
 
 class TestEventQueryset(TestCase):
@@ -271,6 +303,14 @@ class TestViews(TestCase):
         self.assertContains(response, str(speaker),
                             msg_prefix='event speaker name should display without profile')
 
+        # test usage of virtual URL
+        zoom, _ = Location.objects.get_or_create(name="Zoom", is_virtual=True)
+        event.join_url = "princeton.zoom.us/my/zoomroom"
+        event.location = zoom
+        event.save()
+        response = self.client.get(event.get_absolute_url())
+        self.assertContains(response, "princeton.zoom.us/my/zoomroom")
+
         # TODO: how to test with image associated?
 
         # get by slug with wrong dates - should not be found
@@ -317,6 +357,14 @@ class TestViews(TestCase):
         self.assertContains(response, next_event.title)
         self.assertContains(response, next_event.get_absolute_url())
         # (not testing all fields)
+
+        # test usage of virtual URL for upcoming event
+        zoom, _ = Location.objects.get_or_create(name="Zoom", is_virtual=True)
+        next_event.join_url = "princeton.zoom.us/my/zoomroom"
+        next_event.location = zoom
+        next_event.save()
+        response = self.client.get(reverse('event:upcoming'))
+        self.assertContains(response, "princeton.zoom.us/my/zoomroom")
 
         # should not include past events
         past_event = Event.objects.filter(end_time__lte=today).first()

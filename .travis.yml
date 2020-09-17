@@ -1,14 +1,10 @@
 language: python
 python:
 - '3.5'
-addons:
-  chrome: stable
-  firefox: latest
 cache:
   pip: true
-  directories:
-  - downloads
-  - node_modules
+before_install:
+- nvm install 10 # ensure we use node v10
 install:
 - pip install -r requirements/test.txt
 - pip install codecov
@@ -16,17 +12,10 @@ install:
 - cp ci/testsettings.py cdhweb/local_settings.py
 - python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
 before_script:
-- sudo chown root /opt/google/chrome/chrome-sandbox
-- sudo chmod 4755 /opt/google/chrome/chrome-sandbox
-- mysql -u root -e "create database cdhweb";  # load and run site for pa11y to check
 - mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
-- python manage.py migrate
-- python manage.py loaddata pa11y_test_site
-- python manage.py compress -f -v0 # compress static assets
-- python manage.py runserver --insecure --nobanner &  # run in insecure mode for static assets
+- python manage.py compress -f -v0
 script:
 - py.test --cov=cdhweb
-- npm run pa11y
 services:
 - mysql
 after_success:

@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.conf.urls import include, url
+from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
@@ -76,8 +77,11 @@ urlpatterns += [
 
     # let mezzanine handle everything else
     url("^", include("mezzanine.urls")),
-
 ]
+
+# serve static files in development - automatically activates in DEBUG; see
+# https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-files-uploaded-by-a-user-during-development
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Adds ``STATIC_URL`` to the context of error pages, so that error
 # pages can use JS, CSS and images.

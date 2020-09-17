@@ -132,8 +132,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         # and because we don't care about role (always 'alum')
         return self.members \
             .distinct() \
-            .exclude(Q(membership__grant=self.latest_grant()) & ~Q(membership__status_override='past')) \
-            .exclude(membership__status_override='current') \
+            .exclude(membership__in=self.current_memberships()) \
             .order_by('last_name')
 
 
@@ -147,8 +146,8 @@ class GrantType(models.Model):
 
 class Grant(DateRange):
     '''A specific grant associated with a project'''
-    project = models.ForeignKey(Project)
-    grant_type = models.ForeignKey(GrantType)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    grant_type = models.ForeignKey(GrantType, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['start_date', 'project']
@@ -159,6 +158,9 @@ class Grant(DateRange):
 
 
 # fixme: where does resource type go, for associated links?
+
+
+
 
 class Role(models.Model):
     '''A role on a project'''
@@ -175,10 +177,10 @@ class Role(models.Model):
 
 class Membership(models.Model):
     '''Project membership - joins project, grant, user, and role.'''
-    project = models.ForeignKey(Project)
-    user = models.ForeignKey(Person)
-    grant = models.ForeignKey(Grant)
-    role = models.ForeignKey(Role)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(Person, on_delete=models.CASCADE)
+    grant = models.ForeignKey(Grant, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
     # allows forcing certain memberships to show as current or alum
     STATUS_OVERRIDE_CHOICES = (

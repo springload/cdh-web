@@ -218,7 +218,7 @@ STATICFILES_DIRS = [
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = STATIC_URL + "media/"
+MEDIA_URL = "/media/"
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -257,8 +257,12 @@ TEMPLATES = [
         "DIRS": [
             os.path.join(PROJECT_ROOT, "templates")
         ],
-        "APP_DIRS": True,
         "OPTIONS": {
+            'loaders': [
+                'apptemplates.Loader',
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ],
             "context_processors": [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -292,6 +296,7 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.contrib.messages",
     "django.contrib.redirects",
     "django.contrib.sessions",
     "django.contrib.sites",
@@ -339,7 +344,6 @@ MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 

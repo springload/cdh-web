@@ -1,6 +1,15 @@
 Deploy Notes
 ============
 
+2.7
+---
+
+- The "Faculty Affiliates" page has changed to show both Faculty and Staff, and
+  thus its title and content should be updated accordingly in Mezzanine.
+- The django-compressor build process may fail on nodejs versions <10. Ensure
+  that v10 is installed and available on the target machine.
+
+
 2.6
 ---
 
