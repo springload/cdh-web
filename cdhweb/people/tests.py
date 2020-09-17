@@ -280,11 +280,19 @@ class ProfileQuerySetTest(TestCase):
         faculty = Person.objects.get(username='jk2')
         assert faculty.profile in Profile.objects.affiliates()
 
+        # faculty person with co-PI: Research Lead should be affiliate
+        co_pi = Person.objects.create(username='copi')
+        co_pi_profile = Profile.objects.create(user=co_pi, title="Co-PI", pu_status='fac')
+        co_pi_role, _created = Role.objects.get_or_create(title='Co-PI: Research Lead')
+        s_co_grant = Grant.objects.get(pk=4)
+        s_co = Project.objects.get(slug='sco')
+        Membership.objects.create(
+            user=co_pi, project=s_co, grant=s_co_grant, role=co_pi_role)
+        assert co_pi.profile in Profile.objects.affiliates()
+
         # staff project director is also an affiliate
         # (make jay dominick a project director on s&co)
         staff = Person.objects.get(username='dominick')
-        s_co = Project.objects.get(slug='sco')
-        s_co_grant = Grant.objects.get(pk=4)
         proj_director = Role.objects.get(title='Project Director')
         Membership.objects.create(
             user=staff, project=s_co, grant=s_co_grant, role=proj_director)
@@ -431,7 +439,8 @@ class TestViews(TestCase):
 
         response = self.client.get(reverse('people:staff'))
         # person should only appear once even if they have multiple positions
-        assert response.context['current'].filter(user__username='staff').count() == 1
+        assert response.context['current'].filter(
+            user__username='staff').count() == 1
 
         # staffer profile should be included
         assert staffer.profile in response.context['current']
