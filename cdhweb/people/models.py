@@ -12,7 +12,6 @@ from mezzanine.core.models import (CONTENT_STATUS_DRAFT,
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
 
-from cdhweb.projects.models import Role
 from cdhweb.resources.models import (Attachment, DateRange,
                                      PublishedQuerySetMixin)
 
@@ -101,7 +100,7 @@ class Person(User):
     @property
     def latest_grant(self):
         '''most recent grants where this person has director role'''
-        mship = self.membership_set.filter(role__title__in=Role.DIRECTOR_ROLES) \
+        mship = self.membership_set.filter(role__title__in=ProfileQuerySet.director_roles) \
                     .order_by('-grant__start_date').first()
         if mship:
             return mship.grant
@@ -125,6 +124,9 @@ class ProfileQuerySet(PublishedQuerySetMixin):
     postdoc_title = 'Postdoctoral Fellow'
     #: variant postdoc title for Princeton PGRA
     postgrad_title = 'Postgraduate Research Associate'
+
+    #: position titles that indicate a person is a project director
+    director_roles = ['Project Director', 'Co-PI: Research Lead']
 
     #: position titles that indicate a staff person is a student
     student_titles = ['Graduate Fellow', 'Graduate Assistant',
@@ -172,7 +174,7 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         '''Faculty and staff affiliates based on PU status and Project Director
         project role. Excludes CDH staff.'''
         return self.filter(pu_status__in=('fac', 'stf'),
-                           user__membership__role__title__in=Role.DIRECTOR_ROLES) \
+                           user__membership__role__title__in=self.director_roles) \
             .exclude(is_staff=True)
 
     def executive_committee(self):
@@ -195,10 +197,10 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         # page student staff without grants are still included
         return self.annotate(
             first_start=models.Min(models.Case(
-                models.When(user__membership__role__title__in=Role.DIRECTOR_ROLES,
+                models.When(user__membership__role__title__in=self.director_roles,
                             then='user__membership__grant__start_date'))),
             last_end=models.Max(models.Case(
-                models.When(user__membership__role__title__in=Role.DIRECTOR_ROLES,
+                models.When(user__membership__role__title__in=self.director_roles,
                             then='user__membership__grant__end_date'))))
 
     def project_manager_years(self):
