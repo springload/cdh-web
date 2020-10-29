@@ -106,7 +106,7 @@ RICHTEXT_ALLOWED_TAGS = ('a', 'abbr', 'acronym', 'address', 'area', 'article',
                         'section', 'select', 'small', 'span', 'strike',
                         'strong', 'sub', 'sup', 'table', 'tbody', 'td',
                         'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', '',
-                        'ul', 'var', 'wbr')
+                        'ul', 'var', 'wbr', 'iframe')
 
 
 ########################
