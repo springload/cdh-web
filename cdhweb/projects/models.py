@@ -39,7 +39,7 @@ class ProjectQuerySet(PublishedQuerySetMixin):
         return self.exclude(self._current_grant_query())
 
     #: grant types that indicate staff or postdoc project
-    staff_postdoc_grants = ['Staff R&D', 'Postdoctoral Research Project']
+    staff_postdoc_grants = ['Staff R&D', 'Staff Projects', 'Postdoctoral Research Project']
 
     def staff_or_postdoc(self):
         '''Staff and postdoc projects, based on grant type'''
