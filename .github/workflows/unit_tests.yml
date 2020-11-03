@@ -54,13 +54,15 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ env.PYTHON_VERSION }}
+    # We base the python cache on the hash of all requirements files, so that
+    # if any change, the cache is invalidated.
     - name: Cache pip
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: pip-${{ hashFiles('requirements.txt') }}
+        key: pip-${{ hashFiles('requirements/*.txt') }}
         restore-keys: |
-          pip-${{ hashFiles('requirements.txt') }}
+          pip-${{ hashFiles('requirements/*.txt') }}
           pip-
     - name: Install dependencies
       run: pip install -r requirements/test.txt
