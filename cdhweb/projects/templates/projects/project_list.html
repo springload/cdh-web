@@ -10,15 +10,19 @@
 
 {# TODO: first continue person refactor first and then adapt here  #}
 {# drop-down nav adapted from profile list page #}
+{% url 'project:list' as projects_url %}
+{% url 'project:staff' as staff_projects_url %}
+{% url 'project:working-groups' as wg_url %}
 <div class="archive-nav">
   <a class="toggle">
-    Projects
+    {% if request.path == projects_url %}Projects
+    {% elif request.path == staff_projects_url %}Staff Projects
+    {% else %}DH Working Groups{% endif %}
     <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
   <ul class="submenu">
-    {% url 'project:list' as projects_url %}
-    {% url 'project:staff' as staff_projects_url %}
     <li {% if request.path == projects_url %}class="current"{% endif %}><a href="{{ projects_url }}">Projects</a></li>
-    <li {% if request.path == staff_projects_url %}class="current"{% endif %}><a href="{{ staff_projects_url }}">Staff and Postdoctoral Fellow Projects</a></li>
+    <li {% if request.path == staff_projects_url %}class="current"{% endif %}><a href="{{ staff_projects_url }}">Staff Projects</a></li>
+    <li {% if request.path == wg_url %}class="current"{% endif %}><a href="{{ wg_url }}">DH Working Groups</a></li>
   </ul>
 </div>
 
