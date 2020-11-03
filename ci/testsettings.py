@@ -3,6 +3,8 @@ import os
 # This file is exec'd from settings.py, so it has access to and can
 # modify all the variables in settings.py.
 
+# These settings correspond to the service container settings in the
+# .github/workflow .yml files.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -10,6 +12,7 @@ DATABASES = {
         'USER': 'cdhweb',
         'PASSWORD': 'cdhweb',
         'HOST': '127.0.0.1',
+        'PORT': '',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },
