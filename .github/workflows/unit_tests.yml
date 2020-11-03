@@ -70,6 +70,8 @@ jobs:
       run: |
         cp ci/testsettings.py cdhweb/local_settings.py
         python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
+    - name: Build static assets
+      run: python manage.py compress
     - name: Run pytest
       run: py.test --cov=./ --cov-report=xml
     - name: Upload test coverage to Codecov
