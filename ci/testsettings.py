@@ -8,9 +8,9 @@ import os
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cdhweb',
         'USER': 'root',
-        'PASSWORD': 'cdhweb',
+        'NAME': os.getenv('MYSQL_DATABASE'),
+        'PASSWORD': os.getenv('MYSQL_ROOT_PASSWORD'),
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
