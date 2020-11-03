@@ -13,8 +13,18 @@ DATABASES = {
         'PASSWORD': 'cdhweb',
         'HOST': '127.0.0.1',
         'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
+        'TEST': {
+            'CHARSET': 'utf8',
+            'COLLATION': 'utf8_general_ci'
+        }
     },
 }
+
+# required for database access?
+ALLOWED_HOSTS = ['*']
 
 # turn off debug so we see 404s when testing
 DEBUG = False
