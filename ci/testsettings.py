@@ -23,11 +23,11 @@ DATABASES = {
     },
 }
 
-# required for database access?
-ALLOWED_HOSTS = ['*']
-
 # turn off debug so we see 404s when testing
 DEBUG = False
+
+# required for tests when DEBUG = False
+ALLOWED_HOSTS = ['*']
 
 # configure django-compressor to compress css & javascript
 COMPRESS_ENABLED = True
