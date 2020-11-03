@@ -9,7 +9,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cdhweb',
-        'USER': 'cdhweb',
+        'USER': 'root',
         'PASSWORD': 'cdhweb',
         'HOST': '127.0.0.1',
         'PORT': '',
