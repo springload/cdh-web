@@ -16,13 +16,7 @@
             {% if show_grant %} {# display grant role #}
                 {% with grant=profile.user.latest_grant %}
                     {% if grant %}
-                    {# NOTE: for unknown reasons, on qa these are not returned as date objects; handle either date or YYYY-MM-DD string#}
-                        <p>{% if profile.first_start and profile.last_end %}
-                        {# NOTE: not using start year because it creates incorrect display values; see issue 197 #}
-                            {% firstof profile.first_start.year profile.first_start|slice:":4" as start_year %}
-                            {% firstof profile.last_end.year profile.last_end|slice:":4" as end_year %}
-                            {{ end_year }}
-                        {% elif not grant.is_current %}{{ grant.years }}{% endif %}
+                        <p>{{ grant.years }}
                         {# special case for faculty fellowship display #}
                         {% if grant.grant_type.grant_type == 'Faculty Fellowship' %}Faculty Fellow{% else %}
                         {{ grant.grant_type }} Grant Recipient{% endif %}</p>

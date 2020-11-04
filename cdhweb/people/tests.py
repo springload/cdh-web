@@ -530,10 +530,10 @@ class TestViews(TestCase):
 
         # should display name and date from latest grant
         grant = fac.latest_grant
-        self.assertContains(response, '{} {} Grant Recipient'.format(
+        self.assertContains(response, '{}–{} {} Grant Recipient'.format(
+            grant.start_date.year,
             grant.end_date.year,
-            grant.grant_type.grant_type), html=True
-        )
+            grant.grant_type.grant_type), html=True)
 
         # non current grant - should shift to past list
         grant.end_date = date(2018, 1, 1)
