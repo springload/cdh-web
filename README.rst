@@ -3,9 +3,9 @@ CDH Website
 
 .. sphinx-start-marker-do-not-remove
 
-.. image:: https://travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master
-   :target: https://travis-ci.org/Princeton-CDH/cdh-web
-   :alt: Build status
+.. image:: https://github.com/Princeton-CDH/cdh-web/workflows/unit%20tests/badge.svg
+   :target: https://github.com/Princeton-CDH/cdh-web/actions?query=workflow%3A%22unit+tests%22
+   :alt: Unit test status
 
 .. image:: https://landscape.io/github/Princeton-CDH/cdh-web/master/landscape.svg?style=flat
   :target: https://landscape.io/github/Princeton-CDH/cdh-web/master
@@ -19,7 +19,7 @@ CDH Website
    :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=master
    :alt: Requirements Status
 
-Python 3.5 / Django 1.11 / Node 8.16.0 / MariaDB (MySQL) 5.5 w/ timezone info
+Python 3.5 / Django 2.2 / Node 10 / MariaDB (MySQL) 5.5 w/ timezone info
 
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.

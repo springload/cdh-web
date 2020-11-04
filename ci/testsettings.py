@@ -3,34 +3,34 @@ import os
 # This file is exec'd from settings.py, so it has access to and can
 # modify all the variables in settings.py.
 
-# If this file is changed in development, the development server will
-# have to be manually restarted because changes will not be noticed
-# immediately.
-
-# NOTE: setting debug = true to avoid pa11y-ci timeouts
-DEBUG = False
-
+# These settings correspond to the service container settings in the
+# .github/workflow .yml files.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cdhweb',
         'USER': 'root',
-        'PASSWORD': '',
+        'NAME': os.getenv('MYSQL_DATABASE'),
+        'PASSWORD': os.getenv('MYSQL_ROOT_PASSWORD'),
         'HOST': '127.0.0.1',
-        'PORT': '',
+        'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'read_default_file': '~travis/.my.cnf'
         },
+        'TEST': {
+            'CHARSET': 'utf8',
+            'COLLATION': 'utf8_general_ci'
+        }
     },
 }
 
-# required with django 1.11 when debug is false, even for tests
-ALLOWED_HOSTS = ["*"]
+# turn off debug so we see 404s when testing
+DEBUG = False
+
+# required for tests when DEBUG = False
+ALLOWED_HOSTS = ['*']
 
 # configure django-compressor to compress css & javascript
-# NOTE: compression disabled because otherwise pa11y-ci times out
-COMPRESS_ENABLED = False
+COMPRESS_ENABLED = True
 
 # compress to the sitemedia folder
 COMPRESS_ROOT = os.path.join(BASE_DIR, 'sitemedia')
