@@ -6,6 +6,15 @@ Deploy Notes
 
 - The "Postdocs" list page has been removed, so its corresponding page should be
   deleted in Mezzanine.
+- A new "DH Working Groups" page should be created under the Projects page in
+  mezzanine with its slug set to `/projects/working-groups` to enable the new
+  DH Working Groups page.
+- Any Working Groups that were created as pages (not projects) can be deleted,
+  and their content can be moved into a new Project.
+- Any Working Groups that were assigned the "working group" grant type can have
+  this removed, and the grant type can be deleted.
+- Any non-R&D Staff Projects that were assigned the "staff r&d" grant type can
+  have this changed to "Staff Projects", and the grant type can be deleted.
 
 2.7
 ---

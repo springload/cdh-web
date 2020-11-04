@@ -291,6 +291,16 @@ class TestProjectQuerySet(TestCase):
         assert proj not in Project.objects.published(nonstaffer)
         assert proj in Project.objects.published(staffer)
 
+    def test_working_groups(self):
+        wg = Project.objects.create(
+            title="My DH Working Group", working_group=True)
+        derrida = Project.objects.get_or_create(title="Derrida's Margins")
+
+        # should include only working groups
+        all_wgs = Project.objects.working_groups()
+        assert wg in all_wgs
+        assert derrida not in all_wgs
+
 
 class TestGrant(TestCase):
 
@@ -408,6 +418,33 @@ class TestViews(TestCase):
         self.assertContains(response, postdoc_proj.get_absolute_url())
 
         # not testing display specifics since re-used from main project list
+
+    def test_working_group_list(self):
+        # create a working group
+        wg = Project.objects.create(
+            title="My DH Working Group", working_group=True)
+        derrida, _ = Project.objects.get_or_create(title="Derrida's Margins")
+
+        response = self.client.get(reverse('project:working-groups'))
+        # sponsored project not on working group page
+        self.assertNotContains(response, derrida.get_absolute_url())
+
+        # working group is displayed
+        self.assertContains(response, wg.title)
+        self.assertContains(response, wg.get_absolute_url())
+
+        # working groups page shouldn't have a "past projects" section
+        self.assertNotContains(response, "Past Projects")
+
+        # create a grant for the working group that ended in the past
+        start = datetime.today() - timedelta(days=120)
+        end = datetime.today() - timedelta(days=30)
+        seed, _ = GrantType.objects.get_or_create(grant_type='Seed')
+        Grant.objects.create(project=wg, grant_type=seed,
+                             start_date=start, end_date=end)
+
+        # still shouldn't have a "past projects" section
+        self.assertNotContains(response, "Past Projects")
 
     def test_detail(self):
         proj = Project.objects.create(title="Derrida's Margins",
