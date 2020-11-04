@@ -39,7 +39,8 @@ class ProjectQuerySet(PublishedQuerySetMixin):
         return self.exclude(self._current_grant_query())
 
     #: grant types that indicate staff or postdoc project
-    staff_postdoc_grants = ['Staff R&D', 'Staff Projects', 'Postdoctoral Research Project']
+    staff_postdoc_grants = ['Staff R&D',
+                            'Staff Project', 'Postdoctoral Research Project']
 
     def staff_or_postdoc(self):
         '''Staff and postdoc projects, based on grant type'''
@@ -48,6 +49,10 @@ class ProjectQuerySet(PublishedQuerySetMixin):
     def not_staff_or_postdoc(self):
         '''Exclude staff and postdoc projects, based on grant type'''
         return self.exclude(grant__grant_type__grant_type__in=self.staff_postdoc_grants)
+
+    def working_groups(self):
+        '''Include only projects with the working group flag set'''
+        return self.filter(working_group=True)
 
     def order_by_newest_grant(self):
         '''order by grant start date, most recent grants first; secondary
@@ -68,6 +73,8 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
                                     help_text='Include in randomized project display on the home page.')
     cdh_built = models.BooleanField('CDH Built', default=False,
                                     help_text='Project built by CDH Development & Design team.')
+    working_group = models.BooleanField(
+        'Working Group', default=False, help_text='Project is a long-term collaborative group associated with the CDH.')
 
     members = models.ManyToManyField(Person, through='Membership')
     resources = models.ManyToManyField(ResourceType, through='ProjectResource')
@@ -158,8 +165,6 @@ class Grant(DateRange):
 
 
 # fixme: where does resource type go, for associated links?
-
-
 
 
 class Role(models.Model):

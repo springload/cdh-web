@@ -31,6 +31,25 @@ class ProjectListMixinView(ProjectMixinView, ListView, LastModifiedListMixin):
         return context
 
 
+class WorkingGroupListView(ProjectMixinView, ListView, LastModifiedListMixin):
+    '''Working groups, based on working group project flag'''
+
+    title = 'DH Working Groups'
+
+    def get_queryset(self):
+        return Project.objects.working_groups().published()
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        # working groups never expire, so we don't have "past projects"
+        context.update({
+            'project_list': self.object_list,
+            'past_projects': None,
+            'title': self.title
+        })
+        return context
+
+
 class ProjectListView(ProjectListMixinView):
     '''Current and past projects, based on grant dates. (Does not include
     staff and postdoc projects.)'''
