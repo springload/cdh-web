@@ -1,11 +1,9 @@
 name: unit tests
 
 on:
-  # run on every push or PR to any branch
-  push:
+  push:     # run on every push or PR to any branch
   pull_request:
-  # run automatically on main branch each Tuesday at 11am
-  schedule:
+  schedule:   # run automatically on main branch each Tuesday at 11am
   - cron: "0 11 * * 2"
 
 env:
@@ -84,3 +82,14 @@ jobs:
       run: py.test --cov=./ --cov-report=xml
     - name: Upload test coverage to Codecov
       uses: codecov/codecov-action@v1
+    # Send a message to slack to report the build status. The webhook is stored
+    # at the organization level and available to all repositories.
+    - name: Report status to Slack
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_WEBHOOK: ${{ secrets.ACTIONS_SLACK_WEBHOOK }}
+        SLACK_CHANNEL: cdhweb
+        SLACK_TITLE: "Run #${{ github.run_number }} of workflow ${{ github.workflow }}: ${{ job.status }}"
+        SLACK_MESSAGE: "${{ github.repository }}@${{ github.ref }} (${{ github.sha }}) by ${{ github.actor }}"
+        SLACK_FOOTER: <a href="${{ env.GITHUB_SERVER_URL }}/${{ github.repository }}/runs/${{ github.run_id }}">View workflow run</a>
+        MSG_MINIMAL: true   # use compact slack message format
