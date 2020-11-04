@@ -147,15 +147,19 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         return self.filter(is_staff=True)
 
     def student_affiliates(self):
-        '''Return CDH student staff members and grantees based on
+        '''Return CDH student staff members, grantees, and PGRAs based on
         Project Director or Project Manager role.'''
-        return self.filter(pu_status__in=self.student_pu_status) \
+        return self \
+            .filter(models.Q(pu_status__in=self.student_pu_status) |
+                    models.Q(user__positions__title__title__in=self.student_titles)) \
             .filter(models.Q(is_staff=True) |
                     models.Q(user__membership__role__title__in=self.project_roles))
 
     def not_students(self):
-        '''Filter out graduate and undergraduates based on PU status'''
-        return self.exclude(pu_status__in=self.student_pu_status)
+        '''Filter out students based on PU status or student role'''
+        return self \
+            .exclude(models.Q(pu_status__in=self.student_pu_status) |
+                     models.Q(user__positions__title__title__in=self.student_titles))
 
     def affiliates(self):
         '''Faculty and staff affiliates based on PU status and Project Director
