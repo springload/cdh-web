@@ -83,13 +83,15 @@ jobs:
     - name: Upload test coverage to Codecov
       uses: codecov/codecov-action@v1
     # Send a message to slack to report the build status. The webhook is stored
-    # at the organization level and available to all repositories.
+    # at the organization level and available to all repositories. Only run on
+    # scheduled builds & pushes, since PRs automatically report to Slack.
     - name: Report status to Slack
       uses: rtCamp/action-slack-notify@master
+      if: ${{ github.event_name == 'schedule' || github.event_name == 'push' }}
       env:
         SLACK_WEBHOOK: ${{ secrets.ACTIONS_SLACK_WEBHOOK }}
         SLACK_CHANNEL: cdhweb
-        SLACK_TITLE: "Run #${{ github.run_number }} of workflow ${{ github.workflow }}: ${{ job.status }}"
-        SLACK_MESSAGE: "${{ github.repository }}@${{ github.ref }} (${{ github.sha }}) by ${{ github.actor }}"
-        SLACK_FOOTER: <a href="${{ env.GITHUB_SERVER_URL }}/${{ github.repository }}/runs/${{ github.run_id }}">View workflow run</a>
+        SLACK_TITLE: "<${{ env.GITHUB_SERVER_URL }}/${{ github.repository }}/runs/${{ github.run_id }}|Run #${{ github.run_number }}> for workflow `${{ github.workflow }}`: ${{ job.status }}"
+        SLACK_MESSAGE: "<${{ env.GITHUB_SERVER_URL }}/${{ github.repository }}/|${{ github.repository }}@${{ github.ref }}>"
+        SLACK_FOOTER: "<${{ env.GITHUB_SERVER_URL }}/${{ github.repository }}/commit/${{ github.sha }}|:merge: View commit>"
         MSG_MINIMAL: true   # use compact slack message format
