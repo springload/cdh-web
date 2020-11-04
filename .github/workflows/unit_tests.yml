@@ -91,7 +91,7 @@ jobs:
       env:
         SLACK_WEBHOOK: ${{ secrets.ACTIONS_SLACK_WEBHOOK }}
         SLACK_CHANNEL: cdhweb
-        SLACK_TITLE: "<${{ env.GITHUB_SERVER_URL }}/${{ github.repository }}/runs/${{ github.run_id }}|Run #${{ github.run_number }}> for workflow `${{ github.workflow }}`: ${{ job.status }}"
-        SLACK_MESSAGE: "<${{ env.GITHUB_SERVER_URL }}/${{ github.repository }}/|${{ github.repository }}@${{ github.ref }}>"
-        SLACK_FOOTER: "<${{ env.GITHUB_SERVER_URL }}/${{ github.repository }}/commit/${{ github.sha }}|:merge: View commit>"
+        SLACK_TITLE: "Run #${{ github.run_number }}> for workflow `${{ github.workflow }}`: ${{ job.status }}"
+        SLACK_MESSAGE: "<https://github.com/${{ github.repository }}/|${{ github.repository }}@${{ github.ref }}>"
+        SLACK_FOOTER: "<https://github.com/${{ github.repository }}/commit/${{ github.sha }}|View commit>"
         MSG_MINIMAL: true   # use compact slack message format
