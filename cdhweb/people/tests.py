@@ -282,8 +282,10 @@ class ProfileQuerySetTest(TestCase):
 
         # faculty person with co-PI: Research Lead should be affiliate
         co_pi = Person.objects.create(username='copi')
-        co_pi_profile = Profile.objects.create(user=co_pi, title="Co-PI", pu_status='fac')
-        co_pi_role, _created = Role.objects.get_or_create(title='Co-PI: Research Lead')
+        co_pi_profile = Profile.objects.create(
+            user=co_pi, title="Co-PI", pu_status='fac')
+        co_pi_role, _created = Role.objects.get_or_create(
+            title='Co-PI: Research Lead')
         s_co_grant = Grant.objects.get(pk=4)
         s_co = Project.objects.get(slug='sco')
         Membership.objects.create(
@@ -526,12 +528,12 @@ class TestViews(TestCase):
         response = self.client.get(reverse('people:affiliates'))
         assert fac.profile in response.context['current']
 
-        # should display name and date range from latest grant
+        # should display name and date from latest grant
         grant = fac.latest_grant
-        self.assertContains(response, '{} Grant Recipient'.format(
-            grant.grant_type.grant_type))
-        self.assertContains(response, '{}–{}'.format(
-            grant.start_date.year, grant.end_date.year))
+        self.assertContains(response, '{}–{} {} Grant Recipient'.format(
+            grant.start_date.year,
+            grant.end_date.year,
+            grant.grant_type.grant_type), html=True)
 
         # non current grant - should shift to past list
         grant.end_date = date(2018, 1, 1)
