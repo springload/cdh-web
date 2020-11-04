@@ -1,6 +1,14 @@
 Deploy Notes
 ============
 
+2.8
+---
+
+- The "Postdocs" list page has been removed, so its corresponding page should be
+  deleted in Mezzanine.
+- PGRAs profiles should set "is staff" to True and "Princeton status" to
+  "Graduate student" in order for them to display on the "Students" list page.
+
 2.7
 ---
 
