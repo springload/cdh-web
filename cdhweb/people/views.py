@@ -127,9 +127,10 @@ class StaffListView(ProfileListView):
         # filter to profiles with staff flag set and exclude students
         # (already ordered by job title sort order and then by last name)
         return super().get_queryset().staff().not_students()
-        # NOTE: this won't filter correctly if we ever have someone who
-        # goes from a student role to a staff position, however
-        # filtering only on current role messes up past staff
+        # NOTE: if someone goes from a student role to a staff role, they need
+        # to have their PU status changed to something that's not a student
+        # in order to not be excluded from this page based on their previous
+        # role
 
     def get_current_profiles(self):
         # we only care about current position, grant doesn't matter;

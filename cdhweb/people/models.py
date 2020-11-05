@@ -121,7 +121,8 @@ class Person(User):
 class ProfileQuerySet(PublishedQuerySetMixin):
 
     #: position titles that indicate a person is a postdoc
-    postdoc_title = 'Postdoctoral Fellow'
+    postdoc_titles = ['Postdoctoral Fellow',
+                      'Postdoctoral Fellow and Communications Lead']
 
     #: position titles that indicate a person is a project director
     director_roles = ['Project Director', 'Co-PI: Research Lead']
@@ -156,10 +157,9 @@ class ProfileQuerySet(PublishedQuerySetMixin):
                     models.Q(user__membership__role__title__in=self.project_roles))
 
     def not_students(self):
-        '''Filter out students based on PU status or student role'''
+        '''Filter out students based on PU status'''
         return self \
-            .exclude(models.Q(pu_status__in=self.student_pu_status) |
-                     models.Q(user__positions__title__title__in=self.student_titles))
+            .exclude(pu_status__in=self.student_pu_status)
 
     def affiliates(self):
         '''Faculty and staff affiliates based on PU status and Project Director
@@ -297,8 +297,8 @@ class Profile(Displayable, AdminThumbMixin):
     is_staff = models.BooleanField(
         default=False,
         help_text='CDH staff or Postdoctoral Fellow. If checked, person ' +
-        'will be listed on the CDH staff page (except for ' +
-        'postdocs) and will have a profile page on the site.')
+        'will be listed on the CDH staff page and will have a profile page ' +
+        'on the site.')
     education = RichTextField()
     bio = RichTextField()
     # NOTE: could use regex here, but how standard are staff phone
