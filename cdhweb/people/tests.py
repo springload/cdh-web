@@ -411,7 +411,7 @@ class TestViews(TestCase):
     def test_staff_list(self):
         # fixture includes staff person with two positions
         staffer = Person.objects.get(username='staff')
-        # postdoc should not be listed on staff page
+        # postdoc should be listed on staff page
         postdoc = Person.objects.get(username='postdoc')
 
         response = self.client.get(reverse('people:staff'))
