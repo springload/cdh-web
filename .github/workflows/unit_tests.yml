@@ -8,8 +8,10 @@ on:
 
 env:
   NODE_VERSION: 10
-  MYSQL_DATABASE: cdhweb
-  MYSQL_ROOT_PASSWORD: cdhweb
+  POSTGRES_VERSION: 13
+  POSTGRES_DB: cdhweb
+  POSTGRES_USER: cdhweb
+  POSTGRES_PASSWORD: cdhweb
 
 jobs:
   python-unit:
