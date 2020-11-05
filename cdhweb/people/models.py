@@ -121,16 +121,16 @@ class Person(User):
 class ProfileQuerySet(PublishedQuerySetMixin):
 
     #: position titles that indicate a person is a postdoc
-    postdoc_title = 'Postdoctoral Fellow'
-    #: variant postdoc title for Princeton PGRA
-    postgrad_title = 'Postgraduate Research Associate'
+    postdoc_titles = ['Postdoctoral Fellow',
+                      'Postdoctoral Fellow and Communications Lead']
 
     #: position titles that indicate a person is a project director
     director_roles = ['Project Director', 'Co-PI: Research Lead']
 
     #: position titles that indicate a staff person is a student
     student_titles = ['Graduate Fellow', 'Graduate Assistant',
-                      'Undergraduate Assistant']
+                      'Undergraduate Assistant',
+                      'Postgraduate Research Associate']
     #: memebership roles that indicate someone is an affiliate
     project_roles = ['Project Director',
                      'Project Manager', 'Co-PI: Research Lead']
@@ -147,28 +147,19 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         '''Return only CDH staff members'''
         return self.filter(is_staff=True)
 
-    def postdocs(self):
-        '''Return CDH Postdoctoral Fellows, based on role title'''
-        return self.filter(
-            models.Q(user__positions__title__title__icontains=self.postdoc_title) |
-            models.Q(user__positions__title__title=self.postgrad_title))
-
-    def not_postdocs(self):
-        '''Exclude CDH Postdoctoral Fellows, based on role title'''
-        return self.exclude(
-            models.Q(user__positions__title__title__icontains=self.postdoc_title) |
-            models.Q(user__positions__title__title=self.postgrad_title))
-
     def student_affiliates(self):
-        '''Return CDH student staff members and grantees based on
+        '''Return CDH student staff members, grantees, and PGRAs based on
         Project Director or Project Manager role.'''
-        return self.filter(pu_status__in=self.student_pu_status) \
+        return self \
+            .filter(models.Q(pu_status__in=self.student_pu_status) |
+                    models.Q(user__positions__title__title__in=self.student_titles)) \
             .filter(models.Q(is_staff=True) |
                     models.Q(user__membership__role__title__in=self.project_roles))
 
     def not_students(self):
-        '''Filter out graduate and undergraduates based on PU status'''
-        return self.exclude(pu_status__in=self.student_pu_status)
+        '''Filter out students based on PU status'''
+        return self \
+            .exclude(pu_status__in=self.student_pu_status)
 
     def affiliates(self):
         '''Faculty and staff affiliates based on PU status and Project Director
@@ -306,8 +297,8 @@ class Profile(Displayable, AdminThumbMixin):
     is_staff = models.BooleanField(
         default=False,
         help_text='CDH staff or Postdoctoral Fellow. If checked, person ' +
-        'will be listed on the CDH staff page (except for ' +
-        'postdocs) and will have a profile page on the site.')
+        'will be listed on the CDH staff page and will have a profile page ' +
+        'on the site.')
     education = RichTextField()
     bio = RichTextField()
     # NOTE: could use regex here, but how standard are staff phone

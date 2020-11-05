@@ -145,9 +145,11 @@ class ProfileQuerySetTest(TestCase):
     def test_is_staff(self):
         staffer = Person.objects.get(username='staff')
         grad_pi = Person.objects.get(username='tom')
+        postdoc = Person.objects.get(username='postdoc')
 
         staff = Profile.objects.staff()
         assert staffer.profile in staff
+        assert postdoc.profile in staff
         assert grad_pi.profile not in staff
 
     def test_current(self):
@@ -228,45 +230,20 @@ class ProfileQuerySetTest(TestCase):
         assert staffer.profile == profiles[0]
         assert staffer2.profile == profiles[1]
 
-    def test_postdocs(self):
-        # staff with a position
-        staffer = Person.objects.get(username='staff')
-        # staff with no position
-        staffer2 = Person.objects.get(username='staff2')
-        # postdoc
-        postdoc = Person.objects.get(username='postdoc')
-        assert staffer.profile not in Profile.objects.postdocs()
-        assert staffer2.profile not in Profile.objects.postdocs()
-        assert postdoc.profile in Profile.objects.postdocs()
-
-        # PGRA also included in postdocs
-        pgra = Person.objects.get(username='pgra')
-        assert pgra.profile in Profile.objects.postdocs()
-
-    def test_not_postdocs(self):
-        # staff with a position
-        staffer = Person.objects.get(username='staff')
-        # staff with no position
-        staffer2 = Person.objects.get(username='staff2')
-        # postdoc
-        postdoc = Person.objects.get(username='postdoc')
-
-        assert staffer.profile in Profile.objects.not_postdocs()
-        assert staffer2.profile in Profile.objects.not_postdocs()
-        assert postdoc.profile not in Profile.objects.not_postdocs()
-
     def test_student_affiliates(self):
         staffer = Person.objects.get(username='staff')
         grad = Person.objects.get(username='grad')
         undergrad = Person.objects.get(username='undergrad')
         grad_pi = Person.objects.get(username='tom')
         grad_pm = Person.objects.get(username='mary')
+        pgra = Person.objects.get(username='pgra')
 
         assert staffer.profile not in Profile.objects.student_affiliates()
         assert grad.profile in Profile.objects.student_affiliates()
         assert undergrad.profile in Profile.objects.student_affiliates()
         assert grad_pi.profile in Profile.objects.student_affiliates()
         assert grad_pm.profile in Profile.objects.student_affiliates()
+        assert pgra.profile in Profile.objects.student_affiliates()
 
         # grad pi & pm affiliation based on project membership
         grad_pi.membership_set.all().delete()
@@ -436,7 +413,7 @@ class TestViews(TestCase):
     def test_staff_list(self):
         # fixture includes staff person with two positions
         staffer = Person.objects.get(username='staff')
-        # postdoc with is_staff should not be listed on staff page
+        # postdoc should be listed on staff page
         postdoc = Person.objects.get(username='postdoc')
 
         response = self.client.get(reverse('people:staff'))
@@ -446,17 +423,21 @@ class TestViews(TestCase):
 
         # staffer profile should be included
         assert staffer.profile in response.context['current']
-        # postdoc profile should not
-        assert postdoc.profile not in response.context['current']
+        # postdoc profile should also
+        assert postdoc.profile in response.context['current']
 
         cur_post = staffer.positions.first()
         prev_post = staffer.positions.all()[1]
         self.assertContains(response, staffer.profile.title)
         self.assertContains(response, staffer.profile.current_title)
         self.assertContains(response, staffer.profile.get_absolute_url())
-        self.assertNotContains(response, prev_post.title)
         self.assertNotContains(response, prev_post.years)
         self.assertNotContains(response, cur_post.years)
+
+        # postdoc info
+        self.assertContains(response, postdoc.profile.title)
+        self.assertContains(response, postdoc.profile.current_title)
+        self.assertContains(response, postdoc.profile.get_absolute_url())
 
         # should be listed if position end date is set for future
         cur_post.end_date = date.today() + timedelta(days=1)
@@ -471,34 +452,19 @@ class TestViews(TestCase):
         assert staffer.profile in response.context['past']
 
         # should link to other people pages
-        self.assertContains(response, reverse('people:postdocs'))
         self.assertContains(response, reverse('people:students'))
 
-    def test_postdoc_list(self):
-        postdoc = Person.objects.get(username='postdoc')
-        pgra = Person.objects.get(username='pgra')
-
-        response = self.client.get(reverse('people:postdocs'))
-        # person should only appear once even if they have multiple positions
-        assert len(response.context['current']) == 2
-        # postdoc profile should be included
-        assert postdoc.profile in response.context['current']
-        # pgra profile also
-        assert pgra.profile in response.context['current']
-
-        self.assertContains(response, postdoc.profile.title)
-        self.assertContains(response, postdoc.profile.current_title)
-        self.assertContains(response, postdoc.profile.get_absolute_url())
-
     def test_student_list(self):
-        # grad, undergrad assistant
+        # grad, undergrad assistant, PGRA
         grad = Person.objects.get(username='grad')
         undergrad = Person.objects.get(username='undergrad')
+        pgra = Person.objects.get(username='pgra')
         # person with student status with a project
         grad_pi = Person.objects.get(username='tom')
 
         response = self.client.get(reverse('people:students'))
         assert grad.profile in response.context['current']
+        assert pgra.profile in response.context['current']
         assert undergrad.profile in response.context['past']
         assert grad_pi.profile in response.context['past']
 
@@ -512,7 +478,6 @@ class TestViews(TestCase):
         self.assertContains(response, undergrad.profile.get_absolute_url())
         # grad project director does not have local profile page or title
         self.assertContains(response, grad_pi.profile.title)
-        self.assertNotContains(response, grad_pi.profile.get_absolute_url())
         # grad pi does have an external website url
         website = ResourceType.objects.get_or_create(name='Website')[0]
         ext_profile_url = 'http://person.me'

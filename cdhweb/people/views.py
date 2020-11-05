@@ -101,7 +101,6 @@ class ProfileListView(ProfileMixinView, ListView, LastModifiedListMixin):
             'current_title': self.current_title or self.page_title,  # use main title as default
             'archive_nav_urls': [
                 ('Staff', reverse('people:staff')),
-                ('Postdoctoral Fellows', reverse('people:postdocs')),
                 ('Students', reverse('people:students')),
                 ('Affiliates', reverse('people:affiliates')),
                 ('Executive Committee', reverse('people:exec-committee')),
@@ -125,38 +124,18 @@ class StaffListView(ProfileListView):
     show_grant = False
 
     def get_queryset(self):
-        # filter to profiles with staff flag set and exclude postdocs
-        # and students
+        # filter to profiles with staff flag set and exclude students
         # (already ordered by job title sort order and then by last name)
-        return super().get_queryset().staff().not_postdocs().not_students()
-        # NOTE: this won't filter correctly if we ever have someone who
-        # goes from a postdoc or student role to a staff position, however
-        # filtering only on current role messes up past staff
+        return super().get_queryset().staff().not_students()
+        # NOTE: if someone goes from a student role to a staff role, they need
+        # to have their PU status changed to something that's not a student
+        # in order to not be excluded from this page based on their previous
+        # role
 
     def get_current_profiles(self):
         # we only care about current position, grant doesn't matter;
         # filter out past faculty directors who are current exec members
         return self.object_list.current_position_nonexec()
-
-
-class PostdocListView(ProfileListView):
-    '''Display current and past postdoctoral fellows'''
-    page_title = 'Postdoctoral Fellows'
-    past_title = 'Past Postdoctoral Fellows'
-    show_grant = False
-
-    def get_queryset(self):
-        # filter to just postdocs
-        return super().get_queryset().postdocs()
-
-    def get_current_profiles(self):
-        # we only care about current position, grant doesn't matter
-        return self.object_list.current_position()
-
-    def get_past_profiles(self):
-        # show most recent first
-        return super().get_past_profiles()\
-            .order_by('-user__positions__end_date')
 
 
 class StudentListView(ProfileListView):

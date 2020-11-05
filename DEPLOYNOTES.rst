@@ -4,6 +4,8 @@ Deploy Notes
 2.8
 ---
 
+- The "Postdocs" list page has been removed, so its corresponding page should be
+  deleted in Mezzanine.
 - A new "DH Working Groups" page should be created under the Projects page in
   mezzanine with its slug set to `/projects/working-groups` to enable the new
   DH Working Groups page.
