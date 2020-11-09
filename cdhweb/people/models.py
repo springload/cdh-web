@@ -154,7 +154,8 @@ class ProfileQuerySet(PublishedQuerySetMixin):
             .filter(models.Q(pu_status__in=self.student_pu_status) |
                     models.Q(user__positions__title__title__in=self.student_titles)) \
             .filter(models.Q(is_staff=True) |
-                    models.Q(user__membership__role__title__in=self.project_roles))
+                    models.Q(user__membership__role__title__in=self.project_roles)) \
+            .exclude(pu_status="stf")
 
     def not_students(self):
         '''Filter out students based on PU status'''
