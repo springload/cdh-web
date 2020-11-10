@@ -2,21 +2,8 @@
 from django.contrib import admin
 from mezzanine.core.admin import DisplayableAdmin
 
-from .models import Project, GrantType, Grant, Membership, Role, \
-    ProjectResource
-
-
-class ProjectMemberInline(admin.TabularInline):
-    model = Membership
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        field = super(ProjectMemberInline, self).formfield_for_foreignkey(
-            db_field, request, **kwargs)
-        # restrict only to grants associated with the current project
-        if db_field.name == 'grant':
-            if request.object is not None:
-                field.queryset = field.queryset.filter(project=request.object)
-        return field
+from cdhweb.projects.models import Grant, GrantType, Membership, \
+    Project, ProjectResource, Role
 
 
 class ResourceInline(admin.TabularInline):
@@ -62,7 +49,7 @@ class ProjectAdmin(DisplayableAdmin):
         return u", ".join(o.name for o in obj.tags.all())
     tag_list.short_description = 'Tags'
 
-    inlines = [GrantInline, ProjectMemberInline, ResourceInline]
+    inlines = [GrantInline, ResourceInline]
 
     def get_form(self, request, obj=None, **kwargs):
         # save object reference for filtering grants in membership Inline
