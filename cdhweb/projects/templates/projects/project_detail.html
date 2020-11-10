@@ -30,7 +30,7 @@
     {# display project members for the current (or most recent) grant #}
     {% for membership in project.current_memberships %}
         {% ifchanged %}<li class="role"><h3>{{ membership.role }}</h3></li>{% endifchanged %}
-        {% include 'projects/snippets/project_membership.html' with member=membership.user %}
+        {% include 'projects/snippets/project_membership.html' with member=membership.person %}
     {% endfor %}
     {# include project alumni  #}
     {% if project.alums %}
