@@ -1,5 +1,4 @@
 # from adminsortable2.admin import SortableAdminMixin
-from django.utils.functional import curry
 from django.contrib import admin
 from mezzanine.core.admin import DisplayableAdmin
 
@@ -71,23 +70,6 @@ class ProjectAdmin(DisplayableAdmin):
         return super(ProjectAdmin, self).get_form(request, obj, **kwargs)
 
 
-class GrantMemberInline(admin.TabularInline):
-    model = Membership
-    fields = ['user', 'role', 'project']
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        field = super(GrantMemberInline, self).formfield_for_foreignkey(
-            db_field, request, **kwargs)
-        # restrict only to project associated with the current grant
-        # and *DEFAULT* to current project so it does not have to be selected
-        if db_field.name == 'project':
-            if request.object is not None:
-                field.queryset = field.queryset.filter(
-                    pk=request.object.project.pk)
-                field.initial = request.object.project.pk
-        return field
-
-
 class GrantAdmin(admin.ModelAdmin):
     list_display = ('project', 'grant_type', 'start_date', 'end_date')
     list_filter = ('start_date', 'end_date', 'grant_type')
@@ -98,7 +80,6 @@ class GrantAdmin(admin.ModelAdmin):
                      'membership__user__username', 'membership__user__first_name',
                      'membership__user__last_name')
 
-    inlines = [GrantMemberInline]
     # override model ordering to show most recent first
     ordering = ['-start_date', 'project']
 
@@ -109,10 +90,10 @@ class GrantAdmin(admin.ModelAdmin):
 
 
 class MembershipAdmin(admin.ModelAdmin):
-    list_display = ('project', 'user', 'grant', 'role', 'status_override')
-    list_filter = ('project', 'role', 'status_override')
-    list_editable = ('status_override',)
-    search_fields = ('user__first_name', 'user__last_name', 'project__title')
+    list_display = ('project', 'person', 'role', 'start_date', 'end_date')
+    list_filter = ('project', 'role')
+    date_hierarchy = 'start_date'
+    search_fields = ('person__first_name', 'person__last_name', 'project__title')
 
 
 class RoleAdmin(admin.ModelAdmin):

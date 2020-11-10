@@ -180,38 +180,17 @@ class Role(models.Model):
         return self.title
 
 
-class Membership(models.Model):
+class Membership(DateRange):
     '''Project membership - joins project, grant, user, and role.'''
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    user = models.ForeignKey(Person, on_delete=models.CASCADE)
-    grant = models.ForeignKey(Grant, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
-    # allows forcing certain memberships to show as current or alum
-    STATUS_OVERRIDE_CHOICES = (
-        ('current', 'Current'),
-        ('past', 'Alum'),
-    )
-
-    status_override = models.CharField(
-        'Status Override', choices=STATUS_OVERRIDE_CHOICES, default='',
-        help_text='Show the member as current or as an alum regardless of \
-            associated project grant dates. Only use when displaying current \
-                or past project members based on grant dates is incorrect.',
-        blank=True, max_length=7)
-
-    # temporarily include start/end date as optional until migration,
-    # then switch to extending DateRange
-    #: start date
-    start_date = models.DateField(null=True, blank=True)
-    #: end date (optional)
-    end_date = models.DateField(null=True, blank=True)
-
     class Meta:
-        ordering = ('role__sort_order', 'user__last_name')
+        ordering = ('role__sort_order', 'person__last_name')
 
     def __str__(self):
-        return '%s - %s on %s' % (self.user, self.role, self.grant)
+        return '%s - %s on %s' % (self.person, self.role, self.project)
 
 
 class ProjectResource(models.Model):
