@@ -40,12 +40,21 @@ def calculate_membership_dates(apps, schema_editor):
             current.start_date = calculate_membership_start(membership)
             current.end_date = calculate_membership_end(membership)
 
+    # save the last record after loop ends
+    if current:
+        current.save()
+
+    # if any memberships are missing start dates, it will be a problem
+    assert not Membership.objects.filter(start_date__isnull=True).exists()
+
 
 def calculate_membership_start(membership):
     '''calculate membership start based on combination of
     associated grant dates and CDH position dates for CDH staff'''
     try:
-        if membership.user.profile.is_staff:
+        # staff should have positions, but handle if not
+        if membership.user.profile.is_staff and \
+           membership.user.positions.exists():
             # get the first start date for their time at CDH
             cdh_start = membership.user.positions.order_by('start_date')\
                 .first().start_date
@@ -61,7 +70,8 @@ def calculate_membership_end(membership):
     '''calculate membership end based on combination of
     associated grant dates and CDH position dates for CDH staff'''
     try:
-        if membership.user.profile.is_staff:
+        if membership.user.profile.is_staff and \
+           membership.user.positions.exists():
             # get the end date for their most recent position at CDH
             cdh_end = membership.user.positions.order_by('start_date')\
                 .last().end_date
