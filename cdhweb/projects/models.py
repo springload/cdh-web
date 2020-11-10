@@ -131,7 +131,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         # if the last grant for this project is over, display the team
         # for that grant period
         latest_grant = self.latest_grant()
-        if latest_grant.end_date < today:
+        if latest_grant and latest_grant.end_date < today:
             return self.membership_set \
                 .filter(start_date__lte=latest_grant.start_date) \
                 .filter(
@@ -203,7 +203,8 @@ class Membership(DateRange):
         ordering = ('role__sort_order', 'person__last_name')
 
     def __str__(self):
-        return '%s - %s on %s' % (self.person, self.role, self.project)
+        return '%s - %s on %s (%s)' % (self.person, self.role,
+                                       self.project, self.years)
 
 
 class ProjectResource(models.Model):

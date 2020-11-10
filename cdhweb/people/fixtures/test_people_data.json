@@ -1316,9 +1316,10 @@
         "pk": 1,
         "fields": {
             "project": 1,
-            "user": 6,
-            "grant": 1,
-            "role": 1
+            "person": 6,
+            "role": 1,
+            "start_date": "2015-01-01",
+            "end_date": "2016-01-01"
         }
     },
     {
@@ -1326,9 +1327,10 @@
         "pk": 2,
         "fields": {
             "project": 2,
-            "user": 7,
-            "grant": 2,
-            "role": 1
+            "person": 7,
+            "role": 1,
+            "start_date": "2015-01-01",
+            "end_date": "2016-01-01"
         }
     },
     {
@@ -1336,9 +1338,10 @@
         "pk": 3,
         "fields": {
             "project": 2,
-            "user": 7,
-            "grant": 3,
-            "role": 1
+            "person": 7,
+            "role": 1,
+            "start_date": "2017-01-01",
+            "end_date": "2218-09-29"
         }
     },
     {
@@ -1346,9 +1349,10 @@
         "pk": 4,
         "fields": {
             "project": 2,
-            "user": 14,
-            "grant": 3,
-            "role": 2
+            "person": 14,
+            "role": 2,
+            "start_date": "2017-01-01",
+            "end_date": "2218-09-29"
         }
     },
     {
@@ -1356,9 +1360,10 @@
         "pk": 5,
         "fields": {
             "project": 3,
-            "user": 15,
-            "grant": 3,
-            "role": 1
+            "person": 15,
+            "role": 1,
+            "start_date": "2017-01-01",
+            "end_date": "2218-09-29"
         }
     }
 ]

@@ -266,7 +266,8 @@ class ProfileQuerySetTest(TestCase):
         s_co_grant = Grant.objects.get(pk=4)
         s_co = Project.objects.get(slug='sco')
         Membership.objects.create(
-            user=co_pi, project=s_co, grant=s_co_grant, role=co_pi_role)
+            user=co_pi, project=s_co, role=co_pi_role,
+            start_date=s_co_grant.start_date)
         assert co_pi.profile in Profile.objects.affiliates()
 
         # staff project director is also an affiliate
@@ -274,14 +275,16 @@ class ProfileQuerySetTest(TestCase):
         staff = Person.objects.get(username='dominick')
         proj_director = Role.objects.get(title='Project Director')
         Membership.objects.create(
-            user=staff, project=s_co, grant=s_co_grant, role=proj_director)
+            user=staff, project=s_co, role=proj_director,
+            start_date=s_co_grant.start_date)
         assert staff.profile in Profile.objects.affiliates()
 
         # student project director is not an affiliate
         # (promote "tom", grad PI, to project director)
         grad_pi = Person.objects.get(username='tom')
         Membership.objects.create(
-            user=grad_pi, project=s_co, grant=s_co_grant, role=proj_director)
+            user=grad_pi, project=s_co, role=proj_director,
+            start_date=s_co_grant.start_date)
         assert grad_pi.profile not in Profile.objects.affiliates()
 
         # CDH staff are not affiliates
@@ -513,7 +516,8 @@ class TestViews(TestCase):
         s_co_grant = Grant.objects.get(pk=4)
         proj_director = Role.objects.get(title='Project Director')
         Membership.objects.create(
-            user=staff, project=s_co, grant=s_co_grant, role=proj_director)
+            user=staff, project=s_co, role=proj_director,
+            start_date=s_co_grant.start_date)
         response = self.client.get(reverse('people:affiliates'))
         assert staff.profile in response.context['past']
 

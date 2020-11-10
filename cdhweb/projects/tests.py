@@ -329,9 +329,10 @@ class TestMembership(TestCase):
         user = get_user_model().objects.create(username='contributor')
         role = Role.objects.create(title='Data consultant', sort_order=1)
         membership = Membership.objects.create(
-            project=proj, user=user, grant=grant, role=role)
+            project=proj, person=user, role=role, start_date=grant.start_date)
 
-        assert str(membership) == '%s - %s on %s' % (user, role, grant)
+        assert str(membership) == '%s - %s on %s (%s)' % (user, role, proj,
+                                                          membership.years)
 
 
 class TestProjectResource(TestCase):
@@ -470,9 +471,9 @@ class TestViews(TestCase):
         consult = Role.objects.create(title='Consultant', sort_order=2)
         pi = Role.objects.create(title='Principal Investigator', sort_order=1)
         Membership.objects.bulk_create([
-            Membership(project=proj, user=contrib1, grant=grant, role=consult),
-            Membership(project=proj, user=contrib2, grant=grant, role=consult),
-            Membership(project=proj, user=contrib3, grant=grant, role=pi)
+            Membership(project=proj, person=contrib1, role=consult, start_date=grant.start_date),
+            Membership(project=proj, person=contrib2, role=consult, start_date=grant.start_date),
+            Membership(project=proj, person=contrib3, role=pi, start_date=grant.start_date)
         ])
         # add a website url
         website = ResourceType.objects.get(name='Website')
