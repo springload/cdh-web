@@ -200,6 +200,13 @@ class Membership(models.Model):
                 or past project members based on grant dates is incorrect.',
         blank=True, max_length=7)
 
+    # temporarily include start/end date as optional until migration,
+    # then switch to extending DateRange
+    #: start date
+    start_date = models.DateField(null=True, blank=True)
+    #: end date (optional)
+    end_date = models.DateField(null=True, blank=True)
+
     class Meta:
         ordering = ('role__sort_order', 'user__last_name')
 
