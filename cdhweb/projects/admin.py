@@ -51,11 +51,6 @@ class ProjectAdmin(DisplayableAdmin):
 
     inlines = [GrantInline, ResourceInline]
 
-    def get_form(self, request, obj=None, **kwargs):
-        # save object reference for filtering grants in membership Inline
-        request.object = obj
-        return super(ProjectAdmin, self).get_form(request, obj, **kwargs)
-
 
 class GrantAdmin(admin.ModelAdmin):
     list_display = ('project', 'grant_type', 'start_date', 'end_date')
@@ -63,9 +58,7 @@ class GrantAdmin(admin.ModelAdmin):
     date_hierarchy = 'start_date'
     search_fields = ('project__title', 'grant_type__grant_type',
                      'start_date', 'end_date', 'project__long_description',
-                     'project__short_description',
-                     'membership__user__username', 'membership__user__first_name',
-                     'membership__user__last_name')
+                     'project__short_description')
 
     # override model ordering to show most recent first
     ordering = ['-start_date', 'project']
@@ -77,7 +70,7 @@ class GrantAdmin(admin.ModelAdmin):
 
 
 class MembershipAdmin(admin.ModelAdmin):
-    list_display = ('project', 'person', 'role', 'start_date', 'end_date')
+    list_display = ('person', 'project', 'role', 'start_date', 'end_date')
     list_filter = ('project', 'role')
     date_hierarchy = 'start_date'
     search_fields = ('person__first_name', 'person__last_name', 'project__title')
