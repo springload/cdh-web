@@ -71,26 +71,28 @@ class TestProject(TestCase):
         assert self.project.latest_grant() == self.grant2
 
     def test_current_memberships(self):
-        # should get memberships from newest grant (2016-2017) by default
-        current_members = [m.user for m in self.project.current_memberships()]
+        # if all grants are ended,
+        # should get memberships from most recent grant
+        current_members = [m.person for m in self.project.current_memberships()]
         assert self.katie in current_members        # katie is director on both grants
         assert self.chloe in current_members        # chloe is on this grant only
         assert self.munson not in current_members   # rm was on older grant only
         assert self.koeser not in current_members   # rsk was on older grant only
-        # memberships with 'current' status override should be included
-        m = Membership.objects.get(user=self.munson)
-        m.status_override = 'current'
+        # memberships with end date included in last grant period should be included
+        today = timezone.now().date()
+        m = Membership.objects.get(person=self.munson)
+        m.end_date = today
         m.save()
-        current_members = [m.user for m in self.project.current_memberships()]
+        current_members = [m.person for m in self.project.current_memberships()]
         assert self.katie in current_members        # unchanged
         assert self.chloe in current_members        # unchanged
         assert self.munson in current_members       # now forced current
         assert self.koeser not in current_members   # unchanged
-        # memberships with 'past' status override should not be included
-        m = Membership.objects.get(user=self.chloe)
-        m.status_override = 'past'
+        # memberships with end date before last grant should not be included
+        m = Membership.objects.get(person=self.chloe)
+        m.end_date = date(2015, 9, 2)
         m.save()
-        current_members = [m.user for m in self.project.current_memberships()]
+        current_members = [m.person for m in self.project.current_memberships()]
         assert self.katie in current_members        # unchanged
         assert self.chloe not in current_members    # forced past
         assert self.munson in current_members       # forced current
@@ -103,18 +105,18 @@ class TestProject(TestCase):
         assert self.chloe not in alums  # chloe is on newer grant only
         assert self.munson in alums     # rm is on this grant
         assert self.koeser in alums     # rsk is on this grant
-        # memberships with 'past' status override should be included
-        m = Membership.objects.get(user=self.chloe)
-        m.status_override = 'past'
+        # memberships with end date before most recent grant should be included
+        m = Membership.objects.get(person=self.chloe)
+        m.end_date = date(2015, 9, 2)
         m.save()
         alums = self.project.alums()
         assert self.katie not in alums   # unchanged
-        assert self.chloe in alums   # now forced past
+        assert self.chloe in alums   # now past by date
         assert self.munson in alums  # unchanged
         assert self.koeser in alums  # unchanged
-        # memberships with 'current' status override should not be included
-        m = Membership.objects.get(user=self.koeser)
-        m.status_override = 'current'
+        # memberships with end date unset
+        m = Membership.objects.get(person=self.koeser)
+        m.end_date = None
         m.save()
         alums = self.project.alums()
         assert self.katie not in alums   # unchanged

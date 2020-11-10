@@ -127,10 +127,23 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         ''':class:`MembershipQueryset` of current members sorted by role'''
         # uses memberships rather than members so that we can retain role
         # information attached to the membership
-        return self.membership_set.filter(
-            Q(grant=self.latest_grant()) | Q(status_override='current')) \
-            .exclude(status_override='past') \
+        today = timezone.now().date()
+        # if the last grant for this project is over, display the team
+        # for that grant period
+        latest_grant = self.latest_grant()
+        if latest_grant.end_date < today:
+            return self.membership_set \
+                .filter(start_date__lte=latest_grant.start_date) \
+                .filter(
+                    models.Q(end_date__gte=latest_grant.end_date) |
+                    models.Q(end_date__isnull=True)
+                )
 
+        # otherwise, return current members based on date
+        return self.membership_set.filter(start_date__lte=today) \
+            .filter(
+                models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
+        )
 
     def alums(self):
         ''':class:`PersonQueryset` of past members sorted by last name'''
