@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.contrib.admin.models import CHANGE, DELETION
+from django.contrib.contenttypes.management import create_contenttypes
 from django.db import migrations
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -15,6 +16,11 @@ def calculate_membership_dates(apps, schema_editor):
     script_user = User.objects.get(username=settings.SCRIPT_USERNAME)
     LogEntry = apps.get_model('admin', 'LogEntry')
     ContentType = apps.get_model('contenttypes', 'ContentType')
+
+    # make sure content types are created before looking for one
+    app_config = apps.get_app_config('projects')
+    app_config.models_module = app_config.models_module or True
+    create_contenttypes(app_config)
     membership_contenttype = ContentType.objects.get(
         app_label='projects', model='Membership')
     change_message = 'Set start and end dates based on associated grants'
@@ -134,6 +140,7 @@ def calculate_membership_end(membership):
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('contenttypes', '0001_initial'),
         ('projects', '0010_add_membership_date_range'),
         ('resources', '0005_create_script_user'),
     ]
