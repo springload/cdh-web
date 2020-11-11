@@ -69,6 +69,13 @@ def calculate_membership_start(membership):
 def calculate_membership_end(membership):
     '''calculate membership end based on combination of
     associated grant dates and CDH position dates for CDH staff'''
+
+    # if override is set to current, mimic that behavior by returning
+    # no end date (this will only work if current is set on the
+    # *last* membership in a project)
+    if membership.status_override == 'current':
+        return None
+
     try:
         if membership.user.profile.is_staff and \
            membership.user.positions.exists():
