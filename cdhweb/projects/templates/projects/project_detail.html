@@ -29,6 +29,7 @@
     <ul>
     {# display project members for the current (or most recent) grant #}
     {% for membership in project.current_memberships %}
+    {# TODO: can we pluralize by checking role for next item in index? #}
         {% ifchanged %}<li class="role"><h3>{{ membership.role }}</h3></li>{% endifchanged %}
         {% include 'projects/snippets/project_membership.html' with member=membership.person %}
     {% endfor %}

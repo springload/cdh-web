@@ -174,41 +174,29 @@ class ProfileQuerySetTest(TestCase):
         # grad affiliate with past grant project
         grad_pi = Person.objects.get(username='tom')
         assert grad_pi.profile not in Profile.objects.current()
-        grant = grad_pi.latest_grant
+        mship = grad_pi.membership_set.first()
         # no end date = current
-        grant.end_date = None
-        grant.save()
+        mship.end_date = None
+        mship.save()
         assert grad_pi.profile in Profile.objects.current()
         # end date in future = current
-        grant.end_date = date.today() + timedelta(days=30)
-        grant.save()
+        mship.end_date = date.today() + timedelta(days=30)
+        mship.save()
         assert grad_pi.profile in Profile.objects.current()
         # end today = still current
-        grant.end_date = date.today()
-        grant.save()
+        mship.end_date = date.today()
+        mship.save()
         assert grad_pi.profile in Profile.objects.current()
 
-        # grad pm on current grant based on dates
+        # grad pm on based on membership dates
         grad_pm = Person.objects.get(username='mary')
         assert grad_pm.profile in Profile.objects.current()
-        # check status override
+        # set end date to past
         pm_membership = grad_pm.membership_set.first()
-        pm_membership.status_override = 'past'
+        pm_membership.end_date = date.today() - timedelta(days=30)
         pm_membership.save()
         # past should make not current even though grant is active
         assert grad_pm.profile not in Profile.objects.current()
-        grant = grad_pm.membership_set.first().grant
-        # set end in the past
-        grant.end_date = date.today() - timedelta(days=30)
-        grant.save()
-        # remove the status override
-        pm_membership.status_override = ""
-        pm_membership.save()
-        assert grad_pm.profile not in Profile.objects.current()
-        # override to set as current even though grant is past
-        pm_membership.status_override = 'current'
-        pm_membership.save()
-        assert grad_pm.profile in Profile.objects.current()
 
     def test_order_by_position(self):
         director = Person.objects.get(username='Meredith')
@@ -266,8 +254,8 @@ class ProfileQuerySetTest(TestCase):
         s_co_grant = Grant.objects.get(pk=4)
         s_co = Project.objects.get(slug='sco')
         Membership.objects.create(
-            user=co_pi, project=s_co, role=co_pi_role,
-            start_date=s_co_grant.start_date)
+            person=co_pi, project=s_co, role=co_pi_role,
+            start_date=s_co_grant.start_date, end_date=s_co_grant.end_date)
         assert co_pi.profile in Profile.objects.affiliates()
 
         # staff project director is also an affiliate
@@ -275,15 +263,15 @@ class ProfileQuerySetTest(TestCase):
         staff = Person.objects.get(username='dominick')
         proj_director = Role.objects.get(title='Project Director')
         Membership.objects.create(
-            user=staff, project=s_co, role=proj_director,
-            start_date=s_co_grant.start_date)
+            person=staff, project=s_co, role=proj_director,
+            start_date=s_co_grant.start_date, end_date=s_co_grant.end_date)
         assert staff.profile in Profile.objects.affiliates()
 
         # student project director is not an affiliate
         # (promote "tom", grad PI, to project director)
         grad_pi = Person.objects.get(username='tom')
         Membership.objects.create(
-            user=grad_pi, project=s_co, role=proj_director,
+            person=grad_pi, project=s_co, role=proj_director,
             start_date=s_co_grant.start_date)
         assert grad_pi.profile not in Profile.objects.affiliates()
 
@@ -331,10 +319,10 @@ class ProfileQuerySetTest(TestCase):
         annotated = Profile.objects.filter(user__membership__role__title='Project Director') \
                                    .grant_years().order_by('-user__last_name')
         for profile in annotated:
-            grants = Grant.objects.filter(membership__user=profile.user)
-            assert profile.first_start == grants.first().start_date
+            memberships = profile.user.membership_set.order_by('start_date')
+            assert profile.first_start == memberships.first().start_date
             assert isinstance(profile.first_start, date)
-            assert profile.last_end == grants.last().end_date
+            assert profile.last_end == memberships.last().end_date
             assert isinstance(profile.last_end, date)
 
 
@@ -503,9 +491,10 @@ class TestViews(TestCase):
             grant.end_date.year,
             grant.grant_type.grant_type), html=True)
 
-        # non current grant - should shift to past list
-        grant.end_date = date(2018, 1, 1)
-        grant.save()
+        # non current membership - should shift to past list
+        mship = fac.membership_set.first()
+        mship.end_date = date(2018, 1, 1)
+        mship.save()
         response = self.client.get(reverse('people:affiliates'))
         assert fac.profile not in response.context['current']
         assert fac.profile in response.context['past']
@@ -516,8 +505,8 @@ class TestViews(TestCase):
         s_co_grant = Grant.objects.get(pk=4)
         proj_director = Role.objects.get(title='Project Director')
         Membership.objects.create(
-            user=staff, project=s_co, role=proj_director,
-            start_date=s_co_grant.start_date)
+            person=staff, project=s_co, role=proj_director,
+            start_date=s_co_grant.start_date, end_date=s_co_grant.end_date)
         response = self.client.get(reverse('people:affiliates'))
         assert staff.profile in response.context['past']
 

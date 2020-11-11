@@ -103,11 +103,24 @@ class Person(User):
         # find projects where they are director, then get newest grant
         # that overlaps with their directorship dates
         # TODO: figure out where this is used to see what the logic should be
-        self.projects.filter()
+        # get most recent project directorship
         mship = self.membership_set.filter(role__title__in=ProfileQuerySet.director_roles) \
                     .order_by('-start_date').first()
+        # if there is one, find the most recent grant overlapping with their
+        # directorship dates
         if mship:
-            return mship.grant
+            # do we need to support end date unset?
+            # membership start before grant end OR
+            # membership end after grant start
+            # grant start before membership end OR
+            # grant end after membership strt
+            print(mship)
+            print(mship.project.grant_set.all())
+
+            return mship.project.grant_set \
+                .filter(models.Q(start_date__lte=mship.end_date) |
+                        models.Q(end_date__gte=mship.start_date)) \
+                .order_by('-start_date').first()
 
     def __str__(self):
         '''Custom person display to make it easier to choose people

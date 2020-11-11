@@ -161,8 +161,8 @@ class StudentListView(ProfileListView):
         return super().get_past_profiles() \
             .annotate(most_recent=Greatest(
                 Case(
-                    When(user__membership__grant__end_date__isnull=False,
-                         then=Max('user__membership__grant__end_date')),
+                    When(user__membership__end_date__isnull=False,
+                         then=Max('user__membership__end_date')),
                     default=Value('0')
                 ),
                 Case(

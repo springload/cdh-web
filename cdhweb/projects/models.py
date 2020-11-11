@@ -131,11 +131,12 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         # if the last grant for this project is over, display the team
         # for that grant period
         latest_grant = self.latest_grant()
-        if latest_grant and latest_grant.end_date < today:
+        if latest_grant and latest_grant.end_date and \
+           latest_grant.end_date < today:
             return self.membership_set \
-                .filter(start_date__lte=latest_grant.start_date) \
+                .filter(start_date__lte=latest_grant.end_date) \
                 .filter(
-                    models.Q(end_date__gte=latest_grant.end_date) |
+                    models.Q(end_date__gte=latest_grant.start_date) |
                     models.Q(end_date__isnull=True)
                 )
 
