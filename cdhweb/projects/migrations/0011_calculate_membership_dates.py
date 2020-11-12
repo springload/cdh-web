@@ -143,6 +143,7 @@ class Migration(migrations.Migration):
         ('contenttypes', '0001_initial'),
         ('projects', '0010_add_membership_date_range'),
         ('resources', '0005_create_script_user'),
+        ('people', '0008_profile_slug_not_null'),
     ]
 
     operations = [
