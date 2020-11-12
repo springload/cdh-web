@@ -26,9 +26,10 @@ def calculate_membership_dates(apps, schema_editor):
     change_message = 'Set start and end dates based on associated grants'
     delete_message = 'Deleted consolidated membership'
 
-    # sort by project, then user, then grant start date
+    # sort by project, then user, then role, then grant start date
     memberships = Membership.objects.all() \
-                            .order_by('project', 'user', 'grant__start_date')
+                            .order_by('project', 'user', 'role',
+                                      'grant__start_date')
 
     # as we loop through, track current membership to extend across grants
     current = None
