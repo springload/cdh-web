@@ -87,7 +87,7 @@ jobs:
     # scheduled builds & pushes, since PRs automatically report to Slack.
     - name: Report status to Slack
       uses: rtCamp/action-slack-notify@master
-      if: ${{ github.event_name == 'schedule' }}
+      if: ${{ github.event_name == 'schedule' || github.event_name == 'push' }}
       env:
         SLACK_WEBHOOK: ${{ secrets.ACTIONS_SLACK_WEBHOOK }}
         SLACK_CHANNEL: cdhweb
