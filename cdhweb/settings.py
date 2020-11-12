@@ -160,6 +160,8 @@ AUTHENTICATION_BACKENDS = (
 # a mode you'd pass directly to os.chmod.
 FILE_UPLOAD_PERMISSIONS = 0o644
 
+# username for documenting database changes made by code
+SCRIPT_USERNAME = 'script'
 
 #############
 # DATABASES #

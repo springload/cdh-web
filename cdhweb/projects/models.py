@@ -127,10 +127,24 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         ''':class:`MembershipQueryset` of current members sorted by role'''
         # uses memberships rather than members so that we can retain role
         # information attached to the membership
-        return self.membership_set.filter(
-            Q(grant=self.latest_grant()) | Q(status_override='current')) \
-            .exclude(status_override='past') \
+        today = timezone.now().date()
+        # if the last grant for this project is over, display the team
+        # for that grant period
+        latest_grant = self.latest_grant()
+        if latest_grant and latest_grant.end_date and \
+           latest_grant.end_date < today:
+            return self.membership_set \
+                .filter(start_date__lte=latest_grant.end_date) \
+                .filter(
+                    models.Q(end_date__gte=latest_grant.start_date) |
+                    models.Q(end_date__isnull=True)
+                )
 
+        # otherwise, return current members based on date
+        return self.membership_set.filter(start_date__lte=today) \
+            .filter(
+                models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
+        )
 
     def alums(self):
         ''':class:`PersonQueryset` of past members sorted by last name'''
@@ -180,31 +194,18 @@ class Role(models.Model):
         return self.title
 
 
-class Membership(models.Model):
+class Membership(DateRange):
     '''Project membership - joins project, grant, user, and role.'''
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    user = models.ForeignKey(Person, on_delete=models.CASCADE)
-    grant = models.ForeignKey(Grant, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
-    # allows forcing certain memberships to show as current or alum
-    STATUS_OVERRIDE_CHOICES = (
-        ('current', 'Current'),
-        ('past', 'Alum'),
-    )
-
-    status_override = models.CharField(
-        'Status Override', choices=STATUS_OVERRIDE_CHOICES, default='',
-        help_text='Show the member as current or as an alum regardless of \
-            associated project grant dates. Only use when displaying current \
-                or past project members based on grant dates is incorrect.',
-        blank=True, max_length=7)
-
     class Meta:
-        ordering = ('role__sort_order', 'user__last_name')
+        ordering = ('role__sort_order', 'person__last_name')
 
     def __str__(self):
-        return '%s - %s on %s' % (self.user, self.role, self.grant)
+        return '%s - %s on %s (%s)' % (self.person, self.role,
+                                       self.project, self.years)
 
 
 class ProjectResource(models.Model):

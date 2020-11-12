@@ -1,23 +1,9 @@
 # from adminsortable2.admin import SortableAdminMixin
-from django.utils.functional import curry
 from django.contrib import admin
 from mezzanine.core.admin import DisplayableAdmin
 
-from .models import Project, GrantType, Grant, Membership, Role, \
-    ProjectResource
-
-
-class ProjectMemberInline(admin.TabularInline):
-    model = Membership
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        field = super(ProjectMemberInline, self).formfield_for_foreignkey(
-            db_field, request, **kwargs)
-        # restrict only to grants associated with the current project
-        if db_field.name == 'grant':
-            if request.object is not None:
-                field.queryset = field.queryset.filter(project=request.object)
-        return field
+from cdhweb.projects.models import Grant, GrantType, Membership, \
+    Project, ProjectResource, Role
 
 
 class ResourceInline(admin.TabularInline):
@@ -63,29 +49,7 @@ class ProjectAdmin(DisplayableAdmin):
         return u", ".join(o.name for o in obj.tags.all())
     tag_list.short_description = 'Tags'
 
-    inlines = [GrantInline, ProjectMemberInline, ResourceInline]
-
-    def get_form(self, request, obj=None, **kwargs):
-        # save object reference for filtering grants in membership Inline
-        request.object = obj
-        return super(ProjectAdmin, self).get_form(request, obj, **kwargs)
-
-
-class GrantMemberInline(admin.TabularInline):
-    model = Membership
-    fields = ['user', 'role', 'project']
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        field = super(GrantMemberInline, self).formfield_for_foreignkey(
-            db_field, request, **kwargs)
-        # restrict only to project associated with the current grant
-        # and *DEFAULT* to current project so it does not have to be selected
-        if db_field.name == 'project':
-            if request.object is not None:
-                field.queryset = field.queryset.filter(
-                    pk=request.object.project.pk)
-                field.initial = request.object.project.pk
-        return field
+    inlines = [GrantInline, ResourceInline]
 
 
 class GrantAdmin(admin.ModelAdmin):
@@ -94,11 +58,8 @@ class GrantAdmin(admin.ModelAdmin):
     date_hierarchy = 'start_date'
     search_fields = ('project__title', 'grant_type__grant_type',
                      'start_date', 'end_date', 'project__long_description',
-                     'project__short_description',
-                     'membership__user__username', 'membership__user__first_name',
-                     'membership__user__last_name')
+                     'project__short_description')
 
-    inlines = [GrantMemberInline]
     # override model ordering to show most recent first
     ordering = ['-start_date', 'project']
 
@@ -109,10 +70,10 @@ class GrantAdmin(admin.ModelAdmin):
 
 
 class MembershipAdmin(admin.ModelAdmin):
-    list_display = ('project', 'user', 'grant', 'role', 'status_override')
-    list_filter = ('project', 'role', 'status_override')
-    list_editable = ('status_override',)
-    search_fields = ('user__first_name', 'user__last_name', 'project__title')
+    list_display = ('person', 'project', 'role', 'start_date', 'end_date')
+    list_filter = ('project', 'role')
+    date_hierarchy = 'start_date'
+    search_fields = ('person__first_name', 'person__last_name', 'project__title')
 
 
 class RoleAdmin(admin.ModelAdmin):

@@ -100,10 +100,27 @@ class Person(User):
     @property
     def latest_grant(self):
         '''most recent grants where this person has director role'''
-        mship = self.membership_set.filter(role__title__in=ProfileQuerySet.director_roles) \
-                    .order_by('-grant__start_date').first()
+        # find projects where they are director, then get newest grant
+        # that overlaps with their directorship dates
+        mship = self.membership_set \
+            .filter(role__title__in=ProfileQuerySet.director_roles) \
+            .order_by('-start_date').first()
+        # if there is one, find the most recent grant overlapping with their
+        # directorship dates
         if mship:
-            return mship.grant
+            # find most recent grant that overlaps with membership dates
+            # - grant start before membership end OR
+            #   grant end after membership start
+
+            # a membership might have no end date set, in which
+            # case it can't be used in a filter
+            grant_overlap = models.Q(end_date__gte=mship.start_date)
+            if mship.end_date:
+                grant_overlap |= models.Q(start_date__lte=mship.end_date)
+
+            return mship.project.grant_set \
+                .filter(grant_overlap) \
+                .order_by('-start_date').first()
 
     def __str__(self):
         '''Custom person display to make it easier to choose people
@@ -190,10 +207,10 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         return self.annotate(
             first_start=models.Min(models.Case(
                 models.When(user__membership__role__title__in=self.director_roles,
-                            then='user__membership__grant__start_date'))),
+                            then='user__membership__start_date'))),
             last_end=models.Max(models.Case(
                 models.When(user__membership__role__title__in=self.director_roles,
-                            then='user__membership__grant__end_date'))))
+                            then='user__membership__end_date'))))
 
     def project_manager_years(self):
         '''Annotate with first start and last end grant year for grants
@@ -204,10 +221,10 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         return self.annotate(
             pm_start=models.Min(models.Case(
                 models.When(user__membership__role__title='Project Manager',
-                            then='user__membership__grant__start_date'))),
+                            then='user__membership__start_date'))),
             pm_end=models.Max(models.Case(
                 models.When(user__membership__role__title='Project Manager',
-                            then='user__membership__grant__end_date'))))
+                            then='user__membership__end_date'))))
 
     def speakers(self):
         '''Return external speakers at CDH events.'''
@@ -226,24 +243,17 @@ class ProfileQuerySet(PublishedQuerySetMixin):
              )
         )
 
-    def _current_grant_query(self):
+    def _current_project_member_query(self):
         today = timezone.now()
         return (
             # in one of the allowed roles (project director/project manager)
             models.Q(user__membership__role__title__in=self.project_roles) &
-            # current grant
+            # current based on membership dates
             (
-                # current based on grant dates
-                (
-                    models.Q(user__membership__grant__start_date__lte=today) &
-                    (models.Q(user__membership__grant__end_date__gte=today) |
-                     models.Q(user__membership__grant__end_date__isnull=True))
-                ) |
-                # OR current based on status override
-                models.Q(user__membership__status_override='current')
-            ) & ~
-            # but not override set to past
-            models.Q(user__membership__status_override='past')
+                models.Q(user__membership__start_date__lte=today) &
+                (models.Q(user__membership__end_date__gte=today) |
+                 models.Q(user__membership__end_date__isnull=True))
+            )
         )
 
     def current(self):
@@ -251,14 +261,14 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         based on start and end dates.'''
         # annotate with an is_current flag to make template logic simpler
         return self.filter(models.Q(self._current_position_query()) |
-                           models.Q(self._current_grant_query())) \
+                           models.Q(self._current_project_member_query())) \
                    .extra(select={'is_current': True})
         # NOTE: couldn't get annotate to work
         # .annotate(is_current=models.Value(True, output_field=models.BooleanField))
 
     def current_grant(self):
         '''Return profiles for users with a current grant.'''
-        return self.filter(self._current_grant_query())
+        return self.filter(self._current_project_member_query())
 
     def current_position(self):
         '''Return profiles for users with a current position.'''
