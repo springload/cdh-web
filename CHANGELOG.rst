@@ -1,6 +1,18 @@
 CHANGELOG
 =========
 
+2.8
+---
+
+* As an admin, I want to associate project contributors with projects based on the dates they were involved instead of by grant, so that I can accurately reflect project team membership over time.
+* As an admin, I want to create staff projects that aren't R&D and have them show up on the Staff Projects page so I can highlight new work like Startwords.
+* As a user, I want to learn about the DH Working Groups sponsored by the CDH so that I can get involved with a group that matches my interests.
+* As a user, I want to see PGRA profiles listed with students and postdoc profiles listed with staff, so I understand how these people relate to the CDH. 
+* bugfix: project admin edit pages load slowly, especially for large projects
+* bugfix: affiliate grant year ranges on profile list pages are incorrect
+* chore: shift CI to github actions
+* chore: rename master -> main
+
 2.7
 ---
 
