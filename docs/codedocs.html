@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Code Documentation &#8212; CDH website 2.7.0 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <title>Code Documentation &#8212; CDH website 2.8.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -202,7 +202,7 @@ position information.</p>
 <dl class="py method">
 <dt id="cdhweb.people.models.Person.latest_grant">
 <em class="property">property </em><code class="sig-name descname">latest_grant</code><a class="headerlink" href="#cdhweb.people.models.Person.latest_grant" title="Permalink to this definition">¶</a></dt>
-<dd><p>most recent grants where this person is project director</p>
+<dd><p>most recent grants where this person has director role</p>
 </dd></dl>
 
 <dl class="py method">
@@ -301,6 +301,12 @@ based on start and end dates.</p>
 executive committee positions.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt id="cdhweb.people.models.ProfileQuerySet.director_roles">
+<code class="sig-name descname">director_roles</code><em class="property"> = ['Project Director', 'Co-PI: Research Lead']</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.director_roles" title="Permalink to this definition">¶</a></dt>
+<dd><p>position titles that indicate a person is a project director</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="cdhweb.people.models.ProfileQuerySet.exec_member">
 <code class="sig-name descname">exec_member</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.exec_member"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.exec_member" title="Permalink to this definition">¶</a></dt>
@@ -333,15 +339,9 @@ that a person was project director.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="cdhweb.people.models.ProfileQuerySet.not_postdocs">
-<code class="sig-name descname">not_postdocs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.not_postdocs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.not_postdocs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exclude CDH Postdoctoral Fellows, based on role title</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="cdhweb.people.models.ProfileQuerySet.not_students">
 <code class="sig-name descname">not_students</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.not_students"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.not_students" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter out graduate and undergraduates based on PU status</p>
+<dd><p>Filter out students based on PU status</p>
 </dd></dl>
 
 <dl class="py method">
@@ -357,21 +357,9 @@ that a person was project director.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="cdhweb.people.models.ProfileQuerySet.postdoc_title">
-<code class="sig-name descname">postdoc_title</code><em class="property"> = 'Postdoctoral Fellow'</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.postdoc_title" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.people.models.ProfileQuerySet.postdoc_titles">
+<code class="sig-name descname">postdoc_titles</code><em class="property"> = ['Postdoctoral Fellow', 'Postdoctoral Fellow and Communications Lead']</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.postdoc_titles" title="Permalink to this definition">¶</a></dt>
 <dd><p>position titles that indicate a person is a postdoc</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.people.models.ProfileQuerySet.postdocs">
-<code class="sig-name descname">postdocs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.postdocs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.postdocs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return CDH Postdoctoral Fellows, based on role title</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="cdhweb.people.models.ProfileQuerySet.postgrad_title">
-<code class="sig-name descname">postgrad_title</code><em class="property"> = 'Postgraduate Research Associate'</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.postgrad_title" title="Permalink to this definition">¶</a></dt>
-<dd><p>variant postdoc title for Princeton PGRA</p>
 </dd></dl>
 
 <dl class="py method">
@@ -383,7 +371,7 @@ that a person was project manager.</p>
 
 <dl class="py attribute">
 <dt id="cdhweb.people.models.ProfileQuerySet.project_roles">
-<code class="sig-name descname">project_roles</code><em class="property"> = ['Project Director', 'Project Manager']</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.project_roles" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">project_roles</code><em class="property"> = ['Project Director', 'Project Manager', 'Co-PI: Research Lead']</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.project_roles" title="Permalink to this definition">¶</a></dt>
 <dd><p>memebership roles that indicate someone is an affiliate</p>
 </dd></dl>
 
@@ -408,7 +396,7 @@ that a person was project manager.</p>
 <dl class="py method">
 <dt id="cdhweb.people.models.ProfileQuerySet.student_affiliates">
 <code class="sig-name descname">student_affiliates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#ProfileQuerySet.student_affiliates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.student_affiliates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return CDH student staff members and grantees based on
+<dd><p>Return CDH student staff members, grantees, and PGRAs based on
 Project Director or Project Manager role.</p>
 </dd></dl>
 
@@ -420,7 +408,7 @@ Project Director or Project Manager role.</p>
 
 <dl class="py attribute">
 <dt id="cdhweb.people.models.ProfileQuerySet.student_titles">
-<code class="sig-name descname">student_titles</code><em class="property"> = ['Graduate Fellow', 'Graduate Assistant', 'Undergraduate Assistant']</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.student_titles" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">student_titles</code><em class="property"> = ['Graduate Fellow', 'Graduate Assistant', 'Undergraduate Assistant', 'Postgraduate Research Associate']</em><a class="headerlink" href="#cdhweb.people.models.ProfileQuerySet.student_titles" title="Permalink to this definition">¶</a></dt>
 <dd><p>position titles that indicate a staff person is a student</p>
 </dd></dl>
 
@@ -516,35 +504,6 @@ checks both positions and grants.</p>
 <dt id="cdhweb.people.views.ExecListView.show_cdh_position">
 <code class="sig-name descname">show_cdh_position</code><em class="property"> = False</em><a class="headerlink" href="#cdhweb.people.views.ExecListView.show_cdh_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>do not CDH positions or grants; show job title</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="cdhweb.people.views.PostdocListView">
-<em class="property">class </em><code class="sig-prename descclassname">cdhweb.people.views.</code><code class="sig-name descname">PostdocListView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#PostdocListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.PostdocListView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display current and past postdoctoral fellows</p>
-<dl class="py method">
-<dt id="cdhweb.people.views.PostdocListView.get_current_profiles">
-<code class="sig-name descname">get_current_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#PostdocListView.get_current_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.PostdocListView.get_current_profiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get current profiles from the queryset. Override to customize
-which filter is used. By default, uses generic current logic that
-checks both positions and grants.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.people.views.PostdocListView.get_past_profiles">
-<code class="sig-name descname">get_past_profiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#PostdocListView.get_past_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.PostdocListView.get_past_profiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get past profiles. Override to customize filters and ordering. By
-default, assumes any profiles that aren’t current are past.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.people.views.PostdocListView.get_queryset">
-<code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#PostdocListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.people.views.PostdocListView.get_queryset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the list of items for this view.</p>
-<p>The return value must be an iterable and may be an instance of
-<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
 </dd></dl>
 
 </dd></dl>
@@ -889,8 +848,14 @@ sort by project title</p>
 
 <dl class="py attribute">
 <dt id="cdhweb.projects.models.ProjectQuerySet.staff_postdoc_grants">
-<code class="sig-name descname">staff_postdoc_grants</code><em class="property"> = ['Staff R&amp;D', 'Postdoctoral Research Project']</em><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet.staff_postdoc_grants" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">staff_postdoc_grants</code><em class="property"> = ['Staff R&amp;D', 'Staff Project', 'Postdoctoral Research Project']</em><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet.staff_postdoc_grants" title="Permalink to this definition">¶</a></dt>
 <dd><p>grant types that indicate staff or postdoc project</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cdhweb.projects.models.ProjectQuerySet.working_groups">
+<code class="sig-name descname">working_groups</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#ProjectQuerySet.working_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.models.ProjectQuerySet.working_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Include only projects with the working group flag set</p>
 </dd></dl>
 
 </dd></dl>
@@ -1001,6 +966,26 @@ published Project queryset.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt id="cdhweb.projects.views.WorkingGroupListView">
+<em class="property">class </em><code class="sig-prename descclassname">cdhweb.projects.views.</code><code class="sig-name descname">WorkingGroupListView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/views.html#WorkingGroupListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.views.WorkingGroupListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Working groups, based on working group project flag</p>
+<dl class="py method">
+<dt id="cdhweb.projects.views.WorkingGroupListView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/views.html#WorkingGroupListView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.views.WorkingGroupListView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the context for this view.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cdhweb.projects.views.WorkingGroupListView.get_queryset">
+<code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/views.html#WorkingGroupListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.projects.views.WorkingGroupListView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="module-cdhweb.events">
@@ -1026,7 +1011,7 @@ Provides event types, locations, and events</p>
 <dl class="py method">
 <dt id="cdhweb.events.models.Event.duration">
 <code class="sig-name descname">duration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#Event.duration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdhweb.events.models.Event.duration" title="Permalink to this definition">¶</a></dt>
-<dd><p>duration between start and end time as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.timedelta</span></code></a></p>
+<dd><p>duration between start and end time as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.timedelta</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
@@ -1607,7 +1592,7 @@ the author has a published profile</p>
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; CDH website 2.7.0 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <title>Index &#8212; CDH website 2.8.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -242,10 +242,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="codedocs.html#cdhweb.resources.models.DateRange">DateRange (class in cdhweb.resources.models)</a>
 </li>
-      <li><a href="codedocs.html#cdhweb.events.models.Location.display_name">display_name() (cdhweb.events.models.Location property)</a>
+      <li><a href="codedocs.html#cdhweb.people.models.ProfileQuerySet.director_roles">director_roles (cdhweb.people.models.ProfileQuerySet attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="codedocs.html#cdhweb.events.models.Location.display_name">display_name() (cdhweb.events.models.Location property)</a>
+</li>
       <li><a href="codedocs.html#cdhweb.projects.models.ProjectResource.display_url">display_url() (cdhweb.projects.models.ProjectResource method)</a>
 </li>
       <li><a href="codedocs.html#cdhweb.events.models.Event.duration">duration() (cdhweb.events.models.Event method)</a>
@@ -349,13 +351,13 @@
 </li>
         <li><a href="codedocs.html#cdhweb.projects.views.ProjectListMixinView.get_context_data">(cdhweb.projects.views.ProjectListMixinView method)</a>
 </li>
+        <li><a href="codedocs.html#cdhweb.projects.views.WorkingGroupListView.get_context_data">(cdhweb.projects.views.WorkingGroupListView method)</a>
+</li>
       </ul></li>
       <li><a href="codedocs.html#cdhweb.people.views.AffiliateListView.get_current_profiles">get_current_profiles() (cdhweb.people.views.AffiliateListView method)</a>
 
       <ul>
         <li><a href="codedocs.html#cdhweb.people.views.ExecListView.get_current_profiles">(cdhweb.people.views.ExecListView method)</a>
-</li>
-        <li><a href="codedocs.html#cdhweb.people.views.PostdocListView.get_current_profiles">(cdhweb.people.views.PostdocListView method)</a>
 </li>
         <li><a href="codedocs.html#cdhweb.people.views.ProfileListView.get_current_profiles">(cdhweb.people.views.ProfileListView method)</a>
 </li>
@@ -368,17 +370,15 @@
 </li>
       <li><a href="codedocs.html#cdhweb.events.views.EventSemesterArchiveView.get_dated_items">get_dated_items() (cdhweb.events.views.EventSemesterArchiveView method)</a>
 </li>
-      <li><a href="codedocs.html#cdhweb.events.models.Event.get_ical_url">get_ical_url() (cdhweb.events.models.Event method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="codedocs.html#cdhweb.events.models.Event.get_ical_url">get_ical_url() (cdhweb.events.models.Event method)</a>
+</li>
       <li><a href="codedocs.html#cdhweb.events.views.EventDetailView.get_object">get_object() (cdhweb.events.views.EventDetailView method)</a>
 </li>
-      <li><a href="codedocs.html#cdhweb.people.views.PostdocListView.get_past_profiles">get_past_profiles() (cdhweb.people.views.PostdocListView method)</a>
+      <li><a href="codedocs.html#cdhweb.people.views.ProfileListView.get_past_profiles">get_past_profiles() (cdhweb.people.views.ProfileListView method)</a>
 
       <ul>
-        <li><a href="codedocs.html#cdhweb.people.views.ProfileListView.get_past_profiles">(cdhweb.people.views.ProfileListView method)</a>
-</li>
         <li><a href="codedocs.html#cdhweb.people.views.SpeakerListView.get_past_profiles">(cdhweb.people.views.SpeakerListView method)</a>
 </li>
         <li><a href="codedocs.html#cdhweb.people.views.StudentListView.get_past_profiles">(cdhweb.people.views.StudentListView method)</a>
@@ -390,8 +390,6 @@
         <li><a href="codedocs.html#cdhweb.people.views.AffiliateListView.get_queryset">(cdhweb.people.views.AffiliateListView method)</a>
 </li>
         <li><a href="codedocs.html#cdhweb.people.views.ExecListView.get_queryset">(cdhweb.people.views.ExecListView method)</a>
-</li>
-        <li><a href="codedocs.html#cdhweb.people.views.PostdocListView.get_queryset">(cdhweb.people.views.PostdocListView method)</a>
 </li>
         <li><a href="codedocs.html#cdhweb.people.views.ProfileDetailView.get_queryset">(cdhweb.people.views.ProfileDetailView method)</a>
 </li>
@@ -406,6 +404,8 @@
         <li><a href="codedocs.html#cdhweb.projects.views.ProjectListView.get_queryset">(cdhweb.projects.views.ProjectListView method)</a>
 </li>
         <li><a href="codedocs.html#cdhweb.projects.views.StaffProjectListView.get_queryset">(cdhweb.projects.views.StaffProjectListView method)</a>
+</li>
+        <li><a href="codedocs.html#cdhweb.projects.views.WorkingGroupListView.get_queryset">(cdhweb.projects.views.WorkingGroupListView method)</a>
 </li>
       </ul></li>
       <li><a href="codedocs.html#cdhweb.events.views.EventRedirectView.get_redirect_url">get_redirect_url() (cdhweb.events.views.EventRedirectView method)</a>
@@ -569,12 +569,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="codedocs.html#cdhweb.projects.models.ProjectQuerySet.not_current">not_current() (cdhweb.projects.models.ProjectQuerySet method)</a>
 </li>
-      <li><a href="codedocs.html#cdhweb.people.models.ProfileQuerySet.not_postdocs">not_postdocs() (cdhweb.people.models.ProfileQuerySet method)</a>
+      <li><a href="codedocs.html#cdhweb.projects.models.ProjectQuerySet.not_staff_or_postdoc">not_staff_or_postdoc() (cdhweb.projects.models.ProjectQuerySet method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="codedocs.html#cdhweb.projects.models.ProjectQuerySet.not_staff_or_postdoc">not_staff_or_postdoc() (cdhweb.projects.models.ProjectQuerySet method)</a>
-</li>
       <li><a href="codedocs.html#cdhweb.people.models.ProfileQuerySet.not_students">not_students() (cdhweb.people.models.ProfileQuerySet method)</a>
 </li>
       <li><a href="codedocs.html#cdhweb.people.models.Title.num_people">num_people() (cdhweb.people.models.Title method)</a>
@@ -615,13 +613,7 @@
 </li>
       <li><a href="codedocs.html#cdhweb.people.models.Position.MultipleObjectsReturned">Position.MultipleObjectsReturned</a>
 </li>
-      <li><a href="codedocs.html#cdhweb.people.models.ProfileQuerySet.postdoc_title">postdoc_title (cdhweb.people.models.ProfileQuerySet attribute)</a>
-</li>
-      <li><a href="codedocs.html#cdhweb.people.views.PostdocListView">PostdocListView (class in cdhweb.people.views)</a>
-</li>
-      <li><a href="codedocs.html#cdhweb.people.models.ProfileQuerySet.postdocs">postdocs() (cdhweb.people.models.ProfileQuerySet method)</a>
-</li>
-      <li><a href="codedocs.html#cdhweb.people.models.ProfileQuerySet.postgrad_title">postgrad_title (cdhweb.people.models.ProfileQuerySet attribute)</a>
+      <li><a href="codedocs.html#cdhweb.people.models.ProfileQuerySet.postdoc_titles">postdoc_titles (cdhweb.people.models.ProfileQuerySet attribute)</a>
 </li>
       <li><a href="codedocs.html#cdhweb.people.models.Profile">Profile (class in cdhweb.people.models)</a>
 </li>
@@ -635,10 +627,10 @@
 </li>
       <li><a href="codedocs.html#cdhweb.people.views.ProfileListView">ProfileListView (class in cdhweb.people.views)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="codedocs.html#cdhweb.people.views.ProfileMixinView">ProfileMixinView (class in cdhweb.people.views)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="codedocs.html#cdhweb.people.models.ProfileQuerySet">ProfileQuerySet (class in cdhweb.people.models)</a>
 </li>
       <li><a href="codedocs.html#cdhweb.projects.models.Project">Project (class in cdhweb.projects.models)</a>
@@ -811,6 +803,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="codedocs.html#cdhweb.events.models.Event.when">when() (cdhweb.events.models.Event method)</a>
 </li>
+      <li><a href="codedocs.html#cdhweb.projects.models.ProjectQuerySet.working_groups">working_groups() (cdhweb.projects.models.ProjectQuerySet method)</a>
+</li>
+      <li><a href="codedocs.html#cdhweb.projects.views.WorkingGroupListView">WorkingGroupListView (class in cdhweb.projects.views)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -906,7 +902,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

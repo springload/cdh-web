@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.people.views &#8212; CDH website 2.7.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <title>cdhweb.people.views &#8212; CDH website 2.8.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -135,7 +135,6 @@
             <span class="s1">&#39;current_title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_title</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_title</span><span class="p">,</span>  <span class="c1"># use main title as default</span>
             <span class="s1">&#39;archive_nav_urls&#39;</span><span class="p">:</span> <span class="p">[</span>
                 <span class="p">(</span><span class="s1">&#39;Staff&#39;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;people:staff&#39;</span><span class="p">)),</span>
-                <span class="p">(</span><span class="s1">&#39;Postdoctoral Fellows&#39;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;people:postdocs&#39;</span><span class="p">)),</span>
                 <span class="p">(</span><span class="s1">&#39;Students&#39;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;people:students&#39;</span><span class="p">)),</span>
                 <span class="p">(</span><span class="s1">&#39;Affiliates&#39;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;people:affiliates&#39;</span><span class="p">)),</span>
                 <span class="p">(</span><span class="s1">&#39;Executive Committee&#39;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;people:exec-committee&#39;</span><span class="p">)),</span>
@@ -159,38 +158,18 @@
     <span class="n">show_grant</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="StaffListView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.StaffListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># filter to profiles with staff flag set and exclude postdocs</span>
-        <span class="c1"># and students</span>
+        <span class="c1"># filter to profiles with staff flag set and exclude students</span>
         <span class="c1"># (already ordered by job title sort order and then by last name)</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">staff</span><span class="p">()</span><span class="o">.</span><span class="n">not_postdocs</span><span class="p">()</span><span class="o">.</span><span class="n">not_students</span><span class="p">()</span></div>
-        <span class="c1"># NOTE: this won&#39;t filter correctly if we ever have someone who</span>
-        <span class="c1"># goes from a postdoc or student role to a staff position, however</span>
-        <span class="c1"># filtering only on current role messes up past staff</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">staff</span><span class="p">()</span><span class="o">.</span><span class="n">not_students</span><span class="p">()</span></div>
+        <span class="c1"># NOTE: if someone goes from a student role to a staff role, they need</span>
+        <span class="c1"># to have their PU status changed to something that&#39;s not a student</span>
+        <span class="c1"># in order to not be excluded from this page based on their previous</span>
+        <span class="c1"># role</span>
 
 <div class="viewcode-block" id="StaffListView.get_current_profiles"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.StaffListView.get_current_profiles">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># we only care about current position, grant doesn&#39;t matter;</span>
         <span class="c1"># filter out past faculty directors who are current exec members</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">current_position_nonexec</span><span class="p">()</span></div></div>
-
-
-<div class="viewcode-block" id="PostdocListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.PostdocListView">[docs]</a><span class="k">class</span> <span class="nc">PostdocListView</span><span class="p">(</span><span class="n">ProfileListView</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Display current and past postdoctoral fellows&#39;&#39;&#39;</span>
-    <span class="n">page_title</span> <span class="o">=</span> <span class="s1">&#39;Postdoctoral Fellows&#39;</span>
-    <span class="n">past_title</span> <span class="o">=</span> <span class="s1">&#39;Past Postdoctoral Fellows&#39;</span>
-    <span class="n">show_grant</span> <span class="o">=</span> <span class="kc">False</span>
-
-<div class="viewcode-block" id="PostdocListView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.PostdocListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># filter to just postdocs</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">postdocs</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="PostdocListView.get_current_profiles"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.PostdocListView.get_current_profiles">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># we only care about current position, grant doesn&#39;t matter</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">current_position</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="PostdocListView.get_past_profiles"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.PostdocListView.get_past_profiles">[docs]</a>    <span class="k">def</span> <span class="nf">get_past_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># show most recent first</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_past_profiles</span><span class="p">()</span>\
-            <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-user__positions__end_date&#39;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="StudentListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.StudentListView">[docs]</a><span class="k">class</span> <span class="nc">StudentListView</span><span class="p">(</span><span class="n">ProfileListView</span><span class="p">):</span>
@@ -216,8 +195,8 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_past_profiles</span><span class="p">()</span> \
             <span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">most_recent</span><span class="o">=</span><span class="n">Greatest</span><span class="p">(</span>
                 <span class="n">Case</span><span class="p">(</span>
-                    <span class="n">When</span><span class="p">(</span><span class="n">user__membership__grant__end_date__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                         <span class="n">then</span><span class="o">=</span><span class="n">Max</span><span class="p">(</span><span class="s1">&#39;user__membership__grant__end_date&#39;</span><span class="p">)),</span>
+                    <span class="n">When</span><span class="p">(</span><span class="n">user__membership__end_date__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                         <span class="n">then</span><span class="o">=</span><span class="n">Max</span><span class="p">(</span><span class="s1">&#39;user__membership__end_date&#39;</span><span class="p">)),</span>
                     <span class="n">default</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
                 <span class="p">),</span>
                 <span class="n">Case</span><span class="p">(</span>
@@ -382,7 +361,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

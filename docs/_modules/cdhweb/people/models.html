@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.people.models &#8212; CDH website 2.7.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <title>cdhweb.people.models &#8212; CDH website 2.8.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -34,31 +34,31 @@
   <h1>Source code for cdhweb.people.models</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
 
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="kn">import</span> <span class="n">RichTextField</span><span class="p">,</span> <span class="n">FileField</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="kn">import</span> <span class="n">Displayable</span><span class="p">,</span> <span class="n">CONTENT_STATUS_PUBLISHED</span><span class="p">,</span> \
-    <span class="n">CONTENT_STATUS_DRAFT</span>
+<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="kn">import</span> <span class="n">FileField</span><span class="p">,</span> <span class="n">RichTextField</span>
+<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">CONTENT_STATUS_DRAFT</span><span class="p">,</span>
+                                   <span class="n">CONTENT_STATUS_PUBLISHED</span><span class="p">,</span> <span class="n">Displayable</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="kn">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
 <span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="kn">import</span> <span class="n">TaggableManager</span>
 
-<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="kn">import</span> <span class="n">Attachment</span><span class="p">,</span> <span class="n">PublishedQuerySetMixin</span><span class="p">,</span> \
-    <span class="n">DateRange</span>
+<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Attachment</span><span class="p">,</span> <span class="n">DateRange</span><span class="p">,</span>
+                                     <span class="n">PublishedQuerySetMixin</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Title"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.Title">[docs]</a><span class="k">class</span> <span class="nc">Title</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Job titles for people&#39;&#39;&#39;</span>
     <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">sort_order</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                                             <span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># NOTE: defining relationship here because we can&#39;t add it to User</span>
     <span class="c1"># directly</span>
     <span class="n">positions</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">through</span><span class="o">=</span><span class="s1">&#39;Position&#39;</span><span class="p">,</span>
-        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;titles&#39;</span><span class="p">)</span>
+                                       <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;titles&#39;</span><span class="p">)</span>
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_order&#39;</span><span class="p">]</span>
@@ -133,11 +133,28 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">latest_grant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;most recent grants where this person is project director&#39;&#39;&#39;</span>
-        <span class="n">mship</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">membership_set</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">role__title</span><span class="o">=</span><span class="s1">&#39;Project Director&#39;</span><span class="p">)</span> \
-                    <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-grant__start_date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="sd">&#39;&#39;&#39;most recent grants where this person has director role&#39;&#39;&#39;</span>
+        <span class="c1"># find projects where they are director, then get newest grant</span>
+        <span class="c1"># that overlaps with their directorship dates</span>
+        <span class="n">mship</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">membership_set</span> \
+            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">role__title__in</span><span class="o">=</span><span class="n">ProfileQuerySet</span><span class="o">.</span><span class="n">director_roles</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-start_date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="c1"># if there is one, find the most recent grant overlapping with their</span>
+        <span class="c1"># directorship dates</span>
         <span class="k">if</span> <span class="n">mship</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">mship</span><span class="o">.</span><span class="n">grant</span>
+            <span class="c1"># find most recent grant that overlaps with membership dates</span>
+            <span class="c1"># - grant start before membership end OR</span>
+            <span class="c1">#   grant end after membership start</span>
+
+            <span class="c1"># a membership might have no end date set, in which</span>
+            <span class="c1"># case it can&#39;t be used in a filter</span>
+            <span class="n">grant_overlap</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">end_date__gte</span><span class="o">=</span><span class="n">mship</span><span class="o">.</span><span class="n">start_date</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mship</span><span class="o">.</span><span class="n">end_date</span><span class="p">:</span>
+                <span class="n">grant_overlap</span> <span class="o">|=</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">start_date__lte</span><span class="o">=</span><span class="n">mship</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">mship</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">grant_set</span> \
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">grant_overlap</span><span class="p">)</span> \
+                <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-start_date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Custom person display to make it easier to choose people</span>
@@ -155,15 +172,19 @@
 <div class="viewcode-block" id="ProfileQuerySet"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet">[docs]</a><span class="k">class</span> <span class="nc">ProfileQuerySet</span><span class="p">(</span><span class="n">PublishedQuerySetMixin</span><span class="p">):</span>
 
     <span class="c1">#: position titles that indicate a person is a postdoc</span>
-    <span class="n">postdoc_title</span> <span class="o">=</span> <span class="s1">&#39;Postdoctoral Fellow&#39;</span>
-    <span class="c1">#: variant postdoc title for Princeton PGRA</span>
-    <span class="n">postgrad_title</span> <span class="o">=</span> <span class="s1">&#39;Postgraduate Research Associate&#39;</span>
+    <span class="n">postdoc_titles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Postdoctoral Fellow&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;Postdoctoral Fellow and Communications Lead&#39;</span><span class="p">]</span>
+
+    <span class="c1">#: position titles that indicate a person is a project director</span>
+    <span class="n">director_roles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Project Director&#39;</span><span class="p">,</span> <span class="s1">&#39;Co-PI: Research Lead&#39;</span><span class="p">]</span>
 
     <span class="c1">#: position titles that indicate a staff person is a student</span>
     <span class="n">student_titles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Graduate Fellow&#39;</span><span class="p">,</span> <span class="s1">&#39;Graduate Assistant&#39;</span><span class="p">,</span>
-                      <span class="s1">&#39;Undergraduate Assistant&#39;</span><span class="p">]</span>
+                      <span class="s1">&#39;Undergraduate Assistant&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;Postgraduate Research Associate&#39;</span><span class="p">]</span>
     <span class="c1">#: memebership roles that indicate someone is an affiliate</span>
-    <span class="n">project_roles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Project Director&#39;</span><span class="p">,</span> <span class="s1">&#39;Project Manager&#39;</span><span class="p">]</span>
+    <span class="n">project_roles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Project Director&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;Project Manager&#39;</span><span class="p">,</span> <span class="s1">&#39;Co-PI: Research Lead&#39;</span><span class="p">]</span>
 
     <span class="c1">#: student status codes from LDAP</span>
     <span class="n">student_pu_status</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;graduate&#39;</span><span class="p">,</span> <span class="s1">&#39;undergraduate&#39;</span><span class="p">]</span>
@@ -177,35 +198,27 @@
         <span class="sd">&#39;&#39;&#39;Return only CDH staff members&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ProfileQuerySet.postdocs"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.postdocs">[docs]</a>    <span class="k">def</span> <span class="nf">postdocs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Return CDH Postdoctoral Fellows, based on role title&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title__icontains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postdoc_title</span><span class="p">)</span> <span class="o">|</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postgrad_title</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="ProfileQuerySet.not_postdocs"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.not_postdocs">[docs]</a>    <span class="k">def</span> <span class="nf">not_postdocs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Exclude CDH Postdoctoral Fellows, based on role title&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title__icontains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postdoc_title</span><span class="p">)</span> <span class="o">|</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postgrad_title</span><span class="p">))</span></div>
-
 <div class="viewcode-block" id="ProfileQuerySet.student_affiliates"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.student_affiliates">[docs]</a>    <span class="k">def</span> <span class="nf">student_affiliates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Return CDH student staff members and grantees based on</span>
+        <span class="sd">&#39;&#39;&#39;Return CDH student staff members, grantees, and PGRAs based on</span>
 <span class="sd">        Project Director or Project Manager role.&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pu_status__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">student_pu_status</span><span class="p">)</span> \
+        <span class="k">return</span> <span class="bp">self</span> \
+            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">pu_status__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">student_pu_status</span><span class="p">)</span> <span class="o">|</span>
+                    <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__title__title__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">student_titles</span><span class="p">))</span> \
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">|</span>
-                    <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__role__title__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_roles</span><span class="p">))</span></div>
+                    <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__role__title__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_roles</span><span class="p">))</span> \
+            <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">pu_status</span><span class="o">=</span><span class="s2">&quot;stf&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.not_students"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.not_students">[docs]</a>    <span class="k">def</span> <span class="nf">not_students</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Filter out graduate and undergraduates based on PU status&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">pu_status__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">student_pu_status</span><span class="p">)</span></div>
+        <span class="sd">&#39;&#39;&#39;Filter out students based on PU status&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span> \
+            <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">pu_status__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">student_pu_status</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.affiliates"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.affiliates">[docs]</a>    <span class="k">def</span> <span class="nf">affiliates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Faculty and staff affiliates based on PU status and Project Director</span>
 <span class="sd">        project role. Excludes CDH staff.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pu_status__in</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;fac&#39;</span><span class="p">,</span> <span class="s1">&#39;stf&#39;</span><span class="p">),</span>
-                           <span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Director&#39;</span><span class="p">)</span> \
-                    <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+                           <span class="n">user__membership__role__title__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">director_roles</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.executive_committee"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.executive_committee">[docs]</a>    <span class="k">def</span> <span class="nf">executive_committee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Executive committee members; based on position title.&#39;&#39;&#39;</span>
@@ -227,11 +240,11 @@
         <span class="c1"># page student staff without grants are still included</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
             <span class="n">first_start</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Min</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Case</span><span class="p">(</span>
-                <span class="n">models</span><span class="o">.</span><span class="n">When</span><span class="p">(</span><span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Director&#39;</span><span class="p">,</span>
-                            <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__grant__start_date&#39;</span><span class="p">))),</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">When</span><span class="p">(</span><span class="n">user__membership__role__title__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">director_roles</span><span class="p">,</span>
+                            <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__start_date&#39;</span><span class="p">))),</span>
             <span class="n">last_end</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Max</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Case</span><span class="p">(</span>
-                <span class="n">models</span><span class="o">.</span><span class="n">When</span><span class="p">(</span><span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Director&#39;</span><span class="p">,</span>
-                            <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__grant__end_date&#39;</span><span class="p">))))</span></div>
+                <span class="n">models</span><span class="o">.</span><span class="n">When</span><span class="p">(</span><span class="n">user__membership__role__title__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">director_roles</span><span class="p">,</span>
+                            <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__end_date&#39;</span><span class="p">))))</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.project_manager_years"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.project_manager_years">[docs]</a>    <span class="k">def</span> <span class="nf">project_manager_years</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Annotate with first start and last end grant year for grants</span>
@@ -242,10 +255,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
             <span class="n">pm_start</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Min</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Case</span><span class="p">(</span>
                 <span class="n">models</span><span class="o">.</span><span class="n">When</span><span class="p">(</span><span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Manager&#39;</span><span class="p">,</span>
-                            <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__grant__start_date&#39;</span><span class="p">))),</span>
+                            <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__start_date&#39;</span><span class="p">))),</span>
             <span class="n">pm_end</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Max</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Case</span><span class="p">(</span>
                 <span class="n">models</span><span class="o">.</span><span class="n">When</span><span class="p">(</span><span class="n">user__membership__role__title</span><span class="o">=</span><span class="s1">&#39;Project Manager&#39;</span><span class="p">,</span>
-                            <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__grant__end_date&#39;</span><span class="p">))))</span></div>
+                            <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__membership__end_date&#39;</span><span class="p">))))</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.speakers"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.speakers">[docs]</a>    <span class="k">def</span> <span class="nf">speakers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return external speakers at CDH events.&#39;&#39;&#39;</span>
@@ -261,27 +274,20 @@
             <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">&amp;</span>
             <span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__end_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">|</span>
              <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__positions__end_date__gte</span><span class="o">=</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
-            <span class="p">)</span>
+             <span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_current_grant_query</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_current_project_member_query</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">today</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="c1"># in one of the allowed roles (project director/project manager)</span>
             <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__role__title__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_roles</span><span class="p">)</span> <span class="o">&amp;</span>
-            <span class="c1"># current grant</span>
+            <span class="c1"># current based on membership dates</span>
             <span class="p">(</span>
-                <span class="c1"># current based on grant dates</span>
-                <span class="p">(</span>
-                    <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__grant__start_date__lte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">&amp;</span>
-                    <span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__grant__end_date__gte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">|</span>
-                     <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__grant__end_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-                <span class="p">)</span> <span class="o">|</span>
-                <span class="c1"># OR current based on status override</span>
-                <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__status_override</span><span class="o">=</span><span class="s1">&#39;current&#39;</span><span class="p">)</span>
-            <span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span>
-            <span class="c1"># but not override set to past</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__status_override</span><span class="o">=</span><span class="s1">&#39;past&#39;</span><span class="p">)</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__start_date__lte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">&amp;</span>
+                <span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__end_date__gte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">|</span>
+                 <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">user__membership__end_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="ProfileQuerySet.current"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.current">[docs]</a>    <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -289,14 +295,14 @@
 <span class="sd">        based on start and end dates.&#39;&#39;&#39;</span>
         <span class="c1"># annotate with an is_current flag to make template logic simpler</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_position_query</span><span class="p">())</span> <span class="o">|</span>
-                           <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_grant_query</span><span class="p">()))</span> \
+                           <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_project_member_query</span><span class="p">()))</span> \
                    <span class="o">.</span><span class="n">extra</span><span class="p">(</span><span class="n">select</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;is_current&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span></div>
         <span class="c1"># NOTE: couldn&#39;t get annotate to work</span>
         <span class="c1"># .annotate(is_current=models.Value(True, output_field=models.BooleanField))</span>
 
 <div class="viewcode-block" id="ProfileQuerySet.current_grant"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.current_grant">[docs]</a>    <span class="k">def</span> <span class="nf">current_grant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return profiles for users with a current grant.&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_grant_query</span><span class="p">())</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_project_member_query</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.current_position"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.current_position">[docs]</a>    <span class="k">def</span> <span class="nf">current_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return profiles for users with a current position.&#39;&#39;&#39;</span>
@@ -319,7 +325,7 @@
             <span class="n">earliest_event</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Min</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Case</span><span class="p">(</span>
                 <span class="n">models</span><span class="o">.</span><span class="n">When</span><span class="p">(</span><span class="n">user__event__status</span><span class="o">=</span><span class="n">CONTENT_STATUS_PUBLISHED</span><span class="p">,</span>
                             <span class="n">then</span><span class="o">=</span><span class="s1">&#39;user__event__start_time&#39;</span><span class="p">)))</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;earliest_event&#39;</span><span class="p">)</span></div>
+        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;earliest_event&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProfileQuerySet.order_by_position"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.ProfileQuerySet.order_by_position">[docs]</a>    <span class="k">def</span> <span class="nf">order_by_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;order by job title sort order and then by start date&#39;&#39;&#39;</span>
@@ -328,7 +334,7 @@
         <span class="c1"># not be from the same position)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">min_title</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Min</span><span class="p">(</span><span class="s1">&#39;user__positions__title__sort_order&#39;</span><span class="p">),</span>
                              <span class="n">min_start</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Min</span><span class="p">(</span><span class="s1">&#39;user__positions__start_date&#39;</span><span class="p">))</span> \
-                   <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;min_title&#39;</span><span class="p">,</span> <span class="s1">&#39;min_start&#39;</span><span class="p">,</span> <span class="s1">&#39;user__last_name&#39;</span><span class="p">)</span></div></div>
+            <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;min_title&#39;</span><span class="p">,</span> <span class="s1">&#39;min_start&#39;</span><span class="p">,</span> <span class="s1">&#39;user__last_name&#39;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Profile"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.Profile">[docs]</a><span class="k">class</span> <span class="nc">Profile</span><span class="p">(</span><span class="n">Displayable</span><span class="p">,</span> <span class="n">AdminThumbMixin</span><span class="p">):</span>
@@ -336,8 +342,8 @@
     <span class="n">is_staff</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;CDH staff or Postdoctoral Fellow. If checked, person &#39;</span> <span class="o">+</span>
-        <span class="s1">&#39;will be listed on the CDH staff page (except for &#39;</span> <span class="o">+</span>
-        <span class="s1">&#39;postdocs) and will have a profile page on the site.&#39;</span><span class="p">)</span>
+        <span class="s1">&#39;will be listed on the CDH staff page and will have a profile page &#39;</span> <span class="o">+</span>
+        <span class="s1">&#39;on the site.&#39;</span><span class="p">)</span>
     <span class="n">education</span> <span class="o">=</span> <span class="n">RichTextField</span><span class="p">()</span>
     <span class="n">bio</span> <span class="o">=</span> <span class="n">RichTextField</span><span class="p">()</span>
     <span class="c1"># NOTE: could use regex here, but how standard are staff phone</span>
@@ -366,12 +372,12 @@
                                  <span class="n">max_length</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 
     <span class="n">image</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span>
-        <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;people.image&quot;</span><span class="p">,</span> <span class="s2">&quot;people&quot;</span><span class="p">),</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                      <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;people.image&quot;</span><span class="p">,</span> <span class="s2">&quot;people&quot;</span><span class="p">),</span>
+                      <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">thumb</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Thumbnail&quot;</span><span class="p">,</span>
-        <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;people.image&quot;</span><span class="p">,</span> <span class="s2">&quot;people/thumbnails&quot;</span><span class="p">),</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                      <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;people.image&quot;</span><span class="p">,</span> <span class="s2">&quot;people/thumbnails&quot;</span><span class="p">),</span>
+                      <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">admin_thumb_field</span> <span class="o">=</span> <span class="s2">&quot;thumb&quot;</span>
 
@@ -550,7 +556,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

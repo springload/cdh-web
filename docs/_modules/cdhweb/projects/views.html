@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.projects.views &#8212; CDH website 2.7.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <title>cdhweb.projects.views &#8212; CDH website 2.8.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -60,6 +60,25 @@
         <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
             <span class="s1">&#39;project_list&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">current</span><span class="p">(),</span>
             <span class="s1">&#39;past_projects&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">not_current</span><span class="p">()</span><span class="o">.</span><span class="n">order_by_newest_grant</span><span class="p">(),</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
+
+
+<div class="viewcode-block" id="WorkingGroupListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.WorkingGroupListView">[docs]</a><span class="k">class</span> <span class="nc">WorkingGroupListView</span><span class="p">(</span><span class="n">ProjectMixinView</span><span class="p">,</span> <span class="n">ListView</span><span class="p">,</span> <span class="n">LastModifiedListMixin</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Working groups, based on working group project flag&#39;&#39;&#39;</span>
+
+    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;DH Working Groups&#39;</span>
+
+<div class="viewcode-block" id="WorkingGroupListView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.WorkingGroupListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Project</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">working_groups</span><span class="p">()</span><span class="o">.</span><span class="n">published</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WorkingGroupListView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.WorkingGroupListView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># working groups never expire, so we don&#39;t have &quot;past projects&quot;</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s1">&#39;project_list&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="p">,</span>
+            <span class="s1">&#39;past_projects&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
         <span class="p">})</span>
         <span class="k">return</span> <span class="n">context</span></div></div>
@@ -174,7 +193,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
