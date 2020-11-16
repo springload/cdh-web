@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>cdhweb.events.models &#8212; CDH website 2.6.0 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cdhweb.events.models &#8212; CDH website 2.7.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -33,22 +34,23 @@
   <h1>Source code for cdhweb.events.models</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="k">import</span> <span class="n">strip_tags</span>
 <span class="kn">import</span> <span class="nn">icalendar</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">strip_tags</span>
+<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="kn">import</span> <span class="n">FileField</span>
+<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="kn">import</span> <span class="n">Displayable</span><span class="p">,</span> <span class="n">RichText</span>
+<span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="kn">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
+<span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="kn">import</span> <span class="n">TaggableManager</span>
 
-<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="k">import</span> <span class="n">FileField</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="k">import</span> <span class="n">Displayable</span><span class="p">,</span> <span class="n">RichText</span>
-<span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="k">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
-<span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="k">import</span> <span class="n">TaggableManager</span>
-
-<span class="kn">from</span> <span class="nn">cdhweb.people.models</span> <span class="k">import</span> <span class="n">Person</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="k">import</span> <span class="n">Attachment</span><span class="p">,</span> <span class="n">ExcerptMixin</span><span class="p">,</span> <span class="n">PublishedQuerySetMixin</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.utils</span> <span class="k">import</span> <span class="n">absolutize_url</span>
+<span class="kn">from</span> <span class="nn">cdhweb.people.models</span> <span class="kn">import</span> <span class="n">Person</span>
+<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Attachment</span><span class="p">,</span> <span class="n">ExcerptMixin</span><span class="p">,</span>
+                                     <span class="n">PublishedQuerySetMixin</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">cdhweb.resources.utils</span> <span class="kn">import</span> <span class="n">absolutize_url</span>
 
 
 <span class="k">class</span> <span class="nc">EventTypeManager</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
@@ -61,7 +63,7 @@
 
     <span class="n">objects</span> <span class="o">=</span> <span class="n">EventTypeManager</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="k">def</span> <span class="nf">natural_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -70,12 +72,14 @@
 
 <div class="viewcode-block" id="Location"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Location">[docs]</a><span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Name of the location&#39;</span><span class="p">)</span>
+                            <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Name of the location&#39;</span><span class="p">)</span>
     <span class="n">short_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Address of the location (will not display if same as name)&#39;</span><span class="p">)</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                               <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Address of the location (will not display if same as name)&#39;</span><span class="p">)</span>
+    <span class="n">is_virtual</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Virtual&quot;</span><span class="p">,</span>
+                                     <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Virtual platforms, i.e. Zoom or Google Hangouts&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">short_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="nd">@property</span>
@@ -83,7 +87,12 @@
         <span class="sd">&#39;&#39;&#39;A name for template display&#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">])</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+<div class="viewcode-block" id="Location.clean"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Location.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># address is required for non-virtual events</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_virtual</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Address is required for non-virtual events&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="EventQuerySet"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.EventQuerySet">[docs]</a><span class="k">class</span> <span class="nc">EventQuerySet</span><span class="p">(</span><span class="n">PublishedQuerySetMixin</span><span class="p">):</span>
@@ -94,7 +103,7 @@
         <span class="n">now</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="c1"># construct a datetime based on now but with zero hour/minute/second</span>
         <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
-            <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">get_default_timezone</span><span class="p">())</span>
+                         <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">get_default_timezone</span><span class="p">())</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">end_time__gte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EventQuerySet.recent"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.EventQuerySet.recent">[docs]</a>    <span class="k">def</span> <span class="nf">recent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -103,7 +112,7 @@
         <span class="n">now</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="c1"># construct a datetime based on now but with zero hour/minute/second</span>
         <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
-            <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">get_default_timezone</span><span class="p">())</span>
+                         <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">get_default_timezone</span><span class="p">())</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">end_time__lt</span><span class="o">=</span><span class="n">today</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-start_time&#39;</span><span class="p">)</span></div></div>
 
 
@@ -117,25 +126,29 @@
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">()</span>
     <span class="c1"># all day flag todo</span>
     <span class="c1"># all_day = models.BooleanField(default=False, blank=True)</span>
-    <span class="n">location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Location</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">event_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">EventType</span><span class="p">)</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Location</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                 <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">)</span>
+    <span class="n">event_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">EventType</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
     <span class="n">speakers</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Guest lecturer(s) or Workshop leader(s)&#39;</span><span class="p">,</span>
-        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                      <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Guest lecturer(s) or Workshop leader(s)&#39;</span><span class="p">,</span>
+                                      <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">attendance</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Total number of people who attended the event. (Internal only, for reporting purposes.)&#39;</span><span class="p">)</span>
+                                             <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Total number of people who attended the event. (Internal only, for reporting purposes.)&#39;</span><span class="p">)</span>
+
+    <span class="n">join_url</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Join URL&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                               <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Join URL for virtual events, e.g. Zoom meetings.&#39;</span><span class="p">)</span>
 
     <span class="c1"># TODO: include expected size? (required size?)</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span>
-        <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;events.image&quot;</span><span class="p">,</span> <span class="s2">&quot;events&quot;</span><span class="p">),</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Image for display on event detail page (optional)&#39;</span><span class="p">)</span>
+                      <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;events.image&quot;</span><span class="p">,</span> <span class="s2">&quot;events&quot;</span><span class="p">),</span>
+                      <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                      <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Image for display on event detail page (optional)&#39;</span><span class="p">)</span>
 
     <span class="n">thumb</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Thumbnail&quot;</span><span class="p">,</span>
-        <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;events.thumb&quot;</span><span class="p">,</span> <span class="s2">&quot;events/thumbnails&quot;</span><span class="p">),</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Image for display on event card (optional)&#39;</span><span class="p">)</span>
+                      <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;events.thumb&quot;</span><span class="p">,</span> <span class="s2">&quot;events/thumbnails&quot;</span><span class="p">),</span>
+                      <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                      <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Image for display on event card (optional)&#39;</span><span class="p">)</span>
 
     <span class="n">attachments</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Attachment</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -147,11 +160,19 @@
     <span class="n">admin_thumb_field</span> <span class="o">=</span> <span class="s2">&quot;thumb&quot;</span>
     <span class="n">event_type</span><span class="o">.</span><span class="n">verbose_name</span> <span class="o">=</span> <span class="s1">&#39;Type&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39; - &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%b </span><span class="si">%d</span><span class="s1">, %Y&#39;</span><span class="p">)])</span>
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;start_time&quot;</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="Event.is_virtual"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.is_virtual">[docs]</a>    <span class="k">def</span> <span class="nf">is_virtual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;If an event takes place in a virtual location, it is virtual&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">is_virtual</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+    <span class="n">is_virtual</span><span class="o">.</span><span class="n">boolean</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">is_virtual</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s2">&quot;Virtual&quot;</span>
 
 <div class="viewcode-block" id="Event.get_absolute_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;event detail url on this site&#39;&#39;&#39;</span>
@@ -163,7 +184,6 @@
             <span class="c1"># force two-digit month</span>
             <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%02d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
             <span class="s1">&#39;slug&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">})</span></div>
-
 
 <div class="viewcode-block" id="Event.full_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.full_url">[docs]</a>    <span class="k">def</span> <span class="nf">full_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Absolute url, including site address&#39;&#39;&#39;</span>
@@ -221,11 +241,13 @@
         <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;dtstart&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span>
         <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;dtend&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
-            <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">display_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_virtual</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_url</span><span class="p">:</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_url</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">display_name</span><span class="p">)</span>
         <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">strip_tags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">absurl</span><span class="p">]))</span>
+                  <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">strip_tags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">absurl</span><span class="p">]))</span>
         <span class="k">return</span> <span class="n">event</span></div></div>
-
 </pre></div>
 
           </div>
@@ -295,7 +317,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script><div class="powered_by">
+<script>$('#searchbox').show(0);</script><div class="powered_by">
 <p>Powered by:</p>
 <a href="http://cdh.princeton.edu/">
 <img src="https://cdh.princeton.edu/static/img/CDH_logo.svg"
@@ -310,7 +332,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

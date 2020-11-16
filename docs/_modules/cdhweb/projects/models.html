@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>cdhweb.projects.models &#8212; CDH website 2.6.0 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cdhweb.projects.models &#8212; CDH website 2.7.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -31,19 +32,19 @@
           <div class="body" role="main">
             
   <h1>Source code for cdhweb.projects.models</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">date</span>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
 
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="k">import</span> <span class="n">Q</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="k">import</span> <span class="n">FileField</span><span class="p">,</span> <span class="n">RichTextField</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="k">import</span> <span class="n">Displayable</span>
-<span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="k">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
-<span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="k">import</span> <span class="n">TaggableManager</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="kn">import</span> <span class="n">FileField</span><span class="p">,</span> <span class="n">RichTextField</span>
+<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="kn">import</span> <span class="n">Displayable</span>
+<span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="kn">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
+<span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="kn">import</span> <span class="n">TaggableManager</span>
 
-<span class="kn">from</span> <span class="nn">cdhweb.people.models</span> <span class="k">import</span> <span class="n">Person</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="k">import</span> <span class="p">(</span><span class="n">Attachment</span><span class="p">,</span> <span class="n">DateRange</span><span class="p">,</span> <span class="n">ExcerptMixin</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">cdhweb.people.models</span> <span class="kn">import</span> <span class="n">Person</span>
+<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Attachment</span><span class="p">,</span> <span class="n">DateRange</span><span class="p">,</span> <span class="n">ExcerptMixin</span><span class="p">,</span>
                                      <span class="n">PublishedQuerySetMixin</span><span class="p">,</span> <span class="n">ResourceType</span><span class="p">)</span>
 
 
@@ -130,7 +131,7 @@
         <span class="c1"># sort by project title for now</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
 
 <div class="viewcode-block" id="Project.get_absolute_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Project.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -165,8 +166,7 @@
         <span class="c1"># and because we don&#39;t care about role (always &#39;alum&#39;)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span> \
             <span class="o">.</span><span class="n">distinct</span><span class="p">()</span> \
-            <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">membership__grant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">latest_grant</span><span class="p">())</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">membership__status_override</span><span class="o">=</span><span class="s1">&#39;past&#39;</span><span class="p">))</span> \
-            <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">membership__status_override</span><span class="o">=</span><span class="s1">&#39;current&#39;</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">membership__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_memberships</span><span class="p">())</span> \
             <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;last_name&#39;</span><span class="p">)</span></div></div>
 
 
@@ -174,19 +174,19 @@
     <span class="sd">&#39;&#39;&#39;Model to track kinds of grants&#39;&#39;&#39;</span>
     <span class="n">grant_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_type</span></div>
 
 
 <div class="viewcode-block" id="Grant"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Grant">[docs]</a><span class="k">class</span> <span class="nc">Grant</span><span class="p">(</span><span class="n">DateRange</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A specific grant associated with a project&#39;&#39;&#39;</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Project</span><span class="p">)</span>
-    <span class="n">grant_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">GrantType</span><span class="p">)</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">grant_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">GrantType</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">,</span> <span class="s1">&#39;project&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_type</span><span class="o">.</span><span class="n">grant_type</span><span class="p">,</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">years</span><span class="p">)</span></div>
 
@@ -202,16 +202,16 @@
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_order&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span></div>
 
 
 <div class="viewcode-block" id="Membership"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Membership">[docs]</a><span class="k">class</span> <span class="nc">Membership</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Project membership - joins project, grant, user, and role.&#39;&#39;&#39;</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Project</span><span class="p">)</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span>
-    <span class="n">grant</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Grant</span><span class="p">)</span>
-    <span class="n">role</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Role</span><span class="p">)</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">grant</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Grant</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">role</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Role</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
 
     <span class="c1"># allows forcing certain memberships to show as current or alum</span>
     <span class="n">STATUS_OVERRIDE_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
@@ -229,7 +229,7 @@
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;role__sort_order&#39;</span><span class="p">,</span> <span class="s1">&#39;user__last_name&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> - </span><span class="si">%s</span><span class="s1"> on </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant</span><span class="p">)</span></div>
 
 
@@ -315,7 +315,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script><div class="powered_by">
+<script>$('#searchbox').show(0);</script><div class="powered_by">
 <p>Powered by:</p>
 <a href="http://cdh.princeton.edu/">
 <img src="https://cdh.princeton.edu/static/img/CDH_logo.svg"
@@ -330,7 +330,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
