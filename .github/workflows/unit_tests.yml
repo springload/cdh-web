@@ -38,6 +38,7 @@ jobs:
           MYSQL_DATABASE: ${{ env.DB_NAME }}
           MYSQL_USER: ${{ env.DB_USER }}
           MYSQL_PASSWORD: ${{ env.DB_PASSWORD }}
+          MYSQL_RANDOM_ROOT_PASSWORD: true
         ports:
           - 3306:3306
     steps:
