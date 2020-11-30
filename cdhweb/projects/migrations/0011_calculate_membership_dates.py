@@ -21,8 +21,10 @@ def calculate_membership_dates(apps, schema_editor):
     app_config = apps.get_app_config('projects')
     app_config.models_module = app_config.models_module or True
     create_contenttypes(app_config)
+    # NOTE: For postgres contentTypes are created with a lowercase table
+    #  name and will error if capitalized (e.g. "Membership")
     membership_contenttype = ContentType.objects.get(
-        app_label='projects', model='Membership')
+        app_label='projects', model='membership')
     change_message = 'Set start and end dates based on associated grants'
     delete_message = 'Deleted consolidated membership'
 
