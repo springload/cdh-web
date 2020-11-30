@@ -38,7 +38,7 @@ jobs:
           MYSQL_DATABASE: ${{ env.DB_NAME }}
           MYSQL_USER: ${{ env.DB_USER }}
           MYSQL_PASSWORD: ${{ env.DB_PASSWORD }}
-          MYSQL_RANDOM_ROOT_PASSWORD: true
+          MYSQL_ROOT_PASSWORD: ${{ env.DB_PASSWORD }}
         ports:
           - 3306:3306
     steps:
@@ -92,6 +92,13 @@ jobs:
             pip-
       - name: Install dependencies
         run: pip install -r requirements/test.txt
+      # For mysql only, grant permission to the DB_USER to create databases so
+      # that it doesn't fail trying to create the django test database
+      - name: Grant permissions to mysql user
+        if: matrix.backend == 'mysql'
+        env:
+          GRANT_CMD: "grant all privileges on *.* to '${{ env.DB_USER }}'@'%';"
+        run: echo "$GRANT_CMD" | mysql -h 127.0.0.1 --user=root --password="$DB_PASSWORD"
       - name: Setup local_settings.py
         run: |
           cp ci/testsettings.py cdhweb/local_settings.py
@@ -118,6 +125,7 @@ jobs:
         env:
           SLACK_COLOR: ${{ env.SLACK_COLOR }}
           SLACK_WEBHOOK: ${{ secrets.ACTIONS_SLACK_WEBHOOK }}
-          SLACK_MESSAGE: "Run #${{ github.run_number }} of `${{ github.workflow }}` for <https://github.com/${{ github.repository }}/|${{ github.repository }}@${{ github.ref }}>: ${{ job.status }}"
+          SLACK_TITLE: "Run #${{ github.run_number }} for workflow `${{ github.workflow }}`: ${{ job.status }}"
+          SLACK_MESSAGE: "<https://github.com/${{ github.repository }}/|${{ github.repository }}@${{ github.ref }}>"
           SLACK_FOOTER: "<https://github.com/${{ github.repository }}/commit/${{ github.sha }}|View commit>"
           MSG_MINIMAL: true # use compact slack message format
