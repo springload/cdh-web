@@ -8,6 +8,8 @@ on:
 
 env:
   NODE_VERSION: 10
+  MYSQL_DATABASE: cdhweb
+  MYSQL_ROOT_PASSWORD: cdhweb
   POSTGRES_VERSION: 13
   POSTGRES_DB: cdhweb
   POSTGRES_USER: cdhweb
@@ -18,17 +20,18 @@ jobs:
     name: Python unit tests
     runs-on: ubuntu-latest
     # We use a service container to avoid needing to set up a local copy of
-    # mysql on the test runner instance. This syntax is similar to the spec of
+    # mysql & postgres on the test runner instance. This syntax is similar to the spec of
     # a docker-compose file. For more, see:
     # https://docs.github.com/en/free-pro-team@latest/actions/guides/about-service-containers
     services:
       db:
-        image: mysql:5.6  # oldest available on docker hub; QA/Prod use 5.5
+        image: postgres:${{ env.POSTGRES_VERSION }}
         env:
-          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
-          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         ports:
-        - 3306:3306
+        - 5432:5432
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
