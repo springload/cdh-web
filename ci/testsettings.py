@@ -8,9 +8,9 @@ import os
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.%s' % os.getenv('DJANGO_DB_BACKEND'),
-        'USER': os.getenv('DB_NAME'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'NAME': os.getenv('DB_USER'),
+        'USER': os.getenv('DB_USER'),
+        'NAME': os.getenv('DB_NAME'),
         'HOST': '127.0.0.1',
         'PORT': '',
     },
