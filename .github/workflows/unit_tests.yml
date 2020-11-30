@@ -25,7 +25,7 @@ jobs:
     # https://docs.github.com/en/free-pro-team@latest/actions/guides/about-service-containers
     services:
       db:
-        image: postgres:${{ env.POSTGRES_VERSION }}
+        image: postgres:13
         env:
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
