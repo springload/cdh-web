@@ -8,31 +8,45 @@ on:
 
 env:
   NODE_VERSION: 10
-  MYSQL_DATABASE: cdhweb
-  MYSQL_ROOT_PASSWORD: cdhweb
-  POSTGRES_VERSION: 13
-  POSTGRES_DB: cdhweb
-  POSTGRES_USER: cdhweb
-  POSTGRES_PASSWORD: cdhweb
+  DB_NAME: cdhweb
+  DB_USER: cdhweb
+  DB_PASSWORD: cdhweb
 
 jobs:
   python-unit:
     name: Python unit tests
     runs-on: ubuntu-latest
-    # We use a service container to avoid needing to set up a local copy of
-    # mysql & postgres on the test runner instance. This syntax is similar to the spec of
-    # a docker-compose file. For more, see:
+    strategy:
+      matrix:
+        backend: [postgresql, mysql]
+    # We use service containers to avoid needing to set up a local copy of
+    # mysql or postgres on the test runner instance. This syntax is similar to
+    # the spec of a docker-compose file. For more, see:
     # https://docs.github.com/en/free-pro-team@latest/actions/guides/about-service-containers
     services:
-      db:
+      postgres:
         image: postgres:13
         env:
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_NAME }}
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
         ports:
         - 5432:5432
+      mysql:
+        image: mysql:5.6
+        env:
+          MYSQL_DATABASE: ${{ env.DB_NAME }}
+          MYSQL_USER: ${{ env.DB_USER }}
+          MYSQL_PASSWORD: ${{ env.DB_PASSWORD }}
+        ports:
+        - 3306:3306
     steps:
+    # Set the value of DJANGO_DB_BACKEND which is used in ci/testsettings.py to
+    # configure django's ORM based on whether we're testing postgres or mysql
+    - name: Set django database backend adapter
+      env:
+        BACKEND: ${{ matrix.backend }}
+      run: echo "DJANGO_DB_BACKEND=$(echo "$BACKEND")" >> $GITHUB_ENV
     - name: Checkout repository
       uses: actions/checkout@v2
     # We need node to install the JS dependencies used to build static assets.
@@ -60,7 +74,7 @@ jobs:
     # Python version to use is stored in the .python-version file, which is the
     # convention for pyenv: https://github.com/pyenv/pyenv
     - name: Get Python version
-      run: echo "PYTHON_VERSION=`cat .python-version`" >> $GITHUB_ENV
+      run: echo "PYTHON_VERSION=$(cat .python-version)" >> $GITHUB_ENV
     - name: Setup Python
       uses: actions/setup-python@v2
       with:

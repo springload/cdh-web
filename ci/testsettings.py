@@ -7,10 +7,10 @@ import os
 # .github/workflow .yml files.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'USER': os.getenv('POSTGRES_USER'),
-        'NAME': os.getenv('POSTGRES_DB'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'ENGINE': 'django.db.backends.%s' % os.getenv('DJANGO_DB_BACKEND'),
+        'USER': os.getenv('DB_NAME'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'NAME': os.getenv('DB_USER'),
         'HOST': '127.0.0.1',
         'PORT': '',
     },
