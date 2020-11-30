@@ -36,13 +36,6 @@ DATABASES = {
     }
 }
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "dev.db",
-    }
-}
-
 # configure ldap servers, search base, and filter
 PUCAS_LDAP.update({
     'SERVERS': [
