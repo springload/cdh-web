@@ -4,9 +4,6 @@ Table auth_user_user_permissions {
 }
 ref: User.id > auth_user_user_permissions.user_id
 ref: Permission.id > auth_user_user_permissions.permission_id
-ref: User.id > auth_user_user_permissions.user_id
-ref: Permission.id > auth_user_user_permissions.permission_id
-
 
 Table Session {
   expire_date date_time [note:""]
@@ -234,7 +231,7 @@ Table ThreadedComment {
   comment text [note:""]
   replied_to foreign_key [null, note:""]
   ip_address generic_ip_address [null, note:""]
-  is_removed boolean [note:"Check this box if the comment is inappropriate. A "This comment has been removed" message will be displayed instead."]
+  is_removed boolean [note:"Check this box if the comment is inappropriate. A *This comment has been removed* message will be displayed instead."]
   rating_count integer [note:""]
 }
 ref: ThreadedComment.content_type > ContentType.id
@@ -258,7 +255,7 @@ Table Comment {
   user_url url [note:""]
   comment text [note:""]
   ip_address generic_ip_address [null, note:""]
-  is_removed boolean [note:"Check this box if the comment is inappropriate. A "This comment has been removed" message will be displayed instead."]
+  is_removed boolean [note:"Check this box if the comment is inappropriate. A *This comment has been removed* message will be displayed instead."]
 }
 ref: Comment.content_type > ContentType.id
 ref: Comment.site > Site.id
@@ -462,8 +459,6 @@ Table auth_user_groups {
   user_id auto [pk]
   group_id auto [pk]
 }
-ref: User.id > auth_user_groups.user_id
-ref: Group.id > auth_user_groups.group_id
 ref: User.id > auth_user_groups.user_id
 ref: Group.id > auth_user_groups.group_id
 
