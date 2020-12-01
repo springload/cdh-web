@@ -1,0 +1,725 @@
+Table auth_user_user_permissions {
+  user_id auto [pk]
+  permission_id auto [pk]
+}
+ref: User.id > auth_user_user_permissions.user_id
+ref: Permission.id > auth_user_user_permissions.permission_id
+ref: User.id > auth_user_user_permissions.user_id
+ref: Permission.id > auth_user_user_permissions.permission_id
+
+
+Table Session {
+  expire_date date_time [note:""]
+  session_data text [note:""]
+  session_key char [pk, unique, note:""]
+}
+
+
+Table resources_attachment_pages {
+  page_id auto [pk]
+  attachment_id auto [pk]
+}
+ref: Attachment.id > resources_attachment_pages.attachment_id
+ref: Page.id > resources_attachment_pages.page_id
+
+
+Table auth_group_permissions {
+  permission_id auto [pk]
+  group_id auto [pk]
+}
+ref: Group.id > auth_group_permissions.group_id
+ref: Permission.id > auth_group_permissions.permission_id
+
+
+Table projects_membership {
+  person_id auto [pk]
+  project_id auto [pk]
+}
+ref: Project.id > projects_membership.project_id
+ref: Person.id > projects_membership.person_id
+
+
+Table AssignedKeyword {
+  content_object None 
+  _order None [null, note:""]
+  id auto [pk, unique, note:""]
+  keyword foreign_key [note:""]
+  object_pk integer [note:""]
+  content_type foreign_key [note:""]
+}
+ref: AssignedKeyword.keyword > Keyword.id
+ref: AssignedKeyword.content_type > ContentType.id
+
+
+Table projects_project_attachments {
+  attachment_id auto [pk]
+  project_id auto [pk]
+}
+ref: Project.id > projects_project_attachments.project_id
+ref: Attachment.id > projects_project_attachments.attachment_id
+
+
+Table Profile {
+  keywords_string char [note:""]
+  keywords None [note:""]
+  status integer [note:"With Draft chosen, will only be shown for admin users on the site."]
+  site foreign_key [note:""]
+  title char [note:""]
+  id auto [pk, unique, note:""]
+  institution char [note:"Institutional affiliation (for people not associated with Princeton)"]
+  tagged_items None [note:""]
+  expiry_date date_time [null, note:"With Published chosen, won't be shown after this time"]
+  job_title char [note:"Professional title, e.g. Professor or Assistant Professor"]
+  gen_description boolean [note:"If checked, the description will be automatically generated from content. Uncheck if you want to manually set a custom description."]
+  user one_to_one [unique, note:""]
+  office_location char [note:""]
+  education None [note:""]
+  department char [note:"Academic Department at Princeton or other institution (optional)"]
+  image file [null, note:""]
+  is_staff boolean [note:"CDH staff or Postdoctoral Fellow. If checked, person will be listed on the CDH staff page and will have a profile page on the site."]
+  created date_time [null, note:""]
+  _meta_title char [null, note:"Optional title to be used in the HTML title tag. If left blank, the main title field will be used."]
+  description text [note:""]
+  thumb file [null, note:""]
+  in_sitemap boolean [note:""]
+  publish_date date_time [null, note:"With Published chosen, won't be shown until this time"]
+  phone_number char [note:""]
+  pu_status char [note:""]
+  bio None [note:""]
+  short_url url [null, note:""]
+  tags None [null, note:"A comma-separated list of tags."]
+  updated date_time [null, note:""]
+  slug char [note:"Leave blank to have the URL auto-generated from the title."]
+}
+ref: Profile.site > Site.id
+ref: Profile.user - Person.id
+
+
+Table people_profile_attachments {
+  profile_id auto [pk]
+  attachment_id auto [pk]
+}
+ref: Profile.id > people_profile_attachments.profile_id
+ref: Attachment.id > people_profile_attachments.attachment_id
+
+
+Table ContentType {
+  id auto [pk, unique, note:""]
+  model char [note:""]
+  app_label char [note:""]
+}
+
+
+Table UserResource {
+  id auto [pk, unique, note:""]
+  user foreign_key [note:""]
+  url url [note:""]
+  resource_type foreign_key [note:""]
+}
+ref: UserResource.resource_type > ResourceType.id
+ref: UserResource.user > User.id
+
+
+Table Rating {
+  content_object None 
+  user foreign_key [null, note:""]
+  id auto [pk, unique, note:""]
+  rating_date date_time [null, note:""]
+  value integer [note:""]
+  object_pk integer [note:""]
+  content_type foreign_key [note:""]
+}
+ref: Rating.content_type > ContentType.id
+ref: Rating.user > User.id
+
+
+Table User {
+  first_name char [note:""]
+  is_staff boolean [note:"Designates whether the user can log into this admin site."]
+  is_active boolean [note:"Designates whether this user should be treated as active. Unselect this instead of deleting accounts."]
+  is_superuser boolean [note:"Designates that this user has all permissions without explicitly assigning them."]
+  last_name char [note:""]
+  email email [note:""]
+  id auto [pk, unique, note:""]
+  username char [unique, note:"Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."]
+  date_joined date_time [note:""]
+  password char [note:""]
+  last_login date_time [null, note:""]
+}
+
+
+Table Grant {
+  id auto [pk, unique, note:""]
+  project foreign_key [note:""]
+  end_date date [null, note:""]
+  start_date date [note:""]
+  grant_type foreign_key [note:""]
+}
+ref: Grant.project > Project.id
+ref: Grant.grant_type > GrantType.id
+
+
+Table blog_blogpost_attachments {
+  attachment_id auto [pk]
+  blogpost_id auto [pk]
+}
+ref: BlogPost.id > blog_blogpost_attachments.blogpost_id
+ref: Attachment.id > blog_blogpost_attachments.attachment_id
+
+
+Table blog_blogpost_users {
+  person_id auto [pk]
+  blogpost_id auto [pk]
+}
+ref: BlogPost.id > blog_blogpost_users.blogpost_id
+ref: Person.id > blog_blogpost_users.person_id
+
+
+Table Tag {
+  id auto [pk, unique, note:""]
+  name char [unique, note:""]
+  slug slug [unique, note:""]
+}
+
+
+Table Site {
+  id auto [pk, unique, note:""]
+  name char [note:""]
+  domain char [unique, note:""]
+}
+
+
+Table Group {
+  id auto [pk, unique, note:""]
+  name char [unique, note:""]
+}
+
+
+Table Position {
+  id auto [pk, unique, note:""]
+  user foreign_key [note:""]
+  end_date date [null, note:""]
+  start_date date [note:""]
+  title foreign_key [note:""]
+}
+ref: Position.user > User.id
+ref: Position.title > Title.id
+
+
+Table core_sitepermission_sites {
+  sitepermission_id auto [pk]
+  site_id auto [pk]
+}
+ref: SitePermission.id > core_sitepermission_sites.sitepermission_id
+ref: Site.id > core_sitepermission_sites.site_id
+
+
+Table ThreadedComment {
+  rating_sum integer [note:""]
+  is_public boolean [note:"Uncheck this box to make the comment effectively disappear from the site."]
+  by_author boolean [note:""]
+  site foreign_key [note:""]
+  id auto [pk, unique, note:""]
+  object_pk text [note:""]
+  rating None [note:""]
+  rating_average float [note:""]
+  content_type foreign_key [note:""]
+  comment_ptr one_to_one [pk, unique, note:""]
+  submit_date date_time [note:""]
+  user_email email [note:""]
+  user foreign_key [null, note:""]
+  user_name char [note:""]
+  user_url url [note:""]
+  content_object None 
+  comment text [note:""]
+  replied_to foreign_key [null, note:""]
+  ip_address generic_ip_address [null, note:""]
+  is_removed boolean [note:"Check this box if the comment is inappropriate. A "This comment has been removed" message will be displayed instead."]
+  rating_count integer [note:""]
+}
+ref: ThreadedComment.content_type > ContentType.id
+ref: ThreadedComment.site > Site.id
+ref: ThreadedComment.user > User.id
+ref: ThreadedComment.comment_ptr - Comment.id
+ref: ThreadedComment.replied_to > ThreadedComment.comment_ptr
+
+
+Table Comment {
+  is_public boolean [note:"Uncheck this box to make the comment effectively disappear from the site."]
+  content_object None 
+  site foreign_key [note:""]
+  id auto [pk, unique, note:""]
+  object_pk text [note:""]
+  content_type foreign_key [note:""]
+  submit_date date_time [note:""]
+  user_email email [note:""]
+  user foreign_key [null, note:""]
+  user_name char [note:""]
+  user_url url [note:""]
+  comment text [note:""]
+  ip_address generic_ip_address [null, note:""]
+  is_removed boolean [note:"Check this box if the comment is inappropriate. A "This comment has been removed" message will be displayed instead."]
+}
+ref: Comment.content_type > ContentType.id
+ref: Comment.site > Site.id
+ref: Comment.user > User.id
+
+
+Table LogEntry {
+  object_id text [null, note:""]
+  user foreign_key [note:""]
+  action_flag positive_small_integer [note:""]
+  change_message text [note:""]
+  id auto [pk, unique, note:""]
+  action_time date_time [note:""]
+  object_repr char [note:""]
+  content_type foreign_key [null, note:""]
+}
+ref: LogEntry.user > User.id
+ref: LogEntry.content_type > ContentType.id
+
+
+Table Keyword {
+  id auto [pk, unique, note:""]
+  slug char [note:"Leave blank to have the URL auto-generated from the title."]
+  site foreign_key [note:""]
+  title char [note:""]
+}
+ref: Keyword.site > Site.id
+
+
+Table Link {
+  keywords_string char [note:""]
+  status integer [note:"With Draft chosen, will only be shown for admin users on the site."]
+  site foreign_key [note:""]
+  title char [note:""]
+  id auto [pk, unique, note:""]
+  content_model char [null, note:""]
+  expiry_date date_time [null, note:"With Published chosen, won't be shown after this time"]
+  keywords None [note:""]
+  gen_description boolean [note:"If checked, the description will be automatically generated from content. Uncheck if you want to manually set a custom description."]
+  _order None [null, note:""]
+  created date_time [null, note:""]
+  parent foreign_key [null, note:""]
+  _meta_title char [null, note:"Optional title to be used in the HTML title tag. If left blank, the main title field will be used."]
+  description text [note:""]
+  slug char [note:"Leave blank to have the URL auto-generated from the title."]
+  in_sitemap boolean [note:""]
+  publish_date date_time [null, note:"With Published chosen, won't be shown until this time"]
+  page_ptr one_to_one [pk, unique, note:""]
+  in_menus None [null, note:""]
+  short_url url [null, note:""]
+  titles char [null, note:""]
+  updated date_time [null, note:""]
+  login_required boolean [note:"If checked, only logged in users can view this page"]
+}
+ref: Link.site > Site.id
+ref: Link.parent > Page.id
+ref: Link.page_ptr - Page.id
+
+
+Table Title {
+  id auto [pk, unique, note:""]
+  sort_order positive_integer [note:""]
+  title char [unique, note:""]
+}
+
+
+Table events_event_speakers {
+  event_id auto [pk]
+  person_id auto [pk]
+}
+ref: Event.id > events_event_speakers.event_id
+ref: Person.id > events_event_speakers.person_id
+
+
+Table Permission {
+  id auto [pk, unique, note:""]
+  name char [note:""]
+  codename char [note:""]
+  content_type foreign_key [note:""]
+}
+ref: Permission.content_type > ContentType.id
+
+
+Table Redirect {
+  id auto [pk, unique, note:""]
+  new_path char [note:"This can be either an absolute path (as above) or a full URL starting with 'http://'."]
+  old_path char [note:"This should be an absolute path, excluding the domain name. Example: '/events/search/'."]
+  site foreign_key [note:""]
+}
+ref: Redirect.site > Site.id
+
+
+Table events_event_attachments {
+  event_id auto [pk]
+  attachment_id auto [pk]
+}
+ref: Event.id > events_event_attachments.event_id
+ref: Attachment.id > events_event_attachments.attachment_id
+
+
+Table RichTextPage {
+  keywords_string char [note:""]
+  status integer [note:"With Draft chosen, will only be shown for admin users on the site."]
+  site foreign_key [note:""]
+  title char [note:""]
+  id auto [pk, unique, note:""]
+  content_model char [null, note:""]
+  expiry_date date_time [null, note:"With Published chosen, won't be shown after this time"]
+  keywords None [note:""]
+  gen_description boolean [note:"If checked, the description will be automatically generated from content. Uncheck if you want to manually set a custom description."]
+  _order None [null, note:""]
+  created date_time [null, note:""]
+  content None [note:""]
+  parent foreign_key [null, note:""]
+  _meta_title char [null, note:"Optional title to be used in the HTML title tag. If left blank, the main title field will be used."]
+  description text [note:""]
+  slug char [note:"Leave blank to have the URL auto-generated from the title."]
+  in_sitemap boolean [note:""]
+  publish_date date_time [null, note:"With Published chosen, won't be shown until this time"]
+  page_ptr one_to_one [pk, unique, note:""]
+  in_menus None [null, note:""]
+  short_url url [null, note:""]
+  titles char [null, note:""]
+  updated date_time [null, note:""]
+  login_required boolean [note:"If checked, only logged in users can view this page"]
+}
+ref: RichTextPage.site > Site.id
+ref: RichTextPage.parent > Page.id
+ref: RichTextPage.page_ptr - Page.id
+
+
+Table Event {
+  keywords_string char [note:""]
+  status integer [note:"With Draft chosen, will only be shown for admin users on the site."]
+  location foreign_key [null, note:""]
+  site foreign_key [note:""]
+  title char [note:""]
+  id auto [pk, unique, note:""]
+  event_type foreign_key [note:""]
+  join_url url [null, note:"Join URL for virtual events, e.g. Zoom meetings."]
+  expiry_date date_time [null, note:"With Published chosen, won't be shown after this time"]
+  keywords None [note:""]
+  gen_description boolean [note:"If checked, the description will be automatically generated from content. Uncheck if you want to manually set a custom description."]
+  created date_time [null, note:""]
+  content None [note:""]
+  image file [null, note:"Image for display on event detail page (optional)"]
+  end_time date_time [note:""]
+  _meta_title char [null, note:"Optional title to be used in the HTML title tag. If left blank, the main title field will be used."]
+  description text [note:""]
+  thumb file [null, note:"Image for display on event card (optional)"]
+  in_sitemap boolean [note:""]
+  publish_date date_time [null, note:"With Published chosen, won't be shown until this time"]
+  sponsor char [null, note:""]
+  start_time date_time [note:""]
+  tagged_items None [note:""]
+  short_url url [null, note:""]
+  tags None [null, note:"A comma-separated list of tags."]
+  attendance positive_integer [null, note:"Total number of people who attended the event. (Internal only, for reporting purposes.)"]
+  updated date_time [null, note:""]
+  slug char [note:"Leave blank to have the URL auto-generated from the title."]
+}
+ref: Event.site > Site.id
+ref: Event.location > Location.id
+ref: Event.event_type > EventType.id
+
+
+Table Person {
+  first_name char [note:""]
+  is_staff boolean [note:"Designates whether the user can log into this admin site."]
+  is_active boolean [note:"Designates whether this user should be treated as active. Unselect this instead of deleting accounts."]
+  is_superuser boolean [note:"Designates that this user has all permissions without explicitly assigning them."]
+  last_name char [note:""]
+  email email [note:""]
+  id auto [pk, unique, note:""]
+  username char [unique, note:"Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."]
+  date_joined date_time [note:""]
+  password char [note:""]
+  last_login date_time [null, note:""]
+}
+
+
+Table ProjectResource {
+  id auto [pk, unique, note:""]
+  project foreign_key [note:""]
+  url url [note:""]
+  resource_type foreign_key [note:""]
+}
+ref: ProjectResource.resource_type > ResourceType.id
+ref: ProjectResource.project > Project.id
+
+
+Table blog_blogpost_related_posts {
+  to_blogpost_id auto [pk]
+  from_blogpost_id auto [pk]
+}
+ref: BlogPost.id > blog_blogpost_related_posts.from_blogpost_id
+ref: BlogPost.id > blog_blogpost_related_posts.to_blogpost_id
+
+
+Table auth_user_groups {
+  user_id auto [pk]
+  group_id auto [pk]
+}
+ref: User.id > auth_user_groups.user_id
+ref: Group.id > auth_user_groups.group_id
+ref: User.id > auth_user_groups.user_id
+ref: Group.id > auth_user_groups.group_id
+
+
+Table Page {
+  keywords_string char [note:""]
+  status integer [note:"With Draft chosen, will only be shown for admin users on the site."]
+  site foreign_key [note:""]
+  title char [note:""]
+  id auto [pk, unique, note:""]
+  content_model char [null, note:""]
+  expiry_date date_time [null, note:"With Published chosen, won't be shown after this time"]
+  keywords None [note:""]
+  gen_description boolean [note:"If checked, the description will be automatically generated from content. Uncheck if you want to manually set a custom description."]
+  _order None [null, note:""]
+  created date_time [null, note:""]
+  parent foreign_key [null, note:""]
+  _meta_title char [null, note:"Optional title to be used in the HTML title tag. If left blank, the main title field will be used."]
+  description text [note:""]
+  slug char [note:"Leave blank to have the URL auto-generated from the title."]
+  in_sitemap boolean [note:""]
+  publish_date date_time [null, note:"With Published chosen, won't be shown until this time"]
+  in_menus None [null, note:""]
+  short_url url [null, note:""]
+  titles char [null, note:""]
+  updated date_time [null, note:""]
+  login_required boolean [note:"If checked, only logged in users can view this page"]
+}
+ref: Page.site > Site.id
+ref: Page.parent > Page.id
+
+
+Table SessionTicket {
+  id auto [pk, unique, note:""]
+  ticket char [note:""]
+  session_key char [note:""]
+}
+
+
+Table LandingPage {
+  keywords_string char [note:""]
+  status integer [note:"With Draft chosen, will only be shown for admin users on the site."]
+  site foreign_key [note:""]
+  title char [note:""]
+  id auto [pk, unique, note:""]
+  content_model char [null, note:""]
+  expiry_date date_time [null, note:"With Published chosen, won't be shown after this time"]
+  keywords None [note:""]
+  gen_description boolean [note:"If checked, the description will be automatically generated from content. Uncheck if you want to manually set a custom description."]
+  _order None [null, note:""]
+  created date_time [null, note:""]
+  content None [note:""]
+  parent foreign_key [null, note:""]
+  tagline char [note:""]
+  _meta_title char [null, note:"Optional title to be used in the HTML title tag. If left blank, the main title field will be used."]
+  description text [note:""]
+  slug char [note:"Leave blank to have the URL auto-generated from the title."]
+  in_sitemap boolean [note:""]
+  publish_date date_time [null, note:"With Published chosen, won't be shown until this time"]
+  page_ptr one_to_one [pk, unique, note:""]
+  image file [null, note:""]
+  in_menus None [null, note:""]
+  short_url url [null, note:""]
+  titles char [null, note:""]
+  updated date_time [null, note:""]
+  login_required boolean [note:"If checked, only logged in users can view this page"]
+}
+ref: LandingPage.site > Site.id
+ref: LandingPage.parent > Page.id
+ref: LandingPage.page_ptr - Page.id
+
+
+Table Role {
+  id auto [pk, unique, note:""]
+  sort_order positive_integer [note:""]
+  title char [unique, note:""]
+}
+
+
+Table SitePermission {
+  id auto [pk, unique, note:""]
+  user one_to_one [unique, note:""]
+}
+ref: SitePermission.user - User.id
+
+
+Table ResourceType {
+  id auto [pk, unique, note:""]
+  name char [note:""]
+  sort_order positive_integer [note:""]
+}
+
+
+Table Attachment {
+  author char [note:""]
+  title char [note:""]
+  id auto [pk, unique, note:""]
+  attachment_type char [note:""]
+  url url [note:""]
+  file file [note:""]
+}
+
+
+Table BlogPost {
+  short_url url [null, note:""]
+  status integer [note:"With Draft chosen, will only be shown for admin users on the site."]
+  _meta_title char [null, note:"Optional title to be used in the HTML title tag. If left blank, the main title field will be used."]
+  site foreign_key [note:""]
+  title char [note:""]
+  id auto [pk, unique, note:""]
+  in_sitemap boolean [note:""]
+  description text [note:""]
+  publish_date date_time [null, note:"With Published chosen, won't be shown until this time"]
+  tagged_items None [note:""]
+  is_featured boolean [note:"Feature the post in the carousel on the homepage."]
+  expiry_date date_time [null, note:"With Published chosen, won't be shown after this time"]
+  keywords None [note:""]
+  gen_description boolean [note:"If checked, the description will be automatically generated from content. Uncheck if you want to manually set a custom description."]
+  slug char [note:"Leave blank to have the URL auto-generated from the title."]
+  featured_image file [null, note:"Appears on the homepage carousel when post is featured."]
+  created date_time [null, note:""]
+  content None [note:""]
+  tags None [null, note:"A comma-separated list of tags."]
+  updated date_time [null, note:""]
+  keywords_string char [note:""]
+}
+ref: BlogPost.site > Site.id
+
+
+Table TaggedItem {
+  id auto [pk, unique, note:""]
+  object_id integer [note:""]
+  tag foreign_key [note:""]
+  content_object None 
+  content_type foreign_key [note:""]
+}
+ref: TaggedItem.tag > Tag.id
+ref: TaggedItem.content_type > ContentType.id
+
+
+Table Membership {
+  project foreign_key [note:""]
+  role foreign_key [note:""]
+  person foreign_key [note:""]
+  id auto [pk, unique, note:""]
+  end_date date [null, note:""]
+  start_date date [note:""]
+}
+ref: Membership.project > Project.id
+ref: Membership.person > Person.id
+ref: Membership.role > Role.id
+
+
+Table GrantType {
+  id auto [pk, unique, note:""]
+  grant_type char [unique, note:""]
+}
+
+
+Table Location {
+  id auto [pk, unique, note:""]
+  address char [null, note:"Address of the location (will not display if same as name)"]
+  name char [note:"Name of the location"]
+  is_virtual boolean [note:"Virtual platforms, i.e. Zoom or Google Hangouts"]
+  short_name char [note:""]
+}
+
+
+Table EventType {
+  id auto [pk, unique, note:""]
+  name char [unique, note:""]
+}
+
+
+Table ProxyGrantingTicket {
+  user foreign_key [null, note:""]
+  session_key char [null, note:""]
+  pgtiou char [null, note:""]
+  id auto [pk, unique, note:""]
+  date date_time [note:""]
+  pgt char [null, note:""]
+}
+ref: ProxyGrantingTicket.user > User.id
+
+
+Table projects_projectresource {
+  project_id auto [pk]
+  resource_type_id auto [pk]
+}
+ref: Project.id > projects_projectresource.project_id
+ref: ResourceType.id > projects_projectresource.resource_type_id
+
+
+Table CommentFlag {
+  id auto [pk, unique, note:""]
+  flag char [note:""]
+  comment foreign_key [note:""]
+  flag_date date_time [note:""]
+  user foreign_key [note:""]
+}
+ref: CommentFlag.user > User.id
+ref: CommentFlag.comment > Comment.id
+
+
+Table Project {
+  keywords_string char [note:""]
+  status integer [note:"With Draft chosen, will only be shown for admin users on the site."]
+  site foreign_key [note:""]
+  title char [note:""]
+  id auto [pk, unique, note:""]
+  tagged_items None [note:""]
+  expiry_date date_time [null, note:"With Published chosen, won't be shown after this time"]
+  keywords None [note:""]
+  gen_description boolean [note:"If checked, the description will be automatically generated from content. Uncheck if you want to manually set a custom description."]
+  long_description None [note:""]
+  working_group boolean [note:"Project is a long-term collaborative group associated with the CDH."]
+  created date_time [null, note:""]
+  _meta_title char [null, note:"Optional title to be used in the HTML title tag. If left blank, the main title field will be used."]
+  description text [note:""]
+  thumb file [null, note:""]
+  slug char [note:"Leave blank to have the URL auto-generated from the title."]
+  in_sitemap boolean [note:""]
+  publish_date date_time [null, note:"With Published chosen, won't be shown until this time"]
+  image file [null, note:""]
+  short_url url [null, note:""]
+  tags None [null, note:"A comma-separated list of tags."]
+  short_description char [note:"Brief tagline for display on project card in browse view"]
+  cdh_built boolean [note:"Project built by CDH Development & Design team."]
+  updated date_time [null, note:""]
+  highlight boolean [note:"Include in randomized project display on the home page."]
+}
+ref: Project.site > Site.id
+
+
+Table people_position {
+  user_id auto [pk]
+  title_id auto [pk]
+}
+ref: Title.id > people_position.title_id
+ref: User.id > people_position.user_id
+
+
+Table Setting {
+  id auto [pk, unique, note:""]
+  name char [note:""]
+  site foreign_key [note:""]
+  value char [note:""]
+}
+ref: Setting.site > Site.id
+
+
+Table resources_userresource {
+  user_id auto [pk]
+  resource_type_id auto [pk]
+}
+ref: ResourceType.id > resources_userresource.resource_type_id
+ref: User.id > resources_userresource.user_id
+
+

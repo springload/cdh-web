@@ -16,3 +16,4 @@ icalendar
 attrdict
 django-fullurl
 django-apptemplates
+django-dbml

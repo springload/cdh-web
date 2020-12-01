@@ -322,6 +322,7 @@ INSTALLED_APPS = [
     "fullurl",
     "django_cas_ng",
     "pucas",
+    "django_dbml",
     # local apps
     "cdhweb.projects",
     "cdhweb.people",
