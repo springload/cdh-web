@@ -163,12 +163,12 @@ class StudentListView(ProfileListView):
                 Case(
                     When(user__membership__end_date__isnull=False,
                          then=Max('user__membership__end_date')),
-                    default=Value('0')
+                    default=Value('1900-01-01')
                 ),
                 Case(
                     When(user__positions__end_date__isnull=False,
                          then=Max('user__positions__end_date')),
-                    default=Value('0')
+                    default=Value('1900-01-01')
                 )
             )) \
             .order_by('-most_recent')
