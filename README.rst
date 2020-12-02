@@ -7,16 +7,16 @@ CDH Website
    :target: https://github.com/Princeton-CDH/cdh-web/actions?query=workflow%3A%22unit+tests%22
    :alt: Unit test status
 
-.. image:: https://landscape.io/github/Princeton-CDH/cdh-web/master/landscape.svg?style=flat
-  :target: https://landscape.io/github/Princeton-CDH/cdh-web/master
+.. image:: https://landscape.io/github/Princeton-CDH/cdh-web/main/landscape.svg?style=flat
+  :target: https://landscape.io/github/Princeton-CDH/cdh-web/main
   :alt: Code Health
 
-.. image:: https://codecov.io/gh/Princeton-CDH/cdh-web/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/Princeton-CDH/cdh-web/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/Princeton-CDH/cdh-web
    :alt: Code coverage
 
-.. image:: https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=master
-   :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=master
+.. image:: https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=main
+   :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=main
    :alt: Requirements Status
 
 Python 3.5 / Django 2.2 / Node 10 / MariaDB (MySQL) 5.5 w/ timezone info
@@ -27,7 +27,7 @@ with custom models for people, events, and projects.
 View `software and architecture documentation <https://princeton-cdh.github.io/cdh-web/>`_
 for the current release.
 
-This repository uses `git-flow <https://github.com/nvie/gitflow>`_ conventions; master
+This repository uses `git-flow <https://github.com/nvie/gitflow>`_ conventions; main
 contains the most recent release, and work in progress will be on the develop branch.
 Pull requests should be made against develop.
 
@@ -111,7 +111,7 @@ update the published documentation on GitHub Pages.
 
 License
 -------
-This project is licensed under the `Apache 2.0 License <https://github.com/Princeton-CDH/ppa-django/blob/master/LICENSE>`_.
+This project is licensed under the `Apache 2.0 License <https://github.com/Princeton-CDH/cdh-web/blob/main/LICENSE>`_.
 
 ©2019 Trustees of Princeton University.  Permission granted via
 Princeton Docket #20-2634 for distribution online under a standard Open Source
