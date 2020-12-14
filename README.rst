@@ -109,6 +109,11 @@ directory::
 When building documentation for a production release, use `make docs` to
 update the published documentation on GitHub Pages.
 
+On every commit, GitHub Actions will generate and then publish a database diagram to `dbdocs @ princetoncdh/cdh-web <https://dbdocs.io/princetoncdh/cdh-web>`_. But to generate locally, install and log into dbdocs. Then run::
+
+    python manage.py dbml > cdh-web.dbml
+    dbdocs build cdh-web.dbml --project cdh-web
+
 License
 -------
 This project is licensed under the `Apache 2.0 License <https://github.com/Princeton-CDH/ppa-django/blob/master/LICENSE>`_.
