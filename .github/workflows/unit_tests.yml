@@ -85,7 +85,7 @@ jobs:
 
     # Build and publish dbdocs
     - name: Download dbdocs
-      run: npm install dbdocs # remove me
+      run: npm install -g dbdocs # remove me
     - name: Generate DBML
       run: python manage.py dbml > cdh-web.dbml
     - name: Login to dbdocs
