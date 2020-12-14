@@ -7,7 +7,7 @@ git+https://github.com/stephenmcd/filebrowser-safe.git@c7eceb0#egg=filebrowser_s
 git+https://github.com/stephenmcd/grappelli-safe.git@7755ffd2#egg=grappelli_safe # grappelli_safe 1.0.0-alpha.1 for Django 2.2
 django-compressor
 django-compressor-autoprefixer
-mysqlclient
+psycopg2
 django-admin-sortable2
 django-taggit
 pucas>=0.6
