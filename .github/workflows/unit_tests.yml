@@ -82,6 +82,17 @@ jobs:
       run: py.test --cov=./ --cov-report=xml
     - name: Upload test coverage to Codecov
       uses: codecov/codecov-action@v1
+
+    # Build and publish dbdocs
+    - name: Download dbdocs
+      run: npm install dbdocs # remove me
+    - name: Generate DBML
+      run: python manage.py dbml > cdh-web.dbml
+    - name: Login to dbdocs
+      run: echo ${{ secrets.KEVIN_DBDOCS_KEY }} | dbdocs login
+    - name: Push to dbdocs
+      run: dbdocs build cdh-web.dbml
+
     # Send a message to slack to report the build status. The webhook is stored
     # at the organization level and available to all repositories. Only run on
     # scheduled builds & pushes, since PRs automatically report to Slack.
