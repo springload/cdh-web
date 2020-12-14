@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import debug_toolbar
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -44,9 +43,6 @@ urlpatterns = [
         url=FAVICON, permanent=True)),
     re_path(r'^$', resource_views.Homepage.as_view(), name="home"),
 
-    # debug toolbar
-    path("__debug__/", include(debug_toolbar.urls)),
-
     # main apps
     path("people/", include("cdhweb.people.urls", namespace='people')),
     path("updates/", include("cdhweb.blog.urls", namespace='blog')),
@@ -86,6 +82,13 @@ urlpatterns = [
 # serve static files in development - automatically activates in DEBUG; see
 # https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-files-uploaded-by-a-user-during-development
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# django debug toolbar
+try:
+    import debug_toolbar
+    urlpatterns += path("__debug__/", include(debug_toolbar.urls)),
+except ImportError:
+    pass
 
 # Adds ``STATIC_URL`` to the context of error pages, so that error
 # pages can use JS, CSS and images.
