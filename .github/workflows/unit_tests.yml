@@ -91,7 +91,7 @@ jobs:
     - name: Login to dbdocs
       run: echo ${{ secrets.KEVIN_DBDOCS_KEY }} | dbdocs login
     - name: Push to dbdocs
-      run: dbdocs build cdh-web.dbml
+      run: dbdocs build cdh-web.dbml --project cdh-web-gh-actions
 
     # Send a message to slack to report the build status. The webhook is stored
     # at the organization level and available to all repositories. Only run on
