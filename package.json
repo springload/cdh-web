@@ -8,5 +8,8 @@
     "autoprefixer": "^9.1.3",
     "node-sass": "^4.13.0",
     "postcss-cli": "^7.1.2"
+  },
+  "devDependencies": {
+    "dbdocs": "^0.3.1"
   }
 }
