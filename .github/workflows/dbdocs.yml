@@ -35,6 +35,8 @@ jobs:
         uses: actions/setup-node@v2-beta
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - name: Install JS dependencies
+        run: npm ci
       # Python version to use is stored in the .python-version file, which is the
       # convention for pyenv: https://github.com/pyenv/pyenv
       - name: Get Python version
@@ -51,11 +53,9 @@ jobs:
           python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
       
       # Build and publish dbdocs
-      - name: Download dbdocs
-        run: npm install -g dbdocs
       - name: Generate DBML
         run: python manage.py dbml > cdhweb.dbml
       - name: Login to dbdocs
-        run: echo ${{ secrets.DBDOCS_KEY }} | dbdocs login
+        run: echo ${{ secrets.DBDOCS_KEY }} | npx dbdocs login
       - name: Push to dbdocs
-        run: dbdocs build cdhweb.dbml --project cdhweb
+        run: npx dbdocs build cdhweb.dbml --project cdhweb

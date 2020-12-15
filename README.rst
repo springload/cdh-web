@@ -112,7 +112,7 @@ update the published documentation on GitHub Pages.
 On every commit, GitHub Actions will generate and then publish a database diagram to `dbdocs @ princetoncdh/cdh-web <https://dbdocs.io/princetoncdh/cdh-web>`_. But to generate locally, install and log into dbdocs. Then run::
 
     python manage.py dbml > cdhweb.dbml
-    dbdocs build cdhweb.dbml --project cdhweb
+    npx dbdocs build cdhweb.dbml --project cdhweb
 
 License
 -------
