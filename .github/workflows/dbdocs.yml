@@ -109,6 +109,15 @@ jobs:
         run: py.test --cov=./ --cov-report=xml
       - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v1
+        # Build and publish dbdocs
+      - name: Download dbdocs
+        run: npm install -g dbdocs
+      - name: Generate DBML
+        run: python manage.py dbml > cdhweb.dbml
+      - name: Login to dbdocs
+        run: echo ${{ secrets.DBDOCS_KEY }} | dbdocs login
+      - name: Push to dbdocs
+        run: dbdocs build cdhweb.dbml --project cdhweb
       # Set the color of the slack message used in the next step based on the
       # status of the build: "warning" for failure and "good" for success
       - name: Set Slack message color based on build status
