@@ -1,8 +1,9 @@
 name: build dbdocs
 
-# TODO: when done testing, change to "on push to main"
 on:
   push
+  branches:
+    - main
 
 env:
   NODE_VERSION: 10
