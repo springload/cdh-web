@@ -1,9 +1,9 @@
 name: build dbdocs
 
 on:
-  push
-  branches:
-    - main
+  push:
+    branches:
+      - main
 
 env:
   NODE_VERSION: 10
