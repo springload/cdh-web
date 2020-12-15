@@ -84,12 +84,12 @@ urlpatterns = [
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # add django debug toolbar urls if DEBUG = True
-if settings.DEBUG:
-    try:
-        import debug_toolbar
-        urlpatterns += path("__debug__/", include(debug_toolbar.urls)),
-    except ImportError:
-        pass
+# if settings.DEBUG:
+#     try:
+#         import debug_toolbar
+#         urlpatterns += path("__debug__/", include(debug_toolbar.urls)),
+#     except ImportError:
+#         pass
 
 # Adds ``STATIC_URL`` to the context of error pages, so that error
 # pages can use JS, CSS and images.
