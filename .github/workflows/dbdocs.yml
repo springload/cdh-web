@@ -12,15 +12,6 @@ env:
 
 jobs:
   python-unit:
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_DB: ${{ env.DB_NAME }}
-          POSTGRES_USER: ${{ env.DB_USER }}
-          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
-        ports:
-          - 5432:5432
     name: Python unit tests
     runs-on: ubuntu-latest
     steps:
