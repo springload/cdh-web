@@ -323,7 +323,6 @@ INSTALLED_APPS = [
     "fullurl",
     "django_cas_ng",
     "pucas",
-    "django_dbml",
     # local apps
     "cdhweb.projects",
     "cdhweb.people",
@@ -398,6 +397,7 @@ OPTIONAL_APPS = (
     "debug_toolbar",
     "django_extensions",
     "compressor",
+    "django_dbml",
     PACKAGE_NAME_FILEBROWSER,
     PACKAGE_NAME_GRAPPELLI,
 )
