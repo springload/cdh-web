@@ -19,6 +19,10 @@ CDH Website
    :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=main
    :alt: Requirements Status
 
+.. image:: https://github.com/Princeton-CDH/cdh-web/workflows/build%20dbdocs/badge.svg
+    :target: https://dbdocs.io/princetoncdh/cdhweb
+    :alt: dbdocs build
+
 Python 3.5 / Django 2.2 / Node 10 / MariaDB (MySQL) 5.5 w/ timezone info
 
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
