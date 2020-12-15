@@ -1,77 +1,24 @@
 name: unit tests
 
+# TODO: when done testing, change to "on push to main"
 on:
-  push: # run on every push or PR to any branch
-  pull_request:
-  schedule: # run automatically on main branch each Tuesday at 11am
-    - cron: "0 16 * * 2"
+  push
 
 env:
   NODE_VERSION: 10
-  DB_NAME: cdhweb
-  DB_USER: cdhweb
-  DB_PASSWORD: cdhweb
 
 jobs:
   python-unit:
     name: Python unit tests
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        backend: [postgresql, mysql]
-    # We use service containers to avoid needing to set up a local copy of
-    # mysql or postgres on the test runner instance. This syntax is similar to
-    # the spec of a docker-compose file. For more, see:
-    # https://docs.github.com/en/free-pro-team@latest/actions/guides/about-service-containers
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_DB: ${{ env.DB_NAME }}
-          POSTGRES_USER: ${{ env.DB_USER }}
-          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
-        ports:
-          - 5432:5432
-      mysql:
-        image: mysql:5.6
-        env:
-          MYSQL_DATABASE: ${{ env.DB_NAME }}
-          MYSQL_USER: ${{ env.DB_USER }}
-          MYSQL_PASSWORD: ${{ env.DB_PASSWORD }}
-          MYSQL_ROOT_PASSWORD: ${{ env.DB_PASSWORD }}
-        ports:
-          - 3306:3306
     steps:
-      # Set the value of DJANGO_DB_BACKEND which is used in ci/testsettings.py to
-      # configure django's ORM based on whether we're testing postgres or mysql
-      - name: Set django database backend adapter
-        env:
-          BACKEND: ${{ matrix.backend }}
-        run: echo "DJANGO_DB_BACKEND=$(echo "$BACKEND")" >> $GITHUB_ENV
       - name: Checkout repository
         uses: actions/checkout@v2
-      # We need node to install the JS dependencies used to build static assets.
-      # Because some unit tests use Django's test client to visit pages, we need
-      # to have JS and styles ready to be loaded on those pages or there will be
-      # errors.
+      # Node is required to use dbdocs
       - name: Setup node
         uses: actions/setup-node@v2-beta
         with:
           node-version: ${{ env.NODE_VERSION }}
-      # Basing the cache on the hash of the lockfile means that the cache should
-      # only ever be invalidated when we update package-lock.json, which happens
-      # as part of a release. For more info, see:
-      # https://docs.github.com/en/free-pro-team@latest/actions/guides/caching-dependencies-to-speed-up-workflows
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            npm-${{ hashFiles('package-lock.json') }}
-            npm-
-      - name: Install JS dependencies
-        run: npm ci
       # Python version to use is stored in the .python-version file, which is the
       # convention for pyenv: https://github.com/pyenv/pyenv
       - name: Get Python version
@@ -80,36 +27,14 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      # We base the python cache on the hash of all requirements files, so that
-      # if any change, the cache is invalidated.
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: pip-${{ hashFiles('requirements/*.txt') }}
-          restore-keys: |
-            pip-${{ hashFiles('requirements/*.txt') }}
-            pip-
       - name: Install dependencies
         run: pip install -r requirements/test.txt
-      # For mysql only, grant permission to the DB_USER to create databases so
-      # that it doesn't fail trying to create the django test database
-      - name: Grant permissions to mysql user
-        if: matrix.backend == 'mysql'
-        env:
-          GRANT_CMD: "grant all privileges on *.* to '${{ env.DB_USER }}'@'%';"
-        run: echo "$GRANT_CMD" | mysql -h 127.0.0.1 --user=root --password="$DB_PASSWORD"
       - name: Setup local_settings.py
         run: |
           cp ci/testsettings.py cdhweb/local_settings.py
           python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
-      - name: Build static assets
-        run: python manage.py compress
-      - name: Run pytest
-        run: py.test --cov=./ --cov-report=xml
-      - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v1
-        # Build and publish dbdocs
+      
+      # Build and publish dbdocs
       - name: Download dbdocs
         run: npm install -g dbdocs
       - name: Generate DBML
@@ -118,23 +43,3 @@ jobs:
         run: echo ${{ secrets.DBDOCS_KEY }} | dbdocs login
       - name: Push to dbdocs
         run: dbdocs build cdhweb.dbml --project cdhweb
-      # Set the color of the slack message used in the next step based on the
-      # status of the build: "warning" for failure and "good" for success
-      - name: Set Slack message color based on build status
-        if: ${{ always() }}
-        env:
-          JOB_STATUS: ${{ job.status }}
-        run: echo "SLACK_COLOR=$(if [ "$JOB_STATUS" == "success" ]; then echo "good"; else echo "warning"; fi)" >> $GITHUB_ENV
-      # Send a message to slack to report the build status. The webhook is stored
-      # at the organization level and available to all repositories. Only run on
-      # scheduled builds & pushes, since PRs automatically report to Slack.
-      - name: Report status to Slack
-        uses: rtCamp/action-slack-notify@master
-        if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'push') }}
-        env:
-          SLACK_COLOR: ${{ env.SLACK_COLOR }}
-          SLACK_WEBHOOK: ${{ secrets.ACTIONS_SLACK_WEBHOOK }}
-          SLACK_TITLE: "Run #${{ github.run_number }} for workflow `${{ github.workflow }} (${{ matrix.backend }})`: ${{ job.status }}"
-          SLACK_MESSAGE: "<https://github.com/${{ github.repository }}/|${{ github.repository }}@${{ github.ref }}>"
-          SLACK_FOOTER: "<https://github.com/${{ github.repository }}/commit/${{ github.sha }}|View commit>"
-          MSG_MINIMAL: true # use compact slack message format
