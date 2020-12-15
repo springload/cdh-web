@@ -302,10 +302,6 @@ TEMPLATES = [
     },
 ]
 
-if DJANGO_VERSION < (1, 9):
-    del TEMPLATES[0]["OPTIONS"]["builtins"]
-
-
 ################
 # APPLICATIONS #
 ################
@@ -362,6 +358,13 @@ INSTALLED_APPS = [
     # don't want users to create the wrong kind of blog posts.
     "cdhweb.blog",
 ]
+
+# Add django debug toolbar to installed_apps if available
+try:
+    import debug_toolbar as _
+    INSTALLED_APPS.append("debug_toolbar")
+except ImportError:
+    pass
 
 # List of middleware classes to use. Order is important; in the request phase,
 # these middleware classes will be applied in the order given, and in the
