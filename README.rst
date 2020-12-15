@@ -19,6 +19,10 @@ CDH Website
    :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=main
    :alt: Requirements Status
 
+.. image:: https://github.com/Princeton-CDH/cdh-web/workflows/build%20dbdocs/badge.svg
+    :target: https://dbdocs.io/princetoncdh/cdhweb
+    :alt: dbdocs build
+
 Python 3.5 / Django 2.2 / Node 10 / MariaDB (MySQL) 5.5 w/ timezone info
 
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
@@ -108,6 +112,11 @@ directory::
 
 When building documentation for a production release, use `make docs` to
 update the published documentation on GitHub Pages.
+
+On every commit, GitHub Actions will generate and then publish a database diagram to `dbdocs @ princetoncdh/cdh-web <https://dbdocs.io/princetoncdh/cdh-web>`_. But to generate locally, install and log into dbdocs. Then run::
+
+    python manage.py dbml > cdhweb.dbml
+    npx dbdocs build cdhweb.dbml --project cdhweb
 
 License
 -------
