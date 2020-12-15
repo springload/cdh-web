@@ -27,7 +27,7 @@ jobs:
       # Set the value of DJANGO_DB_BACKEND which is used in ci/testsettings.py to
       # configure django's ORM based on whether we're testing postgres or mysql
       - name: Set django database backend adapter
-        run: echo "DJANGO_DB_BACKEND=postgresql >> $GITHUB_ENV
+        run: echo "DJANGO_DB_BACKEND=postgresql" >> $GITHUB_ENV
       - name: Checkout repository
         uses: actions/checkout@v2
       # Node is required to use dbdocs
