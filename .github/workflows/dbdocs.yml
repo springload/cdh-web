@@ -6,12 +6,28 @@ on:
 
 env:
   NODE_VERSION: 10
+  DB_NAME: cdhweb
+  DB_USER: cdhweb
+  DB_PASSWORD: cdhweb
 
 jobs:
   python-unit:
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: ${{ env.DB_NAME }}
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+        ports:
+          - 5432:5432
     name: Python unit tests
     runs-on: ubuntu-latest
     steps:
+      # Set the value of DJANGO_DB_BACKEND which is used in ci/testsettings.py to
+      # configure django's ORM based on whether we're testing postgres or mysql
+      - name: Set django database backend adapter
+        run: echo "DJANGO_DB_BACKEND=postgresql >> $GITHUB_ENV
       - name: Checkout repository
         uses: actions/checkout@v2
       # Node is required to use dbdocs
