@@ -17,8 +17,10 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        # TODO clear out all pages except root for idempotency
-        # Page.objects.filter(depth__gt=1).delete()
+        # clear out all pages except root for idempotency
+        site = Site.objects.get()
+        old_root_page = site.root_page
+        Page.objects.filter(depth__gt=2).delete()
         
         root = Page.objects.get(depth=1)
 
@@ -26,7 +28,7 @@ class Command(BaseCommand):
         ohp = MezzaninePage.objects.get(slug="/")
         homepage = HomePage(
             title=ohp.title,
-            slug=ohp.slug,
+            slug='',  # slug of / is invalid in wagtail
             seo_title=ohp._meta_title or ohp.title,
             body=json.dumps([{
                 "type": "paragraph",
@@ -39,6 +41,12 @@ class Command(BaseCommand):
         )
         root.add_child(instance=homepage)
         root.save()
+
+        # Point site at the new root page before deleting the old one to avoid
+        #  deleting in a cascade
+        site.root_page = homepage
+        site.save()
+        old_root_page.delete()
 
         # migrate all landing pages
         for olp in OldLandingPage.objects.all():
@@ -65,3 +73,5 @@ class Command(BaseCommand):
             )
             homepage.add_child(instance=lp)
         homepage.save()
+
+
