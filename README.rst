@@ -7,10 +7,6 @@ CDH Website
    :target: https://github.com/Princeton-CDH/cdh-web/actions?query=workflow%3A%22unit+tests%22
    :alt: Unit test status
 
-.. image:: https://landscape.io/github/Princeton-CDH/cdh-web/main/landscape.svg?style=flat
-  :target: https://landscape.io/github/Princeton-CDH/cdh-web/main
-  :alt: Code Health
-
 .. image:: https://codecov.io/gh/Princeton-CDH/cdh-web/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/Princeton-CDH/cdh-web
    :alt: Code coverage
@@ -23,7 +19,7 @@ CDH Website
     :target: https://dbdocs.io/princetoncdh/cdhweb
     :alt: dbdocs build
 
-Python 3.5 / Django 2.2 / Node 10 / MariaDB (MySQL) 5.5 w/ timezone info
+Python 3.6 / Django 2.2 / Node 10 / PostgreSQL 10
 
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.
