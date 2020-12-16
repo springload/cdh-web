@@ -19,7 +19,7 @@ CDH Website
    :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=main
    :alt: Requirements Status
 
-.. image:: https://github.com/Princeton-CDH/cdh-web/workflows/build%20dbdocs/badge.svg
+.. image:: https://github.com/Princeton-CDH/cdh-web/workflows/dbdocs/badge.svg
     :target: https://dbdocs.io/princetoncdh/cdhweb
     :alt: dbdocs build
 

@@ -1,4 +1,4 @@
-name: build dbdocs
+name: dbdocs
 
 on:
   push:
@@ -43,7 +43,7 @@ jobs:
         run: |
           cp ci/testsettings.py cdhweb/local_settings.py
           python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
-      
+
       # Build and publish dbdocs
       - name: Generate DBML
         run: python manage.py dbml > cdhweb.dbml
