@@ -1,7 +1,6 @@
 """Convert mezzanine-based pages to wagtail page models."""
 
 import json
-from collections import defaultdict
 
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage
 from cdhweb.resources.models import LandingPage as OldLandingPage
@@ -13,6 +12,9 @@ from wagtail.core.models import Page, Site
 
 class Command(BaseCommand):
     help = __file__.__doc__
+
+    # list to track migrated mezzanine pages by pk
+    migrated = []
 
     def convert_slug(self, slug):
         """Convert a Mezzanine slug into a Wagtail slug."""
@@ -97,12 +99,6 @@ class Command(BaseCommand):
         site.save()
         Page.objects.filter(depth=2).exclude(pk=homepage.pk).delete()
 
-        # track content pages to migrate and their parents.
-        # parent maps mezzanine pages to the parent of their wagtail counterpart
-        # so that you can call save() after adding a child to it
-        queue = []
-        parent = {old_homepage: root}
-
         # create a dummy top-level projects/ page for project pages to go under
         projects = ContentPage(
             title="Sponsored Projects",
@@ -111,6 +107,7 @@ class Command(BaseCommand):
         )
         homepage.add_child(instance=projects)
         homepage.save()
+        self.migrated.append(mezz_page_models.Page.objects.get(slug='projects').pk)
 
         # create a dummy top-level events/ page for event pages to go under
         events = ContentPage(
@@ -120,39 +117,62 @@ class Command(BaseCommand):
         )
         homepage.add_child(instance=events)
         homepage.save()
+        # mark events content page as migrated
+        self.migrated.append(mezz_page_models.Page.objects.get(slug='events').pk)
 
-        # add all top-level content pages and landing pages to the queue
-        for page in list(old_homepage.children.all()) + \
-                list(OldLandingPage.objects.all()):
-            # use the base page type on landingpages for consistency
-            if hasattr(page, "page_ptr"):
-                queue.append(page.page_ptr)
-                parent[page.page_ptr] = homepage
-            else:
-                queue.append(page)
-                parent[page] = homepage
+        # migrate children of homepage
+        for page in old_homepage.children.all():
+            self.migrate_pages(page, homepage)
 
-        # set all the project pages to have the dummy project page as a parent
-        project_pages = mezz_page_models.Page.objects.filter(slug__startswith="projects/")
-        for page in project_pages:
-            parent[page] = projects
-
-        # set all the event pages to have the dummy events page as a parent
-        event_pages = mezz_page_models.Page.objects.filter(Q(slug__startswith="events/") | Q(slug="year-of-data"))
+        # special cases
+        # - migrate event pages but specify new events page as parent
+        event_pages = mezz_page_models.Page.objects \
+            .filter(Q(slug__startswith="events/") | Q(slug="year-of-data"))
         for page in event_pages:
-            parent[page] = events   
+            self.migrate_pages(page, events)
+        # - migrate project pages but specify new projects page as parent
+        project_pages = mezz_page_models.Page.objects \
+            .filter(slug__startswith="projects/")
+        for page in project_pages:
+            self.migrate_pages(page, projects)
 
-        # perform breadth-first search of all content pages
-        while queue:
-            # figure out what page type to create, and create it
-            page = queue.pop(0)
-            if hasattr(page, "richtextpage"):
-                new_page = self.create_contentpage(page)
-            else:
-                new_page = self.create_landingpage(page)
-            parent[page].add_child(instance=new_page)
-            parent[page].save()
-            # add all the pages at the next level down to the queue
-            for child in page.children.all():
-                queue.append(child)
-                parent[child] = new_page
+        # migrate all remaining pages, starting with pages with no parent
+        # (i.e., top level pages)
+        for page in mezz_page_models.Page.objects.filter(parent__isnull=True):
+            self.migrate_pages(page, homepage)
+
+        # report on unmigrated pages
+        unmigrated = mezz_page_models.Page.objects.exclude(pk__in=self.migrated)
+        print('%d unmigrated mezzanine pages:' % unmigrated.count())
+        for page in unmigrated:
+            print('\t%s — slug/url %s)' % (page, page.slug))
+
+    def migrate_pages(self, page, parent):
+        """Recursively convert a mezzanine page and all its descendants
+        to Wagtail pages with the same hierarchy.
+
+        :params page: mezzanine page to convert
+        :params parent: wagtail page the new page should be added to
+        """
+
+        # if a page has already been migrated, skip it
+        if page.pk in self.migrated:
+            return
+        # create the new version of the page according to page type
+        if hasattr(page, "richtextpage"):
+            new_page = self.create_contentpage(page)
+        elif hasattr(page, "landingpage"):
+            new_page = self.create_landingpage(page)
+        else:
+            print('WARN: page conversion not yet handled for %s page' % (page))
+            # bail out for now
+            return
+
+        parent.add_child(instance=new_page)
+        parent.save()
+        # add to list of migrated pages
+        self.migrated.append(page.pk)
+
+        # recursively create and add new versions of all this page's children
+        for child in page.children.all():
+            self.migrate_pages(child, new_page)
