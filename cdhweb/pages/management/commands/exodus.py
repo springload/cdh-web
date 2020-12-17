@@ -1,6 +1,7 @@
 """Convert mezzanine-based pages to wagtail page models."""
 
 import json
+from collections import defaultdict
 
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage
 from cdhweb.resources.models import LandingPage as OldLandingPage
@@ -75,50 +76,59 @@ class Command(BaseCommand):
             # NOTE set has_unpublished_changes on page?
         )
 
-    def walk(self, page, depth):
-        """Recursively create Wagtail content pages."""
-        # create the new version of the page
-        new_page = self.create_contentpage(page)
-        new_page.depth = depth
-        # recursively create the new versions of all the page's children
-        for child in page.children.all():
-            new_page.add_child(instance=self.walk(child, depth + 1))
-        # return the new page
-        return new_page
-
     def handle(self, *args, **options):
-        """Convert all existing Mezzanine pages to Wagtail pages."""
-        # clear out all pages except root and homepage for idempotency
-        site = Site.objects.get()
-        old_root_page = site.root_page
+        """Create Wagtail pages for all extant Mezzanine pages."""
+        # clear out wagtail pages for idempotency
         Page.objects.filter(depth__gt=2).delete()
-        root = Page.objects.get(depth=1)
 
-        # migrate the homepage
+        # create the new homepage
         old_homepage = mezz_page_models.Page.objects.get(slug="/")
         homepage = self.create_homepage(old_homepage)
+        root = Page.objects.get(depth=1)
         root.add_child(instance=homepage)
         root.save()
 
-        # point site at the new root page before deleting the old one to avoid
-        # deleting the site in a cascade
+        # point the default site at the new homepage
+        site = Site.objects.get()
         site.root_page = homepage
         site.save()
-        old_root_page.delete()
+        Page.objects.filter(depth=2).exclude(pk=homepage.pk).delete()
 
-        # migrate all landing pages
-        for old_landingpage in OldLandingPage.objects.all():
-            landingpage = self.create_landingpage(old_landingpage)
-            homepage.add_child(instance=landingpage)
-        homepage.save()
+        # track content pages to migrate and their parents
+        queue = []
+        visited = set([homepage])
+        parent = defaultdict(Page)
+        parent[old_homepage] = root
 
-        # migrate all content pages
-        # direct children of homepage
-        for child in old_homepage.children.all():
-            if child.richtextpage:
-                self.walk(child, 3)
-        # children of landingpage
-        for old_landingpage in OldLandingPage.objects.all():
-            for child in old_landingpage.children.all():
-                self.walk(child, 4)
-        homepage.save()
+        # add all top-level content pages and landing pages to the queue
+        for page in list(old_homepage.children.all()) + \
+                    list(OldLandingPage.objects.all()):
+            queue.append(page)
+            parent[page] = homepage
+
+        # perform breadth-first search of all content pages
+        while queue:
+            # get the next page; skip if we've seen it already
+            page = queue.pop(0)
+            if page in visited:
+                continue
+
+            # figure out what page type to create, and create it
+            if hasattr(page, "richtextpage"):
+                new_page = self.create_contentpage(page)
+            else:
+                new_page = self.create_landingpage(page)
+            try:
+                parent[page].add_child(instance=new_page)
+                parent[page].save()
+                # add all the pages at the next level down to the queue
+                for child in page.children.all():
+                    if child not in visited:
+                        queue.append(child)
+                        parent[child] = new_page
+            # FIXME slugs
+            except:
+                pass
+
+            # mark this page as visited
+            visited.add(page)
