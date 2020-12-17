@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def convert_slug(self, slug):
         """Convert a Mezzanine slug into a Wagtail slug."""
-        # wagtail stores only the final portion of a URL: ""
+        # wagtail stores only the final portion of a URL with no slashes
         # remove trailing slash, then return final portion without slashes
         return slug.rstrip("/").split("/")[-1]
 
@@ -61,7 +61,7 @@ class Command(BaseCommand):
             seo_title=page._meta_title or page.title,
             body=json.dumps([{
                 "type": "paragraph",
-                "value": page.richtextpage.content,
+                "value": page.richtextpage.content,   # access via richtextpage
             }]),
             search_description=page.description,    # store even if generated
             first_published_at=page.created,
@@ -88,7 +88,9 @@ class Command(BaseCommand):
         root.add_child(instance=homepage)
         root.save()
 
-        # point the default site at the new homepage
+        # point the default site at the new homepage and delete old homepage(s).
+        # if they are deleted prior to switching site.root_page, the site will
+        # also be deleted in a cascade, which we don't want
         site = Site.objects.get()
         site.root_page = homepage
         site.save()
@@ -96,7 +98,6 @@ class Command(BaseCommand):
 
         # track content pages to migrate and their parents
         queue = []
-        visited = set([homepage])
         parent = defaultdict(Page)
         parent[old_homepage] = root
 
@@ -108,12 +109,8 @@ class Command(BaseCommand):
 
         # perform breadth-first search of all content pages
         while queue:
-            # get the next page; skip if we've seen it already
-            page = queue.pop(0)
-            if page in visited:
-                continue
-
             # figure out what page type to create, and create it
+            page = queue.pop(0)
             if hasattr(page, "richtextpage"):
                 new_page = self.create_contentpage(page)
             else:
@@ -123,12 +120,9 @@ class Command(BaseCommand):
                 parent[page].save()
                 # add all the pages at the next level down to the queue
                 for child in page.children.all():
-                    if child not in visited:
-                        queue.append(child)
-                        parent[child] = new_page
+                    queue.append(child)
+                    parent[child] = new_page
             # FIXME slugs
             except:
                 pass
 
-            # mark this page as visited
-            visited.add(page)
