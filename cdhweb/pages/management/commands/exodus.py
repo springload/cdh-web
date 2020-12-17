@@ -130,9 +130,10 @@ class Command(BaseCommand):
             .filter(Q(slug__startswith="events/") | Q(slug="year-of-data"))
         for page in event_pages:
             self.migrate_pages(page, events)
-        # - migrate project pages but specify new projects page as parent
+        # - migrate project pages but specify new projects list page as parent
+        # - process about page last so project pages don't nest
         project_pages = mezz_page_models.Page.objects \
-            .filter(slug__startswith="projects/")
+            .filter(slug__startswith="projects/").order_by('-slug')
         for page in project_pages:
             self.migrate_pages(page, projects)
 
