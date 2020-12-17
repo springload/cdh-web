@@ -64,7 +64,8 @@ class Command(BaseCommand):
             seo_title=page._meta_title or page.title,
             body=json.dumps([{
                 "type": "paragraph",
-                "value": page.richtextpage.content,   # access via richtextpage
+                # access via richtextpage when present
+                "value": page.richtextpage.content if hasattr(page, 'richtextpage') else '',
             }]),
             search_description=page.description,    # store even if generated
             first_published_at=page.created,
@@ -90,6 +91,8 @@ class Command(BaseCommand):
         root = Page.objects.get(depth=1)
         root.add_child(instance=homepage)
         root.save()
+        # mark home page as migrated
+        self.migrated.append(old_homepage.pk)
 
         # point the default site at the new homepage and delete old homepage(s).
         # if they are deleted prior to switching site.root_page, the site will
@@ -159,15 +162,15 @@ class Command(BaseCommand):
         # if a page has already been migrated, skip it
         if page.pk in self.migrated:
             return
+
         # create the new version of the page according to page type
-        if hasattr(page, "richtextpage"):
-            new_page = self.create_contentpage(page)
-        elif hasattr(page, "landingpage"):
+        if hasattr(page, "landingpage"):
             new_page = self.create_landingpage(page)
         else:
-            print('WARN: page conversion not yet handled for %s page' % (page))
-            # bail out for now
-            return
+            # treat everything else as page / richtexpage
+            if hasattr(page, "link"):
+                print('WARN: converting link page to content page %s ' % (page))
+            new_page = self.create_contentpage(page)
 
         parent.add_child(instance=new_page)
         parent.save()
