@@ -6,6 +6,7 @@ from collections import defaultdict
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage
 from cdhweb.resources.models import LandingPage as OldLandingPage
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 from mezzanine.pages import models as mezz_page_models
 from wagtail.core.models import Page, Site
 
@@ -38,12 +39,12 @@ class Command(BaseCommand):
         """Create and return a Wagtail landing page based on a Mezzanine page."""
         return LandingPage(
             title=page.title,
-            tagline=page.tagline,   # landing pages have a tagline
+            tagline=page.landingpage.tagline,   # landing pages have a tagline
             slug=self.convert_slug(page.slug),
             seo_title=page._meta_title or page.title,
             body=json.dumps([{
                 "type": "paragraph",
-                "value": page.content,
+                "value": page.landingpage.content,
             }]),
             search_description=page.description,    # store even if generated
             first_published_at=page.created,
@@ -96,16 +97,50 @@ class Command(BaseCommand):
         site.save()
         Page.objects.filter(depth=2).exclude(pk=homepage.pk).delete()
 
-        # track content pages to migrate and their parents
+        # track content pages to migrate and their parents.
+        # parent maps mezzanine pages to the parent of their wagtail counterpart
+        # so that you can call save() after adding a child to it
         queue = []
-        parent = defaultdict(Page)
-        parent[old_homepage] = root
+        parent = {old_homepage: root}
+
+        # create a dummy top-level projects/ page for project pages to go under
+        projects = ContentPage(
+            title="Sponsored Projects",
+            slug="projects",
+            seo_title="Sponsored Projects",
+        )
+        homepage.add_child(instance=projects)
+        homepage.save()
+
+        # create a dummy top-level events/ page for event pages to go under
+        events = ContentPage(
+            title="Events",
+            slug="events",
+            seo_title="Events"
+        )
+        homepage.add_child(instance=events)
+        homepage.save()
 
         # add all top-level content pages and landing pages to the queue
         for page in list(old_homepage.children.all()) + \
-                    list(OldLandingPage.objects.all()):
-            queue.append(page)
-            parent[page] = homepage
+                list(OldLandingPage.objects.all()):
+            # use the base page type on landingpages for consistency
+            if hasattr(page, "page_ptr"):
+                queue.append(page.page_ptr)
+                parent[page.page_ptr] = homepage
+            else:
+                queue.append(page)
+                parent[page] = homepage
+
+        # set all the project pages to have the dummy project page as a parent
+        project_pages = mezz_page_models.Page.objects.filter(slug__startswith="projects/")
+        for page in project_pages:
+            parent[page] = projects
+
+        # set all the event pages to have the dummy events page as a parent
+        event_pages = mezz_page_models.Page.objects.filter(Q(slug__startswith="events/") | Q(slug="year-of-data"))
+        for page in event_pages:
+            parent[page] = events   
 
         # perform breadth-first search of all content pages
         while queue:
@@ -115,14 +150,9 @@ class Command(BaseCommand):
                 new_page = self.create_contentpage(page)
             else:
                 new_page = self.create_landingpage(page)
-            try:
-                parent[page].add_child(instance=new_page)
-                parent[page].save()
-                # add all the pages at the next level down to the queue
-                for child in page.children.all():
-                    queue.append(child)
-                    parent[child] = new_page
-            # FIXME slugs
-            except:
-                pass
-
+            parent[page].add_child(instance=new_page)
+            parent[page].save()
+            # add all the pages at the next level down to the queue
+            for child in page.children.all():
+                queue.append(child)
+                parent[child] = new_page
