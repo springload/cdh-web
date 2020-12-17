@@ -58,6 +58,7 @@ class Command(BaseCommand):
 
     def create_contentpage(self, page):
         """Create and return a Wagtail content page based on a Mezzanine page."""
+
         return ContentPage(
             title=page.title,
             slug=self.convert_slug(page.slug),
@@ -72,7 +73,7 @@ class Command(BaseCommand):
             last_published_at=page.updated,
             # TODO not dealing with images yet
             # TODO not setting menu placement yet
-            # TODO search keywords?
+            # NOTE: not migrating search keywords
             # TODO set the correct visibility status
             # NOTE not login-restricting pages since we don't use it
             # NOTE not setting expiry date; handled manually
@@ -145,11 +146,16 @@ class Command(BaseCommand):
         for page in mezz_page_models.Page.objects.filter(parent__isnull=True):
             self.migrate_pages(page, homepage)
 
+        # special cases — consult/co-sponsor form
+        self.form_pages()
+
         # report on unmigrated pages
         unmigrated = mezz_page_models.Page.objects.exclude(pk__in=self.migrated)
         print('%d unmigrated mezzanine pages:' % unmigrated.count())
         for page in unmigrated:
             print('\t%s — slug/url %s)' % (page, page.slug))
+
+        # delete mezzanine pages here? (but keep for testing migration)
 
     def migrate_pages(self, page, parent):
         """Recursively convert a mezzanine page and all its descendants
@@ -180,3 +186,11 @@ class Command(BaseCommand):
         # recursively create and add new versions of all this page's children
         for child in page.children.all():
             self.migrate_pages(child, new_page)
+
+    def form_pages(self):
+        # migrate embedded google forms from mezzanine templates
+        consults = ContentPage.objects.get(slug='consult')
+        # add new paragraph to body with iframe from engage/consult template and save
+
+        # do the same for cosponsorship page
+
