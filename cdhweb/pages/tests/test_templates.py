@@ -1,59 +1,35 @@
-import string
-from datetime import timedelta
-import json
-
-from django.contrib.sites.models import Site
-from django.test import TestCase
-from django.urls import reverse
-from django.utils import timezone
-from wagtail.core.models import Page
 import pytest
-
-from cdhweb.blog.models import BlogPost
-from cdhweb.events.models import Event, EventType
-from cdhweb.projects.models import Project, GrantType, Grant
-from cdhweb.resources.models import LandingPage
-from cdhweb.resources.sitemaps import PageSitemap
-from cdhweb.resources.utils import absolutize_url
 from cdhweb.pages.models import HomePage
+from django.test import TestCase
+from wagtail.core.models import Page, Site
 
-class TestViews(TestCase):
-    def test_site_index(self):
-        homepage = HomePage(
-            title='Center for Digital Humanities @ Princeton',
-            slug='',
-            seo_title='Center for Digital Humanities at Princeton',
-            body=json.dumps([{
-                "type": "paragraph",
-                "value": "<b>We're a great group of people! Be our friend.</b>"
-            }])
-        )
 
-        root = Page.objects.get(depth=1)
-        root.add_child(instance=homepage)
-        root.save()
-        site = Site.objects.get()
-        site.root_page = homepage
-        site.save()
+class TestHomePage(TestCase):
+    """Test the home page."""
+    fixtures = ["test_pages.json"]
 
-        response = self.client.get(homepage.get_url())
+    def setUp(self):
+        """get objects for use in tests"""
+        self.homepage = HomePage.objects.get()
+        self.site = Site.objects.get()
+
+    def test_visit(self):
+        """homepage should be navigable"""
+        response = self.client.get(self.homepage.relative_url(self.site))
         assert response.status_code == 200
 
-        # test editable page content displayed
-        self.assertContains(response, homepage.body)
+    def test_visit(self):
+        """homepage editable content should display"""
+        response = self.client.get(self.homepage.relative_url(self.site))
+        self.assertContains(response, self.homepage.body[0].value.source)
+
+    def test_blog_posts(self):
+        """homepage should display featured blog posts in carousel"""
+        # TODO actually check that featured posts appear once blog is exodized
+        response = self.client.get(self.homepage.relative_url(self.site))
+        self.assertTemplateNotUsed(response, "snippets/carousel.html")
 
         """
-        TODO: Blog posts, events, and projects not yet ~exodized~ (i.e. turned into models)
-
-        # should not error even if no events/projects to display
-        self.assertContains(response, "Next semester's events are being scheduled.",
-                            msg_prefix='should display a message when there are no upcoming events')
-        self.assertContains(response, reverse('event:upcoming'),
-                            msg_prefix='should link to upcoming events (in lieue of an archive)')
-
-        # test the carousel display
-        # shouldn't display without any blog posts
-        self.assertTemplateNotUsed(response, 'snippets/carousel.html')
         # add some posts but don't feature any yet; should display most recent 3
         for n in range(1, 8):
             BlogPost.objects.create(title='Post %s' % n)
@@ -81,8 +57,17 @@ class TestViews(TestCase):
         for post in BlogPost.objects.all()[:6]:
             self.assertContains(response, post.get_absolute_url())
             self.assertContains(response, post.title)
+        """
 
-        # test how projects are displayed on the home page
+    def test_highlighted_projects(self):
+        """homepage should display highlighted projects as cards"""
+        # TODO actually check that projects appear once projects are exodized
+        response = self.client.get(self.homepage.relative_url(self.site))
+        self.assertTemplateNotUsed(
+            response, "projects/snippets/project_card.html")
+
+        """
+                # test how projects are displayed on the home page
         today = timezone.now()
         site = Site.objects.first()
         projects = Project.objects.bulk_create(
@@ -127,8 +112,21 @@ class TestViews(TestCase):
             self.assertContains(response, proj.title)
             self.assertContains(response, proj.short_description)
             # NOTE: currently not testing thumbnail included
+        """
 
-        # test how projects are displayed on the home page
+    def test_upcoming_events(self):
+        """homepage should display upcoming events as cards"""
+        # TODO actually check that events appear once events are exodized
+        response = self.client.get(self.homepage.relative_url(self.site))
+        self.assertTemplateNotUsed(response, "events/snippets/event_card.html")
+        self.assertContains(
+            response, "Next semester's events are being scheduled.")
+
+        """
+        self.assertContains(response, reverse('event:upcoming'),
+                            msg_prefix='should link to upcoming events (in lieue of an archive)')
+
+        # test how events are displayed on the home page
         event_type = EventType.objects.first()
         yesterday = today - timedelta(days=1)
         tomorrow = today + timedelta(days=1)
@@ -151,13 +149,43 @@ class TestViews(TestCase):
             self.assertContains(response, event.title)
             # TODO: date/time
 
-        
-
         # TODO: not yet testing speakers displayed
 
         # not yet testing published/unpublished
         """
 
+
+class TestLandingPage(TestCase):
+    """Test landing pages."""
+    fixtures = ["test_pages.json"]
+
+    
+
+class TestPagesSitemap(TestCase):
+
+    @pytest.mark.skip("todo")
+    def test_sitemap(self):
+        # basic test of sitemap url config, override from mezzanine
+        pass
+        # response = self.client.get(reverse('sitemap'))
+        # assert response.status_code == 200
+
+        # # both fixture items are published
+        # for page in Page.objects.all():
+        #     self.assertContains(response, page.get_absolute_url())
+        #     self.assertContains(response, page.updated.strftime('%Y-%m-%d'))
+
+        # # set to unpublished - should not be included
+        # pages = Page.objects.exclude(slug='/')  # check all but home page
+        # # pages.update(status=CONTENT_STATUS_DRAFT)
+        # # response = self.client.get(reverse('sitemap'))
+        # for page in pages.all():
+        #     self.assertNotContains(response, page.get_absolute_url())
+
+
+class TestPagesMenus(TestCase):
+
+    @pytest.mark.skip("todo")
     def test_child_pages_attachment(self):
         about = Page.objects.get(title='About')
         annual_report = Page.objects.get(title='Annual Report')
@@ -175,29 +203,3 @@ class TestViews(TestCase):
         # should not error, should not contain page-children attachment section
         self.assertNotContains(
             response, '<div class="attachments page-children">')
-
-
-@pytest.mark.django_db
-def test_absolutize_url():
-    https_url = 'https://example.com/some/path/'
-    # https url is returned unchanged
-    assert absolutize_url(https_url) == https_url
-    # testing with default site domain
-    current_site = Site.objects.get_current()
-
-    # test site domain without https
-    current_site.domain = 'example.org'
-    current_site.save()
-    local_path = '/foo/bar/'
-    assert absolutize_url(local_path) == 'https://example.org/foo/bar/'
-    # trailing slash in domain doesn't result in double slash
-    current_site.domain = 'example.org/'
-    current_site.save()
-    assert absolutize_url(local_path) == 'https://example.org/foo/bar/'
-    # site at subdomain should work too
-    current_site.domain = 'example.org/sub/'
-    current_site.save()
-    assert absolutize_url(local_path) == 'https://example.org/sub/foo/bar/'
-    # site with https:// included
-    current_site.domain = 'https://example.org'
-    assert absolutize_url(local_path) == 'https://example.org/sub/foo/bar/'
