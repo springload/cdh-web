@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load wagtailcore_tags %}
 
-{% block page-title %}{% if page %}{{ page.meta_title }}{% else %}The Center for Digital Humanities at Princeton{% endif %}{% endblock %}
+{% block page-title %}{{ page.seo_title }}{% endblock %}
 
 {% block content %} {# add a class to main content for home-page specific styles #}
 <div class="homepage{% if updates %} with-carousel{% endif %}">
