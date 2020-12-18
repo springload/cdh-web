@@ -27,9 +27,6 @@ class TestHomePage(WagtailPageTests):
         # landing pages or content pages can be children
         self.assertAllowedSubpageTypes(HomePage, [LandingPage, ContentPage])
 
-    def test_template_used(self):
-        pass
-
 
 class TestLandingPage(WagtailPageTests):
     fixtures = ['sample_pages']
@@ -53,9 +50,6 @@ class TestLandingPage(WagtailPageTests):
         # only allowed child is content page
         self.assertAllowedSubpageTypes(LandingPage, [ContentPage])
 
-    def test_template_used(self):
-        pass
-
 
 class TestContentPage(WagtailPageTests):
     fixtures = ['sample_pages']
@@ -78,6 +72,3 @@ class TestContentPage(WagtailPageTests):
     def test_subpages(self):
         # only allowed child is content page
         self.assertAllowedSubpageTypes(ContentPage, [ContentPage])
-
-    def test_template_used(self):
-        pass
