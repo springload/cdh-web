@@ -3,10 +3,11 @@
 import json
 
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage
-from cdhweb.resources.models import LandingPage as OldLandingPage
 from django.core.management.base import BaseCommand
 from django.db.models import Q
+from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 from mezzanine.pages import models as mezz_page_models
+from wagtail.core.blocks import RichTextBlock
 from wagtail.core.models import Page, Site
 
 
@@ -29,12 +30,10 @@ class Command(BaseCommand):
             slug=self.convert_slug(page.slug),
             seo_title=page._meta_title or page.title,
             body=json.dumps([{
-                "type": "paragraph",
+                "type": "migrated",
                 "value": page.richtextpage.content,   # access via richtextpage
             }]),
             search_description=page.description,    # store even if generated
-            first_published_at=page.created,
-            last_published_at=page.updated,
         )
 
     def create_landingpage(self, page):
@@ -45,12 +44,10 @@ class Command(BaseCommand):
             slug=self.convert_slug(page.slug),
             seo_title=page._meta_title or page.title,
             body=json.dumps([{
-                "type": "paragraph",
+                "type": "migrated",
                 "value": page.landingpage.content,
             }]),
             search_description=page.description,    # store even if generated
-            first_published_at=page.created,
-            last_published_at=page.updated,
             # TODO not dealing with images yet
             # TODO not setting menu placement yet
             # TODO search keywords?
@@ -58,19 +55,16 @@ class Command(BaseCommand):
 
     def create_contentpage(self, page):
         """Create and return a Wagtail content page based on a Mezzanine page."""
-
         return ContentPage(
             title=page.title,
             slug=self.convert_slug(page.slug),
             seo_title=page._meta_title or page.title,
             body=json.dumps([{
-                "type": "paragraph",
+                "type": "migrated",
                 # access via richtextpage when present
-                "value": page.richtextpage.content if hasattr(page, 'richtextpage') else '',
+                "value": page.richtextpage.content if hasattr(page, "richtextpage") else "",
             }]),
             search_description=page.description,    # store even if generated
-            first_published_at=page.created,
-            last_published_at=page.updated,
             # TODO not dealing with images yet
             # TODO not setting menu placement yet
             # NOTE: not migrating search keywords
@@ -83,8 +77,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Create Wagtail pages for all extant Mezzanine pages."""
-        # clear out wagtail pages for idempotency
+        # clear out wagtail pages and revisions for idempotency
         Page.objects.filter(depth__gt=2).delete()
+        # PageRevision.objects.all().delete()
 
         # create the new homepage
         old_homepage = mezz_page_models.Page.objects.get(slug="/")
@@ -111,7 +106,8 @@ class Command(BaseCommand):
         )
         homepage.add_child(instance=projects)
         homepage.save()
-        self.migrated.append(mezz_page_models.Page.objects.get(slug='projects').pk)
+        self.migrated.append(
+            mezz_page_models.Page.objects.get(slug='projects').pk)
 
         # create a dummy top-level events/ page for event pages to go under
         events = ContentPage(
@@ -122,7 +118,8 @@ class Command(BaseCommand):
         homepage.add_child(instance=events)
         homepage.save()
         # mark events content page as migrated
-        self.migrated.append(mezz_page_models.Page.objects.get(slug='events').pk)
+        self.migrated.append(
+            mezz_page_models.Page.objects.get(slug='events').pk)
 
         # migrate children of homepage
         for page in old_homepage.children.all():
@@ -150,7 +147,8 @@ class Command(BaseCommand):
         self.form_pages()
 
         # report on unmigrated pages
-        unmigrated = mezz_page_models.Page.objects.exclude(pk__in=self.migrated)
+        unmigrated = mezz_page_models.Page.objects.exclude(
+            pk__in=self.migrated)
         print('%d unmigrated mezzanine pages:' % unmigrated.count())
         for page in unmigrated:
             print('\t%s — slug/url %s)' % (page, page.slug))
@@ -180,17 +178,33 @@ class Command(BaseCommand):
 
         parent.add_child(instance=new_page)
         parent.save()
+
+        # set publication status
+        if page.status != CONTENT_STATUS_PUBLISHED:
+            new_page.unpublish()
+
         # add to list of migrated pages
         self.migrated.append(page.pk)
 
         # recursively create and add new versions of all this page's children
         for child in page.children.all():
             self.migrate_pages(child, new_page)
+            
 
     def form_pages(self):
         # migrate embedded google forms from mezzanine templates
-        consults = ContentPage.objects.get(slug='consult')
-        # add new paragraph to body with iframe from engage/consult template and save
-
-        # do the same for cosponsorship page
-
+        # add new migrated to body with iframe from engage/consult template and save
+        # set a height on the iframe to ensure it renders correctly
+        consults = ContentPage.objects.get(slug="consult")
+        consults.body = json.dumps([
+            {"type": "migrated", "value": consults.body[0].value.source},
+            {"type": "migrated", "value": '<iframe title="Consultation Request Form" height="2400" src="https://docs.google.com/forms/d/e/1FAIpQLScerpyeQAgp91Iy66c1rKbKSwbSpeuB5yHh14l3G9C86eUjsA/viewform?embedded=true">Loading...</iframe>'}
+        ])
+        consults.save()
+        # # do the same for cosponsorship page
+        cosponsor = ContentPage.objects.get(slug="cosponsor")
+        cosponsor.body = json.dumps([
+            {"type": "migrated", "value": cosponsor.body[0].value.source},
+            {"type": "migrated", "value": '<iframe title="Cosponsorship Request Form" height="3250" src="https://docs.google.com/forms/d/e/1FAIpQLSeP40DBM7n8GYgW_i99nRxY5T5P39DrIWyIwq9LggIwu4r5jQ/viewform?embedded=true">Loading...</iframe>'}
+        ])
+        cosponsor.save()
