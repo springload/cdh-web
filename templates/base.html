@@ -83,9 +83,11 @@
     <footer>
         {% include 'snippets/subscribe.html' %}
 
+        {% comment 're-add footer menu when exodized' %}
         <section class="footer-menu" id="footermenu">
             {% page_menu "snippets/footer_menu.html" %}
         </section>
+        {% endcomment %}
 
         <section class="contact" typeof="schema:Organization">
         {# RDFa markup for organization and address #}
