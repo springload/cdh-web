@@ -50,6 +50,7 @@ class Command(BaseCommand):
         return LandingPage(
             title=page.title,
             tagline=page.landingpage.tagline,   # landing pages have a tagline
+            header_image=self.get_wagtail_image(page.landingpage.image),
             slug=self.convert_slug(page.slug),
             seo_title=page._meta_title or page.title,
             body=json.dumps([{
@@ -89,6 +90,9 @@ class Command(BaseCommand):
         # clear out wagtail pages and revisions for idempotency
         Page.objects.filter(depth__gt=2).delete()
         # PageRevision.objects.all().delete()
+
+        # convert media images to wagtail images
+        self.image_exodus()
 
         # create the new homepage
         old_homepage = mezz_page_models.Page.objects.get(slug="/")
@@ -161,9 +165,6 @@ class Command(BaseCommand):
         print('%d unmigrated mezzanine pages:' % unmigrated.count())
         for page in unmigrated:
             print('\t%s — slug/url %s)' % (page, page.slug))
-
-        # convert media images to wagtail images
-        self.image_exodus()
 
         # delete mezzanine pages here? (but keep for testing migration)
 
@@ -334,4 +335,10 @@ class Command(BaseCommand):
                     filenames.remove(extra_copy)
 
         return filenames
+
+    def get_wagtail_image(self, image):
+        # get the migrated wagtail image for a foreign-key image
+        # using image file basename, which is migrated as image title
+        return Image.objects.get(title=os.path.basename(image.name))
+
 
