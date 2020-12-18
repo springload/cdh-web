@@ -1,14 +1,23 @@
 """Convert mezzanine-based pages to wagtail page models."""
-
+import filecmp
+import glob
 import json
+import os
+import os.path
+import shutil
+from collections import defaultdict
 
-from cdhweb.pages.models import ContentPage, HomePage, LandingPage
+from django.conf import settings
+from django.core.files.images import ImageFile
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 from mezzanine.pages import models as mezz_page_models
 from wagtail.core.blocks import RichTextBlock
-from wagtail.core.models import Page, Site
+from wagtail.core.models import Page, Site, Collection, get_root_collection_id
+from wagtail.images.models import Image
+
+from cdhweb.pages.models import ContentPage, HomePage, LandingPage
 
 
 class Command(BaseCommand):
@@ -153,6 +162,9 @@ class Command(BaseCommand):
         for page in unmigrated:
             print('\t%s — slug/url %s)' % (page, page.slug))
 
+        # convert media images to wagtail images
+        self.image_exodus()
+
         # delete mezzanine pages here? (but keep for testing migration)
 
     def migrate_pages(self, page, parent):
@@ -189,7 +201,6 @@ class Command(BaseCommand):
         # recursively create and add new versions of all this page's children
         for child in page.children.all():
             self.migrate_pages(child, new_page)
-            
 
     def form_pages(self):
         # migrate embedded google forms from mezzanine templates
@@ -208,3 +219,119 @@ class Command(BaseCommand):
             {"type": "migrated", "value": '<iframe title="Cosponsorship Request Form" height="3250" src="https://docs.google.com/forms/d/e/1FAIpQLSeP40DBM7n8GYgW_i99nRxY5T5P39DrIWyIwq9LggIwu4r5jQ/viewform?embedded=true">Loading...</iframe>'}
         ])
         cosponsor.save()
+
+    # cached collections used for migrated media
+    collections = {
+        # get root collection so we can add children to it
+        'root': Collection.objects.get(pk=get_root_collection_id())
+    }
+
+    def get_collection(self, name):
+        # if we don't already have this collection, get it
+        if name not in self.collections:
+            # try to get it if it already exists
+            coll = Collection.objects.filter(name=name).first()
+            # otherwise, create it
+            if not coll:
+                coll = Collection(name=name)
+                self.collections['root'].add_child(instance=coll)
+                self.collections['root'].save()
+
+            self.collections[name] = coll
+
+        return self.collections[name]
+
+    def image_exodus(self):
+        # generate wagtail images for all uploaded media
+
+        # mezzanine/filebrowser_safe doesn't seem to have useful objects
+        # or track metadata, so just import from the filesystem
+
+        # delete all images prior to run (clear out past migration attempts)
+        Image.objects.all().delete()
+        # also delete any wagtail image files, since they are not deleted
+        # by removing the objects
+        shutil.rmtree('%s/images' % settings.MEDIA_ROOT, ignore_errors=True)
+        shutil.rmtree('%s/original_images' % settings.MEDIA_ROOT, ignore_errors=True)
+
+        # get media filenames to migrate, with duplicates filtered out
+        media_filenames = self.get_media_files()
+
+        for imgpath in media_filenames:
+            extension = os.path.splitext(imgpath)[1]
+            # skip unsupported files based on file extension
+            # NOTE: leaving this here in case we want to handle
+            # documents the same way
+            if extension in ['.pdf', '.svg', '.docx']:
+                continue
+
+            # if image is in a subdirectory under uploads (e.g. projects, blog)
+            # add it to a collection with that name
+            relative_path = os.path.dirname(imgpath) \
+                .replace('%s/uploads/' % settings.MEDIA_ROOT, '')
+
+            # there are two variants of Slavic DH, one with and one
+            # without a space; remove the space so they'll be in one collection
+            basedir = relative_path.split('/')[0].replace(' ', '')
+            collection = None
+            if basedir:
+                collection = self.get_collection(basedir)
+
+            with open(imgpath, 'rb') as imgfilehandle:
+                title = os.path.basename(imgpath)
+                # passing collection=None errors, so
+                # only specify collection option when we have one
+                extra_opts = {}
+                if collection:
+                    extra_opts['collection'] = collection
+                try:
+                    Image.objects.create(
+                        title=title,
+                        file=ImageFile(imgfilehandle, name=title),
+                        **extra_opts)
+                except Exception as err:
+                    # seems to mean that height/width calculation failed
+                    # (usually non-images)
+                    print('Error creating image for %s: %s' % (imgpath, err))
+
+    def get_media_files(self):
+        # wagtail images support: GIF, JPEG, PNG, WEBP
+        imgfile_path = '%s/**/*.*' % settings.MEDIA_ROOT
+        # get filenames for all uploaded files
+        filenames = glob.glob(imgfile_path, recursive=True)
+        # aggregate files by basename to identify files with the same
+        # name in different locations
+        unique_filenames = defaultdict(list)
+        for path in filenames:
+            unique_filenames[os.path.basename(path)].append(path)
+
+        # check files with the same name in multiple locations
+        for key, val in unique_filenames.items():
+            if len(val) > 1:
+                samefile = filecmp.cmp(val[0], val[1], shallow=False)
+                # if the files are the same
+                if samefile:
+                    # keep the first one and remove the others from the
+                    # list of files to be migrated
+                    extra_copies = val[1:]
+
+                # if not all the same, identify the largest
+                # (all are variant/cropped versions of the same image)
+                else:
+                    largest_file = None
+                    largest_size = 0
+                    for filepath in val:
+                        size = os.stat(filepath).st_size
+                        if size > largest_size:
+                            largest_size = size
+                            largest_file = filepath
+
+                    extra_copies = [f for f in val if f != largest_file]
+
+                # remove duplicate and variant images that
+                # will not be imported into wagtail
+                for extra_copy in extra_copies:
+                    filenames.remove(extra_copy)
+
+        return filenames
+
