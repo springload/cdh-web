@@ -1,8 +1,8 @@
 import pytest
-from cdhweb.pages.models import HomePage
 from django.test import TestCase
 from wagtail.core.models import Page, Site
 
+from cdhweb.pages.models import HomePage, LandingPage, ContentPage
 
 class TestHomePage(TestCase):
     """Test the home page."""
@@ -18,7 +18,7 @@ class TestHomePage(TestCase):
         response = self.client.get(self.homepage.relative_url(self.site))
         assert response.status_code == 200
 
-    def test_visit(self):
+    def test_page_content(self):
         """homepage editable content should display"""
         response = self.client.get(self.homepage.relative_url(self.site))
         self.assertContains(response, self.homepage.body[0].value.source)
@@ -159,7 +159,50 @@ class TestLandingPage(TestCase):
     """Test landing pages."""
     fixtures = ["test_pages.json"]
 
-    
+    def setUp(self):
+        """get objects for use in tests"""
+        self.landingpage = LandingPage.objects.get(slug="research")
+        self.site = Site.objects.get()
+
+    def test_visit(self):
+        """landingpage should be navigable"""
+        response = self.client.get(self.landingpage.relative_url(self.site))
+        assert response.status_code == 200
+
+    def test_page_content(self):
+        """landingpage editable content should display"""
+        response = self.client.get(self.landingpage.relative_url(self.site))
+        self.assertContains(response, self.landingpage.body[0].value.source)
+
+    def test_tagline(self):
+        """landingpage tagline should display"""
+        response = self.client.get(self.landingpage.relative_url(self.site))
+        self.assertContains(response, "Collaborate with us!")
+
+    @pytest.mark.skip("todo")
+    def test_header_image(self):
+        pass
+
+
+class TestContentPage(TestCase):
+    """Test contentpages."""
+    fixtures = ["test_pages.json"]
+
+    def setUp(self):
+        """get contentpage objects for use in tests"""
+        self.contentpage = ContentPage.objects.get(slug="about")
+        self.site = Site.objects.get()
+
+    def test_visit(self):
+        """contentpage should be navigable"""
+        response = self.client.get(self.contentpage.relative_url(self.site))
+        assert response.status_code == 200
+
+    def test_page_content(self):
+        """contentpage editable content should display"""
+        response = self.client.get(self.contentpage.relative_url(self.site))
+        self.assertContains(response, self.contentpage.body[0].value.source)
+
 
 class TestPagesSitemap(TestCase):
 

@@ -29,7 +29,7 @@ class TestHomePage(WagtailPageTests):
 
 
 class TestLandingPage(WagtailPageTests):
-    fixtures = ['sample_pages']
+    fixtures = ['test_pages']
     
     def test_can_create(self):
         home = HomePage.objects.get(title='Home')
@@ -52,7 +52,7 @@ class TestLandingPage(WagtailPageTests):
 
 
 class TestContentPage(WagtailPageTests):
-    fixtures = ['sample_pages']
+    fixtures = ['test_pages']
 
     def test_can_create(self):
         research = LandingPage.objects.get(title='Research')
