@@ -1,31 +1,38 @@
 from random import shuffle
 
 import bleach
+from cdhweb.blog.models import BlogPost
+from cdhweb.events.models import Event
+from cdhweb.projects.models import Project
+from django.conf import settings
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
-from django.utils.text import slugify
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
-from wagtail.core.blocks import (CharBlock, RichTextBlock, StreamBlock,
-                                 StructBlock, TextBlock)
+from wagtail.core.blocks import RichTextBlock, StreamBlock
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
 from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 
-from cdhweb.blog.models import BlogPost
-from cdhweb.events.models import Event
-from cdhweb.projects.models import Project
+#: common features for paragraph text
+PARAGRAPH_FEATURES = [
+    'h3', 'h4', 'bold', 'italic', 'link', 'ol', 'ul',
+    'hr', 'blockquote', 'document', 'superscript', 'subscript',
+    'strikethrough', 'code'
+]
 
-
-#: commonly allowed tags for RichTextBlocks
-RICH_TEXT_TAGS = ['h3', 'h4', 'bold', 'italic', 'link', 'ol', 'ul', 'blockquote']
 
 class BodyContentBlock(StreamBlock):
     '''Common set of blocks available in StreamFields for body text.'''
-    paragraph = RichTextBlock(features=RICH_TEXT_TAGS)
+    paragraph = RichTextBlock(features=PARAGRAPH_FEATURES)
     image = ImageChooserBlock()
+    document = DocumentChooserBlock()
+    embed = EmbedBlock()
+    migrated = RichTextBlock(
+        features=settings.RICHTEXT_ALLOWED_TAGS, icon="warning")
 
 
 class PagePreviewDescriptionMixin(models.Model):
@@ -45,8 +52,8 @@ class PagePreviewDescriptionMixin(models.Model):
     max_length = 225
     # (tags are omitted by subsetting default ALLOWED_TAGS)
     #: allowed tags for bleach html stripping in description
-    allowed_tags = list((set(bleach.sanitizer.ALLOWED_TAGS) - \
-        set(['a', 'blockquote'])))  # additional tags to remove
+    allowed_tags = list((set(bleach.sanitizer.ALLOWED_TAGS) -
+                         set(['a', 'blockquote'])))  # additional tags to remove
 
     class Meta:
         abstract = True
@@ -109,13 +116,13 @@ class ContentPage(Page, PagePreviewDescriptionMixin):
 class LandingPage(Page):
     '''Page type that aggregates and displays multiple :class:`ContentPage`s.'''
 
-    #: main page text
-    body = StreamField(BodyContentBlock, blank=True)
     #: short sentence overlaid on the header image
     tagline = models.CharField(max_length=255)
     #: image that will be used for the header
     header_image = models.ForeignKey('wagtailimages.image', null=True,
-        blank=True, on_delete=models.SET_NULL, related_name='+')  # no reverse relationship
+                                     blank=True, on_delete=models.SET_NULL, related_name='+')  # no reverse relationship
+    #: main page text
+    body = StreamField(BodyContentBlock, blank=True)
 
     search_fields = Page.search_fields + [index.SearchField('body')]
     content_panels = Page.content_panels + [
