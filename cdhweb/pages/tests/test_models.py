@@ -8,7 +8,7 @@ from cdhweb.pages.models import ContentPage, HomePage, LandingPage
 
 
 class TestHomePage(WagtailPageTests):
-    
+
     def test_can_create(self):
         root = Page.objects.get(title='Root')
         self.assertCanCreate(root, HomePage, nested_form_data({
@@ -27,13 +27,10 @@ class TestHomePage(WagtailPageTests):
         # landing pages or content pages can be children
         self.assertAllowedSubpageTypes(HomePage, [LandingPage, ContentPage])
 
-    def test_template_used(self):
-        pass
-
 
 class TestLandingPage(WagtailPageTests):
-    fixtures = ['sample_pages']
-    
+    fixtures = ['test_pages']
+
     def test_can_create(self):
         home = HomePage.objects.get(title='Home')
         self.assertCanCreate(home, LandingPage, nested_form_data({
@@ -53,12 +50,9 @@ class TestLandingPage(WagtailPageTests):
         # only allowed child is content page
         self.assertAllowedSubpageTypes(LandingPage, [ContentPage])
 
-    def test_template_used(self):
-        pass
-
 
 class TestContentPage(WagtailPageTests):
-    fixtures = ['sample_pages']
+    fixtures = ['test_pages']
 
     def test_can_create(self):
         research = LandingPage.objects.get(title='Research')
@@ -78,6 +72,3 @@ class TestContentPage(WagtailPageTests):
     def test_subpages(self):
         # only allowed child is content page
         self.assertAllowedSubpageTypes(ContentPage, [ContentPage])
-
-    def test_template_used(self):
-        pass

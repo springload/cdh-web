@@ -1,0 +1,53 @@
+name: dbdocs
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: 10
+  DB_NAME: cdhweb
+  DB_USER: cdhweb
+  DB_PASSWORD: cdhweb
+
+jobs:
+  python-unit:
+    name: Python unit tests
+    runs-on: ubuntu-latest
+    steps:
+      # Set the value of DJANGO_DB_BACKEND which is used in ci/testsettings.py to
+      # configure django's ORM based on whether we're testing postgres or mysql
+      - name: Set django database backend adapter
+        run: echo "DJANGO_DB_BACKEND=postgresql" >> $GITHUB_ENV
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      # Node is required to use dbdocs
+      - name: Setup node
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install JS dependencies
+        run: npm ci
+      # Python version to use is stored in the .python-version file, which is the
+      # convention for pyenv: https://github.com/pyenv/pyenv
+      - name: Get Python version
+        run: echo "PYTHON_VERSION=$(cat .python-version)" >> $GITHUB_ENV
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: pip install -r requirements/test.txt
+      - name: Setup local_settings.py
+        run: |
+          cp ci/testsettings.py cdhweb/local_settings.py
+          python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
+
+      # Build and publish dbdocs
+      - name: Generate DBML
+        run: python manage.py dbml > cdhweb.dbml
+      - name: Login to dbdocs
+        run: echo ${{ secrets.DBDOCS_KEY }} | npx dbdocs login
+      - name: Push to dbdocs
+        run: npx dbdocs build cdhweb.dbml --project cdhweb

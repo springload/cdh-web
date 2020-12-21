@@ -360,13 +360,6 @@ INSTALLED_APPS = [
     'cdhweb.pages',
 ]
 
-# Add django debug toolbar to installed_apps if available
-try:
-    import debug_toolbar as _
-    INSTALLED_APPS.append("debug_toolbar")
-except ImportError:
-    pass
-
 # List of middleware classes to use. Order is important; in the request phase,
 # these middleware classes will be applied in the order given, and in the
 # response phase the middleware will be applied in reverse order.
@@ -428,9 +421,9 @@ PUCAS_LDAP = {
 
 # These will be added to ``INSTALLED_APPS``, only if available.
 OPTIONAL_APPS = (
-    "debug_toolbar",
     "django_extensions",
     "compressor",
+    "django_dbml",
     PACKAGE_NAME_FILEBROWSER,
     PACKAGE_NAME_GRAPPELLI,
 )

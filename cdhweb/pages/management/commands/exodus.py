@@ -112,27 +112,33 @@ class Command(BaseCommand):
         Page.objects.filter(depth=2).exclude(pk=homepage.pk).delete()
 
         # create a dummy top-level projects/ page for project pages to go under
-        projects = ContentPage(
-            title="Sponsored Projects",
-            slug="projects",
-            seo_title="Sponsored Projects",
-        )
-        homepage.add_child(instance=projects)
-        homepage.save()
-        self.migrated.append(
-            mezz_page_models.Page.objects.get(slug='projects').pk)
+        if mezz_page_models.Page.objects.filter(slug="projects").exists():
+            projects = ContentPage(
+                title="Sponsored Projects",
+                slug="projects",
+                seo_title="Sponsored Projects",
+            )
+            homepage.add_child(instance=projects)
+            homepage.save()
+            self.migrated.append(
+                mezz_page_models.Page.objects.get(slug='projects').pk)
+        else:
+            projects = None
 
         # create a dummy top-level events/ page for event pages to go under
-        events = ContentPage(
-            title="Events",
-            slug="events",
-            seo_title="Events"
-        )
-        homepage.add_child(instance=events)
-        homepage.save()
-        # mark events content page as migrated
-        self.migrated.append(
-            mezz_page_models.Page.objects.get(slug='events').pk)
+        if mezz_page_models.Page.objects.filter(slug="events").exists():
+            events = ContentPage(
+                title="Events",
+                slug="events",
+                seo_title="Events"
+            )
+            homepage.add_child(instance=events)
+            homepage.save()
+            # mark events content page as migrated
+            self.migrated.append(
+                mezz_page_models.Page.objects.get(slug='events').pk)
+        else:
+            events = None
 
         # migrate children of homepage
         for page in old_homepage.children.all():
@@ -140,16 +146,19 @@ class Command(BaseCommand):
 
         # special cases
         # - migrate event pages but specify new events page as parent
-        event_pages = mezz_page_models.Page.objects \
-            .filter(Q(slug__startswith="events/") | Q(slug="year-of-data"))
-        for page in event_pages:
-            self.migrate_pages(page, events)
-        # - migrate project pages but specify new projects list page as parent
-        # - process about page last so project pages don't nest
-        project_pages = mezz_page_models.Page.objects \
-            .filter(slug__startswith="projects/").order_by('-slug')
-        for page in project_pages:
-            self.migrate_pages(page, projects)
+        if events:
+            event_pages = mezz_page_models.Page.objects \
+                .filter(Q(slug__startswith="events/") | Q(slug="year-of-data"))
+            for page in event_pages:
+                self.migrate_pages(page, events)
+
+        if projects:
+            # - migrate project pages but specify new projects list page as parent
+            # - process about page last so project pages don't nest
+            project_pages = mezz_page_models.Page.objects \
+                .filter(slug__startswith="projects/").order_by('-slug')
+            for page in project_pages:
+                self.migrate_pages(page, projects)
 
         # migrate all remaining pages, starting with pages with no parent
         # (i.e., top level pages)
@@ -207,19 +216,21 @@ class Command(BaseCommand):
         # migrate embedded google forms from mezzanine templates
         # add new migrated to body with iframe from engage/consult template and save
         # set a height on the iframe to ensure it renders correctly
-        consults = ContentPage.objects.get(slug="consult")
-        consults.body = json.dumps([
-            {"type": "migrated", "value": consults.body[0].value.source},
-            {"type": "migrated", "value": '<iframe title="Consultation Request Form" height="2400" src="https://docs.google.com/forms/d/e/1FAIpQLScerpyeQAgp91Iy66c1rKbKSwbSpeuB5yHh14l3G9C86eUjsA/viewform?embedded=true">Loading...</iframe>'}
-        ])
-        consults.save()
+        if ContentPage.objects.filter(slug="consult").exists():
+            consults = ContentPage.objects.get(slug="consult")
+            consults.body = json.dumps([
+                {"type": "migrated", "value": consults.body[0].value.source},
+                {"type": "migrated", "value": '<iframe title="Consultation Request Form" height="2400" src="https://docs.google.com/forms/d/e/1FAIpQLScerpyeQAgp91Iy66c1rKbKSwbSpeuB5yHh14l3G9C86eUjsA/viewform?embedded=true">Loading...</iframe>'}
+            ])
+            consults.save()
         # # do the same for cosponsorship page
-        cosponsor = ContentPage.objects.get(slug="cosponsor")
-        cosponsor.body = json.dumps([
-            {"type": "migrated", "value": cosponsor.body[0].value.source},
-            {"type": "migrated", "value": '<iframe title="Cosponsorship Request Form" height="3250" src="https://docs.google.com/forms/d/e/1FAIpQLSeP40DBM7n8GYgW_i99nRxY5T5P39DrIWyIwq9LggIwu4r5jQ/viewform?embedded=true">Loading...</iframe>'}
-        ])
-        cosponsor.save()
+        if ContentPage.objects.filter(slug="cosponsor").exists():
+            cosponsor = ContentPage.objects.get(slug="cosponsor")
+            cosponsor.body = json.dumps([
+                {"type": "migrated", "value": cosponsor.body[0].value.source},
+                {"type": "migrated", "value": '<iframe title="Cosponsorship Request Form" height="3250" src="https://docs.google.com/forms/d/e/1FAIpQLSeP40DBM7n8GYgW_i99nRxY5T5P39DrIWyIwq9LggIwu4r5jQ/viewform?embedded=true">Loading...</iframe>'}
+            ])
+            cosponsor.save()
 
     # cached collections used for migrated media
     collections = {
@@ -340,5 +351,4 @@ class Command(BaseCommand):
         # get the migrated wagtail image for a foreign-key image
         # using image file basename, which is migrated as image title
         return Image.objects.get(title=os.path.basename(image.name))
-
 
