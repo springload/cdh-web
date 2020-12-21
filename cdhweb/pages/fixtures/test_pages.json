@@ -1,0 +1,228 @@
+[
+{
+    "model": "cdhpages.contentpage",
+    "pk": 7,
+    "fields": {
+        "page_ptr": 7,
+        "description": "",
+        "body": "[{\"type\": \"paragraph\", \"value\": \"<p>The Center for Digital Humanities is an interdisciplinary research center and academic unit within the Princeton University Library. At the CDH we embrace an inclusive understanding of DH that respects and investigates the myriad ways digital methods and technologies are opening new avenues for research into the human experience, past and present. </p>\", \"id\": \"011c1cb4-a73b-4424-806d-920a8f8516d2\"}]"
+    }
+},
+{
+    "model": "cdhpages.contentpage",
+    "pk": 8,
+    "fields": {
+        "page_ptr": 8,
+        "description": "",
+        "body": "[{\"type\": \"paragraph\", \"value\": \"<p>In the span of five years, digital humanities at Princeton has grown from a small initiative led by a handful of faculty members, graduate students, staffers, and librarians, all meeting in a college residence dining room, to a world-class research center housed in a gorgeous new space in Firestone Library.</p>\", \"id\": \"7edeb967-3888-408a-baf3-810a566853e3\"}]"
+    }
+},
+{
+    "model": "cdhpages.landingpage",
+    "pk": 9,
+    "fields": {
+        "page_ptr": 9,
+        "tagline": "Collaborate with us!",
+        "header_image": null,
+        "body": "[{\"type\": \"paragraph\", \"value\": \"<p>Here you can find info about how amazing we are and why you would want to make something with us.</p>\", \"id\": \"39d41d72-17da-4fd6-bca1-b7e3f573f465\"}]"
+    }
+},
+{
+    "model": "cdhpages.homepage",
+    "pk": 6,
+    "fields": {
+        "page_ptr": 6,
+        "body": "[{\"type\": \"paragraph\", \"value\": \"<p>The Center for Digital Humanities is an interdisciplinary research center and academic unit within the Princeton University Library. At the CDH we embrace an inclusive understanding of DH that respects and investigates the myriad ways digital methods and technologies are opening new avenues for research into the human experience, past and present.</p>\", \"id\": \"0b183add-9be0-4ac3-b98f-c02187a1e363\"}]"
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 1,
+    "fields": {
+        "path": "0001",
+        "depth": 1,
+        "numchild": 1,
+        "translation_key": "426990b1-0e67-44da-b8eb-ebfa31e66a0f",
+        "locale": 1,
+        "title": "Root",
+        "draft_title": "Root",
+        "slug": "root",
+        "content_type": [
+            "wagtailcore",
+            "page"
+        ],
+        "live": true,
+        "has_unpublished_changes": false,
+        "url_path": "/",
+        "owner": null,
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "go_live_at": null,
+        "expire_at": null,
+        "expired": false,
+        "locked": false,
+        "locked_at": null,
+        "locked_by": null,
+        "first_published_at": null,
+        "last_published_at": null,
+        "latest_revision_created_at": null,
+        "live_revision": null,
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 6,
+    "fields": {
+        "path": "00010004",
+        "depth": 2,
+        "numchild": 2,
+        "translation_key": "e806f9b0-5fc1-4fa2-af59-086db03afc91",
+        "locale": 1,
+        "title": "Home",
+        "draft_title": "Home",
+        "slug": "home-2",
+        "content_type": [
+            "cdhpages",
+            "homepage"
+        ],
+        "live": true,
+        "has_unpublished_changes": false,
+        "url_path": "/home-2/",
+        "owner": null,
+        "seo_title": "Home",
+        "show_in_menus": false,
+        "search_description": "The Center for Digital Humanities is an interdisciplinary research center and academic unit within the Princeton University Library. At the CDH we embrace an inclusive understanding of DH that respects and investigates the myriad ways digital methods and technologies are opening new avenues for research into the human experience, past and present. ",
+        "go_live_at": null,
+        "expire_at": null,
+        "expired": false,
+        "locked": false,
+        "locked_at": null,
+        "locked_by": null,
+        "first_published_at": null,
+        "last_published_at": null,
+        "latest_revision_created_at": null,
+        "live_revision": null,
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 7,
+    "fields": {
+        "path": "000100040001",
+        "depth": 3,
+        "numchild": 1,
+        "translation_key": "d07793e4-0b6c-4671-9f98-e94e133ca928",
+        "locale": 1,
+        "title": "About",
+        "draft_title": "About",
+        "slug": "about",
+        "content_type": [
+            "cdhpages",
+            "contentpage"
+        ],
+        "live": true,
+        "has_unpublished_changes": false,
+        "url_path": "/home-2/about/",
+        "owner": null,
+        "seo_title": "About",
+        "show_in_menus": false,
+        "search_description": "The Center for Digital Humanities is an interdisciplinary research center and academic unit within the Princeton University Library. At the CDH we embrace an inclusive understanding of DH that respects and investigates the myriad ways digital methods and technologies are opening new avenues for research into the human experience, past and present. ",
+        "go_live_at": null,
+        "expire_at": null,
+        "expired": false,
+        "locked": false,
+        "locked_at": null,
+        "locked_by": null,
+        "first_published_at": null,
+        "last_published_at": null,
+        "latest_revision_created_at": null,
+        "live_revision": null,
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 8,
+    "fields": {
+        "path": "0001000400010001",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "073f25e5-fc4f-474e-8ee8-52b8eee8847d",
+        "locale": 1,
+        "title": "Annual Report",
+        "draft_title": "Annual Report",
+        "slug": "annual-report",
+        "content_type": [
+            "cdhpages",
+            "contentpage"
+        ],
+        "live": true,
+        "has_unpublished_changes": false,
+        "url_path": "/home-2/about/annual-report/",
+        "owner": null,
+        "seo_title": "Annual Report",
+        "show_in_menus": false,
+        "search_description": "In the span of five years, digital humanities at Princeton has grown from a small initiative led by a handful of faculty members, graduate students, staffers, and librarians, all meeting in a college residence dining room, to a world-class research center housed in a gorgeous new space in Firestone Library.",
+        "go_live_at": null,
+        "expire_at": null,
+        "expired": false,
+        "locked": false,
+        "locked_at": null,
+        "locked_by": null,
+        "first_published_at": null,
+        "last_published_at": null,
+        "latest_revision_created_at": null,
+        "live_revision": null,
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 9,
+    "fields": {
+        "path": "000100040002",
+        "depth": 3,
+        "numchild": 0,
+        "translation_key": "50b50f09-238d-44ce-aaa4-2c289ac5fdd9",
+        "locale": 1,
+        "title": "Research",
+        "draft_title": "Research",
+        "slug": "research",
+        "content_type": [
+            "cdhpages",
+            "landingpage"
+        ],
+        "live": true,
+        "has_unpublished_changes": false,
+        "url_path": "/home-2/research/",
+        "owner": null,
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "go_live_at": null,
+        "expire_at": null,
+        "expired": false,
+        "locked": false,
+        "locked_at": null,
+        "locked_by": null,
+        "first_published_at": "2020-12-18T20:11:55.889Z",
+        "last_published_at": "2020-12-18T20:11:55.889Z",
+        "latest_revision_created_at": "2020-12-18T20:11:55.258Z",
+        "live_revision": null,
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.site",
+    "fields": {
+        "hostname": "localhost",
+        "port": 80,
+        "site_name": "CDH Website",
+        "root_page": 6,
+        "is_default_site": true
+    }
+}
+]

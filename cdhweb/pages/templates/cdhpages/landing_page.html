@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags %}
+
+{% block page-title %}{{ page.title }}{% endblock %}
+
+{% block bodyattrs %}class="with-cards small-no-cards"{% endblock %}
+
+{% block content %} {# wrap content in an article tag #}
+<article class="landing-page">
+{{ block.super }}
+</article>
+{% endblock %}
+
+{% block content-header %}
+<header {% if page.header_image %}style="background-image:url('{{ MEDIA_URL }}{{ page.header_image }}')"
+    {% else %}class="no-background"{% endif %}>
+    <div>
+    <a href="{% url 'home' %}" class="home">/</a><h1>{{ page.title }}</h1>
+    <p>{{ page.tagline }}</p>
+    </div>
+</header>
+{% endblock %}
+
+{% block main %}
+    {% for block in page.body %}
+        {% include_block block %}
+    {% endfor %}
+{% endblock %}

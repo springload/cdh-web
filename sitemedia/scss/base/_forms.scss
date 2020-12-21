@@ -93,17 +93,3 @@ select {
     outline-offset: $focus-outline-offset;
   }
 }
-
-.consult iframe,
-.cosponsor iframe {
-    width: 100%;
-    border: none;
-}
-
-.consult iframe {
-    height: 2300px;
-}
-
-.cosponsor iframe {
-    height: 3200px;
-}

@@ -1704,14 +1704,6 @@ body.richtextpage {
 	&.consult {
 		section {
 			@include content-page;
-
-			iframe {
-				margin: 0;
-				padding: 0;
-				border: 0;
-				width: 100%;
-				height: 750px;
-			}
 		}
 
     }
