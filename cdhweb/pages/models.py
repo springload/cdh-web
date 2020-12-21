@@ -31,6 +31,9 @@ class BodyContentBlock(StreamBlock):
     image = ImageChooserBlock()
     document = DocumentChooserBlock()
     embed = EmbedBlock()
+    #: used to hold content migrated from mezzanine via a "kitchen-sink"
+    #: approach; virtually all html tags are allowed. should NOT be used when
+    #: creating new pages.
     migrated = RichTextBlock(
         features=settings.RICHTEXT_ALLOWED_TAGS, icon="warning")
 
