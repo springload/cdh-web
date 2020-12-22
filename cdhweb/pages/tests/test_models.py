@@ -8,7 +8,7 @@ from cdhweb.pages.models import ContentPage, HomePage, LandingPage
 
 
 class TestHomePage(WagtailPageTests):
-    
+
     def test_can_create(self):
         root = Page.objects.get(title='Root')
         self.assertCanCreate(root, HomePage, nested_form_data({
@@ -30,7 +30,7 @@ class TestHomePage(WagtailPageTests):
 
 class TestLandingPage(WagtailPageTests):
     fixtures = ['test_pages']
-    
+
     def test_can_create(self):
         home = HomePage.objects.get(title='Home')
         self.assertCanCreate(home, LandingPage, nested_form_data({
