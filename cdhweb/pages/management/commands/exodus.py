@@ -259,8 +259,11 @@ class Command(BaseCommand):
         # mezzanine/filebrowser_safe doesn't seem to have useful objects
         # or track metadata, so just import from the filesystem
 
-        # delete all images prior to run (clear out past migration attempts)
+        # delete all images and collections prior to run
+        # (clear out past migration attempts)
         Image.objects.all().delete()
+        Collection.objects.exclude(pk=get_root_collection_id()).delete()
+
         # also delete any wagtail image files, since they are not deleted
         # by removing the objects
         shutil.rmtree('%s/images' % settings.MEDIA_ROOT, ignore_errors=True)
