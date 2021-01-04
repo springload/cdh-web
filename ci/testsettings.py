@@ -7,19 +7,12 @@ import os
 # .github/workflow .yml files.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'USER': 'root',
-        'NAME': os.getenv('MYSQL_DATABASE'),
-        'PASSWORD': os.getenv('MYSQL_ROOT_PASSWORD'),
+        'ENGINE': 'django.db.backends.%s' % os.getenv('DJANGO_DB_BACKEND'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'USER': os.getenv('DB_USER'),
+        'NAME': os.getenv('DB_NAME'),
         'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-        'TEST': {
-            'CHARSET': 'utf8',
-            'COLLATION': 'utf8_general_ci'
-        }
+        'PORT': '',
     },
 }
 
