@@ -8,7 +8,11 @@ Architecture
 Database
 --------
 
-Database Schema as rendered in DAVILA
+As of version 2.8.1, `database documentation and diagrams are available via dbdocs <https://dbdocs.io/princetoncdh/cdhweb>`_.
+
+------
+
+Older versions of the database schema as rendered by DAVILA.
 
 Overview
 ~~~~~~~~

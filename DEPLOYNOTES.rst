@@ -1,6 +1,12 @@
 Deploy Notes
 ============
 
+2.8.1
+-----
+
+- Data will need to be migrated out of the existing database and into a Postgres
+  database. The `pgloader` tool can be used for this purpose.
+
 2.8
 ---
 
