@@ -122,6 +122,7 @@ jobs:
       - name: Report status to Slack
         uses: rtCamp/action-slack-notify@master
         if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'push') }}
+        continue-on-error: true
         env:
           SLACK_COLOR: ${{ env.SLACK_COLOR }}
           SLACK_WEBHOOK: ${{ secrets.ACTIONS_SLACK_WEBHOOK }}
