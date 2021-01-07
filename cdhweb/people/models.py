@@ -443,10 +443,10 @@ class PeopleLandingPage(LandingPage):
     # via a script or the console, since there's only one.
     parent_page_types = []
     # NOTE the only allowed child page type is a ProfilePage; this is so that
-    # ProfilePages made in the admin automatically are created here. In reality
-    # PersonListPages will also be children of the PeopleLandingPage, but we
-    # don't allow them to be created in the admin and do it via script.
+    # ProfilePages made in the admin automatically are created here.
     subpage_types = [ProfilePage]
+    # use the regular landing page template
+    template = LandingPage.template
 
 
 class Position(DateRange):
