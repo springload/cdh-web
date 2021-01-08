@@ -293,7 +293,6 @@ class Command(BaseCommand):
         if not people_landing:
             return
         for profile in Profile.objects.filter(user__person__isnull=False):
-            # NOTE not sure why Profile.user.person fails; works in console?
             person = Person.objects.get(user=profile.user)
             profile_page = ProfilePage(
                 person=person,
@@ -332,13 +331,11 @@ class Command(BaseCommand):
         # mezzanine/filebrowser_safe doesn't seem to have useful objects
         # or track metadata, so just import from the filesystem
 
-        # delete all images and collections prior to run
+        # delete all images prior to run
         # (clear out past migration attempts)
+        # NOTE we leave collections alone and don't delete them between runs;
+        # doing so seems to corrupt the page/collection tree
         Image.objects.all().delete()
-        # Collection.objects.exclude(pk=get_root_collection_id()).delete()
-        # fix collection tree so root collection is up to date
-        # FIXME: this is still not working; seems to error on alternate runs
-        # Collection.fix_tree()
 
         # also delete any wagtail image files, since they are not deleted
         # by removing the objects
@@ -439,7 +436,6 @@ class Command(BaseCommand):
     def person_image_exodus(self):
         # for people with profile, set larger image as wagtail image for person
         for profile in Profile.objects.filter(user__person__isnull=False):
-            # NOTE not sure why Profile.user.person fails; works in console?
             person = Person.objects.get(user=profile.user)
             if profile.image:
                 person.image = self.get_wagtail_image(profile.image)

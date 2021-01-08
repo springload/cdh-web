@@ -437,9 +437,9 @@ class PeopleLandingPage(LandingPage):
     # via a script or the console, since there's only one.
     parent_page_types = []
     # NOTE the only allowed child page type is a ProfilePage; this is so that
-    # ProfilePages made in the admin automatically are created here. Other
-    # special pages, like profile list pages, have to be created and added
-    # manually underneath this page.
+    # ProfilePages made in the admin automatically are created here. In reality
+    # PersonListPages will also be children of the PeopleLandingPage, but we
+    # don't allow them to be created in the admin and do it via script.
     subpage_types = [ProfilePage]
 
 
@@ -486,7 +486,9 @@ def init_person_from_ldap(user, ldapinfo):
         person.department = str(ldapinfo.ou)
 
     # set job title (split and use only first portion from ldap)
-    # NOTE titles for cdh staff are managed via Title/Position instead
+    # NOTE titles for cdh staff are managed via Title/Position instead; we
+    # don't want to create Titles for every possible job at Princeton. This is
+    # a change from v2.x behavior.
     if ldapinfo.title and not person.job_title:
         person.job_title = str(ldapinfo.title).split(",")[0]
 

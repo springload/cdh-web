@@ -25,7 +25,6 @@ ADMIN_MENU_ORDER = (
                 "resources.Attachment")),
     ("Events", ('events.Event', 'events.Location', 'events.EventType')),
     ('Profiles', ('people.Position', 'people.Title')),
-    # ('Profiles', ('people.Person', 'people.Position', 'people.Title')),   #
     ('Projects', ('projects.Project', 'projects.Grant', 'projects.Membership',
                  'projects.Role', 'projects.GrantType')),
     ('Resources', ('resources.ResourceType', 'taggit.Tag')),
@@ -414,7 +413,6 @@ PUCAS_LDAP = {
     # local method to populate profile fields based on available
     # ldap information
     'EXTRA_USER_INIT': 'cdhweb.people.models.init_profile_from_ldap'
-    # TODO: update for new person model
 }
 
 

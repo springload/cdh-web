@@ -7,7 +7,6 @@ from django.db import migrations
 def create_nonproxy_persons(apps, schema_editor):
     User = apps.get_model('auth', 'User')
     Person = apps.get_model('people', 'Person')
-    # Profile = apps.get_model('people', 'Profile')
 
     # iterate over all users (except script user) and create person records
     # populate new person from user and profile
@@ -29,8 +28,6 @@ def create_nonproxy_persons(apps, schema_editor):
                 'pu_status': user.profile.pu_status
             })
         Person.objects.create(**person_info)
-
-    # NOTE: prune users who don't have login access? later?
 
     # TODO: do we care about log entries for person creation?
     # get script user and log entry model to document changes
