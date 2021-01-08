@@ -22,7 +22,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ("first_name", "last_name", "current_title", "cdh_staff")
     # NOTE: if we switched to profile instead of person here, is_staff
     # and published could be made list editable
-    fields = ("user__username", "first_name", "last_name", "email")
+    fields = ("first_name", "last_name")
 
     inlines = [PositionInline, PersonResourceInline]
 

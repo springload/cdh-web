@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.db import migrations
+from django.contrib.admin.models import ADDITION
 
 
 def create_nonproxy_persons(apps, schema_editor):
@@ -27,13 +28,22 @@ def create_nonproxy_persons(apps, schema_editor):
                 'institution': profile.institution,
                 'pu_status': user.profile.pu_status
             })
-        Person.objects.create(**person_info)
+        person = Person.objects.create(**person_info)
 
-    # TODO: do we care about log entries for person creation?
-    # get script user and log entry model to document changes
-    # script_user = User.objects.get(username=settings.SCRIPT_USERNAME)
-    # LogEntry = apps.get_model('admin', 'LogEntry')
-    # ContentType = apps.get_model('contenttypes', 'ContentType')
+        # log that the person was created via this migration script
+        LogEntry = apps.get_model('admin', 'LogEntry')
+        ContentType = apps.get_model('contenttypes', 'ContentType')
+        script_user = User.objects.get(username=settings.SCRIPT_USERNAME)
+        person_contenttype = ContentType.objects.get(
+            app_label='people', model='person')
+        LogEntry.objects.log_action(
+            user_id=script_user.id,
+            content_type_id=person_contenttype.pk,
+            object_id=person.id,
+            object_repr=str(person),
+            change_message="Migrated from user proxy model",
+            action_flag=ADDITION
+        )
 
 
 def remove_nonproxy_persons(apps, schema_editor):
