@@ -8,6 +8,11 @@ from django.contrib.admin.models import ADDITION
 def create_nonproxy_persons(apps, schema_editor):
     User = apps.get_model('auth', 'User')
     Person = apps.get_model('people', 'Person')
+    LogEntry = apps.get_model('admin', 'LogEntry')
+    ContentType = apps.get_model('contenttypes', 'ContentType')
+    script_user = User.objects.get(username=settings.SCRIPT_USERNAME)
+    person_contenttype = ContentType.objects.get(
+        app_label='people', model='person')
 
     # iterate over all users (except script user) and create person records
     # populate new person from user and profile
@@ -31,11 +36,6 @@ def create_nonproxy_persons(apps, schema_editor):
         person = Person.objects.create(**person_info)
 
         # log that the person was created via this migration script
-        LogEntry = apps.get_model('admin', 'LogEntry')
-        ContentType = apps.get_model('contenttypes', 'ContentType')
-        script_user = User.objects.get(username=settings.SCRIPT_USERNAME)
-        person_contenttype = ContentType.objects.get(
-            app_label='people', model='person')
         LogEntry.objects.log_action(
             user_id=script_user.id,
             content_type_id=person_contenttype.pk,
