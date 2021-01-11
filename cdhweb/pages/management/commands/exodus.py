@@ -441,3 +441,8 @@ class Command(BaseCommand):
             if profile.image:
                 person.image = self.get_wagtail_image(profile.image)
                 person.save()
+            # if no large image but we do have thumbnail, use it as a fallback
+            elif profile.thumb:
+                person.image = self.get_wagtail_image(profile.thumb)
+                person.save()
+
