@@ -1,19 +1,30 @@
 from datetime import date
 
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
-from django.urls import reverse
-from django.utils import timezone
-from django.utils.text import slugify
-from mezzanine.core.fields import FileField, RichTextField
-from mezzanine.core.models import (CONTENT_STATUS_DRAFT,
-                                   CONTENT_STATUS_PUBLISHED, Displayable)
-from mezzanine.utils.models import AdminThumbMixin, upload_to
-from taggit.managers import TaggableManager
-
+from cdhweb.blog.models import BlogPost
+from cdhweb.pages.models import (PARAGRAPH_FEATURES, BodyContentBlock,
+                                 LandingPage)
 from cdhweb.resources.models import (Attachment, DateRange,
                                      PublishedQuerySetMixin)
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+from django.urls import reverse
+from django.utils import timezone
+from mezzanine.core.fields import FileField
+from mezzanine.core.fields import RichTextField as MezzanineRichTextField
+from mezzanine.core.models import CONTENT_STATUS_PUBLISHED, Displayable
+from mezzanine.utils.models import AdminThumbMixin, upload_to
+from modelcluster.fields import ParentalKey
+from modelcluster.models import ClusterableModel
+from taggit.managers import TaggableManager
+from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
+                                         InlinePanel, MultiFieldPanel,
+                                         StreamFieldPanel)
+from wagtail.core.fields import RichTextField, StreamField
+from wagtail.core.models import Page
+from wagtail.images.edit_handlers import ImageChooserPanel
 
 
 class Title(models.Model):
@@ -21,10 +32,7 @@ class Title(models.Model):
     title = models.CharField(max_length=255, unique=True)
     sort_order = models.PositiveIntegerField(default=0, blank=False,
                                              null=False)
-    # NOTE: defining relationship here because we can't add it to User
-    # directly
-    positions = models.ManyToManyField(User, through='Position',
-                                       related_name='titles')
+    positions = models.ManyToManyField("people.Person", through='Position')
 
     class Meta:
         ordering = ['sort_order']
@@ -39,100 +47,99 @@ class Title(models.Model):
     num_people.short_description = '# People'
 
 
-class Person(User):
-    # NOTE: using a proxy model for User so we can customize the
-    # admin interface in one place without having to extend the django
-    # default user model.
+class Person(ClusterableModel):
+    # in cdhweb 2.x this was a proxy model for User;
+    # in 3.x it is a distinct model with 1-1 optional relationship to User
+    first_name = models.CharField('first name', max_length=150)
+    last_name = models.CharField('last name', max_length=150)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        help_text='Corresponding user account for this person (optional)'
+    )
+    cdh_staff = models.BooleanField(
+        'CDH Staff',
+        default=False,
+        help_text='CDH staff or Postdoctoral Fellow.')
+    job_title = models.CharField(
+        max_length=255, blank=True,
+        help_text='Professional title, e.g. Professor or Assistant Professor')
+    department = models.CharField(
+        max_length=255, blank=True,
+        help_text='Academic Department at Princeton or other institution')
+    institution = models.CharField(
+        max_length=255, blank=True,
+        help_text='Institutional affiliation (for people not associated with Princeton)')
+    phone_number = models.CharField(
+        max_length=50, blank=True, help_text="Office phone number")
+    office_location = models.CharField(
+        max_length=255, blank=True, help_text="Office number and building")
+
+    PU_STATUS_CHOICES = (
+        ('fac', 'Faculty'),
+        ('stf', 'Staff'),
+        ('graduate', 'Graduate Student'),
+        ('undergraduate', 'Undergraduate Student'),
+        ('external', 'Not associated with Princeton')
+    )
+    pu_status = models.CharField('Princeton Status', choices=PU_STATUS_CHOICES,
+                                 max_length=15, blank=True, default='')
+
+    image = models.ForeignKey('wagtailimages.image', null=True,
+                              blank=True, on_delete=models.SET_NULL,
+                              related_name='+')  # no reverse relationship
+
+    #: update timestamp
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+    # wagtail admin setup
+    panels = [
+        ImageChooserPanel("image"),
+        FieldRowPanel((FieldPanel("first_name"),
+                       FieldPanel("last_name")), "Name"),
+        FieldPanel("user"),
+        FieldRowPanel((FieldPanel("pu_status"),
+                       FieldPanel("cdh_staff")), "Status"),
+        MultiFieldPanel((
+            FieldPanel("job_title"),
+            FieldPanel("department"),
+            FieldPanel("institution"),
+            FieldPanel("phone_number"),
+            FieldPanel("office_location"),
+        ), heading="Employment"),
+        InlinePanel("positions", heading="Positions"),
+    ]
 
     class Meta:
-        proxy = True
-        verbose_name_plural = 'People'
+        ordering = ("last_name",)
+        verbose_name_plural = "people"
+
+    def __str__(self):
+        """Person display for listing in admin menus. Uses first and last name
+        if set, otherwise falls back to username. If no user, uses pk as a last
+        resort."""
+        if self.first_name or self.last_name:
+            return " ".join([self.first_name, self.last_name]).strip()
+        if self.user:
+            return self.user.username
+        return "Person %d" % self.pk
 
     @property
     def current_title(self):
+        """Return the first of any non-expired titles held by this Person."""
         current_positions = self.positions.filter(end_date__isnull=True)
         if current_positions.exists():
             return current_positions.first().title
 
-    def cdh_staff(self):
-        '''is CDH staff'''
+    @receiver(pre_delete, sender="people.Person")
+    def cleanup_profile(sender, **kwargs):
+        """Handler to delete the corresponding ProfilePage on Person deletion."""
+        # see NOTE on ProfilePage save() method
         try:
-            return self.profile.is_staff
-        except ObjectDoesNotExist:
-            return False
-    cdh_staff.boolean = True
-    cdh_staff.short_description = 'CDH Staff'
-
-    def published(self):
-        '''person has a published profile page'''
-        try:
-            return self.profile.published()
-        except ObjectDoesNotExist:
-            return False
-    published.boolean = True
-
-    def get_absolute_url(self):
-        ''''Display url for user profile'''
-        try:
-            return self.profile.get_absolute_url()
-        except ObjectDoesNotExist:
+            ProfilePage.objects.get(person=kwargs["instance"]).delete()
+        except ProfilePage.DoesNotExist:
             pass
-
-    @property
-    def website_url(self):
-        '''personal website url, if set'''
-        website = self.userresource_set \
-            .filter(resource_type__name='Website').first()
-        if website:
-            return website.url
-
-    @property
-    def profile_url(self):
-        '''local profile url, user has a profile, or website url if there is one'''
-        try:
-            if self.profile.is_staff and self.published():
-                return self.get_absolute_url()
-        except ObjectDoesNotExist:
-            pass
-
-        return self.website_url
-
-    @property
-    def latest_grant(self):
-        '''most recent grants where this person has director role'''
-        # find projects where they are director, then get newest grant
-        # that overlaps with their directorship dates
-        mship = self.membership_set \
-            .filter(role__title__in=ProfileQuerySet.director_roles) \
-            .order_by('-start_date').first()
-        # if there is one, find the most recent grant overlapping with their
-        # directorship dates
-        if mship:
-            # find most recent grant that overlaps with membership dates
-            # - grant start before membership end OR
-            #   grant end after membership start
-
-            # a membership might have no end date set, in which
-            # case it can't be used in a filter
-            grant_overlap = models.Q(end_date__gte=mship.start_date)
-            if mship.end_date:
-                grant_overlap |= models.Q(start_date__lte=mship.end_date)
-
-            return mship.project.grant_set \
-                .filter(grant_overlap) \
-                .order_by('-start_date').first()
-
-    def __str__(self):
-        '''Custom person display to make it easier to choose people
-        in admin menus.  Uses profile title if available, otherwise combines
-        first and last names.  Returns username as last resort if no
-        names are set.'''
-        try:
-            return self.profile.title
-        except ObjectDoesNotExist:
-            if self.first_name or self.last_name:
-                return ' '.join([self.first_name, self.last_name]).strip()
-            return self.username
 
 
 class ProfileQuerySet(PublishedQuerySetMixin):
@@ -304,19 +311,21 @@ class ProfileQuerySet(PublishedQuerySetMixin):
 
 
 class Profile(Displayable, AdminThumbMixin):
-    user = models.OneToOneField(Person, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # -> cdh_staff on person
     is_staff = models.BooleanField(
         default=False,
         help_text='CDH staff or Postdoctoral Fellow. If checked, person ' +
         'will be listed on the CDH staff page and will have a profile page ' +
         'on the site.')
-    education = RichTextField()
-    bio = RichTextField()
+    education = MezzanineRichTextField()
+    bio = MezzanineRichTextField()
     # NOTE: could use regex here, but how standard are staff phone
     # numbers? or django-phonenumber-field, but that's probably overkill
     phone_number = models.CharField(max_length=50, blank=True)
     office_location = models.CharField(max_length=255, blank=True)
 
+    # moved to person
     job_title = models.CharField(
         max_length=255, blank=True,
         help_text='Professional title, e.g. Professor or Assistant Professor')
@@ -349,6 +358,7 @@ class Profile(Displayable, AdminThumbMixin):
 
     attachments = models.ManyToManyField(Attachment, blank=True)
 
+    # TODO: check for
     tags = TaggableManager(blank=True)
 
     # custom manager for additional queryset filters
@@ -371,70 +381,117 @@ class Profile(Displayable, AdminThumbMixin):
         return self.user.current_title
 
 
+class ProfilePage(Page):
+    """Profile page for a Person, managed via wagtail."""
+    person = models.OneToOneField(
+        Person, help_text="Corresponding person for this profile",
+        null=True, on_delete=models.SET_NULL)
+    image = models.ForeignKey('wagtailimages.image', null=True,
+                              blank=True, on_delete=models.SET_NULL,
+                              related_name='+')  # no reverse relationship
+    education = RichTextField(features=PARAGRAPH_FEATURES, blank=True)
+    bio = StreamField(BodyContentBlock, blank=True)
+
+    # admin edit configuration
+    content_panels = Page.content_panels + [
+        FieldRowPanel(
+            (FieldPanel("person"), ImageChooserPanel("image")), "Person"),
+        FieldPanel("education"),
+        StreamFieldPanel("bio")
+    ]
+
+    parent_page_types = ["people.PeopleLandingPage"]
+    subpage_types = []
+
+    def get_context(self, request):
+        """Add recent BlogPosts by this Person to their ProfilePage."""
+        context = super().get_context(request)
+
+        # get 3 most recent published posts with this person as author
+        recent_posts = BlogPost.objects.filter(
+            users__id=self.person.user.id).published()[:3]
+
+        # add to context and set open graph metadata
+        context.update({
+            "opengraph_type": "profile",
+            "recent_posts": recent_posts
+        })
+
+        return context
+
+    def clean(self):
+        """Validate that a Person was specified for this profile."""
+        # NOTE we can't cascade deletes to wagtail pages without corrupting the
+        # page tree. Instead, we use SET_NULL, and then add a delete handler
+        # to Person to delete the corresponding profile manually. We still need
+        # to make sure that it's impossible to create a ProfilePage without a
+        # corresponding Person. More info:
+        # https://github.com/wagtail/wagtail/issues/1602
+        if not self.person:
+            raise ValidationError("Profile page must be for existing person.")
+
+
+class PeopleLandingPage(LandingPage):
+    """LandingPage subtype for People that holds ProfilePages."""
+    # NOTE this page can't be created in the page editor; it is only ever made
+    # via a script or the console, since there's only one.
+    parent_page_types = []
+    # NOTE the only allowed child page type is a ProfilePage; this is so that
+    # ProfilePages made in the admin automatically are created here. In reality
+    # PersonListPages will also be children of the PeopleLandingPage, but we
+    # don't allow them to be created in the admin and do it via script.
+    subpage_types = [ProfilePage]
+
+
 class Position(DateRange):
     '''Through model for many-to-many relation between people
     and titles.  Adds start and end dates to the join table.'''
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='positions')
+    person = ParentalKey(Person, on_delete=models.CASCADE,
+                         related_name="positions")
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['-start_date']
 
     def __str__(self):
-        return '%s %s (%s)' % (self.user, self.title, self.start_date.year)
+        return '%s %s (%s)' % (self.person, self.title, self.start_date.year)
 
 
-def init_profile_from_ldap(user, ldapinfo):
-    '''Extra user/profile init logic for auto-populating people
-    profile fields with data available in LDAP.'''
+def init_person_from_ldap(user, ldapinfo):
+    '''Extra User init logic for creating and auto-populating a corresponding
+    Person with data from LDAP.'''
 
+    # update User to use ldap email
     user.email = user.email.lower()
     user.save()
 
-    try:
-        profile = user.profile
-    except ObjectDoesNotExist:
-        profile = Profile.objects.create(user=user)
-        # set profiles to draft by default when creating a new profile *only
-        # so we don't get a new page for every account we initialize
-        profile.status = CONTENT_STATUS_DRAFT
+    # populate Person fields with data we can pull from ldap, if they are empty
+    person, _created = Person.objects.get_or_create(user=user)
 
-    # populate profile with data we can pull from ldap
-    # but do not set any fields with content, which may contain edits
+    # set first/last name basic on basic whitespace split; can adjust later
+    first_name, *_others, last_name = str(ldapinfo.displayName).split()
+    person.first_name = person.first_name or first_name
+    person.last_name = person.last_name or last_name
 
-    # - set user's display name as page title
-    if not profile.title:
-        profile.title = str(ldapinfo.displayName)
-    # - generate a slug based on display name
-    if not profile.slug:
-        profile.slug = slugify(ldapinfo.displayName)
-    if ldapinfo.telephoneNumber and not profile.phone_number:
-        profile.phone_number = str(ldapinfo.telephoneNumber)
-    # 'street' in ldap is office location
-    if ldapinfo.street and not profile.office_location:
-        profile.office_location = str(ldapinfo.street)
-    # organizational unit = department
-    if ldapinfo.ou and not profile.department:
-        profile.department = str(ldapinfo.ou)
-    # Store job title as string.
-    # NOTE: we may want to split title and only use the first portion.
-    # if ldapinfo.title and not profile.job_title:
-    profile.job_title = str(ldapinfo.title).split('.')[0]
+    # set phone number
+    if ldapinfo.telephoneNumber and not person.phone_number:
+        person.phone_number = str(ldapinfo.telephoneNumber)
+
+    # set office location ("street" in ldap)
+    if ldapinfo.street and not person.office_location:
+        person.office_location = str(ldapinfo.street)
+
+    # set department (organizational unit or "ou" in ldap)
+    if ldapinfo.ou and not person.department:
+        person.department = str(ldapinfo.ou)
+
+    # set job title (split and use only first portion from ldap)
+    # NOTE titles for cdh staff are managed via Title/Position instead; we
+    # don't want to create Titles for every possible job at Princeton. This is
+    # a change from v2.x behavior.
+    if ldapinfo.title and not person.job_title:
+        person.job_title = str(ldapinfo.title).split(",")[0]
 
     # always update PU status to current
-    profile.pu_status = str(ldapinfo.pustatus)
-
-    profile.save()
-
-    # NOTE: job title is available in LDAP; attaching to a person
-    # currently requires at least a start date (which is not available
-    # in LDAP), but we can at least ensure the title is defined
-    # so it can easily be associated with the person
-
-    # only do if the person has a title set
-    if ldapinfo.title:
-        # job title in ldap is currently stored as
-        # job title, organizational unit
-        job_title = str(ldapinfo.title).split(',')[0]
-        Title.objects.get_or_create(title=job_title)
+    person.pu_status = str(ldapinfo.pustatus)
+    person.save()

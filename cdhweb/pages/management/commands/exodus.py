@@ -18,6 +18,7 @@ from wagtail.core.models import Page, Site, Collection, get_root_collection_id
 from wagtail.images.models import Image
 
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage
+from cdhweb.people.models import Person, Profile, ProfilePage, PeopleLandingPage
 
 
 class Command(BaseCommand):
@@ -94,16 +95,28 @@ class Command(BaseCommand):
         # convert media images to wagtail images
         self.image_exodus()
 
+        # populate person images
+        self.person_image_exodus()
+
         # create the new homepage
-        old_homepage = mezz_page_models.Page.objects.get(slug="/")
-        homepage = self.create_homepage(old_homepage)
+        try:
+            old_homepage = mezz_page_models.Page.objects.get(slug="/")
+            homepage = self.create_homepage(old_homepage)
+            # mark home page as migrated
+            self.migrated.append(old_homepage.pk)
+        # in some situations (e.g. fixture loading) there's no homepage
+        except mezz_page_models.Page.DoesNotExist:
+            old_homepage = None
+            homepage = HomePage(
+                title="The Center for Digital Humanities at Princeton",
+                seo_title="The Center for Digital Humanities at Princeton",
+                slug="",
+            )
         root = Page.objects.get(depth=1)
         root.add_child(instance=homepage)
         root.save()
-        # mark home page as migrated
-        self.migrated.append(old_homepage.pk)
 
-        # point the default site at the new homepage and delete old homepage(s).
+        # point the default site at the new homepage and delete any others.
         # if they are deleted prior to switching site.root_page, the site will
         # also be deleted in a cascade, which we don't want
         site = Site.objects.get()
@@ -140,9 +153,32 @@ class Command(BaseCommand):
         else:
             events = None
 
+        # manually migrate the top-level people/ page to a special subtype
+        try:
+            old_people = mezz_page_models.Page.objects.get(slug="people")
+            people = PeopleLandingPage(
+                title=old_people.title,
+                tagline=old_people.landingpage.tagline,
+                header_image=self.get_wagtail_image(old_people.landingpage.image),
+                slug=self.convert_slug(old_people.slug),
+                seo_title=old_people._meta_title or old_people.title,
+                body=json.dumps([{
+                    "type": "migrated",
+                    "value": old_people.landingpage.content,
+                }]),
+                search_description=old_people.description,
+            )
+            homepage.add_child(instance=people)
+            homepage.save()
+            # mark as migrated
+            self.migrated.append(old_people.pk)
+        except mezz_page_models.Page.DoesNotExist:
+            people = None
+
         # migrate children of homepage
-        for page in old_homepage.children.all():
-            self.migrate_pages(page, homepage)
+        if old_homepage:
+            for page in old_homepage.children.all():
+                self.migrate_pages(page, homepage)
 
         # special cases
         # - migrate event pages but specify new events page as parent
@@ -160,6 +196,14 @@ class Command(BaseCommand):
             for page in project_pages:
                 self.migrate_pages(page, projects)
 
+        # migrate people pages but use new landingpage subtype as parent
+        # TODO create new PersonListPage subtypes
+        if people:
+            people_pages = mezz_page_models.Page.objects \
+                .filter(slug__startswith="people/").order_by('-slug')
+            for page in people_pages:
+                self.migrate_pages(page, people)
+
         # migrate all remaining pages, starting with pages with no parent
         # (i.e., top level pages)
         for page in mezz_page_models.Page.objects.filter(parent__isnull=True):
@@ -167,6 +211,9 @@ class Command(BaseCommand):
 
         # special cases — consult/co-sponsor form
         self.form_pages()
+
+        # profile pages
+        self.profile_pages()
 
         # report on unmigrated pages
         unmigrated = mezz_page_models.Page.objects.exclude(
@@ -238,6 +285,32 @@ class Command(BaseCommand):
         'root': Collection.objects.get(pk=get_root_collection_id())
     }
 
+    def profile_pages(self):
+        """Exodize all existing Profiles to new ProfilePage model."""
+        # all the fields on Profile that moved to Person will have been handled
+        # by django migrations; we just need to create new Page models
+        people_landing = PeopleLandingPage.objects.first()
+        if not people_landing:
+            return
+        for profile in Profile.objects.filter(user__person__isnull=False):
+            person = Person.objects.get(user=profile.user)
+            profile_page = ProfilePage(
+                person=person,
+                title=profile.title,
+                slug=self.convert_slug(profile.slug),
+                image=self.get_wagtail_image(profile.image) if profile.image else None,
+                education=profile.education,
+                bio=json.dumps([
+                    {"type": "migrated", "value": profile.bio},
+                ])
+            )
+            # added as child of people landing page so slugs are correct
+            people_landing.add_child(instance=profile_page)
+            people_landing.save()
+            # if the old profile wasn't published, unpublish the new one
+            if profile.status != CONTENT_STATUS_PUBLISHED:
+                profile_page.unpublish()
+
     def get_collection(self, name):
         # if we don't already have this collection, get it
         if name not in self.collections:
@@ -259,15 +332,17 @@ class Command(BaseCommand):
         # mezzanine/filebrowser_safe doesn't seem to have useful objects
         # or track metadata, so just import from the filesystem
 
-        # delete all images and collections prior to run
+        # delete all images prior to run
         # (clear out past migration attempts)
+        # NOTE we leave collections alone and don't delete them between runs;
+        # doing so seems to corrupt the page/collection tree
         Image.objects.all().delete()
-        Collection.objects.exclude(pk=get_root_collection_id()).delete()
 
         # also delete any wagtail image files, since they are not deleted
         # by removing the objects
         shutil.rmtree('%s/images' % settings.MEDIA_ROOT, ignore_errors=True)
-        shutil.rmtree('%s/original_images' % settings.MEDIA_ROOT, ignore_errors=True)
+        shutil.rmtree('%s/original_images' %
+                      settings.MEDIA_ROOT, ignore_errors=True)
 
         # get media filenames to migrate, with duplicates filtered out
         media_filenames = self.get_media_files()
@@ -353,5 +428,21 @@ class Command(BaseCommand):
     def get_wagtail_image(self, image):
         # get the migrated wagtail image for a foreign-key image
         # using image file basename, which is migrated as image title
-        return Image.objects.get(title=os.path.basename(image.name))
+        try:
+            return Image.objects.get(title=os.path.basename(image.name))
+        except Image.DoesNotExist as err:
+            print("Error locating image %s: %s" % (image, err))
+            return None
+
+    def person_image_exodus(self):
+        # for people with profile, set larger image as wagtail image for person
+        for profile in Profile.objects.filter(user__person__isnull=False):
+            person = Person.objects.get(user=profile.user)
+            if profile.image:
+                person.image = self.get_wagtail_image(profile.image)
+                person.save()
+            # if no large image but we do have thumbnail, use it as a fallback
+            elif profile.thumb:
+                person.image = self.get_wagtail_image(profile.thumb)
+                person.save()
 

@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
@@ -195,7 +196,7 @@ class Role(models.Model):
 
 
 class Membership(DateRange):
-    '''Project membership - joins project, grant, user, and role.'''
+    '''Project membership - joins project, user, and role.'''
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
