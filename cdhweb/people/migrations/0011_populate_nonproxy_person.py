@@ -11,8 +11,7 @@ def create_nonproxy_persons(apps, schema_editor):
     LogEntry = apps.get_model('admin', 'LogEntry')
     ContentType = apps.get_model('contenttypes', 'ContentType')
     script_user = User.objects.get(username=settings.SCRIPT_USERNAME)
-    person_contenttype = ContentType.objects.get(
-        app_label='people', model='person')
+    person_contenttype = ContentType.objects.get_for_model(Person)
 
     # iterate over all users (except script user) and create person records
     # populate new person from user and profile
@@ -54,6 +53,7 @@ def remove_nonproxy_persons(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('contenttypes', '0001_initial'),
         ('people', '0010_nonproxy_person'),
     ]
 
