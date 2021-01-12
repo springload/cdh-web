@@ -12,7 +12,8 @@ from taggit.managers import TaggableManager
 
 from cdhweb.people.models import Person
 from cdhweb.resources.models import (Attachment, DateRange, ExcerptMixin,
-                                     PublishedQuerySetMixin, ResourceType)
+                                     PublishedQuerySetMixin)
+from cdhweb.pages.models import RelatedLinkType
 
 
 class ProjectQuerySet(PublishedQuerySetMixin):
@@ -78,7 +79,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         'Working Group', default=False, help_text='Project is a long-term collaborative group associated with the CDH.')
 
     members = models.ManyToManyField(Person, through='Membership')
-    resources = models.ManyToManyField(ResourceType, through='ProjectResource')
+    resources = models.ManyToManyField(RelatedLinkType, through='ProjectResource')
 
     tags = TaggableManager(blank=True)
 
@@ -212,7 +213,7 @@ class Membership(DateRange):
 class ProjectResource(models.Model):
     '''Through-model for associating projects with resource types and
     URLs'''
-    resource_type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
+    resource_type = models.ForeignKey(RelatedLinkType, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     url = models.URLField()
 

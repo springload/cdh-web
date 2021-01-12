@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 import pytest
 
-from cdhweb.resources.models import Attachment, ResourceType, DateRange
+from cdhweb.resources.models import Attachment, DateRange
 
 
 class TestAttachment(TestCase):
@@ -22,13 +22,6 @@ class TestAttachment(TestCase):
 
         attach.attachment_type = None
         assert str(attach) == '%s, %s' % (attach.title, attach.author)
-
-
-class TestResourceType(TestCase):
-
-    def test_str(self):
-        restype = ResourceType(name='twitter')
-        assert str(restype) == restype.name
 
 
 class TestDateRange(TestCase):

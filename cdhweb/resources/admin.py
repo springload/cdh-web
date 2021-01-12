@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from mezzanine.pages.models import Page, RichTextPage
 from mezzanine.pages.admin import PageAdmin
 
-from cdhweb.resources.models import ResourceType, Attachment, LandingPage
+from cdhweb.resources.models import Attachment, LandingPage
+from cdhweb.pages.models import RelatedLinkType
 
 
 class ResourceTypeAdmin(admin.ModelAdmin):
@@ -60,7 +61,7 @@ class LocalPageAdmin(PageAdmin):
     inlines = [PageAttachmentInline]
 
 
-admin.site.register(ResourceType, ResourceTypeAdmin)
+admin.site.register(RelatedLinkType, ResourceTypeAdmin)
 admin.site.register(Attachment, AttachmentAdmin)
 admin.site.register(LandingPage, LocalPageAdmin)
 # unregister and re-register mezzzanine page

@@ -15,7 +15,7 @@ from cdhweb.people.models import Profile
 from cdhweb.projects.models import (Grant, GrantType, Membership, Project,
                                     ProjectResource, Role)
 from cdhweb.projects.sitemaps import ProjectSitemap
-from cdhweb.resources.models import ResourceType
+from cdhweb.pages.models import RelatedLinkType
 
 
 class TestGrantType(TestCase):
@@ -63,7 +63,7 @@ class TestProject(TestCase):
         # no website resource url
         assert self.project.website_url is None
         # add a website url
-        website = ResourceType.objects.get(name='Website')
+        website = RelatedLinkType.objects.get(name='Website')
         derrida_url = 'http://derridas-margins.princeton.edu'
         ProjectResource.objects.create(project=self.project, resource_type=website,
                                        url=derrida_url)
@@ -344,7 +344,7 @@ class TestProjectResource(TestCase):
         base_url = 'derridas-margins.princeton.edu'
         project_url = 'http://%s' % base_url
         proj = Project.objects.create(title="Derrida's Margins")
-        website = ResourceType.objects.get(name='Website')
+        website = RelatedLinkType.objects.get(name='Website')
         res = ProjectResource.objects.create(project=proj, resource_type=website,
                                              url=project_url)
         assert res.display_url() == base_url
@@ -378,7 +378,7 @@ class TestViews(TestCase):
         self.assertNotContains(response, 'Built by CDH')
 
         # add link, set as built by cdh
-        website = ResourceType.objects.get(name='Website')
+        website = RelatedLinkType.objects.get(name='Website')
         project_url = 'http://derridas-margins.princeton.edu'
         ProjectResource.objects.create(project=proj, resource_type=website,
                                        url=project_url)
@@ -480,7 +480,7 @@ class TestViews(TestCase):
             Membership(project=proj, person=contrib3, role=pi, start_date=grant.start_date)
         ])
         # add a website url
-        website = ResourceType.objects.get(name='Website')
+        website = RelatedLinkType.objects.get(name='Website')
         project_url = 'http://something.princeton.edu'
         ProjectResource.objects.create(project=proj, resource_type=website,
                                        url=project_url)

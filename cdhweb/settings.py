@@ -27,7 +27,7 @@ ADMIN_MENU_ORDER = (
     ('Profiles', ('people.Position', 'people.Title')),
     ('Projects', ('projects.Project', 'projects.Grant', 'projects.Membership',
                  'projects.Role', 'projects.GrantType')),
-    ('Resources', ('resources.ResourceType', 'taggit.Tag')),
+    ('Resources', ('cdhpages.RelatedLinkType', 'taggit.Tag')),
     ("Site", ("sites.Site", "redirects.Redirect", "conf.Setting")),
     ("Users", ("auth.User", "auth.Group",)),
 )
