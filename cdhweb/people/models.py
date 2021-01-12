@@ -111,6 +111,20 @@ class PersonQuerySet(models.QuerySet):
         '''Non-faculty Executive committee members'''
         return self.filter(positions__title__title=self.with_exec_title)
 
+    def grant_years(self):
+        '''Annotate with first start and last end grant year for grants
+        that a person was project director.'''
+        # NOTE: filters within the aggregation query on project director
+        # but not on the entire query so that e.g. on the students
+        # page student staff without grants are still included
+        return self.annotate(
+            first_start=models.Min(models.Case(
+                models.When(membership__role__title__in=self.director_roles,
+                            then='membership__start_date'))),
+            last_end=models.Max(models.Case(
+                models.When(membership__role__title__in=self.director_roles,
+                            then='membership__end_date'))))
+
     def project_manager_years(self):
         '''Annotate with first start and last end grant year for grants
         that a person was project manager.'''

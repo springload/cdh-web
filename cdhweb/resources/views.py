@@ -33,12 +33,16 @@ class LastModifiedMixin(View):
 
 class LastModifiedListMixin(LastModifiedMixin):
 
+    lastmodified_attr = 'updated'
+
     def last_modified(self):
         # for list object displayable
         # NOTE: this will error if there are no published items
         queryset = self.get_queryset()
         if queryset.exists():
-            return queryset.order_by('updated').first().updated
+            # use the configured lastmodified attribute to get date updated
+            return getattr(queryset.order_by(self.lastmodified_attr).first(),
+                           self.lastmodified_attr)
 
 
 class Homepage(TemplateView):
