@@ -3,10 +3,12 @@
 {# default card display for a person #}
 <div class="card profile">
     {# link if we have a profile or website URL, otherwise div #}
-    {% with person.profile_url|yesno:"a,div" as tag %}
-    <{{ tag }} {% if person.profile_url %}href="{{ person.profile_url }}"{% endif %} aria-label="{% firstof profile.title person %}">
-        {% if person.card_image %}
-            {% image person.card_image fill-310x240 as profile_img %}
+
+    {% with person.profilepage.url as profile_url %}
+    {% with profile_url|yesno:"a,div" as tag %}
+    <{{ tag }} {% if profile_url %}href="{{ profile_url }}"{% endif %} aria-label="{% firstof profile.title person %}">
+        {% if person.image %}
+            {% image person.image fill-310x240 as profile_img %}
             <div class="image" style="background-image:url('{{ profile_img.url }}')"></div>
         {% else %}
             <div class="image"></div>
@@ -30,4 +32,5 @@
         </div>
     </{{ tag }}>
     {% endwith %}
+    {% endwith %} {# profile_url #}
 </div>
