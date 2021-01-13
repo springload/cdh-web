@@ -1,69 +1,71 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 import pytest
 from django.urls import reverse
 from django.utils import timezone
 
-from cdhweb.people.models import Person, Position, Title
-
-
-@pytest.fixture
-def staffer():
-    # fixture to create a staff person with staff position
-    developer = Title.objects.get_or_create(title='DH Developer')[0]
-    staff_person = Person.objects.create(first_name='Staffer', cdh_staff=True,
-                                         pu_status='stf')
-    # give the staffer two positions
-    Position.objects.create(person=staff_person, title=developer,
-                            start_date=date(2016, 3, 1), end_date=date(2018, 3, 1))
-    Position.objects.create(person=staff_person, title=developer, start_date=date(2018, 3, 2))
-    return staff_person
-
-
-@pytest.fixture
-@pytest.mark.django_db
-def postdoc():
-    # fixture to create a postdoc person
-    postdoc_title = Title.objects.get_or_create(title='Postdoctoral Fellow')[0]
-    postdoc_person = Person.objects.create(
-        first_name='Postdoc', cdh_staff=True, pu_status='stf')
-    Position.objects.create(
-        person=postdoc_person, title=postdoc_title, start_date=date(2018, 3, 1))
-    return postdoc_person
+# NOTE: person factory fixtures in conftest
 
 
 @pytest.mark.django_db
-def test_staff_list_current(client, staffer, postdoc):
-    response = client.get(reverse('people:staff'))
-    # staffer should be included
-    assert staffer in response.context['current']
-    # postdoc also
-    assert postdoc in response.context['current']
-    # no duplicates even with multiple positions
-    assert len(response.context['current']) == 2
-    # past staff list is empty
-    assert not response.context['past']
+class TestStaffListView:
+
+    def test_list_current(self, client, staffer, postdoc, student):
+        '''test staff list view current members'''
+        response = client.get(reverse('people:staff'))
+        # staffer should be included
+        assert staffer in response.context['current']
+        # postdoc also
+        assert postdoc in response.context['current']
+        # no duplicates even with multiple positions
+        assert len(response.context['current']) == 2
+        # past staff list is empty
+        assert not response.context['past']
+        # doesn't include students
+        assert student not in response.context['current']
+        assert student not in response.context['past']
+
+    def test_future_end(self, client, staffer):
+        '''test staff member with future end date'''
+        # position with future end date should be current
+        position = staffer.positions.first()
+        position.end_date = timezone.now() + timedelta(days=30)
+        position.save()
+        response = client.get(reverse('people:staff'))
+        # staffer should be current
+        assert staffer in response.context['current']
+        assert staffer not in response.context['past']
+
+    def test_list_past(self, client, postdoc):
+        '''test postdoc with position end date in the past'''
+        position = postdoc.positions.last()
+        position.end_date = timezone.now() - timedelta(days=30)
+        position.save()
+        response = client.get(reverse('people:staff'))
+        # postdoc should be past
+        assert postdoc in response.context['past']
+        assert postdoc not in response.context['current']
 
 
 @pytest.mark.django_db
-def test_staff_list_future_end(client, staffer):
-    # position with future end date should be current
-    position = staffer.positions.first()
-    position.end_date = timezone.now() + timedelta(days=30)
-    position.save()
-    response = client.get(reverse('people:staff'))
-    # staffer should be current
-    assert staffer in response.context['current']
-    assert staffer not in response.context['past']
+class TestStudentListView:
 
+    def test_list_current(self, client, student, staffer):
+        '''test current student'''
+        response = client.get(reverse('people:students'))
+        # student should be included
+        assert student in response.context['current']
+        assert student not in response.context['past']
+        # doesn't include staff
+        assert staffer not in response.context['current']
+        assert staffer not in response.context['past']
 
-@pytest.mark.django_db
-def test_staff_list_past(client, postdoc):
-    # set an end date in the past
-    position = postdoc.positions.last()
-    position.end_date = timezone.now() - timedelta(days=30)
-    position.save()
-    response = client.get(reverse('people:staff'))
-    # postdoc should be past
-    assert postdoc in response.context['past']
-    assert postdoc not in response.context['current']
+    def test_student_list_past(self, client, student):
+        '''test past student'''
+        position = student.positions.first()
+        position.end_date = timezone.now() - timedelta(days=30)
+        position.save()
+        response = client.get(reverse('people:students'))
+        # student should be included in past
+        assert student in response.context['past']
+        assert student not in response.context['current']
