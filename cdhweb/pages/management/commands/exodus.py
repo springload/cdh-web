@@ -362,7 +362,7 @@ class Command(BaseCommand):
 
             # there are two variants of Slavic DH, one with and one
             # without a space; remove the space so they'll be in one collection
-            basedir = relative_path.split('/')[0].replace(' ', '')
+            basedir = relative_path.strip('/').split('/')[0].replace(' ', '')
             collection = None
             if basedir:
                 collection = self.get_collection(basedir)
