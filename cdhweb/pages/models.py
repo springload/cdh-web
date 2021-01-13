@@ -264,3 +264,17 @@ class RelatedLinkType(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class RelatedLink(models.Model):
+    type = models.ForeignKey(RelatedLinkType, on_delete=models.CASCADE)
+    url = models.URLField()
+
+    panels = [
+        FieldPanel('type'),
+        FieldPanel('url'),
+    ]
+
+    class Meta:
+        abstract = True
+

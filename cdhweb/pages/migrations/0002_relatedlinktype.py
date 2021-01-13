@@ -19,8 +19,7 @@ class Migration(migrations.Migration):
                 ('sort_order', models.PositiveIntegerField(default=0)),
             ],
             options={
-                'ordering': ['sort_order'],
-                'db_table': 'cdhpages_relatedlinktype'
+                'ordering': ['sort_order']
             }
         ),
     ]
