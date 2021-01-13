@@ -2,6 +2,14 @@
 
 {# default card display for a person #}
 <div class="card profile">
+    {# FIXME still connected to user instead of person #}
+    {# link to event, if speaker has upcoming one #}
+    {% if show_events and person.user.event_set.published.upcoming %}
+        {% with person.user.event_set.published.upcoming.first as event %}
+        <a class="external event" title="{{ event.title }}" href="{{ event.get_absolute_url }}"></a>
+        {% endwith %}
+    {% endif %}
+
     {# link if we have a profile or website URL, otherwise div #}
     {% with person.profilepage.url as profile_url %}  {# FIXME: handle external website url #}
     {% with profile_url|yesno:"a,div" as tag %}
@@ -10,23 +18,26 @@
             {% image person.image fill-310x240 as profile_img %}
             <div class="image" style="background-image:url('{{ profile_img.url }}')"></div>
         {% else %}
-            <div class="imae"></div>
+            <div class="image"></div>
         {% endif %}
         <div class="content">
             <p class="name">{% firstof profile.title person %}</p>
             {# use in order of availability: cdh position, project role, event speaker + institution, job title + institution #}
             <div class="title">
-            {% with position=person.positions.first membership=person.membership_set.first event=person.user.event_set.first %}
-                {% if position %}
-                    <p>{% if not position.is_current %}{{ position.years }} {% endif %}{{ position.title }}</p>
-                {% elif membership %}
-                    <p>{% if not membership.is_current %}{{ membership.years }} {% endif %}{{ membership.role }}</p>
-                {% elif event %}
-                    <p>{{ event.start_time.year }} Speaker{% if person.institution %}<br/>{{ person.institution }}{% endif %}</p>
-                {% elif person.job_title %}
-                    <p>{{ person.job_title }}{% if person.institution %}<br/>{{ person.institution }}{% endif %}</p>
+                {{ person.label }}  {# display whatever label is set in the view #}
+
+                {% if show_events %} {# optionally show associated events #}
+                    <div>
+                    {% if person.user.event_set.published.upcoming %}
+                        {% with person.user.event_set.published.upcoming.first as event %}
+                        {{ event.event_type }}: {{ event.when }} {# type and time of event #}
+                        {% endwith %}
+                    {% else %}
+                    {{ person.user.event_set.published.first.start_time|date:"Y" }} {# most recent year of past event #}
+                    {% endif %}
+                    </div>
                 {% endif %}
-            {% endwith %}
+
             </div>
         </div>
     </{{ tag }}>

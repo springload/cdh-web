@@ -307,6 +307,31 @@ class Person(ClusterableModel):
         if current_positions.exists():
             return current_positions.first().title
 
+    @property
+    def latest_grant(self):
+        '''most recent grants where this person has director role'''
+        # find projects where they are director, then get newest grant
+        # that overlaps with their directorship dates
+        mship = self.membership_set \
+            .filter(role__title__in=PersonQuerySet.director_roles) \
+            .order_by('-start_date').first()
+        # if there is one, find the most recent grant overlapping with their
+        # directorship dates
+        if mship:
+            # find most recent grant that overlaps with membership dates
+            # - grant start before membership end OR
+            #   grant end after membership start
+
+            # a membership might have no end date set, in which
+            # case it can't be used in a filter
+            grant_overlap = models.Q(end_date__gte=mship.start_date)
+            if mship.end_date:
+                grant_overlap |= models.Q(start_date__lte=mship.end_date)
+
+            return mship.project.grant_set \
+                .filter(grant_overlap) \
+                .order_by('-start_date').first()
+
     @receiver(pre_delete, sender="people.Person")
     def cleanup_profile(sender, **kwargs):
         """Handler to delete the corresponding ProfilePage on Person deletion."""

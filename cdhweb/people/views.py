@@ -19,16 +19,6 @@ class PersonListView(ListView, LastModifiedListMixin):
     current_title = ''
     #: label for past people in this category of people
     past_title = ''
-    #: show CDH position on person card (true by default)
-    show_cdh_position = True
-    #: show grant recepient information on profle card (true by default)
-    show_grant = True
-    #: show official job title (false by default)
-    show_job_title = False
-    #: show departmental or instutional affiliation (false by default)
-    show_affiliation = False
-    #: show related events (i.e. for speakers)
-    show_events = False
 
     def get_queryset(self):
         # get people ordered by position (job title then start date)
@@ -46,6 +36,16 @@ class PersonListView(ListView, LastModifiedListMixin):
         current = self.get_current()
         return self.object_list.exclude(id__in=current.values('id'))
 
+    def display_label(self, person):
+        # by default, do nothing
+        return ''
+
+    def add_display_label(self, queryset):
+        # annotate the queryset with label to be displayed for this view
+        for person in queryset:
+            person.label = self.display_label(person)
+        return queryset
+
     def get_context_data(self):
         context = super().get_context_data()
         # update context to display current and past people separately
@@ -54,8 +54,8 @@ class PersonListView(ListView, LastModifiedListMixin):
         # query to find not current people
         past = self.get_past()
         context.update({
-            'current': current,
-            'past': past,
+            'current': self.add_display_label(current),
+            'past': self.add_display_label(past),
             'title': self.page_title,
             'past_title': self.past_title,
             'current_title': self.current_title or self.page_title,  # use main title as default
@@ -65,13 +65,7 @@ class PersonListView(ListView, LastModifiedListMixin):
                 ('Affiliates', reverse('people:affiliates')),
                 ('Executive Committee', reverse('people:exec-committee')),
                 ('Speakers', reverse('people:speakers')),
-            ],
-            # flags for person card display
-            'show_cdh_position': self.show_cdh_position,
-            'show_grant': self.show_grant,
-            'show_job_title': self.show_job_title,
-            'show_affiliation': self.show_affiliation,
-            'show_events': self.show_events
+            ]
         })
         return context
 
@@ -80,8 +74,15 @@ class StaffListView(PersonListView):
     '''Display current and past CDH staff'''
     page_title = 'Staff'
     past_title = 'Past Staff'
-    # don't show grant recipient info
-    show_grant = False
+
+    def display_label(self, person):
+        # for staff list view, label based on most recent position
+        last_position = person.positions.first()
+        label = last_position.title
+        # if position is not current, include years
+        if not last_position.is_current:
+            label = '%s %s' % (last_position.years, label)
+        return label
 
     def get_queryset(self):
         # filter to profiles with staff flag set and exclude students
@@ -108,6 +109,24 @@ class StudentListView(PersonListView):
         # filter to just students
         return super().get_queryset().student_affiliates() \
             .grant_years().project_manager_years()
+
+    def display_label(self, person):
+        # for student assistants and fellows, label based on position
+        if person.positions.exists():
+            last_position = person.positions.first()
+            label = last_position.title
+            # if position is not current, include years
+            if not last_position.is_current:
+                label = '%s %s' % (last_position.years, label)
+
+        # for students on projects, label based on project membership
+        elif person.membership_set.exists():
+            membership = person.membership_set.first()
+            label = membership.role
+            if not membership.is_current:
+                label = '%s %s' % (membership.years, label)
+
+        return label
 
     def get_past(self):
         # show most recent first based on grant or position end date
@@ -138,13 +157,23 @@ class AffiliateListView(PersonListView):
     '''Display current and past faculty & staff affiliates'''
     page_title = 'Affiliates'
     past_title = 'Past {}'.format(page_title)
-    #: do not show person positions; want grant information instead
-    show_cdh_position = False
 
     def get_queryset(self):
         # filter to affiliates, annotate with grant years, and order by name
         return super().get_queryset().affiliates().grant_years() \
                       .order_by('user__last_name')
+
+    def display_label(self, person):
+        # use grant information as label
+        grant = person.latest_grant
+        # special case for faculty fellowship display
+        if grant.grant_type.grant_type == 'Faculty Fellowship':
+            label = 'Faculty Fellow'
+        else:
+            label = '%s Grant Recipient' % grant.grant_type.grant_type
+
+        label = '%s %s' % (grant.years, label)
+        return label
 
     def get_current(self):
         # we only care about current grants, position doesn't matter
@@ -155,10 +184,6 @@ class ExecListView(PersonListView):
     '''Display current and past executive committee members.'''
     page_title = 'Executive Committee'
     past_title = 'Past members of {}'.format(page_title)
-    #: do not CDH positions or grants; show job title
-    show_cdh_position = False
-    show_grant = False
-    show_job_title = True
 
     def get_queryset(self):
         # filter to exec members
@@ -167,6 +192,10 @@ class ExecListView(PersonListView):
     def get_current(self):
         # we only care about current position, grant doesn't matter
         return self.object_list.current_position()
+
+    def display_label(self, person):
+        # for exec, we just want to show their job title
+        return person.job_title
 
     def get_context_data(self):
         context = super().get_context_data()
@@ -185,12 +214,6 @@ class SpeakerListView(PersonListView):
     page_title = 'Speakers'
     current_title = 'Upcoming {}'.format(page_title)
     past_title = 'Past {}'.format(page_title)
-    #: show affiliation and info about events
-    show_affiliation = True
-    show_events = True
-    # don't show non-speaker related info (shouldn't happen)
-    show_grant = False
-    show_cdh_position = False
 
     def get_queryset(self):
         # filter to just speakers
@@ -203,3 +226,14 @@ class SpeakerListView(PersonListView):
     def get_past(self):
         # resort the past people and show latest first
         return super().get_past().order_by_event().reverse()
+
+    def display_label(self, person):
+        # for speakers, just show institutional affiliation
+        return person.institution
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        # for now, set flag to show event info in the template
+        # (maybe could use extended person card instead?)
+        context['show_events'] = True
+        return context
