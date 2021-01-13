@@ -52,12 +52,6 @@ urlpatterns = [
     # CAS login urls
     path("accounts/", include('pucas.cas_urls')),
 
-    # programmatic redirects from v1 site
-    # - old staff page is now under /people/
-    re_path(r'^about/staff/(?P<slug>[\w-]+)/$',
-            RedirectView.as_view(
-                pattern_name='people:profile', permanent=True),
-            name='old-profile'),
     # - all blog urls are now under updates/
     re_path(r'^blog(?P<blog_url>.*)$',
             RedirectView.as_view(url='/updates%(blog_url)s', permanent=True)),
