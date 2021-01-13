@@ -122,7 +122,7 @@ class StudentListView(PersonListView):
         # for students on projects, label based on project membership
         elif person.membership_set.exists():
             membership = person.membership_set.first()
-            label = membership.role
+            label = membership.role.title
             if not membership.is_current:
                 label = '%s %s' % (membership.years, label)
 

@@ -5,6 +5,10 @@ from django.utils import timezone
 import pytest
 from pytest_django.asserts import assertContains, assertNotContains
 
+from cdhweb.people.models import Person
+from cdhweb.people.views import AffiliateListView, ExecListView, \
+    SpeakerListView, StaffListView, StudentListView
+
 # NOTE: person factory fixtures in conftest
 
 
@@ -72,6 +76,19 @@ class TestStaffListView:
         # should display years
         assertContains(response, postdoc.positions.first().years)
 
+    def test_display_label_current(self, staffer):
+        '''test display label for current staff'''
+        assert StaffListView().display_label(staffer) == \
+            staffer.positions.first().title
+
+    def test_display_label_past(self, postdoc):
+        '''test display label for past staff'''
+        position = postdoc.positions.last()
+        position.end_date = timezone.now() - timedelta(days=30)
+        position.save()
+        assert StaffListView().display_label(postdoc) == \
+            '%s %s' % (position.years, position.title)
+
 
 @pytest.mark.django_db
 class TestStudentListView:
@@ -108,6 +125,22 @@ class TestStudentListView:
         assertContains(response, student.positions.first().title)
         assertContains(response, student.positions.first().years)
 
+    def test_display_label_current(self, student, grad_pi):
+        '''test display label for current student'''
+        assert StudentListView().display_label(student) == \
+            student.positions.first().title
+
+        assert StudentListView().display_label(grad_pi) == \
+            grad_pi.membership_set.first().role.title
+
+    def test_display_label_past(self, student):
+        '''test display label for former staff'''
+        position = student.positions.last()
+        position.end_date = timezone.now() - timedelta(days=30)
+        position.save()
+        assert StudentListView().display_label(student) == \
+            '%s %s' % (position.years, position.title)
+
 
 @pytest.mark.django_db
 class TestAffiliateListView:
@@ -133,13 +166,49 @@ class TestAffiliateListView:
             grant.end_date.year,
             grant.grant_type.grant_type), html=True)
 
+    def test_display_label(self, faculty_pi):
+        '''test display label for current faculty/staff affiliate'''
+        grant = faculty_pi.latest_grant
+        assert AffiliateListView().display_label(faculty_pi) == \
+            '%s %s Grant Recipient' % (grant.years, grant.grant_type)
 
-@pytest.mark.skip('todo')
+        # switch to faculty fellowship to test custom display logic
+        grant_type = grant.grant_type
+        grant_type.grant_type = 'Faculty Fellowship'
+        grant_type.save()
+        assert AffiliateListView().display_label(faculty_pi) == \
+            '%s Faculty Fellow' % grant.years
+
+
+@pytest.mark.django_db
+class TestExecListView:
+    url = reverse('people:exec-committee')
+
+    @pytest.mark.skip('todo')  # needs fixture people
+    def test_list_current(self, client):
+        '''test upcoming speakers'''
+        response = client.get(self.url)
+
+    def test_display_label(self):
+        '''test display label for exec'''
+        exec_member = Person.objects.create(first_name='Laura', job_title='Professor of Humanities')
+        assert ExecListView().display_label(exec_member) == \
+            exec_member.job_title
+
+
 @pytest.mark.django_db
 class TestSpeakersListView:
     url = reverse('people:speakers')
 
+    @pytest.mark.skip('todo')  # needs fixture, but wait on event exodus
     def test_list_current(self, client, speaker):
         '''test upcoming speakers'''
         response = client.get(self.url)
         assert speaker in response.context['current']
+
+    def test_display_label(self):
+        '''test display label for speaker'''
+        speaker = Person.objects.create(first_name='Jill', institution='IAS')
+        assert SpeakerListView().display_label(speaker) == \
+            speaker.institution
+
