@@ -107,7 +107,7 @@ class TestProfilePage(WagtailPageTests):
         factory = RequestFactory()
         request = factory.get(profile.get_url())
         context = profile.get_context(request)
-        assert len(context["recent_posts"]) == 0
+        assert not context["recent_posts"]  # empty list
 
         # create some blog posts by this person
         # "one"     2021-01-01  published
