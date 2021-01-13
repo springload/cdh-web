@@ -128,8 +128,8 @@ class LandingPage(Page):
     search_fields = Page.search_fields + [index.SearchField('body')]
     content_panels = Page.content_panels + [
         FieldPanel('tagline'),
-        StreamFieldPanel('body'),
         ImageChooserPanel('header_image'),
+        StreamFieldPanel('body'),
     ]
 
     parent_page_types = ['HomePage']
