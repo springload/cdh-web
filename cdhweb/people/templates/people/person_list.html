@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load mezzanine_tags %}
 
 {% block page-subtitle %}{{ title|default:"People" }} | {% endblock %}
 {% block bodyattrs %}class="with-cards"{% endblock %}
@@ -21,12 +20,11 @@
   </ul>
 </div>
 
-{# TODO: use snippet here instead #}
-{# display editable page content; wrapped for formatting reasons; skip if whitespace only #}
-{% if page.richtextpage.content and page.richtextpage.content|striptags|slugify != 'nbspnbsp' %}
+{# display page intro snippet paragraph if there is one #}
+{% if page_intro %}
 <section class="textcontent">
     <div class="richtext">
-    {{ page.richtextpage.content|richtext_filters }}
+    {{ page_intro.paragraph|safe }}
     </div>
 </section>
 {% endif %}

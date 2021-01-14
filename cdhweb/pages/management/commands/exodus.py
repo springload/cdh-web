@@ -269,7 +269,7 @@ class Command(BaseCommand):
     def create_link_page(self, page, parent):
         '''generate link pages for content served by django views'''
 
-        # link page is needed for menus; should use existing title and full url
+        # link page is needed for menus; should use existing title and full slug
         new_page = LinkPage(
             title=page.title,
             link_url=page.slug)
