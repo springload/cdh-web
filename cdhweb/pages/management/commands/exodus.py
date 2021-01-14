@@ -383,11 +383,11 @@ class Command(BaseCommand):
             # if image is in a subdirectory under uploads (e.g. projects, blog)
             # add it to a collection with that name
             relative_path = os.path.dirname(imgpath) \
-                .replace('%s/uploads/' % settings.MEDIA_ROOT, '')
+                .replace(os.path.join(settings.MEDIA_ROOT, 'uploads'), '')
 
             # there are two variants of Slavic DH, one with and one
             # without a space; remove the space so they'll be in one collection
-            basedir = relative_path.split('/')[0].replace(' ', '')
+            basedir = relative_path.strip('/').split('/')[0].replace(' ', '')
             collection = None
             if basedir:
                 collection = self.get_collection(basedir)

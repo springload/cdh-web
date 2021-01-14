@@ -6,6 +6,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.test import RequestFactory
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from wagtail.core.models import Page
 from wagtail.tests.utils import WagtailPageTests
 from wagtail.tests.utils.form_data import rich_text
@@ -119,7 +120,7 @@ class TestProfilePage(WagtailPageTests):
         posts = {}
         for i, title in enumerate(["one", "two", "three", "four", "five"]):
             post = BlogPost(title=title)
-            post.publish_date = datetime.date(2021, 1, i + 1)
+            post.publish_date = timezone.make_aware(datetime.datetime(2021, 1, i + 1))
             if title == "four":
                 post.status = CONTENT_STATUS_DRAFT
             else:
