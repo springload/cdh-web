@@ -3,11 +3,11 @@ from django.contrib import admin
 from mezzanine.core.admin import DisplayableAdmin
 
 from cdhweb.projects.models import Grant, GrantType, Membership, \
-    Project, ProjectResource, Role
+    Project, ProjectRelatedLink, Role
 
 
 class ResourceInline(admin.TabularInline):
-    model = ProjectResource
+    model = ProjectRelatedLink
 
 
 class GrantInline(admin.TabularInline):

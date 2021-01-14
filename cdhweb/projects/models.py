@@ -79,7 +79,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
         'Working Group', default=False, help_text='Project is a long-term collaborative group associated with the CDH.')
 
     members = models.ManyToManyField(Person, through='Membership')
-    resources = models.ManyToManyField(RelatedLinkType, through='ProjectResource')
+    resources = models.ManyToManyField(RelatedLinkType, through='ProjectRelatedLink')
 
     tags = TaggableManager(blank=True)
 
@@ -115,7 +115,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
     @property
     def website_url(self):
         '''website url, if set'''
-        website = self.projectresource_set \
+        website = self.projectrelatedlink_set \
             .filter(resource_type__name='Website').first()
         if website:
             return website.url
@@ -210,7 +210,7 @@ class Membership(DateRange):
                                        self.project, self.years)
 
 
-class ProjectResource(models.Model):
+class ProjectRelatedLink(models.Model):
     '''Through-model for associating projects with resource types and
     URLs'''
     resource_type = models.ForeignKey(RelatedLinkType, on_delete=models.CASCADE)
