@@ -90,3 +90,19 @@ def staff_pi():
         project=project, person=person, role=project_director,
         start_date=date(2016, 9, 1))
     return person
+
+
+@pytest.fixture
+def faculty_exec():
+    return create_person_with_position(
+        'Executive Committee Member',
+        start_date=date(2018, 3, 1),
+        first_name='Anna', cdh_staff=False, pu_status='fac')
+
+
+@pytest.fixture
+def staff_exec():
+    return create_person_with_position(
+        'Sits with Executive Committee',
+        start_date=date(2010, 3, 1),
+        first_name='Jay', cdh_staff=False, pu_status='stf')

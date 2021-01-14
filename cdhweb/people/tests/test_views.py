@@ -133,13 +133,19 @@ class TestStudentListView:
         assert StudentListView().display_label(grad_pi) == \
             grad_pi.membership_set.first().role.title
 
-    def test_display_label_past(self, student):
-        '''test display label for former staff'''
+    def test_display_label_past(self, student, grad_pi):
+        '''test display label for former student affiliates'''
         position = student.positions.last()
         position.end_date = timezone.now() - timedelta(days=30)
         position.save()
         assert StudentListView().display_label(student) == \
             '%s %s' % (position.years, position.title)
+
+        membership = grad_pi.membership_set.first()
+        membership.end_date = timezone.now() - timedelta(days=30)
+        membership.save()
+        assert StudentListView().display_label(grad_pi) == \
+            '%s %s' % (membership.years, membership.role.title)
 
 
 @pytest.mark.django_db
@@ -184,10 +190,22 @@ class TestAffiliateListView:
 class TestExecListView:
     url = reverse('people:exec-committee')
 
-    @pytest.mark.skip('todo')  # needs fixture people
-    def test_list_current(self, client):
-        '''test upcoming speakers'''
+    def test_list_current(self, client, faculty_exec, staff_exec):
+        '''test current exec members'''
         response = client.get(self.url)
+        assert faculty_exec in response.context['current']
+        assert staff_exec in response.context['sits_with']
+
+    def test_list_past(self, client, faculty_exec, staff_exec):
+        '''test past exec members'''
+        for position in [faculty_exec.positions.first(),
+                         staff_exec.positions.first()]:
+            position.end_date = timezone.now() - timedelta(days=30)
+            position.save()
+
+        response = client.get(self.url)
+        assert faculty_exec in response.context['past']
+        assert staff_exec in response.context['past']
 
     def test_display_label(self):
         '''test display label for exec'''

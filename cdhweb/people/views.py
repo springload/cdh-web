@@ -37,8 +37,8 @@ class PersonListView(ListView, LastModifiedListMixin):
         return self.object_list.exclude(id__in=current.values('id'))
 
     def display_label(self, person):
-        # by default, do nothing
-        return ''
+        # no default; force subclasses to implement
+        raise NotImplemented
 
     def add_display_label(self, queryset):
         # annotate the queryset with label to be displayed for this view

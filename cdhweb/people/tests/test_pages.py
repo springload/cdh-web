@@ -3,16 +3,16 @@ import datetime
 from mezzanine.core.models import CONTENT_STATUS_DRAFT, CONTENT_STATUS_PUBLISHED
 
 import pytest
-from cdhweb.pages.models import HomePage
-from cdhweb.people.models import LinkPage, PeopleLandingPage, Person, \
-    ProfilePage
-from cdhweb.blog.models import BlogPost
 from django.core.exceptions import ValidationError
 from django.test import RequestFactory
 from django.contrib.auth import get_user_model
 from wagtail.core.models import Page
 from wagtail.tests.utils import WagtailPageTests
 from wagtail.tests.utils.form_data import rich_text
+
+from cdhweb.pages.models import HomePage, PageIntro, LinkPage
+from cdhweb.people.models import PeopleLandingPage, Person, ProfilePage
+from cdhweb.blog.models import BlogPost
 
 
 class TestPeopleLandingPage(WagtailPageTests):
@@ -138,3 +138,16 @@ class TestProfilePage(WagtailPageTests):
         assert posts["two"] in context["recent_posts"]
         assert posts["four"] not in context["recent_posts"]
         assert posts["one"] not in context["recent_posts"]
+
+
+@pytest.mark.django_db
+class TestPageIntro:
+
+    def test_str(self):
+        root = Page.objects.get(title="Root")
+        link_page = LinkPage(title='Students', link_url='people/students')
+        root.add_child(instance=link_page)
+        intro = PageIntro.objects.create(
+            page=link_page, paragraph='<p>We have great students</p>')
+
+        assert str(intro) == link_page.title
