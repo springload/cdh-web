@@ -2,7 +2,7 @@ from datetime import date
 
 from cdhweb.blog.models import BlogPost
 from cdhweb.pages.models import (PARAGRAPH_FEATURES, BodyContentBlock,
-                                 LandingPage)
+                                 LandingPage, LinkPage)
 from cdhweb.resources.models import (Attachment, DateRange,
                                      PublishedQuerySetMixin)
 from django.contrib.auth.models import User
@@ -469,7 +469,7 @@ class PeopleLandingPage(LandingPage):
     parent_page_types = []
     # NOTE the only allowed child page type is a ProfilePage; this is so that
     # ProfilePages made in the admin automatically are created here.
-    subpage_types = [ProfilePage]
+    subpage_types = [ProfilePage, LinkPage]
     # use the regular landing page template
     template = LandingPage.template
 

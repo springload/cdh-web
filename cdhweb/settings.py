@@ -292,6 +292,8 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "mezzanine.conf.context_processors.settings",
                 "mezzanine.pages.context_processors.page",
+                # 'wagtail.contrib.settings.context_processors.settings', # needed?
+                'wagtailmenus.context_processors.wagtailmenus',
                 'cdhweb.context_extras',
                 'cdhweb.context_processors.template_settings'
             ],
@@ -342,6 +344,7 @@ INSTALLED_APPS = [
     'wagtail.admin',
     'wagtail.contrib.modeladmin',
     'wagtail.core',
+    'wagtailmenus',
     'modelcluster',
     'taggit',
     'adminsortable2',

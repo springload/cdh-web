@@ -4,7 +4,8 @@ from mezzanine.core.models import CONTENT_STATUS_DRAFT, CONTENT_STATUS_PUBLISHED
 
 import pytest
 from cdhweb.pages.models import HomePage
-from cdhweb.people.models import PeopleLandingPage, Person, ProfilePage
+from cdhweb.people.models import LinkPage, PeopleLandingPage, Person, \
+    ProfilePage
 from cdhweb.blog.models import BlogPost
 from django.core.exceptions import ValidationError
 from django.test import RequestFactory
@@ -28,9 +29,9 @@ class TestPeopleLandingPage(WagtailPageTests):
         self.assertAllowedParentPageTypes(PeopleLandingPage, [])
 
     def test_child_pages(self):
-        """only profile pages can be children"""
+        """only profile pages and link pages can be children"""
         self.assertAllowedSubpageTypes(
-            PeopleLandingPage, [ProfilePage])
+            PeopleLandingPage, [ProfilePage, LinkPage])
 
 
 class TestProfilePage(WagtailPageTests):

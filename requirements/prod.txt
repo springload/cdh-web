@@ -18,3 +18,4 @@ icalendar
 attrdict
 django-fullurl
 django-apptemplates
+wagtailmenus
