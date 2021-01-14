@@ -1,8 +1,4 @@
-from datetime import date
-
-from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
 from mezzanine.core.fields import FileField, RichTextField
@@ -70,7 +66,7 @@ class ProjectQuerySet(PublishedQuerySetMixin):
                    .order_by('-last_start', 'title')
 
 
-class Project(Displayable, AdminThumbMixin, ExcerptMixin, ClusterableModel):
+class OldProject(Displayable, AdminThumbMixin, ExcerptMixin):
     '''A CDH sponsored project'''
 
     short_description = models.CharField(max_length=255, blank=True,
@@ -181,11 +177,11 @@ class GrantType(models.Model):
 
 class Grant(DateRange):
     '''A specific grant associated with a project'''
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    old_project = models.ForeignKey(OldProject, on_delete=models.CASCADE)
     grant_type = models.ForeignKey(GrantType, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['start_date', 'project']
+        ordering = ['start_date', 'old_project']
 
     def __str__(self):
         return '%s: %s (%s)' % (self.project.title, self.grant_type.grant_type,
@@ -210,7 +206,7 @@ class Role(models.Model):
 
 class Membership(DateRange):
     '''Project membership - joins project, user, and role.'''
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    old_project = models.ForeignKey(OldProject, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
@@ -225,6 +221,12 @@ class Membership(DateRange):
 class ProjectRelatedLink(RelatedLink):
     '''Through-model for associating projects with relatedlinks'''
     project = ParentalKey(Project, on_delete=models.CASCADE, related_name="related_links")
+class ProjectResource(models.Model):
+    '''Through-model for associating projects with resource types and
+    URLs'''
+    resource_type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
+    old_project = models.ForeignKey(OldProject, on_delete=models.CASCADE)
+    url = models.URLField()
 
     def display_url(self):
         '''url cleaned up for display, with leading http(s):// removed'''
