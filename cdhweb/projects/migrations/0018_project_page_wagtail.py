@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ('highlight', models.BooleanField(default=False, help_text='Include in randomized project display on the home page.')),
                 ('cdh_built', models.BooleanField(default=False, help_text='Project built by CDH Development & Design team.', verbose_name='CDH Built')),
                 ('working_group', models.BooleanField(default=False, help_text='Project is a long-term collaborative group associated with the CDH.', verbose_name='Working Group')),
-                ('updated_at', models.DateTimeField(auto_now=True, null=True)),
+                ('updated', models.DateTimeField(auto_now=True, null=True)),
                 ('image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.Image')),
                 ('members', models.ManyToManyField(through='projects.Membership', to='people.Person')),
             ],

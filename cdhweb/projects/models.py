@@ -194,7 +194,7 @@ class ProjectPage(Page, ClusterableModel):
                               related_name='+')
     members = models.ManyToManyField(Person, through="Membership")
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+    updated = models.DateTimeField(auto_now=True, null=True, editable=False)
 
     # can only be created underneath landing page
     parent_page_types = ["projects.ProjectsLandingPage"]
