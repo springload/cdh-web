@@ -73,7 +73,7 @@ class TestContentPage(WagtailPageTests):
         self.assertAllowedSubpageTypes(ContentPage, [ContentPage])
 
 
-class TestRelatedLinkType(WagtailPageTests):
+class TestRelatedLinkType:
     def test_str(self):
         restype = RelatedLinkType(name='twitter')
         assert str(restype) == restype.name
