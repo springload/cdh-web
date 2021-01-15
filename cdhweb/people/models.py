@@ -5,6 +5,8 @@ from cdhweb.pages.models import (PARAGRAPH_FEATURES, BodyContentBlock,
                                  LandingPage, LinkPage)
 from cdhweb.resources.models import (Attachment, DateRange,
                                      PublishedQuerySetMixin)
+from cdhweb.pages.models import RelatedLinkType, RelatedLink
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -23,7 +25,7 @@ from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
                                          InlinePanel, MultiFieldPanel,
                                          StreamFieldPanel)
 from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Page
+from wagtail.core.models import Page, Orderable
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 
@@ -281,6 +283,7 @@ class Person(ClusterableModel):
             FieldPanel("office_location"),
         ), heading="Employment"),
         InlinePanel("positions", heading="Positions"),
+        InlinePanel("related_links", heading="Related Links")
     ]
 
     # custom manager for querying
@@ -428,7 +431,7 @@ class ProfilePage(Page):
         FieldRowPanel(
             (FieldPanel("person"), ImageChooserPanel("image")), "Person"),
         FieldPanel("education"),
-        StreamFieldPanel("bio")
+        StreamFieldPanel("bio"),
     ]
 
     parent_page_types = ["people.PeopleLandingPage"]
@@ -526,3 +529,9 @@ def init_person_from_ldap(user, ldapinfo):
     # always update PU status to current
     person.pu_status = str(ldapinfo.pustatus)
     person.save()
+
+
+class PersonRelatedLink(RelatedLink):
+    '''Through-model for associating people with resource types and
+    corresponding URLs for the specified resource type.'''
+    person = ParentalKey(Person, on_delete=models.CASCADE, related_name="related_links")

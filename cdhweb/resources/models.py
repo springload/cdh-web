@@ -10,20 +10,7 @@ from mezzanine.core.models import RichText, CONTENT_STATUS_PUBLISHED
 from mezzanine.pages.models import Page
 from mezzanine.utils.models import upload_to
 
-
-class ResourceType(models.Model):
-    '''Resource type for associating particular kinds of URLs
-    with people and projects (e.g., project url, GitHub, Twitter, etc)'''
-    name = models.CharField(max_length=255)
-    sort_order = models.PositiveIntegerField(default=0, blank=False,
-                                             null=False)
-
-    class Meta:
-        ordering = ['sort_order']
-
-    def __str__(self):
-        return self.name
-
+from cdhweb.pages.models import RelatedLinkType
 
 class ExcerptMixin(object):
 
@@ -33,14 +20,6 @@ class ExcerptMixin(object):
         when displayed on the page.'''
         if not self.gen_description:
             return self.description
-
-
-class PersonResource(models.Model):
-    '''Through-model for associating people with resource types and
-    corresponding URLs for the specified resource type.'''
-    resource_type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
-    person = models.ForeignKey("people.Person", on_delete=models.CASCADE)
-    url = models.URLField()
 
 
 class Attachment(models.Model):
