@@ -49,7 +49,6 @@ class Title(models.Model):
     num_people.short_description = '# People'
 
 
-<<<<<<< HEAD
 class PersonQuerySet(models.QuerySet):
 
     #: position titles that indicate a person is a postdoc
