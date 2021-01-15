@@ -211,11 +211,10 @@ class HomePage(Page):
         '''Add featured updates, projects, and events to the page context.'''
         context = super().get_context(request)
 
-        # FIXME an ImportError is thrown when classes in this module are
-        # imported elsewhere if any of these three models are imported at the
-        # top. Why?
+        # FIXME because these apps import LandingPage, there is a circular
+        # import issue, so we can't import these models at the top of this file
         BlogPost = apps.get_model("blog", "blogpost")
-        Project = apps.get_model("projects", "project")
+        ProjectPage = apps.get_model("projects", "projectpage")
         Event = apps.get_model("events", "event")
 
         # add up to 6 featured updates, otherwise use 3 most recent updates
@@ -225,7 +224,7 @@ class HomePage(Page):
         context['updates'] = updates
 
         # add up to 4 highlighted, published projects
-        projects = list(Project.objects.published().highlighted())
+        projects = list(ProjectPage.objects.live().highlighted())
         shuffle(projects)
         context['projects'] = projects[:4]
 
