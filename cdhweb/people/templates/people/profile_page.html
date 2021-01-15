@@ -20,7 +20,7 @@
 <div class="links">
     {# NOTE equiv to contributors in project #}
     <ul>
-    {% for resource in page.person.personresource_set.all %}
+    {% for resource in page.person.personrelatedlink_set.all %}
         <li><a href="{{ resource.url }}">{{ resource.resource_type.name }}</a></li>
     {% endfor %}
     </ul>

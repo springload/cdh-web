@@ -22,14 +22,6 @@ class ExcerptMixin(object):
             return self.description
 
 
-class PersonResource(models.Model):
-    '''Through-model for associating people with resource types and
-    corresponding URLs for the specified resource type.'''
-    resource_type = models.ForeignKey(RelatedLinkType, on_delete=models.CASCADE)
-    person = models.ForeignKey("people.Person", on_delete=models.CASCADE)
-    url = models.URLField()
-
-
 class Attachment(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255, blank=True)

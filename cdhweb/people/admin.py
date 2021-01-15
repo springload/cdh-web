@@ -2,7 +2,7 @@ from django.contrib import admin
 from mezzanine.core.admin import DisplayableAdmin
 
 from cdhweb.people.models import Title, Person, Profile, Position
-from cdhweb.resources.models import PersonResource
+from cdhweb.people.models import PersonRelatedLink
 
 
 class TitleAdmin(admin.ModelAdmin):
@@ -14,8 +14,8 @@ class PositionInline(admin.TabularInline):
     model = Position
 
 
-class PersonResourceInline(admin.TabularInline):
-    model = PersonResource
+class PersonRelatedLinkInline(admin.TabularInline):
+    model = PersonRelatedLink
 
 
 class PersonAdmin(admin.ModelAdmin):
@@ -24,7 +24,7 @@ class PersonAdmin(admin.ModelAdmin):
     # and published could be made list editable
     fields = ("first_name", "last_name")
 
-    inlines = [PositionInline, PersonResourceInline]
+    inlines = [PositionInline, PersonRelatedLinkInline]
 
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.profile.tags.all())
