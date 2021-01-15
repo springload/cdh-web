@@ -11,13 +11,14 @@ from django.conf import settings
 from django.core.files.images import ImageFile
 from django.core.management.base import BaseCommand
 from django.db.models import Q
+from django.utils.html import strip_tags
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 from mezzanine.pages import models as mezz_page_models
-from wagtail.core.blocks import RichTextBlock
 from wagtail.core.models import Page, Site, Collection, get_root_collection_id
 from wagtail.images.models import Image
 
-from cdhweb.pages.models import ContentPage, HomePage, LandingPage
+from cdhweb.pages.models import ContentPage, HomePage, LandingPage, LinkPage, \
+    PageIntro
 from cdhweb.people.models import Person, Profile, ProfilePage, PeopleLandingPage
 
 
@@ -196,13 +197,13 @@ class Command(BaseCommand):
             for page in project_pages:
                 self.migrate_pages(page, projects)
 
-        # migrate people pages but use new landingpage subtype as parent
-        # TODO create new PersonListPage subtypes
+        # migrate people list pages to link page,
+        # using new people landingpage as parent
         if people:
             people_pages = mezz_page_models.Page.objects \
                 .filter(slug__startswith="people/").order_by('-slug')
             for page in people_pages:
-                self.migrate_pages(page, people)
+                self.create_link_page(page, people)
 
         # migrate all remaining pages, starting with pages with no parent
         # (i.e., top level pages)
@@ -243,6 +244,7 @@ class Command(BaseCommand):
             # treat everything else as page / richtexpage
             if hasattr(page, "link"):
                 print('WARN: converting link page to content page %s ' % (page))
+                # TODO: adapt new create_link_page method for these links
             new_page = self.create_contentpage(page)
 
         parent.add_child(instance=new_page)
@@ -258,6 +260,29 @@ class Command(BaseCommand):
         # recursively create and add new versions of all this page's children
         for child in page.children.all():
             self.migrate_pages(child, new_page)
+
+    def is_blank(self, content):
+        # check for if mezzanine page content is whitespace only
+        # remove non-breaking space, strip tags, strip whitespace
+        return not strip_tags(content.replace('&nbsp;', '')).strip()
+
+    def create_link_page(self, page, parent):
+        '''generate link pages for content served by django views'''
+
+        # link page is needed for menus; should use existing title and full slug
+        new_page = LinkPage(
+            title=page.title,
+            link_url=page.slug)
+        parent.add_child(instance=new_page)
+
+        # if the page is not blank, create a page intro snippet with the content
+        if page.richtextpage.content and \
+           not self.is_blank(page.richtextpage.content):
+            PageIntro.objects.create(page=new_page,
+                                     paragraph=page.richtextpage.content)
+
+        # add to list of migrated pages
+        self.migrated.append(page.pk)
 
     def form_pages(self):
         # migrate embedded google forms from mezzanine templates

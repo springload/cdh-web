@@ -15,6 +15,9 @@ from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
+from wagtail.snippets.models import register_snippet
+from wagtailmenus.models import AbstractLinkPage
+
 
 #: common features for paragraph text
 PARAGRAPH_FEATURES = [
@@ -146,6 +149,10 @@ class PagePreviewDescriptionMixin(models.Model):
         return striptags(self.get_description())
 
 
+class LinkPage(AbstractLinkPage):
+    pass
+
+
 class ContentPage(Page, PagePreviewDescriptionMixin):
     '''Basic content page model.'''
 
@@ -226,3 +233,20 @@ class HomePage(Page):
         context['events'] = Event.objects.published().upcoming()[:3]
 
         return context
+
+
+@register_snippet
+class PageIntro(models.Model):
+    '''Snippet for optional page intro text on for pages generated from
+    django views not managed by wagtail'''
+    page = models.OneToOneField(LinkPage, on_delete=models.CASCADE)
+    #: intro text
+    paragraph = RichTextField(features=PARAGRAPH_FEATURES)
+
+    panels = [
+        FieldPanel('page'),
+        FieldPanel('paragraph'),
+    ]
+
+    def __str__(self):
+        return self.page.title

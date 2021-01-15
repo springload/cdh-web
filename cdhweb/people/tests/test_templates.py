@@ -1,13 +1,13 @@
 import datetime
 import json
 
-from cdhweb.pages.models import HomePage
-from cdhweb.people.models import (PeopleLandingPage, Person, Position,
-                                  ProfilePage, Title)
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from wagtail.core.models import Page, Site
-from wagtail.tests.utils.form_data import rich_text
+
+from cdhweb.pages.models import HomePage
+from cdhweb.people.models import (PeopleLandingPage, Person, Position,
+                                  ProfilePage, Title)
 
 
 class TestProfilePage(TestCase):
@@ -62,11 +62,11 @@ class TestProfilePage(TestCase):
         director = Title.objects.create(title="director")
         developer = Title.objects.create(title="developer")
         Position.objects.create(person=self.person, title=developer,
-            start_date=datetime.date(2021, 1, 1))
+                                start_date=datetime.date(2021, 1, 1))
         Position.objects.create(person=self.person, title=director,
-            start_date=datetime.date(2020, 1, 1),
-            end_date=datetime.date(2020, 10, 1))
-        
+                                start_date=datetime.date(2020, 1, 1),
+                                end_date=datetime.date(2020, 10, 1))
+
         # should all be displayed with dates
         response = self.client.get(self.profile.relative_url(self.site))
         self.assertContains(response, "<p class='title'>developer</p>",

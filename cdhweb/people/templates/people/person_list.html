@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load mezzanine_tags %}
 
 {% block page-subtitle %}{{ title|default:"People" }} | {% endblock %}
 {% block bodyattrs %}class="with-cards"{% endblock %}
@@ -21,18 +20,18 @@
   </ul>
 </div>
 
-{# display editable page content; wrapped for formatting reasons; skip if whitespace only #}
-{% if page.richtextpage.content and page.richtextpage.content|striptags|slugify != 'nbspnbsp' %}
+{# display page intro snippet paragraph if there is one #}
+{% if page_intro %}
 <section class="textcontent">
     <div class="richtext">
-    {{ page.richtextpage.content|richtext_filters }}
+    {{ page_intro.paragraph|safe }}
     </div>
 </section>
 {% endif %}
 
 {# current people #}
-{% for profile in current %}
-    {% include 'people/snippets/profile_card.html' %}
+{% for person in current %}
+    {% include 'people/snippets/person_card.html' %}
 {% empty %}
     {% if show_events %}
     <p class="message">Next semester's speaking events are being scheduled.
@@ -45,17 +44,17 @@
 {# executive committe page only has an additinoal current section #}
 {% if sits_with %}
   <h2>Sits with Executive Committee</h2>
-  {% for profile in sits_with %}
-    {% include 'people/snippets/profile_card.html' %}
+  {% for person in sits_with %}
+    {% include 'people/snippets/person_card.html' %}
   {% endfor %}
 {% endif %}
 
 
 {# alumni / past members or affiliates #}
 {% if past %}
-  <h2>{{ past_title|default:"Alumni" }}</h2>
-  {% for profile in past %}
-    {% include 'people/snippets/profile_card.html' %}
+<h2>{{ past_title|default:"Alumni" }}</h2>
+  {% for person in past %}
+    {% include 'people/snippets/person_card.html' %}
   {% endfor %}
 {% endif %}
 
