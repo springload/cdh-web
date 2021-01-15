@@ -5,7 +5,7 @@ from cdhweb.pages.models import (PARAGRAPH_FEATURES, BodyContentBlock,
                                  LandingPage, LinkPage)
 from cdhweb.resources.models import (Attachment, DateRange,
                                      PublishedQuerySetMixin)
-from cdhweb.pages.models import RelatedLinkType
+from cdhweb.pages.models import RelatedLinkType, RelatedLink
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -25,7 +25,7 @@ from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
                                          InlinePanel, MultiFieldPanel,
                                          StreamFieldPanel)
 from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Page
+from wagtail.core.models import Page, Orderable
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 
@@ -530,9 +530,7 @@ def init_person_from_ldap(user, ldapinfo):
     person.save()
 
 
-class PersonRelatedLink(models.Model):
+class PersonRelatedLink(Orderable, RelatedLink):
     '''Through-model for associating people with resource types and
     corresponding URLs for the specified resource type.'''
-    resource_type = models.ForeignKey(RelatedLinkType, on_delete=models.CASCADE)
-    person = models.ForeignKey("people.Person", on_delete=models.CASCADE)
-    url = models.URLField()
+    person = ParentalKey(Person, on_delete=models.CASCADE, related_name="related_links")
