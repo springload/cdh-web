@@ -17,17 +17,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='grant',
             name='project',
-            field=models.ForeignKey('projects.Project', null=True, on_delete=models.CASCADE)
+            field=models.ForeignKey('projects.Project', null=True, editable=False, on_delete=models.CASCADE)
         ),
         migrations.AlterField(
             model_name='membership',
             name='project',
-            field=models.ForeignKey('projects.Project', null=True, on_delete=models.CASCADE)
+            field=models.ForeignKey('projects.Project', null=True, editable=False, on_delete=models.CASCADE)
         ),
         migrations.AlterField(
             model_name='projectresource',
             name='project',
-            field=models.ForeignKey('projects.Project', null=True, on_delete=models.CASCADE)
+            field=models.ForeignKey('projects.Project', null=True, editable=False, on_delete=models.CASCADE)
         ),
         migrations.RenameField(
             model_name='grant',
