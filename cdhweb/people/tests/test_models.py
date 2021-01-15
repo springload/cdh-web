@@ -90,8 +90,6 @@ class TestPersonQuerySet(TestCase):
 
     def setUp(self):
         """create testing data"""
-        # FIXME why is this necessary?
-        Title.objects.all().delete()
 
         # create titles and roles
         self.director = Title.objects.create(title="director", sort_order=0)
@@ -103,10 +101,10 @@ class TestPersonQuerySet(TestCase):
             title="Undergraduate Assistant", sort_order=3)
         self.pgra = Title.objects.create(
             title="Postgraduate Research Associate")
-        self.exec = Title.objects.create(title="Executive Committee Member",
-            sort_order=5)
-        self.sits_exec = Title.objects.create(sort_order=6,
-            title="Sits with Executive Committee")
+        self.exec = Title.objects.get_or_create(
+            title="Executive Committee Member")[0]
+        self.sits_exec = Title.objects.get_or_create(
+            title="Sits with Executive Committee")[0]
         self.proj_dir = Role.objects.create(title="Project Director")
         self.co_pi = Role.objects.create(title="Co-PI: Research Lead")
         self.pm = Role.objects.create(title="Project Manager")
