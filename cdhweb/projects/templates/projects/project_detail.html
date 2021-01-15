@@ -12,7 +12,7 @@
 
 <div class="links">
   <ul>
-    {% for link in project.projectrelatedlink_set.all %}
+    {% for link in project.related_links %}
         {% with link_type=link.type.name %}
         <li class="{{ link_type|lower }}"><a href="{{ link.url }}">
             {# Special case: display project URL to make it visible & memorable  #}
