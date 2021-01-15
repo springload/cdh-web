@@ -9,11 +9,16 @@ from mezzanine.core.fields import FileField, RichTextField
 from mezzanine.core.models import Displayable
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from taggit.managers import TaggableManager
+from wagtail.core.models import Orderable
+from modelcluster.fields import ParentalKey
+from modelcluster.models import ClusterableModel
 
 from cdhweb.people.models import Person
 from cdhweb.resources.models import (Attachment, DateRange, ExcerptMixin,
                                      PublishedQuerySetMixin)
-from cdhweb.pages.models import RelatedLinkType
+from cdhweb.pages.models import RelatedLinkType, RelatedLink
+
+
 
 
 class ProjectQuerySet(PublishedQuerySetMixin):
@@ -65,7 +70,7 @@ class ProjectQuerySet(PublishedQuerySetMixin):
                    .order_by('-last_start', 'title')
 
 
-class Project(Displayable, AdminThumbMixin, ExcerptMixin):
+class Project(Displayable, AdminThumbMixin, ExcerptMixin, ClusterableModel):
     '''A CDH sponsored project'''
 
     short_description = models.CharField(max_length=255, blank=True,
@@ -115,8 +120,8 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
     @property
     def website_url(self):
         '''website url, if set'''
-        website = self.projectrelatedlink_set \
-            .filter(resource_type__name='Website').first()
+        website = self.related_links \
+            .filter(type__name='Website').first()
         if website:
             return website.url
 
@@ -210,12 +215,9 @@ class Membership(DateRange):
                                        self.project, self.years)
 
 
-class ProjectRelatedLink(models.Model):
-    '''Through-model for associating projects with resource types and
-    URLs'''
-    resource_type = models.ForeignKey(RelatedLinkType, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    url = models.URLField()
+class ProjectRelatedLink(Orderable, RelatedLink):
+    '''Through-model for associating projects with relatedlinks'''
+    project = ParentalKey(Project, on_delete=models.CASCADE, related_name="related_links")
 
     def display_url(self):
         '''url cleaned up for display, with leading http(s):// removed'''

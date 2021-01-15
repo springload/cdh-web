@@ -65,7 +65,7 @@ class TestProject(TestCase):
         # add a website url
         website = RelatedLinkType.objects.get(name='Website')
         derrida_url = 'http://derridas-margins.princeton.edu'
-        ProjectRelatedLink.objects.create(project=self.project, resource_type=website,
+        ProjectRelatedLink.objects.create(project=self.project, type=website,
                                        url=derrida_url)
         assert self.project.website_url == derrida_url
 
@@ -345,7 +345,7 @@ class TestProjectRelatedLink(TestCase):
         project_url = 'http://%s' % base_url
         proj = Project.objects.create(title="Derrida's Margins")
         website = RelatedLinkType.objects.get(name='Website')
-        res = ProjectRelatedLink.objects.create(project=proj, resource_type=website,
+        res = ProjectRelatedLink.objects.create(project=proj, type=website,
                                              url=project_url)
         assert res.display_url() == base_url
 
@@ -380,7 +380,7 @@ class TestViews(TestCase):
         # add link, set as built by cdh
         website = RelatedLinkType.objects.get(name='Website')
         project_url = 'http://derridas-margins.princeton.edu'
-        ProjectRelatedLink.objects.create(project=proj, resource_type=website,
+        ProjectRelatedLink.objects.create(project=proj, type=website,
                                        url=project_url)
         proj.cdh_built = True
         proj.save()
@@ -482,7 +482,7 @@ class TestViews(TestCase):
         # add a website url
         website = RelatedLinkType.objects.get(name='Website')
         project_url = 'http://something.princeton.edu'
-        ProjectRelatedLink.objects.create(project=proj, resource_type=website,
+        ProjectRelatedLink.objects.create(project=proj, type=website,
                                        url=project_url)
 
         response = self.client.get(reverse('project:detail',
