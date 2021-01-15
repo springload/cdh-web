@@ -10,22 +10,9 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-from cdhweb.blog.sitemaps import BlogPostSitemap
-from cdhweb.events.sitemaps import EventSitemap
-from cdhweb.people.sitemaps import ProfileSitemap
-from cdhweb.projects.sitemaps import ProjectSitemap
 from cdhweb.resources import views as resource_views
-from cdhweb.resources.sitemaps import PageSitemap
 
 admin.autodiscover()
-
-sitemaps = {
-    'blogs': BlogPostSitemap,
-    'events': EventSitemap,
-    'pages': PageSitemap,
-    'people': ProfileSitemap,
-    'projects': ProjectSitemap,
-}
 
 # use test favicon when test warning is enabled as another visual indicator
 FAVICON = '/static/favicon.ico'
@@ -55,12 +42,6 @@ urlpatterns = [
     # - all blog urls are now under updates/
     re_path(r'^blog(?P<blog_url>.*)$',
             RedirectView.as_view(url='/updates%(blog_url)s', permanent=True)),
-
-    # override mezzanine sitemap and use locally customized sitemaps
-    # NOTE: could use a sitemap index and grouped sitemaps here, but
-    # may complicate testing with pa11y-ci
-    re_path(r"^sitemap\.xml$", sitemap, {
-            'sitemaps': sitemaps}, name='sitemap'),
 
     # wagtail paths
     # NOTE temporarily make wagtail pages available at pages/ so that they can
