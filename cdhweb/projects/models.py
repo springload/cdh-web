@@ -1,4 +1,4 @@
-from cdhweb.pages.models import BodyContentBlock
+from cdhweb.pages.models import LandingPage, BodyContentBlock
 from cdhweb.people.models import Person
 from cdhweb.resources.models import (Attachment, DateRange, ExcerptMixin,
                                      ResourceType)
@@ -196,6 +196,11 @@ class ProjectPage(Page, ClusterableModel):
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
+    # can only be created underneath landing page
+    parent_page_types = ["projects.ProjectsLandingPage"]
+    # no allowed subpages
+    subpage_types = []
+
     # admin edit configuration
     content_panels = Page.content_panels + [
         FieldRowPanel((FieldPanel("highlight"),
@@ -338,3 +343,13 @@ class ProjectResource(models.Model):
             return self.url[8:]
         elif self.url.startswith('http://'):
             return self.url[7:]
+
+
+class ProjectsLandingPage(LandingPage):
+    """LandingPage subtype for Projects that holds Project pages."""
+    # NOTE this page can't be created in the page editor; it is only ever made
+    # via a script or the console, since there's only one.
+    parent_page_types = []
+    # NOTE the only allowed child page type is a Project; this is so that
+    # Projects made in the admin automatically are created here.
+    subpage_types = [ProjectPage]
