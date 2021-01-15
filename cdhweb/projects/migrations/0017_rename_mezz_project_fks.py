@@ -14,6 +14,21 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterField(
+            model_name='grant',
+            name='project',
+            field=models.ForeignKey('projects.Project', null=True, on_delete=models.CASCADE)
+        ),
+        migrations.AlterField(
+            model_name='membership',
+            name='project',
+            field=models.ForeignKey('projects.Project', null=True, on_delete=models.CASCADE)
+        ),
+        migrations.AlterField(
+            model_name='projectresource',
+            name='project',
+            field=models.ForeignKey('projects.Project', null=True, on_delete=models.CASCADE)
+        ),
         migrations.RenameField(
             model_name='grant',
             old_name='project',
@@ -29,19 +44,4 @@ class Migration(migrations.Migration):
             old_name='project',
             new_name='old_project',
         ),
-        migrations.AlterField(
-            model_name='grant',
-            name='old_project',
-            field=models.ForeignKey('projects.Project', null=True, on_delete=models.CASCADE)
-        ),
-        migrations.AlterField(
-            model_name='membership',
-            name='old_project',
-            field=models.ForeignKey('projects.Project', null=True, on_delete=models.CASCADE)
-        ),
-        migrations.AlterField(
-            model_name='projectresource',
-            name='old_project',
-            field=models.ForeignKey('projects.Project', null=True, on_delete=models.CASCADE)
-        )
     ]

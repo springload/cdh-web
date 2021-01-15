@@ -66,17 +66,21 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='grant',
-            name='project',
+            name='project_page',
             field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='grants', to='projects.ProjectPage'),
         ),
         migrations.AddField(
             model_name='membership',
-            name='project',
+            name='project_page',
             field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='memberships', to='projects.ProjectPage'),
         ),
         migrations.AddField(
             model_name='projectresource',
-            name='project',
+            name='project_page',
             field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='related_links', to='projects.ProjectPage'),
+        ),
+        migrations.AlterModelOptions(
+            name='grant',
+            options={'ordering': ['start_date', 'project_page']},
         ),
     ]

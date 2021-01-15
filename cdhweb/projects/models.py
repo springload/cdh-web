@@ -275,13 +275,13 @@ class GrantType(models.Model):
 
 class Grant(DateRange):
     '''A specific grant associated with a project'''
-    project = ParentalKey(
+    project_page = ParentalKey(
         ProjectPage, null=True, on_delete=models.CASCADE, related_name="grants")
     old_project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
     grant_type = models.ForeignKey(GrantType, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['start_date', 'project']
+        ordering = ['start_date', 'project_page']
 
     def __str__(self):
         return '%s: %s (%s)' % (self.project.title, self.grant_type.grant_type,
@@ -303,7 +303,7 @@ class Role(models.Model):
 
 class Membership(DateRange):
     '''Project membership - joins project, user, and role.'''
-    project = ParentalKey(ProjectPage, on_delete=models.CASCADE, null=True,
+    project_page = ParentalKey(ProjectPage, on_delete=models.CASCADE, null=True,
                           related_name="memberships")
     old_project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -323,7 +323,7 @@ class ProjectRelatedLink(RelatedLink):
 class ProjectResource(models.Model):
     '''Through-model for associating projects with resource types and
     URLs'''
-    project = ParentalKey(ProjectPage, on_delete=models.CASCADE, null=True,
+    project_page = ParentalKey(ProjectPage, on_delete=models.CASCADE, null=True,
                           related_name="related_links")
     resource_type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
     old_project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
