@@ -532,7 +532,7 @@ def init_person_from_ldap(user, ldapinfo):
     person.save()
 
 
-class PersonRelatedLink(Orderable, RelatedLink):
+class PersonRelatedLink(RelatedLink):
     '''Through-model for associating people with resource types and
     corresponding URLs for the specified resource type.'''
     person = ParentalKey(Person, on_delete=models.CASCADE, related_name="related_links")

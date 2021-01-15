@@ -222,7 +222,7 @@ class Membership(DateRange):
                                        self.project, self.years)
 
 
-class ProjectRelatedLink(Orderable, RelatedLink):
+class ProjectRelatedLink(RelatedLink):
     '''Through-model for associating projects with relatedlinks'''
     project = ParentalKey(Project, on_delete=models.CASCADE, related_name="related_links")
 

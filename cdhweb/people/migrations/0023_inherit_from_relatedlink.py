@@ -14,17 +14,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='personrelatedlink',
-            options={'ordering': ['sort_order']},
+            options={},
         ),
         migrations.RenameField(
             model_name='personrelatedlink',
             old_name='resource_type',
             new_name='type',
-        ),
-        migrations.AddField(
-            model_name='personrelatedlink',
-            name='sort_order',
-            field=models.IntegerField(blank=True, editable=False, null=True),
         ),
         migrations.AlterField(
             model_name='personrelatedlink',
