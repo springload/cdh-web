@@ -49,6 +49,7 @@ class Title(models.Model):
     num_people.short_description = '# People'
 
 
+<<<<<<< HEAD
 class PersonQuerySet(models.QuerySet):
 
     #: position titles that indicate a person is a postdoc
@@ -283,6 +284,7 @@ class Person(ClusterableModel):
             FieldPanel("office_location"),
         ), heading="Employment"),
         InlinePanel("positions", heading="Positions"),
+        InlinePanel("related_links", heading="Related Links")
     ]
 
     # custom manager for querying
@@ -430,7 +432,7 @@ class ProfilePage(Page):
         FieldRowPanel(
             (FieldPanel("person"), ImageChooserPanel("image")), "Person"),
         FieldPanel("education"),
-        StreamFieldPanel("bio")
+        StreamFieldPanel("bio"),
     ]
 
     parent_page_types = ["people.PeopleLandingPage"]

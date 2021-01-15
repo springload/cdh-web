@@ -107,6 +107,12 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin, ClusterableModel):
 
     admin_thumb_field = "thumb"
 
+    # TODO: Insert panels after creating project wagtail page
+    # content_panels = Page.content_panels + [
+    #     #....
+    #     InlinePanel("related_links", heading="Related Links"),
+    # ]
+
     class Meta:
         # sort by project title for now
         ordering = ['title']
@@ -152,6 +158,7 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin, ClusterableModel):
             .filter(
                 models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
         )
+
 
     def alums(self):
         ''':class:`PersonQueryset` of past members sorted by last name'''
