@@ -11,4 +11,6 @@ picture {
 iframe {
   width: 100%;
   border: none;
+  min-height: 250px;
+  @media (min-width: $medium-min-width) { min-height: 400px; }
 }

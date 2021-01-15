@@ -71,7 +71,11 @@ class SVGImageBlock(StructBlock):
 
 class BodyContentBlock(StreamBlock):
     '''Common set of blocks available in StreamFields for body text.'''
-    # allow h2 in regular paragraphs; insert before h3 for logical display
+    # NOTE add h2 here so that StreamField content can insert top-level headings
+    # (the page title is always h1). However, we don't put it in the config for
+    # PARAGRAPH_FEATURES because in some places you shouldn't be allowed to make
+    # an h2 or it would conflict with LinkableSections. In those cases, define
+    # RichTextField(features=PARAGRAPH_FEATURES) to get everything except h2.
     paragraph = RichTextBlock(features=["h2"] + PARAGRAPH_FEATURES)
     image = CaptionedImageBlock()
     svg_image = SVGImageBlock()
