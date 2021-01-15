@@ -7,9 +7,7 @@ class Migration(migrations.Migration):
     # Before altering the model, ensure that all other app migrations have referenced it
     dependencies = [
         ('resources', '0011_delete_resourcelinktype_model'),
-        ('projects', '0019_inherit_from_relatedlink'),
-        ('people', '0021_peoplelandingpage'),
-        ('cdhpages', '0002_relatedlinktype')
+        ('people', '0021_peoplelandingpage')
     ]
 
     operations = [

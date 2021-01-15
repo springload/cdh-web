@@ -6,7 +6,7 @@ from cdhweb.projects.models import Grant, GrantType, Membership, \
     Project, ProjectRelatedLink, Role
 
 
-class ResourceInline(admin.TabularInline):
+class RelatedLinkInline(admin.TabularInline):
     model = ProjectRelatedLink
 
 
@@ -49,7 +49,7 @@ class ProjectAdmin(DisplayableAdmin):
         return u", ".join(o.name for o in obj.tags.all())
     tag_list.short_description = 'Tags'
 
-    inlines = [GrantInline, ResourceInline]
+    inlines = [GrantInline, RelatedLinkInline]
 
 
 class GrantAdmin(admin.ModelAdmin):

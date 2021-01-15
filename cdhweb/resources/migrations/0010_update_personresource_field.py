@@ -11,7 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Update other resource models with new location. This is will be temporary.
         migrations.AlterField(
             model_name='personresource',
             name='resource_type',

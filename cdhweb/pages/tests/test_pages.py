@@ -74,8 +74,6 @@ class TestContentPage(WagtailPageTests):
 
 
 class TestRelatedLinkType(WagtailPageTests):
-
     def test_str(self):
         restype = RelatedLinkType(name='twitter')
         assert str(restype) == restype.name
-
