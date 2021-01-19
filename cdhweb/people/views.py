@@ -203,8 +203,8 @@ class ExecListView(PersonListView):
         # exec members, sits with committee, then alumni as usual
         current = context['current']
         context.update({
-            'current': current.exec_member(),
-            'sits_with': current.sits_with_exec(),
+            'current': self.add_display_label(current.exec_member()),
+            'sits_with': self.add_display_label(current.sits_with_exec()),
         })
         return context
 
