@@ -230,6 +230,7 @@ class Person(ClusterableModel):
         User,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         help_text='Corresponding user account for this person (optional)'
     )
     cdh_staff = models.BooleanField(
