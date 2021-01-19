@@ -442,15 +442,19 @@ class ProfilePage(Page):
         """Add recent BlogPosts by this Person to their ProfilePage."""
         context = super().get_context(request)
 
-        # get 3 most recent published posts with this person as author
-        recent_posts = BlogPost.objects.filter(
-            users__id=self.person.user.id).published()[:3]
+        # TODO BlogPost still associated to user; will break when blog models
+        # are migrated/exodized to wagtail
+        
+        if self.person.user:
+            # get 3 most recent published posts with this person as author
+            recent_posts = BlogPost.objects.filter(
+                users__id=self.person.user.id).published()[:3]
 
-        # add to context and set open graph metadata
-        context.update({
-            "opengraph_type": "profile",
-            "recent_posts": recent_posts
-        })
+            # add to context and set open graph metadata
+            context.update({
+                "opengraph_type": "profile",
+                "recent_posts": recent_posts
+            })
 
         return context
 
