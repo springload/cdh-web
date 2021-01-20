@@ -1,7 +1,6 @@
-from cdhweb.pages.models import LandingPage, BodyContentBlock
+from cdhweb.pages.models import BodyContentBlock, LandingPage, RelatedLink
 from cdhweb.people.models import Person
-from cdhweb.resources.models import (Attachment, DateRange, ExcerptMixin,
-                                     ResourceType)
+from cdhweb.resources.models import Attachment, DateRange, ExcerptMixin
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -160,7 +159,6 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
                 models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
         )
 
-
     def alums(self):
         ''':class:`PersonQueryset` of past members sorted by last name'''
         # uses people rather than memberships so that we can use distinct()
@@ -226,8 +224,7 @@ class ProjectPage(Page, ClusterableModel):
     @property
     def website_url(self):
         """URL for this Project's website, if set"""
-        website = self.projectresource_set \
-            .filter(resource_type__name="Website").first()
+        website = self.related_links.filter(type__name="Website").first()
         if website:
             return website.url
 
@@ -310,7 +307,7 @@ class Role(models.Model):
 class Membership(DateRange):
     '''Project membership - joins project, user, and role.'''
     project_page = ParentalKey(ProjectPage, on_delete=models.CASCADE, null=True,
-                               related_name="memberships")
+                          related_name="memberships")
     old_project = models.ForeignKey(
         Project, null=True, editable=False, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -326,16 +323,10 @@ class Membership(DateRange):
 
 class ProjectRelatedLink(RelatedLink):
     '''Through-model for associating projects with relatedlinks'''
-    project = ParentalKey(Project, on_delete=models.CASCADE, related_name="related_links")
-class ProjectResource(models.Model):
-    '''Through-model for associating projects with resource types and
-    URLs'''
-    project_page = ParentalKey(ProjectPage, on_delete=models.CASCADE, null=True,
-                               related_name="related_links")
-    resource_type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
+    project_page = ParentalKey(
+        ProjectPage, on_delete=models.CASCADE, related_name="related_links")
     old_project = models.ForeignKey(
         Project, null=True, editable=False, on_delete=models.CASCADE)
-    url = models.URLField()
 
     def display_url(self):
         '''url cleaned up for display, with leading http(s):// removed'''

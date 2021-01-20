@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('cdhpages', '0002_allow_body_h2'),
-        ('projects', '0018_project_page_wagtail'),
+        ('projects', '0021_project_page_wagtail'),
     ]
 
     operations = [

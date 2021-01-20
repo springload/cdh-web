@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         ('taggit', '0003_taggeditem_add_unique_index'),
         ('wagtailimages', '0022_uploadedimage'),
         ('people', '0022_allow_bio_h2'),
-        ('projects', '0017_rename_mezz_project_fks'),
+        ('projects', '0020_rename_mezz_project_fks'),
     ]
 
     operations = [
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
             field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='memberships', to='projects.ProjectPage'),
         ),
         migrations.AddField(
-            model_name='projectresource',
+            model_name='projectrelatedlink',
             name='project_page',
             field=modelcluster.fields.ParentalKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='related_links', to='projects.ProjectPage'),
         ),

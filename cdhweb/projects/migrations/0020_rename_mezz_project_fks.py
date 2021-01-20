@@ -6,11 +6,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('taggit', '0003_taggeditem_add_unique_index'),
-        ('sites', '0002_alter_domain_unique'),
-        ('people', '0022_allow_bio_h2'),
-        ('resources', '0008_userresource_to_personresource'),
-        ('projects', '0016_project_member_to_person'),
+        ('projects', '0019_inherit_from_relatedlink'),
     ]
 
     operations = [
@@ -25,7 +21,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey('projects.Project', null=True, editable=False, on_delete=models.CASCADE)
         ),
         migrations.AlterField(
-            model_name='projectresource',
+            model_name='projectrelatedlink',
             name='project',
             field=models.ForeignKey('projects.Project', null=True, editable=False, on_delete=models.CASCADE)
         ),
@@ -40,7 +36,7 @@ class Migration(migrations.Migration):
             new_name='old_project',
         ),
         migrations.RenameField(
-            model_name='projectresource',
+            model_name='projectrelatedlink',
             old_name='project',
             new_name='old_project',
         ),
