@@ -20,6 +20,7 @@ from wagtail.images.models import Image
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage, LinkPage, \
     PageIntro
 from cdhweb.people.models import Person, Profile, ProfilePage, PeopleLandingPage
+from cdhweb.projects.models import ProjectsLandingPage, Project
 
 
 class Command(BaseCommand):
@@ -125,18 +126,30 @@ class Command(BaseCommand):
         site.save()
         Page.objects.filter(depth=2).exclude(pk=homepage.pk).delete()
 
-        # create a dummy top-level projects/ page for project pages to go under
-        if mezz_page_models.Page.objects.filter(slug="projects").exists():
-            projects = ContentPage(
-                title="Sponsored Projects",
+        # manually migrate the project landing page to a special subtype
+        try:
+            old_projects = mezz_page_models.Page.objects.get(slug="projects/about")
+            projects = ProjectsLandingPage(
+                title=old_projects.title,
+                tagline=old_projects.landingpage.tagline,
+                header_image=self.get_wagtail_image(old_projects.landingpage.image),
                 slug="projects",
-                seo_title="Sponsored Projects",
+                seo_title=old_projects._meta_title or old_projects.title,
+                body=json.dumps([{
+                    "type": "migrated",
+                    "value": old_projects.landingpage.content,
+                }]),
+                search_description=old_projects.description,
             )
             homepage.add_child(instance=projects)
             homepage.save()
-            self.migrated.append(
-                mezz_page_models.Page.objects.get(slug='projects').pk)
-        else:
+            # mark as migrated
+            self.migrated.append(old_projects.pk)
+            # mark all children (list pages) as migrated since they become
+            # views/snippets
+            for page in old_projects.children.all():
+                self.migrated.append(page.pk)
+        except mezz_page_models.Page.DoesNotExist:
             projects = None
 
         # create a dummy top-level events/ page for event pages to go under
@@ -189,16 +202,7 @@ class Command(BaseCommand):
             for page in event_pages:
                 self.migrate_pages(page, events)
 
-        if projects:
-            # - migrate project pages but specify new projects list page as parent
-            # - process about page last so project pages don't nest
-            project_pages = mezz_page_models.Page.objects \
-                .filter(slug__startswith="projects/").order_by('-slug')
-            for page in project_pages:
-                self.migrate_pages(page, projects)
-
-        # migrate people list pages to link page,
-        # using new people landingpage as parent
+        # migrate people pages but use new landingpage subtype as parent
         if people:
             people_pages = mezz_page_models.Page.objects \
                 .filter(slug__startswith="people/").order_by('-slug')
@@ -471,3 +475,9 @@ class Command(BaseCommand):
                 person.image = self.get_wagtail_image(profile.thumb)
                 person.save()
 
+    def project_exodus(self):
+        # TODO exodize each project page
+        # TODO create redirects:
+        # /projects/about -> /projects
+        # /project/ -> /projects/sponsored-projects
+        pass
