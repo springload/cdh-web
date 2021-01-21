@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('cdhpages', '0002_allow_body_h2'),
-        ('projects', '0021_rename_mezz_project_fks'),
+        ('projects', '0022_rename_project'),
     ]
 
     operations = [

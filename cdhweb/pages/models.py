@@ -214,7 +214,7 @@ class HomePage(Page):
         # FIXME because these apps import LandingPage, there is a circular
         # import issue, so we can't import these models at the top of this file
         BlogPost = apps.get_model("blog", "blogpost")
-        ProjectPage = apps.get_model("projects", "projectpage")
+        Project = apps.get_model("projects", "project")
         Event = apps.get_model("events", "event")
 
         # add up to 6 featured updates, otherwise use 3 most recent updates
@@ -224,7 +224,7 @@ class HomePage(Page):
         context['updates'] = updates
 
         # add up to 4 highlighted, published projects
-        projects = list(ProjectPage.objects.live().highlighted())
+        projects = list(Project.objects.live().highlighted())
         shuffle(projects)
         context['projects'] = projects[:4]
 

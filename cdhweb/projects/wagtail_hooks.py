@@ -1,11 +1,11 @@
-from cdhweb.projects.models import ProjectPage, GrantType, Role
+from cdhweb.projects.models import Project, GrantType, Role
 from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
 from wagtail.contrib.modeladmin.options import (ModelAdmin, ModelAdminGroup,
                                                 modeladmin_register)
 
 
 class ProjectAdmin(ThumbnailMixin, ModelAdmin):
-    model = ProjectPage
+    model = Project
     menu_label = "Projects"
     menu_icon = "site"
     list_display = ("title", "live", "highlight", "admin_thumb", "tags")

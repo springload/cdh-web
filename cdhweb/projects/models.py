@@ -73,7 +73,7 @@ class ProjectQuerySet(PageQuerySet):
 ProjectManager = PageManager.from_queryset(ProjectQuerySet)
 
 
-class Project(Displayable, AdminThumbMixin, ExcerptMixin):
+class OldProject(Displayable, AdminThumbMixin, ExcerptMixin):
     '''A CDH sponsored project'''
 
     short_description = models.CharField(max_length=255, blank=True,
@@ -173,10 +173,10 @@ class Project(Displayable, AdminThumbMixin, ExcerptMixin):
 class ProjectTag(TaggedItemBase):
     """Tags for Project pages."""
     content_object = ParentalKey(
-        "projects.ProjectPage", on_delete=models.CASCADE, related_name="tagged_items")
+        "projects.Project", on_delete=models.CASCADE, related_name="tagged_items")
 
 
-class ProjectPage(Page, ClusterableModel):
+class Project(Page, ClusterableModel):
     """Page type for a CDH sponsored project or working group."""
     short_description = models.CharField(max_length=255, blank=True,
                                          help_text="Brief tagline for display on project card in browse view")
@@ -278,9 +278,9 @@ class GrantType(models.Model):
 class Grant(DateRange):
     '''A specific grant associated with a project'''
     project = ParentalKey(
-        ProjectPage, null=True, on_delete=models.CASCADE, related_name="grants")
+        Project, null=True, on_delete=models.CASCADE, related_name="grants")
     old_project = models.ForeignKey(
-        Project, null=True, editable=False, on_delete=models.SET_NULL)
+        OldProject, null=True, editable=False, on_delete=models.SET_NULL)
     grant_type = models.ForeignKey(GrantType, on_delete=models.CASCADE)
 
     class Meta:
@@ -306,10 +306,10 @@ class Role(models.Model):
 
 class Membership(DateRange):
     '''Project membership - joins project, user, and role.'''
-    project = ParentalKey(ProjectPage, on_delete=models.CASCADE, null=True,
+    project = ParentalKey(Project, on_delete=models.CASCADE, null=True,
                           related_name="memberships")
     old_project = models.ForeignKey(
-        Project, null=True, editable=False, on_delete=models.SET_NULL)
+        OldProject, null=True, editable=False, on_delete=models.SET_NULL)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
@@ -324,9 +324,9 @@ class Membership(DateRange):
 class ProjectRelatedLink(RelatedLink):
     '''Through-model for associating projects with relatedlinks'''
     project = ParentalKey(
-        ProjectPage, on_delete=models.CASCADE, related_name="related_links")
+        Project, on_delete=models.CASCADE, related_name="related_links")
     old_project = models.ForeignKey(
-        Project, null=True, editable=False, on_delete=models.SET_NULL)
+        OldProject, null=True, editable=False, on_delete=models.SET_NULL)
 
     def display_url(self):
         '''url cleaned up for display, with leading http(s):// removed'''
@@ -343,4 +343,4 @@ class ProjectsLandingPage(LandingPage):
     parent_page_types = []
     # NOTE the only allowed child page type is a Project; this is so that
     # Projects made in the admin automatically are created here.
-    subpage_types = [ProjectPage]
+    subpage_types = [Project]
