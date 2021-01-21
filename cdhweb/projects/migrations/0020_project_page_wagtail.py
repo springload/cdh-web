@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         ('taggit', '0003_taggeditem_add_unique_index'),
         ('wagtailimages', '0022_uploadedimage'),
         ('people', '0022_allow_bio_h2'),
-        ('projects', '0020_rename_mezz_project_fks'),
+        ('projects', '0019_inherit_from_relatedlink'),
     ]
 
     operations = [

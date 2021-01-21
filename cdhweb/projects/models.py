@@ -277,14 +277,14 @@ class GrantType(models.Model):
 
 class Grant(DateRange):
     '''A specific grant associated with a project'''
-    project_page = ParentalKey(
+    project = ParentalKey(
         ProjectPage, null=True, on_delete=models.CASCADE, related_name="grants")
     old_project = models.ForeignKey(
-        Project, null=True, editable=False, on_delete=models.CASCADE)
+        Project, null=True, editable=False, on_delete=models.SET_NULL)
     grant_type = models.ForeignKey(GrantType, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['start_date', 'project_page']
+        ordering = ['start_date', 'project']
 
     def __str__(self):
         return '%s: %s (%s)' % (self.project.title, self.grant_type.grant_type,
@@ -306,10 +306,10 @@ class Role(models.Model):
 
 class Membership(DateRange):
     '''Project membership - joins project, user, and role.'''
-    project_page = ParentalKey(ProjectPage, on_delete=models.CASCADE, null=True,
+    project = ParentalKey(ProjectPage, on_delete=models.CASCADE, null=True,
                           related_name="memberships")
     old_project = models.ForeignKey(
-        Project, null=True, editable=False, on_delete=models.CASCADE)
+        Project, null=True, editable=False, on_delete=models.SET_NULL)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
@@ -323,10 +323,10 @@ class Membership(DateRange):
 
 class ProjectRelatedLink(RelatedLink):
     '''Through-model for associating projects with relatedlinks'''
-    project_page = ParentalKey(
+    project = ParentalKey(
         ProjectPage, on_delete=models.CASCADE, related_name="related_links")
     old_project = models.ForeignKey(
-        Project, null=True, editable=False, on_delete=models.CASCADE)
+        Project, null=True, editable=False, on_delete=models.SET_NULL)
 
     def display_url(self):
         '''url cleaned up for display, with leading http(s):// removed'''
