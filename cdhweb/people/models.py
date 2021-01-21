@@ -332,7 +332,7 @@ class Person(ClusterableModel):
             if mship.end_date:
                 grant_overlap |= models.Q(start_date__lte=mship.end_date)
 
-            return mship.project.grant_set \
+            return mship.project.grants \
                 .filter(grant_overlap) \
                 .order_by('-start_date').first()
 
