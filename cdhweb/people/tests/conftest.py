@@ -17,7 +17,16 @@ def create_person_with_position(position, start_date=None, end_date=None,
 
 
 @pytest.fixture
-def staffer():
+def project(db, project_landing_page):
+    """Empty project for use in testing people."""
+    project = Project(title="project")
+    project_landing_page.add_child(instance=project)
+    project_landing_page.save()
+    return project
+
+
+@pytest.fixture
+def staffer(db):
     '''fixture to create a staff person with two staff positions'''
     staff_person = create_person_with_position(
         'DH Developer',
@@ -31,7 +40,7 @@ def staffer():
 
 
 @pytest.fixture
-def postdoc():
+def postdoc(db):
     '''fixture to create a postdoc person'''
     return create_person_with_position(
         'Postdoctoral Fellow',
@@ -40,7 +49,7 @@ def postdoc():
 
 
 @pytest.fixture
-def student():
+def student(db):
     '''fixture to create a student person record'''
     return create_person_with_position(
         'Undergraduate Assistant',
@@ -49,10 +58,12 @@ def student():
 
 
 @pytest.fixture
-def grad_pi():
+def grad_pi(db, projects_landing_page):
     person = Person.objects.create(
         first_name='Tom', cdh_staff=False, pu_status='graduate')
-    project = Project.objects.create(title='Chinese Exchange Poems')
+    project = Project(title='Chinese Exchange Poems')
+    projects_landing_page.add_child(instance=project)
+    projects_landing_page.save()
     project_director = Role.objects.get_or_create(title='Project Director')[0]
     Membership.objects.create(
         project=project, person=person, role=project_director,
@@ -61,12 +72,15 @@ def grad_pi():
 
 
 @pytest.fixture
-def faculty_pi():
+def faculty_pi(db, projects_landing_page):
     person = Person.objects.create(
         first_name='Josh', cdh_staff=False, pu_status='fac')
-    project = Project.objects.create(title='MEP')
+    project = Project(title='MEP')
+    projects_landing_page.add_child(instance=project)
+    projects_landing_page.save()
     project_director = Role.objects.get_or_create(title='Project Director')[0]
-    dataset_curation = GrantType.objects.get_or_create(grant_type='Dataset Curation')[0]
+    dataset_curation = GrantType.objects.get_or_create(
+        grant_type='Dataset Curation')[0]
     Grant.objects.create(grant_type=dataset_curation, project=project,
                          start_date=date(2019, 9, 1),
                          end_date=date.today() + timedelta(days=30))
@@ -77,12 +91,15 @@ def faculty_pi():
 
 
 @pytest.fixture
-def staff_pi():
+def staff_pi(db, projects_landing_page):
     person = Person.objects.create(
         first_name='Thomas', cdh_staff=False, pu_status='stf')
-    project = Project.objects.create(title='SVP')
+    project = Project(title='SVP')
+    projects_landing_page.add_child(instance=project)
+    projects_landing_page.save()
     project_director = Role.objects.get_or_create(title='Project Director')[0]
-    dataset_curation = GrantType.objects.get_or_create(grant_type='Dataset Curation')[0]
+    dataset_curation = GrantType.objects.get_or_create(
+        grant_type='Dataset Curation')[0]
     Grant.objects.create(grant_type=dataset_curation, project=project,
                          start_date=date(2020, 9, 1),
                          end_date=date.today() + timedelta(days=30))
@@ -93,7 +110,7 @@ def staff_pi():
 
 
 @pytest.fixture
-def faculty_exec():
+def faculty_exec(db):
     return create_person_with_position(
         'Executive Committee Member',
         start_date=date(2018, 3, 1),
@@ -101,7 +118,7 @@ def faculty_exec():
 
 
 @pytest.fixture
-def staff_exec():
+def staff_exec(db):
     return create_person_with_position(
         'Sits with Executive Committee',
         start_date=date(2010, 3, 1),
