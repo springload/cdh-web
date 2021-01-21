@@ -1,10 +1,14 @@
+import pytest
 from datetime import date, timedelta
 from unittest.mock import Mock
 
-from cdhweb.projects.models import Project, Membership, Role
+from cdhweb.projects.models import Membership, Role
 from cdhweb.people.models import Person, Position, Title, init_person_from_ldap
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from wagtail.core.models import Page
+from cdhweb.pages.models import HomePage
+from cdhweb.projects.models import ProjectsLandingPage, Project
 
 
 class TestTitle(TestCase):
@@ -90,7 +94,6 @@ class TestPersonQuerySet(TestCase):
 
     def setUp(self):
         """create testing data"""
-
         # create titles and roles
         self.director = Title.objects.create(title="director", sort_order=0)
         self.dev = Title.objects.create(title="developer", sort_order=1)
@@ -108,7 +111,18 @@ class TestPersonQuerySet(TestCase):
         self.proj_dir = Role.objects.create(title="Project Director")
         self.co_pi = Role.objects.create(title="Co-PI: Research Lead")
         self.pm = Role.objects.create(title="Project Manager")
-        self.project = Project.objects.create(title="project")
+        # FIXME should use fixtures when these are converted
+        root = Page.objects.first()
+        home = HomePage(title="home", slug="")
+        root.add_child(instance=home)
+        root.save()
+        landing = ProjectsLandingPage(
+            title="projects", slug="projects", tagline="projects")
+        home.add_child(instance=landing)
+        home.save()
+        self.project = Project(title="project")
+        landing.add_child(instance=self.project)
+        landing.save()
 
     def test_staff(self):
         """should be able to filter people to only cdh staff"""
