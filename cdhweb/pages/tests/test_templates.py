@@ -1,34 +1,27 @@
 import pytest
-from django.test import TestCase, SimpleTestCase
-from wagtail.core.models import Page, Site
-
-from cdhweb.pages.models import HomePage, LandingPage, ContentPage, CaptionedImageBlock, SVGImageBlock
+from cdhweb.pages.models import CaptionedImageBlock, SVGImageBlock
+from pytest_django.asserts import assertContains, assertTemplateNotUsed
 
 
-class TestHomePage(TestCase):
-    """Test the home page."""
-    fixtures = ["test_pages.json"]
+@pytest.mark.django_db
+class TestHomePage:
 
-    def setUp(self):
-        """get objects for use in tests"""
-        self.homepage = HomePage.objects.get()
-        self.site = Site.objects.get()
-
-    def test_visit(self):
+    def test_visit(self, client, site, homepage):
         """homepage should be navigable"""
-        response = self.client.get(self.homepage.relative_url(self.site))
+        response = client.get(homepage.relative_url(site))
         assert response.status_code == 200
 
-    def test_page_content(self):
+    def test_page_content(self, client, site, homepage):
         """homepage editable content should display"""
-        response = self.client.get(self.homepage.relative_url(self.site))
-        self.assertContains(response, self.homepage.body[0].value.source)
+        response = client.get(homepage.relative_url(site))
+        assertContains(response, homepage.body[0].value.source)
 
-    def test_blog_posts(self):
+    @pytest.mark.skip("todo")
+    def test_blog_posts(self, client, site, homepage):
         """homepage should display featured blog posts in carousel"""
         # TODO actually check that featured posts appear once blog is exodized
-        response = self.client.get(self.homepage.relative_url(self.site))
-        self.assertTemplateNotUsed(response, "snippets/carousel.html")
+        response = client.get(homepage.relative_url(site))
+        assertTemplateNotUsed(response, "snippets/carousel.html")
 
         """
         # add some posts but don't feature any yet; should display most recent 3
@@ -60,15 +53,17 @@ class TestHomePage(TestCase):
             self.assertContains(response, post.title)
         """
 
-    def test_highlighted_projects(self):
-        """homepage should display highlighted projects as cards"""
-        # TODO actually check that projects appear once projects are exodized
-        response = self.client.get(self.homepage.relative_url(self.site))
-        self.assertTemplateNotUsed(
-            response, "projects/snippets/project_card.html")
+    def test_empty_projects(self, client, site, homepage):
+        """homepage should not render projects if none exist"""
+        response = client.get(homepage.relative_url(site))
+        assertTemplateNotUsed(response, "projects/snippets/project_card.html")
 
+    @pytest.mark.skip("todo")
+    def test_highlighted_projects(self, client, site, homepage, derrida):
+        """homepage should display highlighted projects as cards"""
+        response = client.get(homepage.relative_url(site))
+        # test how projects are displayed on the home page
         """
-                # test how projects are displayed on the home page
         today = timezone.now()
         site = Site.objects.first()
         projects = Project.objects.bulk_create(
@@ -115,13 +110,16 @@ class TestHomePage(TestCase):
             # NOTE: currently not testing thumbnail included
         """
 
-    def test_upcoming_events(self):
+    def test_empty_events(self, client, site, homepage):
+        """homepage should display message when no events are available"""
+        response = client.get(homepage.relative_url(site))
+        assertTemplateNotUsed(response, "events/snippets/event_card.html")
+        assertContains(response, "Next semester's events are being scheduled.")
+
+    @pytest.mark.skip("todo")
+    def test_upcoming_events(self, client, site, homepage):
         """homepage should display upcoming events as cards"""
         # TODO actually check that events appear once events are exodized
-        response = self.client.get(self.homepage.relative_url(self.site))
-        self.assertTemplateNotUsed(response, "events/snippets/event_card.html")
-        self.assertContains(
-            response, "Next semester's events are being scheduled.")
 
         """
         self.assertContains(response, reverse('event:upcoming'),
@@ -156,100 +154,68 @@ class TestHomePage(TestCase):
         """
 
 
-class TestLandingPage(TestCase):
-    """Test landing pages."""
-    fixtures = ["test_pages.json"]
+@pytest.mark.django_db
+class TestLandingPage:
 
-    def setUp(self):
-        """get objects for use in tests"""
-        self.landingpage = LandingPage.objects.get(slug="research")
-        self.site = Site.objects.get()
-
-    def test_visit(self):
+    def test_visit(self, client, site, landing_page):
         """landingpage should be navigable"""
-        response = self.client.get(self.landingpage.relative_url(self.site))
+        response = client.get(landing_page.relative_url(site))
         assert response.status_code == 200
 
-    def test_page_content(self):
+    def test_page_content(self, client, site, landing_page):
         """landingpage editable content should display"""
-        response = self.client.get(self.landingpage.relative_url(self.site))
-        self.assertContains(response, self.landingpage.body[0].value.source)
+        response = client.get(landing_page.relative_url(site))
+        assertContains(response, "<p>content of the landing page</p>")
 
-    def test_tagline(self):
+    def test_tagline(self, client, site, landing_page):
         """landingpage tagline should display"""
-        response = self.client.get(self.landingpage.relative_url(self.site))
-        self.assertContains(response, "Collaborate with us!")
+        response = client.get(landing_page.relative_url(site))
+        assertContains(response, "tagline")
 
     @pytest.mark.skip("todo")
     def test_header_image(self):
         pass
 
 
-class TestContentPage(TestCase):
-    """Test contentpages."""
-    fixtures = ["test_pages.json"]
+@pytest.mark.django_db
+class TestContentPage:
 
-    def setUp(self):
-        """get contentpage objects for use in tests"""
-        self.contentpage = ContentPage.objects.get(slug="about")
-        self.site = Site.objects.get()
-
-    def test_visit(self):
+    def test_visit(self, client, site, content_page):
         """contentpage should be navigable"""
-        response = self.client.get(self.contentpage.relative_url(self.site))
+        response = client.get(content_page.relative_url(site))
         assert response.status_code == 200
 
-    def test_page_content(self):
+    def test_page_content(self, client, site, content_page):
         """contentpage editable content should display"""
-        response = self.client.get(self.contentpage.relative_url(self.site))
-        self.assertContains(response, self.contentpage.body[0].value.source)
+        response = client.get(content_page.relative_url(site))
+        assertContains(response, "<p>content of the content page</p>")
 
 
-class TestPagesSitemap(TestCase):
-
-    @pytest.mark.skip("todo")
-    def test_sitemap(self):
-        # basic test of sitemap url config, override from mezzanine
-        pass
-        # response = self.client.get(reverse('sitemap'))
-        # assert response.status_code == 200
-
-        # # both fixture items are published
-        # for page in Page.objects.all():
-        #     self.assertContains(response, page.get_absolute_url())
-        #     self.assertContains(response, page.updated.strftime('%Y-%m-%d'))
-
-        # # set to unpublished - should not be included
-        # pages = Page.objects.exclude(slug='/')  # check all but home page
-        # # pages.update(status=CONTENT_STATUS_DRAFT)
-        # # response = self.client.get(reverse('sitemap'))
-        # for page in pages.all():
-        #     self.assertNotContains(response, page.get_absolute_url())
-
-
-class TestPagesMenus(TestCase):
+@pytest.mark.django_db
+class TestPagesMenus:
 
     @pytest.mark.skip("todo")
-    def test_child_pages_attachment(self):
+    def test_child_pages_attachment(self, client):
+        """
         about = Page.objects.get(title='About')
         annual_report = Page.objects.get(title='Annual Report')
-        response = self.client.get(about.get_absolute_url())
+        response = client.get(about.get_absolute_url())
         # page-children attachment section should be present
-        self.assertContains(
+        assertContains(
             response, '<div class="attachments page-children">')
         # child page title and url should be present
-        self.assertContains(response, annual_report.title)
-        self.assertContains(response, annual_report.get_absolute_url())
+        assertContains(response, annual_report.title)
+        assertContains(response, annual_report.get_absolute_url())
 
         # delete child page to check behavior without
         annual_report.delete()
-        response = self.client.get(about.get_absolute_url())
+        response = client.get(about.get_absolute_url())
         # should not error, should not contain page-children attachment section
-        self.assertNotContains(
-            response, '<div class="attachments page-children">')
+        assertNotContains(response, '<div class="attachments page-children">')
+        """
 
 
-class TestCaptionedImageBlock(SimpleTestCase):
+class TestCaptionedImageBlock:
 
     def test_render(self):
         block = CaptionedImageBlock()
@@ -276,7 +242,7 @@ class TestCaptionedImageBlock(SimpleTestCase):
         assert caption in html
 
 
-class TestSVGImageBlock(SimpleTestCase):
+class TestSVGImageBlock:
 
     def test_render(self):
         block = SVGImageBlock()
