@@ -3,7 +3,6 @@ from cdhweb.pages.models import CaptionedImageBlock, SVGImageBlock
 from pytest_django.asserts import assertContains, assertTemplateNotUsed
 
 
-@pytest.mark.django_db
 class TestHomePage:
 
     def test_visit(self, client, site, homepage):
@@ -154,7 +153,6 @@ class TestHomePage:
         """
 
 
-@pytest.mark.django_db
 class TestLandingPage:
 
     def test_visit(self, client, site, landing_page):
@@ -177,7 +175,6 @@ class TestLandingPage:
         pass
 
 
-@pytest.mark.django_db
 class TestContentPage:
 
     def test_visit(self, client, site, content_page):
@@ -191,7 +188,6 @@ class TestContentPage:
         assertContains(response, "<p>content of the content page</p>")
 
 
-@pytest.mark.django_db
 class TestPagesMenus:
 
     @pytest.mark.skip("todo")
