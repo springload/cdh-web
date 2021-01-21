@@ -1,5 +1,5 @@
 import pytest
-from datetime import date
+from datetime import date, datetime, timedelta
 from cdhweb.pages.models import HomePage
 from cdhweb.people.models import Person
 from cdhweb.projects.models import Membership, ProjectsLandingPage, Role, Project, Grant, GrantType
@@ -33,26 +33,31 @@ def derrida(db, projects_landing_page):
     projects_landing_page.add_child(instance=derrida)
     projects_landing_page.save()
 
-    # add grants: 2015-2016 DCG and 2016-2017 RPG
+    # dates used
+    today = datetime.today()
+    one_year_ago = today - timedelta(days=365)
+    two_years_ago = one_year_ago - timedelta(days=365)
+
+    # add grants: DCG from last year and RPG from this year
     dcg = GrantType.objects.get_or_create(grant_type="Dataset Curation")[0]
     rpg = GrantType.objects.get_or_create(grant_type="Research Partnership")[0]
-    Grant.objects.create(project=derrida, grant_type=dcg, start_date=date(
-        2015, 1, 1), end_date=date(2016, 1, 1))
-    Grant.objects.create(project=derrida, grant_type=rpg, start_date=date(
-        2016, 1, 1), end_date=date(2017, 1, 1))
+    Grant.objects.create(project=derrida, grant_type=dcg,
+                         start_date=two_years_ago, end_date=one_year_ago)
+    Grant.objects.create(project=derrida, grant_type=rpg,
+                         start_date=one_year_ago, end_date=today)
 
-    # add memberships for initial project team
-    add_project_member(derrida, "Project Director", start_date=date(
-        2015, 1, 1), end_date=date(2017, 1, 1), first_name="Katie", last_name="Chenoweth")
-    add_project_member(derrida, "Lead Developer", start_date=date(
-        2015, 1, 1), end_date=date(2017, 1, 1), first_name="Rebecca", last_name="Koeser")
-    add_project_member(derrida, "Project Manager", start_date=date(
-        2015, 1, 1), end_date=date(2016, 1, 1), first_name="Rebecca", last_name="Munson")
+    # add memberships for initial project team (first year)
+    add_project_member(derrida, "Project Director", start_date=two_years_ago,
+                       end_date=today, first_name="Katie", last_name="Chenoweth")
+    add_project_member(derrida, "Lead Developer", start_date=two_years_ago,
+                       end_date=today, first_name="Rebecca", last_name="Koeser")
+    add_project_member(derrida, "Project Manager", start_date=two_years_ago,
+                       end_date=one_year_ago, first_name="Rebecca", last_name="Munson")
 
-    # add new memberships for 2016-2017 year
-    add_project_member(derrida, "Grad Assistant", start_date=date(
-        2016, 1, 1), end_date=date(2017, 1, 1), first_name="Chloe", last_name="Vettier")
-    add_project_member(derrida, "Project Manager", start_date=date(
-        2016, 1, 1), end_date=date(2017, 1, 1), first_name="Renee", last_name="Altergott")
+    # add new memberships for past year
+    add_project_member(derrida, "Grad Assistant", start_date=one_year_ago,
+                       end_date=today, first_name="Chloe", last_name="Vettier")
+    add_project_member(derrida, "Project Manager", start_date=one_year_ago,
+                       end_date=today, first_name="Renee", last_name="Altergott")
 
     return derrida
