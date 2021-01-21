@@ -18,13 +18,6 @@ from cdhweb.blog.models import BlogPost
 
 class TestPeopleLandingPage(WagtailPageTests):
 
-    def setUp(self):
-        """create page tree for testing"""
-        root = Page.objects.get(title="Root")
-        self.home = HomePage(title="home", slug="")
-        root.add_child(instance=self.home)
-        root.save()
-
     def test_parent_pages(self):
         """no allowed parent page type; must be created manually"""
         self.assertAllowedParentPageTypes(PeopleLandingPage, [])
