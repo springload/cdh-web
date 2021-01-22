@@ -1,7 +1,7 @@
-import pytest
-from cdhweb.pages.models import RelatedLinkType
-from cdhweb.projects.models import Grant, GrantType, ProjectRelatedLink
+from cdhweb.pages.models import HomePage, RelatedLinkType
+from cdhweb.projects.models import Grant, GrantType, Project, ProjectRelatedLink, ProjectsLandingPage
 from cdhweb.people.models import Person
+from wagtail.tests.utils import WagtailPageTests
 
 
 class TestProject:
@@ -55,3 +55,14 @@ class TestProject:
         assert rm in alums
         assert chloe not in alums
         assert renee not in alums
+
+
+class TestProjectsLandingPage(WagtailPageTests):
+
+    def test_parentpage_types(self):
+        """projects landing page should not be creatable in admin"""
+        self.assertAllowedParentPageTypes(ProjectsLandingPage, [])
+
+    def test_subpage_types(self):
+        """projects landing page only allowed child is project page"""
+        self.assertAllowedSubpageTypes(ProjectsLandingPage, [Project])
