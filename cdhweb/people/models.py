@@ -333,6 +333,14 @@ class Person(ClusterableModel):
                 .filter(grant_overlap) \
                 .order_by('-start_date').first()
 
+    @property
+    def profile_url(self):
+        """Use an internal profile if available, otherwise try website url"""
+        if self.profile:
+            return self.profile.get_url()
+        elif self.related_links.filter(type__name="Website").exists():
+            return self.related_links.filter(type__name="Website").first().url
+
     @receiver(pre_delete, sender="people.Person")
     def cleanup_profile(sender, **kwargs):
         """Handler to delete the corresponding Profile on Person deletion."""

@@ -45,13 +45,13 @@ class TestStaffListView:
         assertContains(response, postdoc.first_name)
         assertContains(response, postdoc.current_title)
 
-    @pytest.mark.skip
-    def test_profile_links(self, client, staffer, postdoc):
+    def test_profile_links(self, client, staffer_profile, faculty_pi):
         '''test that profile page links are present'''
         response = client.get(self.url)
-        # TODO: requires creating profile landing page & profile pages!
-        assertContains(response, staffer.profile.url)
-        assertContains(response, postdoc.profile.url)
+        # staffer has internal profile, should use local url
+        assertContains(response, staffer_profile.get_url())
+        # faculty pi has external profile, should use external url
+        assertContains(response, "example.com")
 
     def test_future_end(self, client, staffer):
         '''test staff member with future end date'''
@@ -209,7 +209,8 @@ class TestExecListView:
 
     def test_display_label(self):
         '''test display label for exec'''
-        exec_member = Person.objects.create(first_name='Laura', job_title='Professor of Humanities')
+        exec_member = Person.objects.create(
+            first_name='Laura', job_title='Professor of Humanities')
         assert ExecListView().display_label(exec_member) == \
             exec_member.job_title
 
@@ -229,4 +230,3 @@ class TestSpeakersListView:
         speaker = Person.objects.create(first_name='Jill', institution='IAS')
         assert SpeakerListView().display_label(speaker) == \
             speaker.institution
-

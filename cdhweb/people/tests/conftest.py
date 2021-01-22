@@ -1,8 +1,9 @@
+from cdhweb.pages.models import RelatedLink, RelatedLinkType
 from datetime import date, timedelta
 
 import pytest
 
-from cdhweb.people.models import Person, Position, Title
+from cdhweb.people.models import PeopleLandingPage, Person, PersonRelatedLink, Position, Profile, Title
 from cdhweb.projects.models import Grant, GrantType, Project, Role, Membership
 
 
@@ -87,6 +88,9 @@ def faculty_pi(db, projects_landing_page):
     Membership.objects.create(
         project=project, person=person, role=project_director,
         start_date=date(2016, 9, 1))
+    website = RelatedLinkType.objects.get_or_create(name="Website")[0]
+    PersonRelatedLink.objects.create(
+        person=person, type=website, url="example.com")
     return person
 
 
@@ -123,3 +127,26 @@ def staff_exec(db):
         'Sits with Executive Committee',
         start_date=date(2010, 3, 1),
         first_name='Jay', cdh_staff=False, pu_status='stf')
+
+
+@pytest.fixture
+def people_landing_page(db, homepage):
+    """create a test people landing page underneath the homepage"""
+    landing = PeopleLandingPage(
+        title="people", slug="people", tagline="cdh people")
+    homepage.add_child(instance=landing)
+    homepage.save()
+    return landing
+
+
+@pytest.fixture
+def staffer_profile(db, people_landing_page, staffer):
+    """profile for a staff person"""
+    profile = Profile(
+        person=staffer,
+        title="Staffer",
+        education="Princeton University"
+    )
+    people_landing_page.add_child(instance=profile)
+    people_landing_page.save()
+    return profile
