@@ -122,3 +122,13 @@ def slavic(db, projects_landing_page):
                        first_name="Natalia", last_name="Ermolaev")
 
     return slavic
+
+@pytest.fixture
+def projects(db, derrida, pliny, ocampo, slavic):
+    """convience fixture to create several projects and associated models"""
+    return {
+        "derrida": derrida,
+        "pliny": pliny,
+        "ocampo": ocampo,
+        "slavic": slavic
+    }
