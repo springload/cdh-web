@@ -39,5 +39,4 @@ class ProjectsGroup(ModelAdminGroup):
     items = (ProjectAdmin, RoleAdmin, GrantTypeAdmin)
 
 
-# TODO inlines for editing ProjectRelatedLinks (#181) on Project
 modeladmin_register(ProjectsGroup)
