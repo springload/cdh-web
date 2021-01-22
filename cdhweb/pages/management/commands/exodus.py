@@ -147,10 +147,6 @@ class Command(BaseCommand):
             homepage.save()
             # mark as migrated
             self.migrated.append(old_projects.pk)
-            # mark all children (list pages) as migrated since they become
-            # views/snippets
-            for page in old_projects.children.all():
-                self.migrated.append(page.pk)
         except mezz_page_models.Page.DoesNotExist:
             projects = None
 
@@ -205,12 +201,19 @@ class Command(BaseCommand):
             for page in event_pages:
                 self.migrate_pages(page, events)
 
-        # migrate people pages but use new landingpage subtype as parent
+        # migrate people pages as link pages
         if people:
             people_pages = mezz_page_models.Page.objects \
                 .filter(slug__startswith="people/").order_by('-slug')
             for page in people_pages:
                 self.create_link_page(page, people)
+
+        # migrate project pages as link pages
+        if projects:
+            project_pages = mezz_page_models.Page.objects \
+                .filter(Q(slug__startswith="projects")).order_by('-slug')
+            for page in project_pages:
+                self.create_link_page(page, projects)
 
         # migrate all remaining pages, starting with pages with no parent
         # (i.e., top level pages)
@@ -278,6 +281,8 @@ class Command(BaseCommand):
 
     def create_link_page(self, page, parent):
         '''generate link pages for content served by django views'''
+        if page.pk in self.migrated:
+            return
 
         # link page is needed for menus; should use existing title and full slug
         new_page = LinkPage(
@@ -287,9 +292,9 @@ class Command(BaseCommand):
 
         # if the page is not blank, create a page intro snippet with the content
         if page.richtextpage.content and \
-           not self.is_blank(page.richtextpage.content):
-            PageIntro.objects.create(page=new_page,
-                                     paragraph=page.richtextpage.content)
+            not self.is_blank(page.richtextpage.content):
+                PageIntro.objects.create(page=new_page,
+                                        paragraph=page.richtextpage.content)
 
         # add to list of migrated pages
         self.migrated.append(page.pk)
@@ -490,6 +495,7 @@ class Command(BaseCommand):
         if not project_landing:
             return
 
+        # create new project pages
         for project in OldProject.objects.all():
             # create project page
             project_page = Project(
