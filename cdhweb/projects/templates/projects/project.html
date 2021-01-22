@@ -48,7 +48,9 @@
         {% image page.image width-735 as project_img %}
         <img src="{{ project_img.url }}" alt="{{ page.title }}"/>
     {% endif %}
-    {{ page.long_description|safe }}
+    {% for block in page.long_description %}
+        {% include_block block %}
+    {% endfor %}
     {% if page.grants.exists %}
     <section class="grant-history">
         <h2>CDH Grant History</h2>
