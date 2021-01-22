@@ -346,3 +346,5 @@ class ProjectsLandingPage(LandingPage):
     # NOTE the only allowed child page type is a Project; this is so that
     # Projects made in the admin automatically are created here.
     subpage_types = [Project]
+    # use the regular landing page template
+    template = LandingPage.template
