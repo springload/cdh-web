@@ -2,11 +2,8 @@ from datetime import date
 
 from cdhweb.blog.models import BlogPost
 from cdhweb.pages.models import (PARAGRAPH_FEATURES, BodyContentBlock,
-                                 LandingPage, LinkPage)
-from cdhweb.resources.models import (Attachment, DateRange,
-                                     PublishedQuerySetMixin)
-from cdhweb.pages.models import RelatedLinkType, RelatedLink
-
+                                 LandingPage, LinkPage, RelatedLink)
+from cdhweb.resources.models import Attachment, DateRange
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -25,7 +22,7 @@ from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
                                          InlinePanel, MultiFieldPanel,
                                          StreamFieldPanel)
 from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Page, Orderable
+from wagtail.core.models import Page
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 
@@ -338,15 +335,15 @@ class Person(ClusterableModel):
 
     @receiver(pre_delete, sender="people.Person")
     def cleanup_profile(sender, **kwargs):
-        """Handler to delete the corresponding ProfilePage on Person deletion."""
-        # see NOTE on ProfilePage save() method
+        """Handler to delete the corresponding Profile on Person deletion."""
+        # see NOTE on Profile save() method
         try:
-            ProfilePage.objects.get(person=kwargs["instance"]).delete()
-        except ProfilePage.DoesNotExist:
+            Profile.objects.get(person=kwargs["instance"]).delete()
+        except Profile.DoesNotExist:
             pass
 
 
-class Profile(Displayable, AdminThumbMixin):
+class OldProfile(Displayable, AdminThumbMixin):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # -> cdh_staff on person
     is_staff = models.BooleanField(
@@ -416,7 +413,7 @@ class Profile(Displayable, AdminThumbMixin):
         return self.user.current_title
 
 
-class ProfilePage(Page):
+class Profile(Page):
     """Profile page for a Person, managed via wagtail."""
     person = models.OneToOneField(
         Person, help_text="Corresponding person for this profile",
@@ -439,12 +436,12 @@ class ProfilePage(Page):
     subpage_types = []
 
     def get_context(self, request):
-        """Add recent BlogPosts by this Person to their ProfilePage."""
+        """Add recent BlogPosts by this Person to their Profile."""
         context = super().get_context(request)
 
         # TODO BlogPost still associated to user; will break when blog models
         # are migrated/exodized to wagtail
-        
+
         if self.person.user:
             # get 3 most recent published posts with this person as author
             recent_posts = BlogPost.objects.filter(
@@ -463,7 +460,7 @@ class ProfilePage(Page):
         # NOTE we can't cascade deletes to wagtail pages without corrupting the
         # page tree. Instead, we use SET_NULL, and then add a delete handler
         # to Person to delete the corresponding profile manually. We still need
-        # to make sure that it's impossible to create a ProfilePage without a
+        # to make sure that it's impossible to create a Profile without a
         # corresponding Person. More info:
         # https://github.com/wagtail/wagtail/issues/1602
         if not self.person:
@@ -471,13 +468,13 @@ class ProfilePage(Page):
 
 
 class PeopleLandingPage(LandingPage):
-    """LandingPage subtype for People that holds ProfilePages."""
+    """LandingPage subtype for People that holds Profiles."""
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []
-    # NOTE the only allowed child page type is a ProfilePage; this is so that
-    # ProfilePages made in the admin automatically are created here.
-    subpage_types = [ProfilePage, LinkPage]
+    # NOTE the only allowed child page type is a Profile; this is so that
+    # Profiles made in the admin automatically are created here.
+    subpage_types = [Profile, LinkPage]
     # use the regular landing page template
     template = LandingPage.template
 
@@ -539,4 +536,5 @@ def init_person_from_ldap(user, ldapinfo):
 class PersonRelatedLink(RelatedLink):
     '''Through-model for associating people with resource types and
     corresponding URLs for the specified resource type.'''
-    person = ParentalKey(Person, on_delete=models.CASCADE, related_name="related_links")
+    person = ParentalKey(Person, on_delete=models.CASCADE,
+                         related_name="related_links")

@@ -12,7 +12,7 @@ from wagtail.tests.utils import WagtailPageTests
 from wagtail.tests.utils.form_data import rich_text
 
 from cdhweb.pages.models import HomePage, PageIntro, LinkPage
-from cdhweb.people.models import PeopleLandingPage, Person, ProfilePage
+from cdhweb.people.models import PeopleLandingPage, Person, Profile
 from cdhweb.blog.models import BlogPost
 
 
@@ -25,10 +25,10 @@ class TestPeopleLandingPage(WagtailPageTests):
     def test_child_pages(self):
         """only profile pages and link pages can be children"""
         self.assertAllowedSubpageTypes(
-            PeopleLandingPage, [ProfilePage, LinkPage])
+            PeopleLandingPage, [Profile, LinkPage])
 
 
-class TestProfilePage(WagtailPageTests):
+class TestProfile(WagtailPageTests):
 
     def setUp(self):
         """create page tree and person for testing"""
@@ -45,15 +45,15 @@ class TestProfilePage(WagtailPageTests):
 
     def test_parent_pages(self):
         """only allowed parent is people landing page"""
-        self.assertAllowedParentPageTypes(ProfilePage, [PeopleLandingPage])
+        self.assertAllowedParentPageTypes(Profile, [PeopleLandingPage])
 
     def test_child_pages(self):
         """no allowed children"""
-        self.assertAllowedSubpageTypes(ProfilePage, [])
+        self.assertAllowedSubpageTypes(Profile, [])
 
     def test_can_create(self):
         """should be creatable as child of people landing page"""
-        profile = ProfilePage(
+        profile = Profile(
             title="tom r. jones",
             person=self.person,
             education=rich_text("school"),
@@ -61,12 +61,12 @@ class TestProfilePage(WagtailPageTests):
         )
         self.lp.add_child(instance=profile)
         self.lp.save()
-        assert self.person.profilepage == profile
+        assert self.person.profile == profile
 
     def test_person_required(self):
         """profile page must be for an existing person"""
         with pytest.raises(ValidationError):
-            self.lp.add_child(instance=ProfilePage(
+            self.lp.add_child(instance=Profile(
                 title="tom r. jones",
                 education=rich_text("school"),
                 bio=json.dumps([{"type": "paragraph", "value": "about me"}])
@@ -74,13 +74,13 @@ class TestProfilePage(WagtailPageTests):
 
     def test_delete_handler(self):
         """deleting person should delete corresponding profile"""
-        self.lp.add_child(instance=ProfilePage(
+        self.lp.add_child(instance=Profile(
             title="tom r. jones",
             person=self.person,
         ))
         self.lp.save()
         self.person.delete()
-        assert ProfilePage.objects.count() == 0
+        assert Profile.objects.count() == 0
 
     def test_recent_blogposts(self):
         """profile should have person's most recent blog posts in context"""
@@ -90,7 +90,7 @@ class TestProfilePage(WagtailPageTests):
         self.person.user = tom
 
         # create the profile page
-        profile = ProfilePage(
+        profile = Profile(
             title="tom jones",
             slug="tom-jones",
             person=self.person,

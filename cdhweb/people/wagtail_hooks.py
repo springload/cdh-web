@@ -1,4 +1,4 @@
-from cdhweb.people.models import Person, ProfilePage, Title
+from cdhweb.people.models import Person, Profile, Title
 from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
 from wagtail.contrib.modeladmin.options import (ModelAdmin, ModelAdminGroup,
                                                 modeladmin_register)
@@ -23,12 +23,9 @@ class TitleAdmin(ModelAdmin):
     list_display = ("title", "sort_order", "num_people")
     search_fields = ("title",)
 
-# remove ProfilePages from the regular wagtail page editor and create a special
-# admin area for them underneath the "people" section
 
-
-class ProfilePageAdmin(ThumbnailMixin, ModelAdmin):
-    model = ProfilePage
+class ProfileAdmin(ThumbnailMixin, ModelAdmin):
+    model = Profile
     menu_icon = "user"
     list_display = ("title", "admin_thumb", "live")
     search_fields = ("title",)
@@ -40,8 +37,7 @@ class PeopleGroup(ModelAdminGroup):
     menu_label = "People"
     menu_icon = "group"
     menu_order = 200
-    items = (PersonAdmin, TitleAdmin, ProfilePageAdmin)
+    items = (PersonAdmin, TitleAdmin, ProfileAdmin)
 
 
-# TODO inlines for editing PersonRelatedLinks (#181) on People
 modeladmin_register(PeopleGroup)

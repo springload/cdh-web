@@ -19,7 +19,7 @@ from wagtail.images.models import Image
 
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage, LinkPage, \
     PageIntro
-from cdhweb.people.models import Person, Profile, ProfilePage, PeopleLandingPage
+from cdhweb.people.models import Person, Profile, OldProfile, PeopleLandingPage
 from cdhweb.projects.models import ProjectsLandingPage, Project
 
 
@@ -315,15 +315,15 @@ class Command(BaseCommand):
     }
 
     def profile_pages(self):
-        """Exodize all existing Profiles to new ProfilePage model."""
+        """Exodize all existing Profiles to new Profile model."""
         # all the fields on Profile that moved to Person will have been handled
         # by django migrations; we just need to create new Page models
         people_landing = PeopleLandingPage.objects.first()
         if not people_landing:
             return
-        for profile in Profile.objects.filter(user__person__isnull=False):
+        for profile in OldProfile.objects.filter(user__person__isnull=False):
             person = Person.objects.get(user=profile.user)
-            profile_page = ProfilePage(
+            profile_page = Profile(
                 person=person,
                 title=profile.title,
                 slug=self.convert_slug(profile.slug),
@@ -465,7 +465,7 @@ class Command(BaseCommand):
 
     def person_image_exodus(self):
         # for people with profile, set larger image as wagtail image for person
-        for profile in Profile.objects.filter(user__person__isnull=False):
+        for profile in OldProfile.objects.filter(user__person__isnull=False):
             person = Person.objects.get(user=profile.user)
             if profile.image:
                 person.image = self.get_wagtail_image(profile.image)

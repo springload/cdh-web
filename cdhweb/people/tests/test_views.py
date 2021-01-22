@@ -46,12 +46,12 @@ class TestStaffListView:
         assertContains(response, postdoc.current_title)
 
     @pytest.mark.skip
-    def test_profilepage_links(self, client, staffer, postdoc):
+    def test_profile_links(self, client, staffer, postdoc):
         '''test that profile page links are present'''
         response = client.get(self.url)
         # TODO: requires creating profile landing page & profile pages!
-        assertContains(response, staffer.profilepage.url)
-        assertContains(response, postdoc.profilepage.url)
+        assertContains(response, staffer.profile.url)
+        assertContains(response, postdoc.profile.url)
 
     def test_future_end(self, client, staffer):
         '''test staff member with future end date'''
