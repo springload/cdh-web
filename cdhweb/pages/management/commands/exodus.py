@@ -20,7 +20,7 @@ from wagtail.images.models import Image
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage, LinkPage, \
     PageIntro
 from cdhweb.people.models import Person, Profile, OldProfile, PeopleLandingPage
-from cdhweb.projects.models import ProjectsLandingPage, Project
+from cdhweb.projects.models import ProjectsLandingPage, Project, OldProject
 
 
 class Command(BaseCommand):
@@ -219,6 +219,9 @@ class Command(BaseCommand):
 
         # profile pages
         self.profile_pages()
+
+        # project pages
+        self.project_pages()
 
         # report on unmigrated pages
         unmigrated = mezz_page_models.Page.objects.exclude(
@@ -475,9 +478,54 @@ class Command(BaseCommand):
                 person.image = self.get_wagtail_image(profile.thumb)
                 person.save()
 
-    def project_exodus(self):
-        # TODO exodize each project page
+    def project_pages(self):
+        """exodize all project models and create redirects"""
+        # if no project landing page, nothing to do
+        project_landing = ProjectsLandingPage.objects.first()
+        if not project_landing:
+            return
+
+        for project in OldProject.objects.all():
+            # create project page
+            project_page = Project(
+                title=project.title,
+                slug=self.convert_slug(project.slug),
+                image=self.get_wagtail_image(project.image) if project.image else self.get_wagtail_image(project.thumb) if project.thumb else None,
+                highlight=project.highlight,
+                cdh_built=project.cdh_built,
+                working_group=project.working_group,
+                short_description=project.short_description,
+                long_description=json.dumps([
+                    {"type": "migrated", "value": project.long_description},
+                ])
+            )
+
+            # add it as child of project landing page so slugs are correct
+            project_landing.add_child(instance=project_page)
+            project_landing.save()
+
+            # if the old project wasn't published, unpublish the new one
+            if project.status != CONTENT_STATUS_PUBLISHED:
+                project_page.unpublish()
+
+            # transfer memberships
+            for membership in project.membership_set.all():
+                membership.project = project_page
+                membership.save()
+
+            # transfer grants
+            for grant in project.grant_set.all():
+                grant.project = project_page
+                grant.save()
+
+            # transfer related links
+            for link in project.projectrelatedlink_set.all():
+                link.project = project_page
+                link.save()
+
+            # TODO transfer tags
+            # TODO transfer attachments
+
         # TODO create redirects:
         # /projects/about -> /projects
         # /project/ -> /projects/sponsored-projects
-        pass
