@@ -12,7 +12,7 @@ class ProjectListView(ListView, LastModifiedListMixin):
     #: title for this category of projects
     page_title = "Projects"
     #: title for past projects in this category of projects
-    past_title = "Past Projects"
+    past_title = "Past " + page_title
 
     def get_queryset(self):
         """Get all published projects ordered by newest grant."""
@@ -37,7 +37,7 @@ class ProjectListView(ListView, LastModifiedListMixin):
             "title": self.page_title,
             "past_title": self.past_title,
             "archive_nav_urls": (
-                ("Projects", reverse("projects:list")),
+                ("Sponsored Projects", reverse("projects:sponsored")),
                 ("Staff Projects", reverse("projects:staff")),
                 ("DH Working Groups", reverse("projects:working-groups")),
             )
@@ -48,6 +48,8 @@ class ProjectListView(ListView, LastModifiedListMixin):
 class SponsoredProjectListView(ProjectListView):
     """Main project list, i.e. not staff/postdoc/working group."""
 
+    page_title = "Sponsored Projects"    
+
     def get_queryset(self):
         """Get all published sponsored projects."""
         return super().get_queryset().not_staff_or_postdoc()
@@ -56,7 +58,7 @@ class SponsoredProjectListView(ProjectListView):
 class StaffProjectListView(ProjectListView):
     """Staff and postdoc projects, based on grant type."""
 
-    page_title = "Staff and Postdoctoral Fellow Projects"
+    page_title = "Staff Projects"
 
     def get_queryset(self):
         """Get all published staff/postdoc projects."""
@@ -67,7 +69,6 @@ class WorkingGroupListView(ProjectListView):
     """DH Working group list, based on working group project flag."""
 
     page_title = "DH Working Groups"
-    past_title = "Past Working Groups"
 
     def get_queryset(self):
         """Get all published DH working groups."""
