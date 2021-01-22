@@ -277,3 +277,10 @@ class RelatedLink(models.Model):
     class Meta:
         abstract = True
 
+    @property
+    def display_url(self):
+        '''url cleaned up for display, with leading http(s):// removed'''
+        if self.url.startswith('https://'):
+            return self.url[8:]
+        elif self.url.startswith('http://'):
+            return self.url[7:]
