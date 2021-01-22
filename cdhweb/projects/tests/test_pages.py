@@ -1,6 +1,7 @@
-from cdhweb.pages.models import HomePage, RelatedLinkType
-from cdhweb.projects.models import Grant, GrantType, Project, ProjectRelatedLink, ProjectsLandingPage
+from cdhweb.pages.models import RelatedLinkType
 from cdhweb.people.models import Person
+from cdhweb.projects.models import (Grant, GrantType, Project,
+                                    ProjectRelatedLink, ProjectsLandingPage)
 from wagtail.tests.utils import WagtailPageTests
 
 
@@ -55,6 +56,17 @@ class TestProject:
         assert rm in alums
         assert chloe not in alums
         assert renee not in alums
+
+
+class TestProjectPage(WagtailPageTests):
+
+    def test_parent_pages(self):
+        """project can only be created under projects landing page"""
+        self.assertAllowedParentPageTypes(Project, [ProjectsLandingPage])
+
+    def test_subpages(self):
+        """project page can't have children"""
+        self.assertAllowedSubpageTypes(Project, [])
 
 
 class TestProjectsLandingPage(WagtailPageTests):
