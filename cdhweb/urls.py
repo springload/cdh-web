@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path, re_path
 from django.views.generic.base import RedirectView, TemplateView
 from wagtail.admin import urls as wagtailadmin_urls
@@ -34,7 +33,7 @@ urlpatterns = [
     path("people/", include("cdhweb.people.urls", namespace='people')),
     path("updates/", include("cdhweb.blog.urls", namespace='blog')),
     path("events/", include("cdhweb.events.urls", namespace='event')),
-    path("projects/", include("cdhweb.projects.urls", namespace='project')),
+    path("projects/", include("cdhweb.projects.urls", namespace='projects')),
 
     # CAS login urls
     path("accounts/", include('pucas.cas_urls')),
