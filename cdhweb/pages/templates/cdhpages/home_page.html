@@ -38,10 +38,9 @@
 </section>
 
 <section class="projects">
-<h2><a href="{% url 'project:list' %}">Projects</a></h2>
+<h2><a href="{% slugurl 'projects' %}">Projects</a></h2>
 {% for project in projects %}
     {% include 'projects/snippets/project_card.html' %}
-    {# project tile still todo #}
 {% endfor %}
 </section>
 
