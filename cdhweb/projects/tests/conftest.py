@@ -1,9 +1,9 @@
+from datetime import datetime, timedelta
+
 import pytest
-from datetime import date, datetime, timedelta
-from cdhweb.pages.models import HomePage
 from cdhweb.people.models import Person
-from cdhweb.projects.models import Membership, ProjectsLandingPage, Role, Project, Grant, GrantType
-from wagtail.core.models import Page, Site
+from cdhweb.projects.models import (Grant, GrantType, Membership, Project,
+                                    ProjectsLandingPage, Role)
 
 
 def add_project_member(project, role, start_date=None, end_date=None, **person_opts):
@@ -27,7 +27,7 @@ def projects_landing_page(db, homepage):
 
 @pytest.fixture
 def derrida(db, projects_landing_page):
-    """create and return a project with two different grants/project teams"""
+    """a sponsored project with two different grants and project teams"""
     # create the project
     derrida = Project(title="Derrida's Margins")
     projects_landing_page.add_child(instance=derrida)
@@ -61,3 +61,45 @@ def derrida(db, projects_landing_page):
                        end_date=today, first_name="Renee", last_name="Altergott")
 
     return derrida
+
+
+@pytest.fixture
+def pliny(db, projects_landing_page):
+    """a staff r&d project with one current r&d grant and one current member"""
+    # create the project
+    pliny = Project(title="Pliny Project")
+    projects_landing_page.add_child(instance=pliny)
+    projects_landing_page.save()
+
+    # add a staff r&d grant and one member; no end date so grant/role is current
+    one_year_ago = datetime.today() - timedelta(days=365)
+    srd = GrantType.objects.get_or_create(grant_type="Staff R&D")[0]
+    Grant.objects.create(project=pliny, grant_type=srd,
+                         start_date=one_year_ago)
+    add_project_member(pliny, "Project Director",
+                       start_date=one_year_ago, first_name="Ben", last_name="Hicks")
+
+    return pliny
+
+
+@pytest.fixture
+def slavic(db, projects_landing_page):
+    """a dh working group with one expired seed grant and one current member"""
+    # create the working group
+    slavic = Project(title="Slavic DH Working Group", working_group=True)
+    projects_landing_page.add_child(instance=slavic)
+    projects_landing_page.save()
+
+    # dates used
+    today = datetime.today()
+    one_year_ago = today - timedelta(days=365)
+    two_years_ago = one_year_ago - timedelta(days=365)
+
+    # add a seed grant and one member; grant ended but membership is current
+    seed = GrantType.objects.get_or_create(grant_type="Seed")[0]
+    Grant.objects.create(project=slavic, grant_type=seed,
+                         start_date=two_years_ago, end_date=one_year_ago)
+    add_project_member(slavic, "Chair", start_date=two_years_ago,
+                       first_name="Natalia", last_name="Ermolaev")
+
+    return slavic
