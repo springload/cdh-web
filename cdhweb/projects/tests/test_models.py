@@ -135,14 +135,15 @@ class TestProjectRelatedLink:
 
     def test_display_url(self, derrida):
         """should remove http/https from website url for display"""
+        # NOTE tested here because RelatedLink is abstract
         # http
         base_url = "derridas-margins.princeton.edu"
         project_url = "http://%s" % base_url
         website = RelatedLinkType.objects.get_or_create(name="Website")[0]
         res = ProjectRelatedLink.objects.create(project=derrida, type=website,
                                                 url=project_url)
-        assert res.display_url() == base_url
+        assert res.display_url == base_url
 
         # https
         res.url = "https://%s" % base_url
-        assert res.display_url() == base_url
+        assert res.display_url == base_url
