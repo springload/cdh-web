@@ -23,9 +23,7 @@
         <div class="content">
             <p class="name">{% firstof profile.title person %}</p>
             {# use in order of availability: cdh position, project role, event speaker + institution, job title + institution #}
-            <div class="title">
-                {{ person.label }}  {# display whatever label is set in the view #}
-
+            <div class="title">{{ person.label }}  {# display whatever label is set in the view #}
                 {% if show_events %} {# optionally show associated events #}
                     <div>
                     {% if person.user.event_set.published.upcoming %}
@@ -37,7 +35,6 @@
                     {% endif %}
                     </div>
                 {% endif %}
-
             </div>
         </div>
     </{{ tag }}>

@@ -109,24 +109,51 @@ class StudentListView(PersonListView):
         # filter to just students
         return super().get_queryset().student_affiliates() \
             .grant_years().project_manager_years()
+        # FIXME: still getting some duplicates...
 
     def display_label(self, person):
         # for student assistants and fellows, label based on position
-        if person.positions.exists():
-            last_position = person.positions.first()
-            label = last_position.title
-            # if position is not current, include years
-            if not last_position.is_current:
-                label = '%s %s' % (last_position.years, label)
+        # students can multiple affiliations
+        labels = []
+        current_label = None
+        for position in person.positions.all():
+            label = str(position.title)
+            # if position is current, set as current label
+            if position.is_current:
+                current_label = label
+            # if not current, include years and add to list
+            else:
+                label = '%s %s' % (position.years, label)
+                labels.append(label)
+
+        if person.latest_grant:
+            # if student was a project director, show as grant recipient
+            grant = person.latest_grant
+            label = '%s %s Grant Recipient' % \
+                (grant.years, grant.grant_type.grant_type)
+            if grant.is_current:
+                current_label = label
+            else:
+                labels.append(label)
 
         # for students on projects, label based on project membership
-        elif person.membership_set.exists():
-            membership = person.membership_set.first()
+        for membership in person.membership_set.filter(role__title='Project Manager'):
+            # NOTE: it might be better to use memberships for
+            # project director / grant role as well, but with the new
+            # data model it's harder to determine what type of grant they were on
             label = membership.role.title
-            if not membership.is_current:
+            if membership.is_current:
+                current_label = label
+            else:
                 label = '%s %s' % (membership.years, label)
+                labels.append(label)
 
-        return label
+        # if the student has a current affiliation, return only that
+        # otherwise return multiple
+        # NOTE: could truncate this list and/or prioritize certain titles/roles
+        return current_label or '\n'.join(sorted(set(labels), reverse=True))
+        # NOTE: at least one case is generating duplicate labels,
+        # not sure why!
 
     def get_past(self):
         # show most recent first based on grant or position end date

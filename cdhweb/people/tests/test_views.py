@@ -110,7 +110,10 @@ class TestStudentListView:
         assertContains(response, student.first_name)
         assertContains(response, student.positions.first().title)
         assertContains(response, grad_pi.first_name)
-        assertContains(response, grad_pi.membership_set.first().role.title)
+        # should not display "project director" role
+        assertNotContains(response, grad_pi.membership_set.first().role.title)
+        assertContains(response,
+                       '%s Grant Recipient' % grad_pi.latest_grant.grant_type)
 
     def test_student_list_past(self, client, student):
         '''test past student'''
@@ -128,10 +131,11 @@ class TestStudentListView:
     def test_display_label_current(self, student, grad_pi):
         '''test display label for current student'''
         assert StudentListView().display_label(student) == \
-            student.positions.first().title
+            str(student.positions.first().title)
 
+        grant = grad_pi.latest_grant
         assert StudentListView().display_label(grad_pi) == \
-            grad_pi.membership_set.first().role.title
+            "%s %s Grant Recipient" % (grant.years, grant.grant_type)
 
     def test_display_label_past(self, student, grad_pi):
         '''test display label for former student affiliates'''
@@ -141,11 +145,11 @@ class TestStudentListView:
         assert StudentListView().display_label(student) == \
             '%s %s' % (position.years, position.title)
 
-        membership = grad_pi.membership_set.first()
-        membership.end_date = timezone.now() - timedelta(days=30)
-        membership.save()
+        grant = grad_pi.latest_grant
+        grant.end_date = timezone.now() - timedelta(days=30)
+        grant.save()
         assert StudentListView().display_label(grad_pi) == \
-            '%s %s' % (membership.years, membership.role.title)
+            "%s %s Grant Recipient" % (grant.years, grant.grant_type)
 
 
 @pytest.mark.django_db

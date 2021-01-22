@@ -57,6 +57,10 @@ def grad_pi():
     Membership.objects.create(
         project=project, person=person, role=project_director,
         start_date=date(2015, 9, 1))
+    dataset_curation = GrantType.objects.get_or_create(grant_type='Dataset Curation')[0]
+    Grant.objects.create(grant_type=dataset_curation, project=project,
+                         start_date=date(2015, 9, 1),
+                         end_date=date.today() + timedelta(days=30))
     return person
 
 
