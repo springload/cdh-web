@@ -330,12 +330,8 @@ class ProjectRelatedLink(RelatedLink):
     old_project = models.ForeignKey(
         OldProject, null=True, editable=False, on_delete=models.SET_NULL)
 
-    def display_url(self):
-        '''url cleaned up for display, with leading http(s):// removed'''
-        if self.url.startswith('https://'):
-            return self.url[8:]
-        elif self.url.startswith('http://'):
-            return self.url[7:]
+    def __str__(self):
+        return "%s – %s (%s)" % (self.person, self.type, self.display_url)
 
 
 class ProjectsLandingPage(LandingPage):

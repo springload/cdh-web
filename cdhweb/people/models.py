@@ -546,3 +546,6 @@ class PersonRelatedLink(RelatedLink):
     corresponding URLs for the specified resource type.'''
     person = ParentalKey(Person, on_delete=models.CASCADE,
                          related_name="related_links")
+
+    def __str__(self):
+        return "%s – %s (%s)" % (self.person, self.type, self.display_url)
