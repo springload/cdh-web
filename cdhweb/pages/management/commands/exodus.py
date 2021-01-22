@@ -128,11 +128,13 @@ class Command(BaseCommand):
 
         # manually migrate the project landing page to a special subtype
         try:
-            old_projects = mezz_page_models.Page.objects.get(slug="projects/about")
+            old_projects = mezz_page_models.Page.objects.get(
+                slug="projects/about")
             projects = ProjectsLandingPage(
                 title=old_projects.title,
                 tagline=old_projects.landingpage.tagline,
-                header_image=self.get_wagtail_image(old_projects.landingpage.image),
+                header_image=self.get_wagtail_image(
+                    old_projects.landingpage.image),
                 slug="projects",
                 seo_title=old_projects._meta_title or old_projects.title,
                 body=json.dumps([{
@@ -173,7 +175,8 @@ class Command(BaseCommand):
             people = PeopleLandingPage(
                 title=old_people.title,
                 tagline=old_people.landingpage.tagline,
-                header_image=self.get_wagtail_image(old_people.landingpage.image),
+                header_image=self.get_wagtail_image(
+                    old_people.landingpage.image),
                 slug=self.convert_slug(old_people.slug),
                 seo_title=old_people._meta_title or old_people.title,
                 body=json.dumps([{
@@ -324,13 +327,15 @@ class Command(BaseCommand):
         people_landing = PeopleLandingPage.objects.first()
         if not people_landing:
             return
-        for profile in OldProfile.objects.filter(user__person__isnull=False):
+        # only create profiles if there's actually text in the old one
+        for profile in OldProfile.objects.exclude(bio=""):
             person = Person.objects.get(user=profile.user)
             profile_page = Profile(
                 person=person,
                 title=profile.title,
                 slug=self.convert_slug(profile.slug),
-                image=self.get_wagtail_image(profile.image) if profile.image else None,
+                image=self.get_wagtail_image(profile.image) if profile.image else self.get_wagtail_image(
+                    profile.thumb) if profile.thumb else None,
                 education=profile.education,
                 bio=json.dumps([
                     {"type": "migrated", "value": profile.bio},
@@ -490,7 +495,8 @@ class Command(BaseCommand):
             project_page = Project(
                 title=project.title,
                 slug=self.convert_slug(project.slug),
-                image=self.get_wagtail_image(project.image) if project.image else self.get_wagtail_image(project.thumb) if project.thumb else None,
+                image=self.get_wagtail_image(project.image) if project.image else self.get_wagtail_image(
+                    project.thumb) if project.thumb else None,
                 highlight=project.highlight,
                 cdh_built=project.cdh_built,
                 working_group=project.working_group,
