@@ -8,13 +8,13 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
     model = Project
     menu_label = "Projects"
     menu_icon = "site"
-    list_display = ("title", "live", "highlight", "admin_thumb", "tags")
-    list_editable = ("live", "highlight")
-    list_filter = ("live", "cdh_built", "working_group")
+    list_display = ("title", "admin_thumb", "live", "cdh_built", "highlight")
+    list_filter = ("grants__grant_type",)
     list_export = ("title", "working_group", "cdh_built", "tags",
                    "short_description", "long_description", "website_url",
                    "updated_at")
-    search_fields = ("title", "short_description", "grant__grant_type")
+    search_fields = ("title", "short_description", "long_description")
+    export_filename = "cdhweb-projects"
 
 
 class GrantTypeAdmin(ModelAdmin):
