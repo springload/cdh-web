@@ -31,9 +31,9 @@ class ProjectQuerySet(PageQuerySet):
         date or not set.
         '''
         today = timezone.now()
-        return (models.Q(grant__start_date__lt=today) &
-                (models.Q(grant__end_date__gt=today) |
-                 models.Q(grant__end_date__isnull=True)))
+        return (models.Q(grants__start_date__lt=today) &
+                (models.Q(grants__end_date__gt=today) |
+                 models.Q(grants__end_date__isnull=True)))
 
     def current(self):
         '''Projects with a current grant, based on dates'''
@@ -49,11 +49,13 @@ class ProjectQuerySet(PageQuerySet):
 
     def staff_or_postdoc(self):
         '''Staff and postdoc projects, based on grant type'''
-        return self.filter(grant__grant_type__grant_type__in=self.staff_postdoc_grants)
+        return self.filter(grants__grant_type__grant_type__in=self.staff_postdoc_grants) \
+            .exclude(working_group=True)
 
     def not_staff_or_postdoc(self):
         '''Exclude staff and postdoc projects, based on grant type'''
-        return self.exclude(grant__grant_type__grant_type__in=self.staff_postdoc_grants)
+        return self.exclude(grants__grant_type__grant_type__in=self.staff_postdoc_grants) \
+            .exclude(working_group=True)
 
     def working_groups(self):
         '''Include only projects with the working group flag set'''
@@ -64,7 +66,7 @@ class ProjectQuerySet(PageQuerySet):
         sort by project title'''
         # NOTE: using annotation to get just the most recent start date
         # to avoid issues with projects appearing multiple times.
-        return self.annotate(last_start=models.Max('grant__start_date')) \
+        return self.annotate(last_start=models.Max('grants__start_date')) \
                    .order_by('-last_start', 'title')
 
 
