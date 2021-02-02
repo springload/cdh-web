@@ -15,6 +15,7 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
                    "updated_at")
     search_fields = ("title", "short_description", "long_description")
     export_filename = "cdhweb-projects"
+    thumb_image_field_name = "thumbnail"
 
 
 class GrantTypeAdmin(ModelAdmin):

@@ -193,8 +193,8 @@ class Project(Page, ClusterableModel):
                               blank=True, on_delete=models.SET_NULL,
                               related_name='+')
     thumbnail = models.ForeignKey('wagtailimages.image', null=True,
-                              blank=True, on_delete=models.SET_NULL,
-                              related_name='+')
+                                  blank=True, on_delete=models.SET_NULL,
+                                  related_name='+')
     members = models.ManyToManyField(Person, through="Membership")
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
     updated = models.DateTimeField(auto_now=True, null=True, editable=False)
@@ -208,8 +208,9 @@ class Project(Page, ClusterableModel):
     content_panels = Page.content_panels + [
         FieldRowPanel((FieldPanel("highlight"),
                        FieldPanel("cdh_built"),
-                       FieldPanel("working_group"))),
-        ImageChooserPanel("image"),
+                       FieldPanel("working_group")), "Settings"),
+        FieldRowPanel((ImageChooserPanel("thumbnail"),
+                        ImageChooserPanel("image")), "Images"),
         FieldPanel("short_description"),
         StreamFieldPanel("long_description"),
         InlinePanel("grants", label="Grants"),
