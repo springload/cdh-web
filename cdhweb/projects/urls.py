@@ -1,10 +1,10 @@
-from django.conf.urls import url
+from django.urls import path
 
 from cdhweb.projects import views
 
-app_name = 'projects'
+app_name = "projects"
 urlpatterns = [
-    url('^sponsored/$', views.SponsoredProjectListView.as_view(), name='sponsored'),
-    url('^staff/$', views.StaffProjectListView.as_view(), name='staff'),
-    url('^working-groups/$', views.WorkingGroupListView.as_view(), name='working-groups'),
+    path("", views.SponsoredProjectListView.as_view(), name="sponsored"),
+    path("staff/", views.StaffProjectListView.as_view(), name="staff"),
+    path("working-groups", views.WorkingGroupListView.as_view(), name="working-groups"),
 ]
