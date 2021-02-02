@@ -14,13 +14,14 @@ from django.db.models import Q
 from django.utils.html import strip_tags
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 from mezzanine.pages import models as mezz_page_models
-from wagtail.core.models import Page, Site, Collection, get_root_collection_id
+from wagtail.contrib.redirects.models import Redirect
+from wagtail.core.models import Collection, Page, Site, get_root_collection_id
 from wagtail.images.models import Image
 
-from cdhweb.pages.models import ContentPage, HomePage, LandingPage, LinkPage, \
-    PageIntro
-from cdhweb.people.models import Person, Profile, OldProfile, PeopleLandingPage
-from cdhweb.projects.models import ProjectsLandingPage, Project, OldProject
+from cdhweb.pages.models import (ContentPage, HomePage, LandingPage, LinkPage,
+                                 PageIntro)
+from cdhweb.people.models import OldProfile, PeopleLandingPage, Person, Profile
+from cdhweb.projects.models import OldProject, Project, ProjectsLandingPage
 
 
 class Command(BaseCommand):
@@ -292,9 +293,9 @@ class Command(BaseCommand):
 
         # if the page is not blank, create a page intro snippet with the content
         if page.richtextpage.content and \
-            not self.is_blank(page.richtextpage.content):
-                PageIntro.objects.create(page=new_page,
-                                        paragraph=page.richtextpage.content)
+                not self.is_blank(page.richtextpage.content):
+            PageIntro.objects.create(page=new_page,
+                                     paragraph=page.richtextpage.content)
 
         # add to list of migrated pages
         self.migrated.append(page.pk)
@@ -501,8 +502,10 @@ class Command(BaseCommand):
             project_page = Project(
                 title=project.title,
                 slug=self.convert_slug(project.slug),
-                image=self.get_wagtail_image(project.image) if project.image else None,
-                thumbnail=self.get_wagtail_image(project.thumb) if project.thumb else None,
+                image=self.get_wagtail_image(
+                    project.image) if project.image else None,
+                thumbnail=self.get_wagtail_image(
+                    project.thumb) if project.thumb else None,
                 highlight=project.highlight,
                 cdh_built=project.cdh_built,
                 working_group=project.working_group,
@@ -538,6 +541,10 @@ class Command(BaseCommand):
             # NOTE no tags to migrate
             # TODO transfer attachments
 
-        # TODO create redirects:
+        # create redirect:
         # /projects/about -> /projects
-        # /projects/ -> /projects/sponsored
+        Redirect.add_redirect(
+            old_path="/projects/about",
+            redirect_to=project_landing.url,
+            is_permanent=True
+        )
