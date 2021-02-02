@@ -1,4 +1,4 @@
-from cdhweb.projects.models import Project, GrantType, Role
+from cdhweb.projects.models import Membership, Project, GrantType, Role
 from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
 from wagtail.contrib.modeladmin.options import (ModelAdmin, ModelAdminGroup,
                                                 modeladmin_register)
@@ -15,7 +15,21 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
                    "updated_at")
     search_fields = ("title", "short_description", "long_description")
     export_filename = "cdhweb-projects"
+    exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"
+    thumb_col_header_text = "thumbnail"
+
+
+class MembershipAdmin(ModelAdmin):
+    model = Membership
+    menu_icon = "group"
+    list_display = ("start_date", "end_date", "person", "role", "project")
+    list_filter = ("start_date", "end_date")
+    list_export = ("start_date", "end_date", "person", "role", "project")
+    search_fields = ("project__title", "role__title",
+                     "person__first_name", "person__last_name")
+    export_filename = "cdhweb-memberships"
+    ordering = ("-start_date",)
 
 
 class GrantTypeAdmin(ModelAdmin):
@@ -27,7 +41,7 @@ class GrantTypeAdmin(ModelAdmin):
 
 class RoleAdmin(ModelAdmin):
     model = Role
-    menu_icon = "group"
+    menu_icon = "order"
     list_display = ("title", "sort_order")
     list_editable = ("title", "sort_order")
     search_fields = ("title",)
@@ -37,7 +51,7 @@ class ProjectsGroup(ModelAdminGroup):
     menu_label = "Projects"
     menu_icon = "site"
     menu_order = 210
-    items = (ProjectAdmin, RoleAdmin, GrantTypeAdmin)
+    items = (ProjectAdmin, MembershipAdmin, RoleAdmin, GrantTypeAdmin)
 
 
 modeladmin_register(ProjectsGroup)
