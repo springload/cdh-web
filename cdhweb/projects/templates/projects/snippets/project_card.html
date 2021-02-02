@@ -2,7 +2,7 @@
 
 {# default card display for a project #}
 {% if project.image %}
-    {% image project.image max-310x240 as project_img %}
+    {% image project.thumbnail max-310x240 as project_img %}
 {% endif %}
 <div class="card project {% if large %}project-large{% endif %}"
 {% if project.image %}style="background-image:url('{{ project_img.url }}')"{% endif %}>
