@@ -535,7 +535,7 @@ class Command(BaseCommand):
                 link.project = project_page
                 link.save()
 
-            # TODO transfer tags
+            # NOTE no tags to migrate
             # TODO transfer attachments
 
         # TODO create redirects:
