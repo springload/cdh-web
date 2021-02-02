@@ -192,6 +192,9 @@ class Project(Page, ClusterableModel):
     image = models.ForeignKey('wagtailimages.image', null=True,
                               blank=True, on_delete=models.SET_NULL,
                               related_name='+')
+    thumbnail = models.ForeignKey('wagtailimages.image', null=True,
+                              blank=True, on_delete=models.SET_NULL,
+                              related_name='+')
     members = models.ManyToManyField(Person, through="Membership")
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
     updated = models.DateTimeField(auto_now=True, null=True, editable=False)

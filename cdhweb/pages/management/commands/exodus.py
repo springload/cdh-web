@@ -502,6 +502,7 @@ class Command(BaseCommand):
                 title=project.title,
                 slug=self.convert_slug(project.slug),
                 image=self.get_wagtail_image(project.image) if project.image else None,
+                thumbnail=self.get_wagtail_image(project.thumb) if project.thumb else None,
                 highlight=project.highlight,
                 cdh_built=project.cdh_built,
                 working_group=project.working_group,

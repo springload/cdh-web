@@ -33,6 +33,7 @@ class Migration(migrations.Migration):
                 ('working_group', models.BooleanField(default=False, help_text='Project is a long-term collaborative group associated with the CDH.', verbose_name='Working Group')),
                 ('updated', models.DateTimeField(auto_now=True, null=True)),
                 ('image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.Image')),
+                ('thumbnail', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.Image')),
                 ('members', models.ManyToManyField(through='projects.Membership', to='people.Person')),
             ],
             options={
