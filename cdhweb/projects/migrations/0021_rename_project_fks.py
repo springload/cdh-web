@@ -9,6 +9,30 @@ class Migration(migrations.Migration):
         ('projects', '0020_project_page_wagtail'),
     ]
 
+    # NOTE approach for migrating foreign keys to page models; where "new" model
+    # extends wagtail Page and "old" model extends mezzanine Displayable:
+    #
+    # [see 0020_project_page_wagtail.py]
+    # 1. create new model with name FooPage (extends wagtail Page)
+    # 2. add FKs to new model called "foo_page" on all models with FKs to old model
+    #
+    # [in this migration]
+    # 2. rename FKs to old model, adding "old_" prefix
+    # 3. make FKs to old model nullable but not editable in admin
+    # 4. rename FKs to new model, removing "_page" suffix
+    #
+    # [see 0022_rename_project.py]
+    # 5. rename old model Foo to OldFoo
+    # 6. rename new model FooPage to Foo
+    #
+    # [in exodus script]
+    # 7. create a Foo for each OldFoo
+    # 8. set the value of all FKs to OldFoo to the Foo created in step 7
+    #
+    # [after exodus is complete]
+    # 9. remove all OldFoo FKs
+    # 10. remove OldFoo model
+
     operations = [
         migrations.RenameField(
             model_name='grant',
