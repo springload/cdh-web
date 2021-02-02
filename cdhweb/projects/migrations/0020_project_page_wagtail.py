@@ -40,14 +40,6 @@ class Migration(migrations.Migration):
             },
             bases=('wagtailcore.page', models.Model),
         ),
-        migrations.RemoveField(
-            model_name='project',
-            name='members',
-        ),
-        migrations.RemoveField(
-            model_name='project',
-            name='resources',
-        ),
         migrations.CreateModel(
             name='ProjectTag',
             fields=[
