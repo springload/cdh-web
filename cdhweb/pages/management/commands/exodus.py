@@ -501,8 +501,7 @@ class Command(BaseCommand):
             project_page = Project(
                 title=project.title,
                 slug=self.convert_slug(project.slug),
-                image=self.get_wagtail_image(project.image) if project.image else self.get_wagtail_image(
-                    project.thumb) if project.thumb else None,
+                image=self.get_wagtail_image(project.image) if project.image else None,
                 highlight=project.highlight,
                 cdh_built=project.cdh_built,
                 working_group=project.working_group,
@@ -540,4 +539,4 @@ class Command(BaseCommand):
 
         # TODO create redirects:
         # /projects/about -> /projects
-        # /project/ -> /projects/sponsored-projects
+        # /projects/ -> /projects/sponsored
