@@ -15,7 +15,8 @@ from wagtail.core.fields import StreamField
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import BodyContentBlock, LandingPage, RelatedLink
+from cdhweb.pages.models import (BodyContentBlock, LinkPage, RelatedLink,
+                                 RelatedLinkType)
 from cdhweb.people.models import Person
 from cdhweb.resources.models import Attachment, DateRange, ExcerptMixin
 
@@ -88,6 +89,8 @@ class OldProject(Displayable, AdminThumbMixin, ExcerptMixin):
                                     help_text='Project built by CDH Development & Design team.')
     working_group = models.BooleanField(
         'Working Group', default=False, help_text='Project is a long-term collaborative group associated with the CDH.')
+    members = models.ManyToManyField(Person, through='Membership')
+    resources = models.ManyToManyField(RelatedLinkType, through='ProjectRelatedLink')
 
     tags = TaggableManager(blank=True)
 
@@ -200,8 +203,8 @@ class Project(Page, ClusterableModel):
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
     updated = models.DateTimeField(auto_now=True, null=True, editable=False)
 
-    # can only be created underneath landing page
-    parent_page_types = ["projects.ProjectsLandingPage"]
+    # can only be created underneath special link page
+    parent_page_types = ["projects.ProjectsLinkPage"]
     # no allowed subpages
     subpage_types = []
 
@@ -336,8 +339,8 @@ class Membership(DateRange):
 
 class ProjectRelatedLink(RelatedLink):
     '''Through-model for associating projects with relatedlinks'''
-    project = ParentalKey(
-        Project, on_delete=models.CASCADE, related_name="related_links")
+    project = ParentalKey(Project, on_delete=models.CASCADE, null=True,
+                          related_name="related_links")
     old_project = models.ForeignKey(
         OldProject, null=True, editable=False, on_delete=models.SET_NULL)
 
@@ -345,13 +348,11 @@ class ProjectRelatedLink(RelatedLink):
         return "%s – %s (%s)" % (self.person, self.type, self.display_url)
 
 
-class ProjectsLandingPage(LandingPage):
-    """LandingPage subtype for Projects that holds Project pages."""
+class ProjectsLinkPage(LinkPage):
+    """Container page that defines where Project pages can be created."""
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []
     # NOTE the only allowed child page type is a Project; this is so that
     # Projects made in the admin automatically are created here.
     subpage_types = [Project]
-    # use the regular landing page template
-    template = LandingPage.template
