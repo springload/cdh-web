@@ -13,7 +13,7 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
-                                         InlinePanel, StreamFieldPanel)
+                                         InlinePanel, MultiFieldPanel, StreamFieldPanel)
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
@@ -210,11 +210,17 @@ class Project(Page, ClusterableModel):
                        FieldPanel("cdh_built"),
                        FieldPanel("working_group")), "Settings"),
         FieldRowPanel((ImageChooserPanel("thumbnail"),
-                        ImageChooserPanel("image")), "Images"),
+                       ImageChooserPanel("image")), "Images"),
         FieldPanel("short_description"),
         StreamFieldPanel("long_description"),
-        InlinePanel("grants", label="Grants"),
-        InlinePanel("memberships", label="Members"),
+        InlinePanel("grants", panels=[FieldRowPanel((
+            FieldPanel("start_date"), FieldPanel("end_date")
+        )), FieldPanel("grant_type")], label="Grants"),
+        InlinePanel("memberships", panels=[FieldRowPanel((
+            FieldPanel("start_date"),
+            FieldPanel("end_date"))),
+            FieldPanel("person"), FieldPanel("role")
+        ], label="Members"),
         # TODO add inline editing for ProjectRelatedLink (#181)
     ]
     promote_panels = Page.promote_panels + [
