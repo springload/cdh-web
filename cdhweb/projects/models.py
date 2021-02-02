@@ -1,6 +1,3 @@
-from cdhweb.pages.models import BodyContentBlock, LandingPage, RelatedLink
-from cdhweb.people.models import Person
-from cdhweb.resources.models import Attachment, DateRange, ExcerptMixin
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -13,10 +10,14 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
-                                         InlinePanel, MultiFieldPanel, StreamFieldPanel)
+                                         InlinePanel, StreamFieldPanel)
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
+
+from cdhweb.pages.models import BodyContentBlock, LandingPage, RelatedLink
+from cdhweb.people.models import Person
+from cdhweb.resources.models import Attachment, DateRange, ExcerptMixin
 
 
 class ProjectQuerySet(PageQuerySet):
