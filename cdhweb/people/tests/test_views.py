@@ -7,7 +7,7 @@ from pytest_django.asserts import assertContains, assertNotContains
 
 from cdhweb.people.models import Person
 from cdhweb.people.views import AffiliateListView, ExecListView, \
-    SpeakerListView, StaffListView, StudentListView
+    StaffListView, StudentListView
 
 # NOTE: person factory fixtures in conftest
 
@@ -219,18 +219,5 @@ class TestExecListView:
 
 
 @pytest.mark.django_db
-class TestSpeakersListView:
-    url = reverse('people:speakers')
-
-    @pytest.mark.skip('todo')  # needs fixture, but wait on event exodus
-    def test_list_current(self, client, speaker):
-        '''test upcoming speakers'''
-        response = client.get(self.url)
-        assert speaker in response.context['current']
-
-    def test_display_label(self):
-        '''test display label for speaker'''
-        speaker = Person.objects.create(first_name='Jill', institution='IAS')
-        assert SpeakerListView().display_label(speaker) == \
-            speaker.institution
-
+def test_speakers_list_gone(client):
+    assert client.get('/people/speakers/').status_code == 410

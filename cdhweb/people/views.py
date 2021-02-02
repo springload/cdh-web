@@ -1,5 +1,6 @@
-from django.db.models import Max, Q, Case, When, Value
-from django.db.models.functions import Coalesce, Greatest
+from django.db.models import Case, Max, Value, When
+from django.db.models.functions import Greatest
+from django.views.generic.base import RedirectView
 from django.views.generic.list import ListView
 from django.urls import reverse
 
@@ -64,7 +65,6 @@ class PersonListView(ListView, LastModifiedListMixin):
                 ('Students', reverse('people:students')),
                 ('Affiliates', reverse('people:affiliates')),
                 ('Executive Committee', reverse('people:exec-committee')),
-                ('Speakers', reverse('people:speakers')),
             ]
         })
         return context
@@ -236,31 +236,11 @@ class ExecListView(PersonListView):
         return context
 
 
-class SpeakerListView(PersonListView):
-    '''Display upcoming and past speakers.'''
-    page_title = 'Speakers'
-    current_title = 'Upcoming {}'.format(page_title)
-    past_title = 'Past {}'.format(page_title)
+class SpeakerListGoneView(RedirectView):
+    '''Previously, this page displayed upcoming and past speakers;
+    removed in 3.0 since it's not longer relevant after Year of Data.
+    Use redirect view with no redirect url to return a 410 Gone.'''
 
-    def get_queryset(self):
-        # filter to just speakers
-        return super().get_queryset().speakers()
-
-    def get_current(self):
-        # return only speakers with upcoming events, sorted by recent event
-        return self.object_list.has_upcoming_events().order_by_event()
-
-    def get_past(self):
-        # resort the past people and show latest first
-        return super().get_past().order_by_event().reverse()
-
-    def display_label(self, person):
-        # for speakers, just show institutional affiliation
-        return person.institution
-
-    def get_context_data(self):
-        context = super().get_context_data()
-        # for now, set flag to show event info in the template
-        # (maybe could use extended person card instead?)
-        context['show_events'] = True
-        return context
+    def get_redirect_url(self, *args, **kwargs):
+        # explicitly return None to ensure we serve a 410 response
+        return None
