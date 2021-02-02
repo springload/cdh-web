@@ -19,3 +19,4 @@ attrdict
 django-fullurl
 django-apptemplates
 wagtailmenus
+opencv-python

@@ -125,6 +125,10 @@ TAGGIT_CASE_INSENSITIVE = True
 # https://docs.wagtail.io/en/latest/reference/settings.html#usage-for-images-documents-and-snippets
 WAGTAIL_USAGE_COUNT_ENABLED = True
 
+# enable feature detection in images
+WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = True
+
+
 ########################
 # MAIN DJANGO SETTINGS #
 ########################
