@@ -223,9 +223,8 @@ class HomePage(Page):
             updates = BlogPost.objects.published().recent()[:3]
         context['updates'] = updates
 
-        # add up to 4 highlighted, published projects
-        projects = list(Project.objects.live().highlighted())
-        shuffle(projects)
+        # add up to 4 randomly selected highlighted, published projects
+        projects = list(Project.objects.live().highlighted().order_by("?"))
         context['projects'] = projects[:4]
 
         # add up to 3 upcoming, published events
