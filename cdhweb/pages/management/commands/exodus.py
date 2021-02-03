@@ -14,7 +14,7 @@ from django.core.files.images import ImageFile
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
-from mezzanine.pages import models as mezz_page_models
+from mezzanine.pages.models import Page as MezzaninePage
 from wagtail.core.models import Collection, Page, Site, get_root_collection_id
 from wagtail.images.models import Image
 
@@ -26,7 +26,7 @@ from cdhweb.pages.models import ContentPage, HomePage
 from cdhweb.people.exodus import people_exodus
 from cdhweb.people.models import PeopleLandingPage
 from cdhweb.projects.exodus import project_exodus
-from cdhweb.projects.models import ProjectsLandingPage
+from cdhweb.projects.models import ProjectsLinkPage
 
 # raise UserWarnings from image handling as errors so they can be logged
 warnings.simplefilter(action="error", category=UserWarning)
@@ -46,6 +46,160 @@ class Command(BaseCommand):
         # get root collection so we can add children to it
         'root': Collection.objects.get(pk=get_root_collection_id())
     }
+
+    def handle(self, *args, **options):
+        """Create Wagtail pages for all extant Mezzanine pages."""
+        # clear out wagtail pages for idempotency
+        Page.objects.filter(depth__gt=2).delete()
+
+        # convert media images to wagtail images
+        self.image_exodus()
+
+        # create the new homepage
+        try:
+            old_homepage = MezzaninePage.objects.get(slug="/")
+            homepage = create_homepage(old_homepage)
+            # mark home page as migrated
+            self.migrated.append(old_homepage.pk)
+        # in some situations (e.g. fixture loading) there's no homepage
+        except MezzaninePage.DoesNotExist:
+            old_homepage = None
+            homepage = HomePage(
+                title="The Center for Digital Humanities at Princeton",
+                seo_title="The Center for Digital Humanities at Princeton",
+                slug="",
+            )
+        root = Page.objects.get(depth=1)
+        root.add_child(instance=homepage)
+        root.save()
+
+        # point the default site at the new homepage and delete any others.
+        # if they are deleted prior to switching site.root_page, the site will
+        # also be deleted in a cascade, which we don't want
+        site = Site.objects.get()
+        site.root_page = homepage
+        site.save()
+        Page.objects.filter(depth=2).exclude(pk=homepage.pk).delete()
+
+        # create a LinkPage to serve as the projects/ root (project list page)
+        try:
+            old_projects = MezzaninePage.objects.get(slug="projects")
+            projects = ProjectsLinkPage(
+                title=old_projects.title,
+                link_url=old_projects.slug
+            )
+            homepage.add_child(instance=projects)
+            homepage.save()
+            self.migrated.append(old_projects.pk)
+        except MezzaninePage.DoesNotExist:
+            projects = None
+
+        # create a dummy top-level events/ page for event pages to go under
+        if MezzaninePage.objects.filter(slug="events").exists():
+            events = ContentPage(
+                title="Events",
+                slug="events",
+                seo_title="Events"
+            )
+            homepage.add_child(instance=events)
+            homepage.save()
+            # mark events content page as migrated
+            self.migrated.append(
+                MezzaninePage.objects.get(slug='events').pk)
+        else:
+            events = None
+
+        # manually migrate the top-level people/ page to a special subtype
+        try:
+            old_people = MezzaninePage.objects.get(slug="people")
+            people = PeopleLandingPage(
+                title=old_people.title,
+                tagline=old_people.landingpage.tagline,
+                header_image=get_wagtail_image(old_people.landingpage.image),
+                slug=convert_slug(old_people.slug),
+                seo_title=old_people._meta_title or old_people.title,
+                body=json.dumps([{
+                    "type": "migrated",
+                    "value": old_people.landingpage.content,
+                }]),
+                search_description=old_people.description,
+            )
+            homepage.add_child(instance=people)
+            homepage.save()
+            # mark as migrated
+            self.migrated.append(old_people.pk)
+        except MezzaninePage.DoesNotExist:
+            people = None
+
+        # migrate children of homepage
+        if old_homepage:
+            for page in old_homepage.children.all():
+                self.migrate_pages(page, homepage)
+
+        # special cases
+        # - migrate event pages but specify new events page as parent
+        if events:
+            event_pages = MezzaninePage.objects \
+                .filter(Q(slug__startswith="events/") | Q(slug="year-of-data"))
+            for page in event_pages:
+                self.migrate_pages(page, events)
+
+        # migrate people pages as link pages
+        if people:
+            people_pages = MezzaninePage.objects \
+                .filter(slug__startswith="people/").order_by('-slug')
+            for page in people_pages:
+                if page.pk not in self.migrated:
+                    create_link_page(page, people)
+                    self.migrated.append(page.pk)
+
+        # migrate project pages
+        if projects:
+            # old landing page at projects/about
+            try:
+                old_projects_landing = MezzaninePage.objects.get(
+                    slug="projects/about")
+                projects_landing = create_landingpage(old_projects_landing)
+                projects.add_child(instance=projects_landing)
+                projects.save()
+                self.migrated.append(old_projects_landing.pk)
+            except MezzaninePage.DoesNotExist:
+                pass
+
+            # project list pages become link pages
+            project_pages = MezzaninePage.objects \
+                .filter(Q(slug__startswith="projects")).order_by('-slug')
+            for page in project_pages:
+                if page.pk not in self.migrated:
+                    create_link_page(page, projects)
+                    self.migrated.append(page.pk)
+
+        # migrate all remaining pages, starting with pages with no parent
+        # (i.e., top level pages)
+        for page in MezzaninePage.objects.filter(parent__isnull=True):
+            self.migrate_pages(page, homepage)
+
+        # special cases — consult/co-sponsor form
+        form_pages()
+
+        # profiles, people
+        people_exodus()
+
+        # projects, memberships, grants, roles
+        project_exodus()
+
+        # report on unmigrated pages
+        unmigrated = MezzaninePage.objects.exclude(
+            pk__in=self.migrated)
+        if unmigrated.count() == 0:
+            logging.info("all mezzanine pages migrated")
+        else:
+            logging.warning("%d unmigrated mezzanine pages" %
+                            unmigrated.count())
+        for page in unmigrated:
+            print('\t%s — slug/url %s)' % (page, page.slug))
+
+        # delete mezzanine pages here? (but keep for testing migration)
 
     def get_collection(self, name):
         # if we don't already have this collection, get it
@@ -197,156 +351,3 @@ class Command(BaseCommand):
                     # seems to mean that height/width calculation failed
                     # (usually non-images)
                     logging.warning("%s: %s" % (imgpath, err))
-
-    def handle(self, *args, **options):
-        """Create Wagtail pages for all extant Mezzanine pages."""
-        # clear out wagtail pages and revisions for idempotency
-        Page.objects.filter(depth__gt=2).delete()
-        # PageRevision.objects.all().delete()
-
-        # convert media images to wagtail images
-        self.image_exodus()
-
-        # create the new homepage
-        try:
-            old_homepage = mezz_page_models.Page.objects.get(slug="/")
-            homepage = create_homepage(old_homepage)
-            # mark home page as migrated
-            self.migrated.append(old_homepage.pk)
-        # in some situations (e.g. fixture loading) there's no homepage
-        except mezz_page_models.Page.DoesNotExist:
-            old_homepage = None
-            homepage = HomePage(
-                title="The Center for Digital Humanities at Princeton",
-                seo_title="The Center for Digital Humanities at Princeton",
-                slug="",
-            )
-        root = Page.objects.get(depth=1)
-        root.add_child(instance=homepage)
-        root.save()
-
-        # point the default site at the new homepage and delete any others.
-        # if they are deleted prior to switching site.root_page, the site will
-        # also be deleted in a cascade, which we don't want
-        site = Site.objects.get()
-        site.root_page = homepage
-        site.save()
-        Page.objects.filter(depth=2).exclude(pk=homepage.pk).delete()
-
-        # manually migrate the project landing page to a special subtype
-        try:
-            old_projects = mezz_page_models.Page.objects.get(
-                slug="projects/about")
-            projects = ProjectsLandingPage(
-                title=old_projects.title,
-                tagline=old_projects.landingpage.tagline,
-                header_image=get_wagtail_image(old_projects.landingpage.image),
-                slug="projects",
-                seo_title=old_projects._meta_title or old_projects.title,
-                body=json.dumps([{
-                    "type": "migrated",
-                    "value": old_projects.landingpage.content,
-                }]),
-                search_description=old_projects.description,
-            )
-            homepage.add_child(instance=projects)
-            homepage.save()
-            # mark as migrated
-            self.migrated.append(old_projects.pk)
-        except mezz_page_models.Page.DoesNotExist:
-            projects = None
-
-        # create a dummy top-level events/ page for event pages to go under
-        if mezz_page_models.Page.objects.filter(slug="events").exists():
-            events = ContentPage(
-                title="Events",
-                slug="events",
-                seo_title="Events"
-            )
-            homepage.add_child(instance=events)
-            homepage.save()
-            # mark events content page as migrated
-            self.migrated.append(
-                mezz_page_models.Page.objects.get(slug='events').pk)
-        else:
-            events = None
-
-        # manually migrate the top-level people/ page to a special subtype
-        try:
-            old_people = mezz_page_models.Page.objects.get(slug="people")
-            people = PeopleLandingPage(
-                title=old_people.title,
-                tagline=old_people.landingpage.tagline,
-                header_image=get_wagtail_image(old_people.landingpage.image),
-                slug=convert_slug(old_people.slug),
-                seo_title=old_people._meta_title or old_people.title,
-                body=json.dumps([{
-                    "type": "migrated",
-                    "value": old_people.landingpage.content,
-                }]),
-                search_description=old_people.description,
-            )
-            homepage.add_child(instance=people)
-            homepage.save()
-            # mark as migrated
-            self.migrated.append(old_people.pk)
-        except mezz_page_models.Page.DoesNotExist:
-            people = None
-
-        # migrate children of homepage
-        if old_homepage:
-            for page in old_homepage.children.all():
-                self.migrate_pages(page, homepage)
-
-        # special cases
-        # - migrate event pages but specify new events page as parent
-        if events:
-            event_pages = mezz_page_models.Page.objects \
-                .filter(Q(slug__startswith="events/") | Q(slug="year-of-data"))
-            for page in event_pages:
-                self.migrate_pages(page, events)
-
-        # migrate people pages as link pages
-        if people:
-            people_pages = mezz_page_models.Page.objects \
-                .filter(slug__startswith="people/").order_by('-slug')
-            for page in people_pages:
-                if page.pk not in self.migrated:
-                    create_link_page(page, people)
-                    self.migrated.append(page.pk)
-
-        # migrate project pages as link pages
-        if projects:
-            project_pages = mezz_page_models.Page.objects \
-                .filter(Q(slug__startswith="projects")).order_by('-slug')
-            for page in project_pages:
-                if page.pk not in self.migrated:
-                    create_link_page(page, projects)
-                    self.migrated.append(page.pk)
-
-        # migrate all remaining pages, starting with pages with no parent
-        # (i.e., top level pages)
-        for page in mezz_page_models.Page.objects.filter(parent__isnull=True):
-            self.migrate_pages(page, homepage)
-
-        # special cases — consult/co-sponsor form
-        form_pages()
-
-        # profiles, people
-        people_exodus()
-
-        # projects, memberships, grants, roles
-        project_exodus()
-
-        # report on unmigrated pages
-        unmigrated = mezz_page_models.Page.objects.exclude(
-            pk__in=self.migrated)
-        if unmigrated.count() == 0:
-            logging.info("all mezzanine pages migrated")
-        else:
-            logging.warning("%d unmigrated mezzanine pages" %
-                            unmigrated.count())
-        for page in unmigrated:
-            print('\t%s — slug/url %s)' % (page, page.slug))
-
-        # delete mezzanine pages here? (but keep for testing migration)
