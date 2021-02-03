@@ -3,14 +3,15 @@
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
 from cdhweb.pages.exodus import convert_slug, get_wagtail_image, to_streamfield
-from cdhweb.projects.models import OldProject, Project, ProjectsLandingPage
+from cdhweb.projects.models import OldProject, Project, ProjectsLinkPage
 
 
 def project_exodus():
     """exodize all project models"""
-    # if no project landing page, nothing to do
-    project_landing = ProjectsLandingPage.objects.first()
-    if not project_landing:
+    # get the top-level projects link page
+    try:
+        project_link = ProjectsLinkPage.objects.get()
+    except ProjectsLinkPage.DoesNotExist:
         return
 
     # create new project pages
@@ -29,8 +30,8 @@ def project_exodus():
         )
 
         # add it as child of project landing page so slugs are correct
-        project_landing.add_child(instance=project_page)
-        project_landing.save()
+        project_link.add_child(instance=project_page)
+        project_link.save()
 
         # if the old project wasn't published, unpublish the new one
         if project.status != CONTENT_STATUS_PUBLISHED:
