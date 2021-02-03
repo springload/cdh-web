@@ -1,6 +1,6 @@
 from django.db.models import Case, Max, Value, When
 from django.db.models.functions import Greatest
-from django.views.generic.base import RedirectView
+from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.urls import reverse
 
@@ -234,3 +234,12 @@ class ExecListView(PersonListView):
             'sits_with': self.add_display_label(current.sits_with_exec()),
         })
         return context
+
+
+def speakerlist_gone(request):
+    # return 410 gone for speakers list view;
+    # (removed in 3.0, no longer needed after the Year of Data)
+    return render(request, 'errors/404.html', context={
+        'error_code': 410,
+        'message': "That page isn't here anymore."
+    }, status=410)

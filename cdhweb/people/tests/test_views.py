@@ -221,14 +221,21 @@ class TestExecListView:
 
     def test_display_label(self):
         '''test display label for exec'''
-        exec_member = Person.objects.create(first_name='Laura', job_title='Professor of Humanities')
+        exec_member = Person.objects.create(
+            first_name='Laura', job_title='Professor of Humanities')
         assert ExecListView().display_label(exec_member) == \
             exec_member.job_title
 
 
 @pytest.mark.django_db
 def test_speakers_list_gone(client):
-    assert client.get('/people/speakers/').status_code == 410
+    response = client.get('/people/speakers/')
+    assert response.status_code == 410
+    assertContains(response, '410', status_code=410)
+    assertContains(response, "That page isn&#39;t here anymore.",
+                   status_code=410)
+    assertNotContains(response, '404', status_code=410)
+    assertNotContains(response, "can't seem to find", status_code=410)
 
 
 @pytest.mark.django_db

@@ -15,8 +15,5 @@ urlpatterns = [
     url(r'^faculty/$', RedirectView.as_view(url='/people/affiliates/', permanent=True)),
     # redirect from /people/postdocs -> /people/staff
     url(r'^postdocs/$', RedirectView.as_view(url='/people/staff/', permanent=True)),
-    # return 410 gone for speakers list view; unnamed to prevent links
-    # (removed in 3.0, no longer needed post Year of Data)
-    url(r'^speakers/$', RedirectView.as_view(url=None)),
-
+    url(r'^speakers/$', views.speakerlist_gone),
 ]
