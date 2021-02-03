@@ -234,13 +234,3 @@ class ExecListView(PersonListView):
             'sits_with': self.add_display_label(current.sits_with_exec()),
         })
         return context
-
-
-class SpeakerListGoneView(RedirectView):
-    '''Previously, this page displayed upcoming and past speakers;
-    removed in 3.0 since it's not longer relevant after Year of Data.
-    Use redirect view with no redirect url to return a 410 Gone.'''
-
-    def get_redirect_url(self, *args, **kwargs):
-        # explicitly return None to ensure we serve a 410 response
-        return None
