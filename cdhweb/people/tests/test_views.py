@@ -7,7 +7,7 @@ from pytest_django.asserts import assertContains, assertNotContains
 
 from cdhweb.people.models import Person
 from cdhweb.people.views import AffiliateListView, ExecListView, \
-    SpeakerListView, StaffListView, StudentListView
+    StaffListView, StudentListView, PersonListView
 
 # NOTE: person factory fixtures in conftest
 
@@ -110,7 +110,10 @@ class TestStudentListView:
         assertContains(response, student.first_name)
         assertContains(response, student.positions.first().title)
         assertContains(response, grad_pi.first_name)
-        assertContains(response, grad_pi.membership_set.first().role.title)
+        # should not display "project director" role
+        assertNotContains(response, grad_pi.membership_set.first().role.title)
+        assertContains(response,
+                       '%s Grant Recipient' % grad_pi.latest_grant.grant_type)
 
     def test_student_list_past(self, client, student):
         '''test past student'''
@@ -125,15 +128,18 @@ class TestStudentListView:
         assertContains(response, student.positions.first().title)
         assertContains(response, student.positions.first().years)
 
-    def test_display_label_current(self, student, grad_pi):
+    def test_display_label_current(self, student, grad_pi, grad_pm):
         '''test display label for current student'''
         assert StudentListView().display_label(student) == \
-            student.positions.first().title
+            str(student.positions.first().title)
 
+        grant = grad_pi.latest_grant
         assert StudentListView().display_label(grad_pi) == \
-            grad_pi.membership_set.first().role.title
+            "%s %s Grant Recipient" % (grant.years, grant.grant_type)
 
-    def test_display_label_past(self, student, grad_pi):
+        assert StudentListView().display_label(grad_pm) == 'Project Manager'
+
+    def test_display_label_past(self, student, grad_pi, grad_pm):
         '''test display label for former student affiliates'''
         position = student.positions.last()
         position.end_date = timezone.now() - timedelta(days=30)
@@ -141,11 +147,17 @@ class TestStudentListView:
         assert StudentListView().display_label(student) == \
             '%s %s' % (position.years, position.title)
 
-        membership = grad_pi.membership_set.first()
+        grant = grad_pi.latest_grant
+        grant.end_date = timezone.now() - timedelta(days=30)
+        grant.save()
+        assert StudentListView().display_label(grad_pi) == \
+            "%s %s Grant Recipient" % (grant.years, grant.grant_type)
+
+        membership = grad_pm.membership_set.first()
         membership.end_date = timezone.now() - timedelta(days=30)
         membership.save()
-        assert StudentListView().display_label(grad_pi) == \
-            '%s %s' % (membership.years, membership.role.title)
+        assert StudentListView().display_label(grad_pm) == \
+            '%s Project Manager' % membership.years
 
 
 @pytest.mark.django_db
@@ -209,24 +221,25 @@ class TestExecListView:
 
     def test_display_label(self):
         '''test display label for exec'''
-        exec_member = Person.objects.create(first_name='Laura', job_title='Professor of Humanities')
+        exec_member = Person.objects.create(
+            first_name='Laura', job_title='Professor of Humanities')
         assert ExecListView().display_label(exec_member) == \
             exec_member.job_title
 
 
 @pytest.mark.django_db
-class TestSpeakersListView:
-    url = reverse('people:speakers')
+def test_speakers_list_gone(client):
+    response = client.get('/people/speakers/')
+    assert response.status_code == 410
+    assertContains(response, '410', status_code=410)
+    assertContains(response, "That page isn&#39;t here anymore.",
+                   status_code=410)
+    assertNotContains(response, '404', status_code=410)
+    assertNotContains(response, "can't seem to find", status_code=410)
 
-    @pytest.mark.skip('todo')  # needs fixture, but wait on event exodus
-    def test_list_current(self, client, speaker):
-        '''test upcoming speakers'''
-        response = client.get(self.url)
-        assert speaker in response.context['current']
 
-    def test_display_label(self):
-        '''test display label for speaker'''
-        speaker = Person.objects.create(first_name='Jill', institution='IAS')
-        assert SpeakerListView().display_label(speaker) == \
-            speaker.institution
-
+@pytest.mark.django_db
+def test_personlistview_displaylabel_notimplemented(grad_pm):
+    # base person list view class display label raises not implemented
+    with pytest.raises(NotImplementedError):
+        PersonListView().display_label(grad_pm)

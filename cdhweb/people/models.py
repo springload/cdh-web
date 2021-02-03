@@ -141,14 +141,6 @@ class PersonQuerySet(models.QuerySet):
                 models.When(membership__role__title='Project Manager',
                             then='membership__end_date'))))
 
-    def speakers(self):
-        '''Return external speakers at CDH events.'''
-        # FIXME event still associated to user
-        # Speakers are non-Princeton profiles (external) who are associated with
-        # at least one published event
-        return self.filter(user__event__isnull=False, pu_status='external',
-                           user__event__status=CONTENT_STATUS_PUBLISHED)
-
     def _current_position_query(self):
         # query to find a person with a current cdh position
         # person *has* a position and it has no end date or date after today
@@ -195,21 +187,6 @@ class PersonQuerySet(models.QuerySet):
         executive committee positions.'''
         return self.filter(models.Q(self._current_position_query()) &
                            ~models.Q(positions__title__title__in=self.exec_committee_titles))
-
-    def has_upcoming_events(self):
-        '''Filter profiles to only those with an upcoming published event.'''
-        # FIXME event still associated to user
-        return self.filter(user__event__end_time__gte=timezone.now(),
-                           user__event__status=CONTENT_STATUS_PUBLISHED).distinct()
-
-    def order_by_event(self):
-        '''Order by earliest published event associated with profile.'''
-        # FIXME event still associated to user
-        return self.annotate(
-            earliest_event=models.Min(models.Case(
-                models.When(user__event__status=CONTENT_STATUS_PUBLISHED,
-                            then='user__event__start_time')))
-        ).order_by('earliest_event')
 
     def order_by_position(self):
         '''order by job title sort order and then by start date'''
@@ -444,7 +421,7 @@ class ProfilePage(Page):
 
         # TODO BlogPost still associated to user; will break when blog models
         # are migrated/exodized to wagtail
-        
+
         if self.person.user:
             # get 3 most recent published posts with this person as author
             recent_posts = BlogPost.objects.filter(
