@@ -65,6 +65,22 @@ def grad_pi():
 
 
 @pytest.fixture
+def grad_pm():
+    person = Person.objects.create(
+        first_name='Tom', cdh_staff=False, pu_status='graduate')
+    project = Project.objects.create(title='Reconstructing the Past')
+    project_manager = Role.objects.get_or_create(title='Project Manager')[0]
+    Membership.objects.create(
+        project=project, person=person, role=project_manager,
+        start_date=date(2015, 9, 1))
+    dataset_curation = GrantType.objects.get_or_create(grant_type='Dataset Curation')[0]
+    Grant.objects.create(grant_type=dataset_curation, project=project,
+                         start_date=date(2015, 9, 1),
+                         end_date=date.today() + timedelta(days=30))
+    return person
+
+
+@pytest.fixture
 def faculty_pi():
     person = Person.objects.create(
         first_name='Josh', cdh_staff=False, pu_status='fac')

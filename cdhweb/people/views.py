@@ -39,7 +39,7 @@ class PersonListView(ListView, LastModifiedListMixin):
 
     def display_label(self, person):
         # no default; force subclasses to implement
-        raise NotImplemented
+        raise NotImplementedError
 
     def add_display_label(self, queryset):
         # annotate the queryset with label to be displayed for this view

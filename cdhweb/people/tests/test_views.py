@@ -7,7 +7,7 @@ from pytest_django.asserts import assertContains, assertNotContains
 
 from cdhweb.people.models import Person
 from cdhweb.people.views import AffiliateListView, ExecListView, \
-    StaffListView, StudentListView
+    StaffListView, StudentListView, PersonListView
 
 # NOTE: person factory fixtures in conftest
 
@@ -128,7 +128,7 @@ class TestStudentListView:
         assertContains(response, student.positions.first().title)
         assertContains(response, student.positions.first().years)
 
-    def test_display_label_current(self, student, grad_pi):
+    def test_display_label_current(self, student, grad_pi, grad_pm):
         '''test display label for current student'''
         assert StudentListView().display_label(student) == \
             str(student.positions.first().title)
@@ -137,7 +137,9 @@ class TestStudentListView:
         assert StudentListView().display_label(grad_pi) == \
             "%s %s Grant Recipient" % (grant.years, grant.grant_type)
 
-    def test_display_label_past(self, student, grad_pi):
+        assert StudentListView().display_label(grad_pm) == 'Project Manager'
+
+    def test_display_label_past(self, student, grad_pi, grad_pm):
         '''test display label for former student affiliates'''
         position = student.positions.last()
         position.end_date = timezone.now() - timedelta(days=30)
@@ -150,6 +152,12 @@ class TestStudentListView:
         grant.save()
         assert StudentListView().display_label(grad_pi) == \
             "%s %s Grant Recipient" % (grant.years, grant.grant_type)
+
+        membership = grad_pm.membership_set.first()
+        membership.end_date = timezone.now() - timedelta(days=30)
+        membership.save()
+        assert StudentListView().display_label(grad_pm) == \
+            '%s Project Manager' % membership.years
 
 
 @pytest.mark.django_db
@@ -221,3 +229,10 @@ class TestExecListView:
 @pytest.mark.django_db
 def test_speakers_list_gone(client):
     assert client.get('/people/speakers/').status_code == 410
+
+
+@pytest.mark.django_db
+def test_personlistview_displaylabel_notimplemented(grad_pm):
+    # base person list view class display label raises not implemented
+    with pytest.raises(NotImplementedError):
+        PersonListView().display_label(grad_pm)
