@@ -1,4 +1,4 @@
-from cdhweb.pages.models import RelatedLink, RelatedLinkType
+from cdhweb.pages.models import RelatedLinkType
 from datetime import date, timedelta
 
 import pytest

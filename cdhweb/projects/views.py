@@ -1,7 +1,8 @@
-from cdhweb.projects.models import Project
-from cdhweb.resources.views import LastModifiedListMixin
 from django.urls import reverse
 from django.views.generic.list import ListView
+
+from cdhweb.projects.models import Project
+from cdhweb.resources.views import LastModifiedListMixin
 
 
 class ProjectListView(ListView, LastModifiedListMixin):
@@ -12,7 +13,7 @@ class ProjectListView(ListView, LastModifiedListMixin):
     #: title for this category of projects
     page_title = "Projects"
     #: title for past projects in this category of projects
-    past_title = "Past " + page_title
+    past_title = "Past Projects"
 
     def get_queryset(self):
         """Get all published projects ordered by newest grant."""
