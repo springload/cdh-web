@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from wagtail.core.models import Page
 from cdhweb.pages.models import HomePage
-from cdhweb.projects.models import ProjectsLandingPage, Project
+from cdhweb.projects.models import ProjectsLinkPage, Project
 
 
 class TestTitle(TestCase):
@@ -116,13 +116,12 @@ class TestPersonQuerySet(TestCase):
         home = HomePage(title="home", slug="")
         root.add_child(instance=home)
         root.save()
-        landing = ProjectsLandingPage(
-            title="projects", slug="projects", tagline="projects")
-        home.add_child(instance=landing)
+        link = ProjectsLinkPage(title="projects", link_url="projects")
+        home.add_child(instance=link)
         home.save()
         self.project = Project(title="project")
-        landing.add_child(instance=self.project)
-        landing.save()
+        link.add_child(instance=self.project)
+        link.save()
 
     def test_staff(self):
         """should be able to filter people to only cdh staff"""

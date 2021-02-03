@@ -1,8 +1,9 @@
-from cdhweb.pages.models import RelatedLinkType
+from wagtail.tests.utils import WagtailPageTests
+
+from cdhweb.pages.models import HomePage, RelatedLinkType
 from cdhweb.people.models import Person
 from cdhweb.projects.models import (Grant, GrantType, Project,
-                                    ProjectRelatedLink, ProjectsLandingPage)
-from wagtail.tests.utils import WagtailPageTests
+                                    ProjectRelatedLink, ProjectsLinkPage)
 
 
 class TestProject:
@@ -61,20 +62,20 @@ class TestProject:
 class TestProjectPage(WagtailPageTests):
 
     def test_parent_pages(self):
-        """project can only be created under projects landing page"""
-        self.assertAllowedParentPageTypes(Project, [ProjectsLandingPage])
+        """project can only be created under projects link page"""
+        self.assertAllowedParentPageTypes(Project, [ProjectsLinkPage])
 
     def test_subpages(self):
         """project page can't have children"""
         self.assertAllowedSubpageTypes(Project, [])
 
 
-class TestProjectsLandingPage(WagtailPageTests):
+class TestProjectsLinkPage(WagtailPageTests):
 
     def test_parentpage_types(self):
-        """projects landing page should not be creatable in admin"""
-        self.assertAllowedParentPageTypes(ProjectsLandingPage, [])
+        """projects link page should not be creatable in admin"""
+        self.assertAllowedParentPageTypes(ProjectsLinkPage, [])
 
     def test_subpage_types(self):
-        """projects landing page only allowed child is project page"""
-        self.assertAllowedSubpageTypes(ProjectsLandingPage, [Project])
+        """projects link page only allowed child is project page"""
+        self.assertAllowedSubpageTypes(ProjectsLinkPage, [Project])

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 from cdhweb.people.models import Person
 from cdhweb.projects.models import (Grant, GrantType, Membership, Project,
-                                    ProjectsLandingPage, Role)
+                                    ProjectsLinkPage, Role)
 
 
 def add_project_member(project, role, start_date=None, end_date=None, **person_opts):
@@ -16,22 +16,21 @@ def add_project_member(project, role, start_date=None, end_date=None, **person_o
 
 
 @pytest.fixture
-def projects_landing_page(db, homepage):
+def projects_link_page(db, homepage):
     """create a test projects landing page underneath the homepage"""
-    landing = ProjectsLandingPage(
-        title="projects", slug="projects", tagline="cdh projects")
-    homepage.add_child(instance=landing)
+    link = ProjectsLinkPage(title="projects", link_url="projects")
+    homepage.add_child(instance=link)
     homepage.save()
-    return landing
+    return link
 
 
 @pytest.fixture
-def derrida(db, projects_landing_page):
+def derrida(db, projects_link_page):
     """a sponsored project with two different grants and project teams"""
     # create the project
     derrida = Project(title="Derrida's Margins")
-    projects_landing_page.add_child(instance=derrida)
-    projects_landing_page.save()
+    projects_link_page.add_child(instance=derrida)
+    projects_link_page.save()
 
     # dates used
     tomorrow = datetime.today() + timedelta(days=1)
@@ -64,12 +63,12 @@ def derrida(db, projects_landing_page):
 
 
 @pytest.fixture
-def pliny(db, projects_landing_page):
+def pliny(db, projects_link_page):
     """a staff r&d project with one current r&d grant and one current member"""
     # create the project
     pliny = Project(title="Pliny Project")
-    projects_landing_page.add_child(instance=pliny)
-    projects_landing_page.save()
+    projects_link_page.add_child(instance=pliny)
+    projects_link_page.save()
 
     # add a staff r&d grant and one member; no end date so grant/role is current
     start_date = datetime.today() - timedelta(days=400)
@@ -83,12 +82,12 @@ def pliny(db, projects_landing_page):
 
 
 @pytest.fixture
-def ocampo(db, projects_landing_page):
+def ocampo(db, projects_link_page):
     """a postdoctoral research project with one r&d grant and one current member"""
     # create the project
     ocampo = Project(title="Global Networks of Cultural Production")
-    projects_landing_page.add_child(instance=ocampo)
-    projects_landing_page.save()
+    projects_link_page.add_child(instance=ocampo)
+    projects_link_page.save()
 
     # add a postdoc grant and one member; no end date so grant/role is current
     start_date = datetime.today() - timedelta(days=450)
@@ -103,12 +102,12 @@ def ocampo(db, projects_landing_page):
 
 
 @pytest.fixture
-def slavic(db, projects_landing_page):
+def slavic(db, projects_link_page):
     """a dh working group with one expired seed grant and one current member"""
     # create the working group
     slavic = Project(title="Slavic DH Working Group", working_group=True)
-    projects_landing_page.add_child(instance=slavic)
-    projects_landing_page.save()
+    projects_link_page.add_child(instance=slavic)
+    projects_link_page.save()
 
     # dates used
     one_year_ago = datetime.today() - timedelta(days=365)
