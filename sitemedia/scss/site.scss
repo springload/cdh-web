@@ -745,6 +745,7 @@ $event-card-img-height: 240px;
                 font-style: italic;
                 font-family: $font-stack-body-text;
                 font-weight: normal;
+                white-space: pre-line;
 			}
 			.name {
 				margin: 0;
@@ -1277,7 +1278,7 @@ $event-card-img-height: 240px;
 			margin-top: 0;
 		}
     }
-    
+
     .grant-history {
         margin-top: 2rem;
 
