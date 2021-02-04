@@ -49,7 +49,7 @@ class ProjectListView(ListView, LastModifiedListMixin):
 class SponsoredProjectListView(ProjectListView):
     """Main project list, i.e. not staff/postdoc/working group."""
 
-    page_title = "Sponsored Projects"    
+    page_title = "Sponsored Projects"
 
     def get_queryset(self):
         """Get all published sponsored projects."""
@@ -74,3 +74,10 @@ class WorkingGroupListView(ProjectListView):
     def get_queryset(self):
         """Get all published DH working groups."""
         return Project.objects.working_groups()
+
+    def get_context_data(self, *args, **kwargs):
+        """Override so that working groups are never shown as past."""
+        context = super().get_context_data(*args, **kwargs)
+        context["current"] = self.object_list   # use cached queryset
+        context["past"] = []
+        return context
