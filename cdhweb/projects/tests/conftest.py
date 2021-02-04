@@ -28,7 +28,8 @@ def projects_link_page(db, homepage):
 def derrida(db, projects_link_page):
     """a sponsored project with two different grants and project teams"""
     # create the project
-    derrida = Project(title="Derrida's Margins")
+    derrida = Project(title="Derrida's Margins",
+                      short_description="derrida description")
     projects_link_page.add_child(instance=derrida)
     projects_link_page.save()
 
@@ -66,7 +67,8 @@ def derrida(db, projects_link_page):
 def pliny(db, projects_link_page):
     """a staff r&d project with one current r&d grant and one current member"""
     # create the project
-    pliny = Project(title="Pliny Project")
+    pliny = Project(title="Pliny Project",
+                    short_description="pliny description")
     projects_link_page.add_child(instance=pliny)
     projects_link_page.save()
 
@@ -85,7 +87,8 @@ def pliny(db, projects_link_page):
 def ocampo(db, projects_link_page):
     """a postdoctoral research project with one r&d grant and one current member"""
     # create the project
-    ocampo = Project(title="Global Networks of Cultural Production")
+    ocampo = Project(title="Global Networks of Cultural Production",
+                     short_description="ocampo description")
     projects_link_page.add_child(instance=ocampo)
     projects_link_page.save()
 
@@ -105,7 +108,8 @@ def ocampo(db, projects_link_page):
 def slavic(db, projects_link_page):
     """a dh working group with one expired seed grant and one current member"""
     # create the working group
-    slavic = Project(title="Slavic DH Working Group", working_group=True)
+    slavic = Project(title="Slavic DH Working Group",
+                     short_description="slavic description", working_group=True)
     projects_link_page.add_child(instance=slavic)
     projects_link_page.save()
 
@@ -121,6 +125,7 @@ def slavic(db, projects_link_page):
                        first_name="Natalia", last_name="Ermolaev")
 
     return slavic
+
 
 @pytest.fixture
 def projects(db, derrida, pliny, ocampo, slavic):
