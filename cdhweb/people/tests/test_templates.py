@@ -7,10 +7,10 @@ from wagtail.core.models import Page, Site
 
 from cdhweb.pages.models import HomePage
 from cdhweb.people.models import (PeopleLandingPage, Person, Position,
-                                  ProfilePage, Title)
+                                  Profile, Title)
 
 
-class TestProfilePage(TestCase):
+class TestProfile(TestCase):
 
     def setUp(self):
         """create example user/person/profile and testing client"""
@@ -31,7 +31,7 @@ class TestProfilePage(TestCase):
         User = get_user_model()
         self.user = User.objects.create_user(username="tom")
         self.person = Person.objects.create(user=self.user, first_name="tom")
-        self.profile = ProfilePage(
+        self.profile = Profile(
             person=self.person,
             title="tom r. jones",
             slug="tom-jones",

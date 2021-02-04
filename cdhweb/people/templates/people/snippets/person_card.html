@@ -11,9 +11,8 @@
     {% endif %}
 
     {# link if we have a profile or website URL, otherwise div #}
-    {% with person.profilepage.url as profile_url %}  {# FIXME: handle external website url #}
-    {% with profile_url|yesno:"a,div" as tag %}
-    <{{ tag }} {% if profile_url %}href="{{ profile_url }}"{% endif %} aria-label="{% firstof profile.title person %}">
+    {% with person.profile_url|yesno:"a,div" as tag %}
+    <{{ tag }} {% if person.profile_url %}href="{{ person.profile_url }}"{% endif %} aria-label="{% firstof profile.title person %}">
         {% if person.image %}
             {% image person.image fill-310x240-c15 as profile_img %}
             <div class="image" style="background-image:url('{{ profile_img.url }}')"></div>
@@ -39,5 +38,4 @@
         </div>
     </{{ tag }}>
     {% endwith %}
-    {% endwith %} {# profile_url #}
 </div>

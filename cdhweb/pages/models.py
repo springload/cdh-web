@@ -211,9 +211,8 @@ class HomePage(Page):
         '''Add featured updates, projects, and events to the page context.'''
         context = super().get_context(request)
 
-        # FIXME an ImportError is thrown when classes in this module are
-        # imported elsewhere if any of these three models are imported at the
-        # top. Why?
+        # FIXME because these apps import LandingPage, there is a circular
+        # import issue, so we can't import these models at the top of this file
         BlogPost = apps.get_model("blog", "blogpost")
         Project = apps.get_model("projects", "project")
         Event = apps.get_model("events", "event")
@@ -224,9 +223,8 @@ class HomePage(Page):
             updates = BlogPost.objects.published().recent()[:3]
         context['updates'] = updates
 
-        # add up to 4 highlighted, published projects
-        projects = list(Project.objects.published().highlighted())
-        shuffle(projects)
+        # add up to 4 randomly selected highlighted, published projects
+        projects = list(Project.objects.live().highlighted().order_by("?"))
         context['projects'] = projects[:4]
 
         # add up to 3 upcoming, published events
@@ -278,3 +276,10 @@ class RelatedLink(models.Model):
     class Meta:
         abstract = True
 
+    @property
+    def display_url(self):
+        '''url cleaned up for display, with leading http(s):// removed'''
+        if self.url.startswith('https://'):
+            return self.url[8:]
+        elif self.url.startswith('http://'):
+            return self.url[7:]

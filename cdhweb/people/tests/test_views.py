@@ -45,13 +45,13 @@ class TestStaffListView:
         assertContains(response, postdoc.first_name)
         assertContains(response, postdoc.current_title)
 
-    @pytest.mark.skip
-    def test_profilepage_links(self, client, staffer, postdoc):
+    def test_profile_links(self, client, staffer_profile, faculty_pi):
         '''test that profile page links are present'''
         response = client.get(self.url)
-        # TODO: requires creating profile landing page & profile pages!
-        assertContains(response, staffer.profilepage.url)
-        assertContains(response, postdoc.profilepage.url)
+        # staffer has internal profile, should use local url
+        assertContains(response, staffer_profile.get_url())
+        # faculty pi has external profile, should use external url
+        assertContains(response, "example.com")
 
     def test_future_end(self, client, staffer):
         '''test staff member with future end date'''
@@ -236,7 +236,6 @@ def test_speakers_list_gone(client):
                    status_code=410)
     assertNotContains(response, '404', status_code=410)
     assertNotContains(response, "can't seem to find", status_code=410)
-
 
 @pytest.mark.django_db
 def test_personlistview_displaylabel_notimplemented(grad_pm):
