@@ -345,7 +345,7 @@ class ProjectRelatedLink(RelatedLink):
         OldProject, null=True, editable=False, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return "%s – %s (%s)" % (self.person, self.type, self.display_url)
+        return "%s – %s (%s)" % (self.project, self.type, self.display_url)
 
 
 class ProjectsLinkPage(LinkPage):
