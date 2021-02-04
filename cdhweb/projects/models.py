@@ -217,6 +217,7 @@ class Project(Page, ClusterableModel):
                        ImageChooserPanel("image")), "Images"),
         FieldPanel("short_description"),
         StreamFieldPanel("long_description"),
+        InlinePanel("related_links", label="Links"),
         InlinePanel("grants", panels=[FieldRowPanel((
             FieldPanel("start_date"), FieldPanel("end_date")
         )), FieldPanel("grant_type")], label="Grants"),
@@ -225,7 +226,6 @@ class Project(Page, ClusterableModel):
             FieldPanel("end_date"))),
             FieldPanel("person"), FieldPanel("role")
         ], label="Members"),
-        # TODO add inline editing for ProjectRelatedLink (#181)
     ]
     promote_panels = Page.promote_panels + [
         FieldPanel("tags")
