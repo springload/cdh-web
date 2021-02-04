@@ -77,10 +77,12 @@ def grad_pi(db, projects_link_page):
 
 
 @pytest.fixture
-def grad_pm():
+def grad_pm(db, projects_link_page):
     person = Person.objects.create(
         first_name='Tom', cdh_staff=False, pu_status='graduate')
-    project = Project.objects.create(title='Reconstructing the Past')
+    project = Project(title='Reconstructing the Past')
+    projects_link_page.add_child(instance=project)
+    projects_link_page.save()
     project_manager = Role.objects.get_or_create(title='Project Manager')[0]
     Membership.objects.create(
         project=project, person=person, role=project_manager,
