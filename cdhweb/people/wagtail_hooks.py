@@ -7,7 +7,7 @@ from wagtail.contrib.modeladmin.options import (ModelAdmin, ModelAdminGroup,
 class PersonAdmin(ThumbnailMixin, ModelAdmin):
     model = Person
     menu_icon = "group"
-    list_display = ("first_name", "last_name", "admin_thumb", "current_title",
+    list_display = ("admin_thumb", "first_name", "last_name", "current_title",
                     "cdh_staff")
     search_fields = ("first_name", "last_name", "user__username")
     list_filter = ("pu_status", "cdh_staff")
@@ -27,7 +27,7 @@ class TitleAdmin(ModelAdmin):
 class ProfileAdmin(ThumbnailMixin, ModelAdmin):
     model = Profile
     menu_icon = "user"
-    list_display = ("title", "admin_thumb", "live")
+    list_display = ("admin_thumb", "title", "live")
     search_fields = ("title",)
     thumb_image_field_name = "image"
     exclude_from_explorer = True

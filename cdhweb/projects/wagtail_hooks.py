@@ -8,7 +8,7 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
     model = Project
     menu_label = "Projects"
     menu_icon = "site"
-    list_display = ("title", "admin_thumb", "live", "cdh_built", "highlight")
+    list_display = ("admin_thumb", "title", "live", "cdh_built", "highlight")
     list_filter = ("grants__grant_type",)
     list_export = ("title", "working_group", "cdh_built", "tags",
                    "short_description", "long_description", "website_url",
