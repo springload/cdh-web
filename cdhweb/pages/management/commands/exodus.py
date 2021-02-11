@@ -11,8 +11,9 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.core.files.images import ImageFile
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandParser
 from django.db.models import Q
+from django.test import override_settings
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 from mezzanine.pages.models import Page as MezzaninePage
 from wagtail.core.models import Collection, Page, Site, get_root_collection_id
@@ -28,11 +29,13 @@ from cdhweb.people.models import PeopleLandingPage
 from cdhweb.projects.exodus import project_exodus
 from cdhweb.projects.models import ProjectsLinkPage
 
-# raise UserWarnings from image handling as errors so they can be logged
-warnings.simplefilter(action="error", category=UserWarning)
-
-# set this to INFO to view wagtail's page creation logs
-logging.basicConfig(level=logging.WARN)
+# log levels as integers for verbosity option
+LOG_LEVELS = {
+    0: logging.ERROR,
+    1: logging.WARNING,
+    2: logging.INFO,
+    3: logging.DEBUG
+}
 
 
 class Command(BaseCommand):
@@ -47,13 +50,27 @@ class Command(BaseCommand):
         'root': Collection.objects.get(pk=get_root_collection_id())
     }
 
+    def add_arguments(self, parser: CommandParser) -> None:
+        # skip feature detection if requested (faster image loading)
+        parser.add_argument(
+            "--skip-feature-detection", "-s", action="store_true",
+            help="Skip image feature detection with OpenCV"
+        )
+
     def handle(self, *args, **options):
         """Create Wagtail pages for all extant Mezzanine pages."""
+        # set up logging based on verbosity
+        logging.basicConfig(level=LOG_LEVELS[options["verbosity"]])
+
+        # raise UserWarnings from image handling as errors so they can be logged
+        warnings.simplefilter(action="error", category=UserWarning)
+
         # clear out wagtail pages for idempotency
         Page.objects.filter(depth__gt=2).delete()
 
-        # convert media images to wagtail images
-        self.image_exodus()
+        # convert media images to wagtail images; detect features by default
+        with override_settings(WAGTAILIMAGES_FEATURE_DETECTION_ENABLED=not options["skip_feature_detection"]):
+            self.image_exodus()
 
         # create the new homepage
         try:
