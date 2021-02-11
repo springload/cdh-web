@@ -9,6 +9,7 @@ class PersonAdmin(ThumbnailMixin, ModelAdmin):
     menu_icon = "group"
     list_display = ("admin_thumb", "first_name", "last_name", "current_title",
                     "cdh_staff")
+    list_display_add_buttons = "first_name"
     search_fields = ("first_name", "last_name", "user__username")
     list_filter = ("pu_status", "cdh_staff")
     list_export = ("first_name", "last_name", "admin_thumb", "current_title",
@@ -28,6 +29,7 @@ class ProfileAdmin(ThumbnailMixin, ModelAdmin):
     model = Profile
     menu_icon = "user"
     list_display = ("admin_thumb", "title", "live")
+    list_display_add_buttons = "title"
     search_fields = ("title",)
     thumb_image_field_name = "image"
     exclude_from_explorer = True
