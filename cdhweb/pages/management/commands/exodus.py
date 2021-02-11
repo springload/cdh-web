@@ -68,6 +68,9 @@ class Command(BaseCommand):
         # clear out wagtail pages for idempotency
         Page.objects.filter(depth__gt=2).delete()
 
+        # exodize user groups to wagtail moderators/editors
+        user_group_exodus()
+
         # convert media images to wagtail images; detect features by default
         with override_settings(WAGTAILIMAGES_FEATURE_DETECTION_ENABLED=not options["skip_feature_detection"]):
             self.image_exodus()
