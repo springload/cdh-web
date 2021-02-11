@@ -24,7 +24,7 @@ from cdhweb.pages.exodus import (convert_slug, create_contentpage,
                                  create_link_page, form_pages,
                                  get_wagtail_image)
 from cdhweb.pages.models import ContentPage, HomePage
-from cdhweb.people.exodus import people_exodus
+from cdhweb.people.exodus import people_exodus, user_group_exodus
 from cdhweb.people.models import PeopleLandingPage
 from cdhweb.projects.exodus import project_exodus
 from cdhweb.projects.models import ProjectsLinkPage
@@ -59,10 +59,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Create Wagtail pages for all extant Mezzanine pages."""
-        # set up logging based on verbosity
+        # set up logging based on verbosity; ignore most low-level image logs
+        # and raise UserWarnings from image handling as errors to log them
         logging.basicConfig(level=LOG_LEVELS[options["verbosity"]])
-
-        # raise UserWarnings from image handling as errors so they can be logged
+        logging.getLogger("PIL").setLevel(logging.WARNING)
         warnings.simplefilter(action="error", category=UserWarning)
 
         # clear out wagtail pages for idempotency
