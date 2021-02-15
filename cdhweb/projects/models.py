@@ -90,7 +90,8 @@ class OldProject(Displayable, AdminThumbMixin, ExcerptMixin):
     working_group = models.BooleanField(
         'Working Group', default=False, help_text='Project is a long-term collaborative group associated with the CDH.')
     members = models.ManyToManyField(Person, through='Membership')
-    resources = models.ManyToManyField(RelatedLinkType, through='ProjectRelatedLink')
+    resources = models.ManyToManyField(
+        RelatedLinkType, through='ProjectRelatedLink')
 
     tags = TaggableManager(blank=True)
 
@@ -331,6 +332,15 @@ class Membership(DateRange):
 
     class Meta:
         ordering = ('role__sort_order', 'person__last_name')
+
+    # admin edit configuration
+    panels = [
+        FieldRowPanel((FieldPanel("start_date"),
+                       FieldPanel("end_date")), "Dates"),
+        FieldPanel("person"),
+        FieldPanel("role"),
+        FieldPanel("project"),
+    ]
 
     def __str__(self):
         return '%s - %s on %s (%s)' % (self.person, self.role,
