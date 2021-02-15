@@ -84,7 +84,7 @@ def user_group_exodus():
     # script user
     non_staff = 0
     for user in User.objects.filter(Q(is_staff=False) | Q(is_active=False)) \
-                            .exclude(settings["SCRIPT_USERNAME"]):
+                            .exclude(username=settings.SCRIPT_USERNAME):
         non_staff += 1
         logging.debug("removing user %s with is_staff=False" % user)
         user.delete()
