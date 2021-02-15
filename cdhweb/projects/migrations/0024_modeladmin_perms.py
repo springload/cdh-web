@@ -41,16 +41,16 @@ def create_projects_permissions(apps, schema_editor):
     view_membership = Permission.objects.get(codename="view_membership")
 
     # give moderators all permissions on GrantType, Role, and Membership
-    moderators.permissions.set([
+    moderators.permissions.add(
         add_granttype, change_granttype, delete_granttype, view_granttype,
         add_role, change_role, delete_role, view_role,
         add_membership, change_membership, delete_membership, view_membership,
-    ])
+    )
 
     # editors have all permissions on Membership only
-    editors.permissions.set([
+    editors.permissions.add(
         add_membership, change_membership, delete_membership, view_membership,
-    ])
+    )
 
 
 class Migration(migrations.Migration):

@@ -36,15 +36,15 @@ def create_people_permissions(apps, schema_editor):
     view_person = Permission.objects.get(codename="view_person")
 
     # give moderators all permissions on Title and Person
-    moderators.permissions.set([
+    moderators.permissions.add(
         add_title, change_title, delete_title, view_title,
         add_person, change_person, delete_person, view_person
-    ])
+    )
 
     # editors have all permissions on Person, but none for Title
-    editors.permissions.set([
+    editors.permissions.add(
         add_person, change_person, delete_person, view_person
-    ])
+    )
 
 
 class Migration(migrations.Migration):
