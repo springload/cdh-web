@@ -1,4 +1,5 @@
 """Exodus script for projects"""
+import logging
 
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
@@ -16,6 +17,8 @@ def project_exodus():
 
     # create new project pages
     for project in OldProject.objects.all():
+        logging.debug("found mezzanine project %s" % project)
+
         # create project page
         project_page = Project(
             title=project.title,
@@ -41,16 +44,19 @@ def project_exodus():
         for membership in project.membership_set.all():
             membership.project = project_page
             membership.save()
+            logging.debug("updated membership %s" % membership)
 
         # transfer grants
         for grant in project.grant_set.all():
             grant.project = project_page
             grant.save()
+            logging.debug("updated grant %s" % grant)
 
         # transfer related links
         for link in project.projectrelatedlink_set.all():
             link.project = project_page
             link.save()
+            logging.debug("updated related link %s" % link)
 
         # NOTE no tags to migrate
         # TODO transfer attachments
