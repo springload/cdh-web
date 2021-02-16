@@ -202,6 +202,9 @@ class Command(BaseCommand):
         # profiles, people
         people_exodus()
 
+        # exodize user groups to wagtail moderators/editors
+        user_group_exodus()
+
         # projects, memberships, grants, roles
         project_exodus()
 
