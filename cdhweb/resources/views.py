@@ -58,7 +58,7 @@ class Homepage(TemplateView):
 
         # get highlighted, published projects
         # TODO: (maybe) published(for_user=request.user)
-        projects = list(Project.objects.published().highlighted())
+        projects = list(Project.objects.live().highlighted())
         # randomize the project list
         shuffle(projects)
 
