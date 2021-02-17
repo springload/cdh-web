@@ -5,7 +5,7 @@ from django.utils.cache import get_conditional_response
 
 from cdhweb.blog.models import BlogPost
 
-from cdhweb.events.models import Event
+from cdhweb.events.models import OldEvent
 
 from cdhweb.projects.models import Project
 
@@ -64,7 +64,7 @@ class Homepage(TemplateView):
 
         # find the next three upcoming, published events
         # TODO: (maybe) published(for_user=request.user) \
-        upcoming_events = Event.objects.published().upcoming()[:3]
+        upcoming_events = OldEvent.objects.published().upcoming()[:3]
 
         return {
             'updates': updates,

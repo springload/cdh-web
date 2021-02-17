@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import EventType, Location, Event
+from .models import EventType, Location, OldEvent
 
 class EventAdmin(admin.ModelAdmin):
     list_display = ('title', 'event_type', 'is_virtual', 'start_time', 'admin_thumb',
@@ -27,5 +27,5 @@ class LocationAdmin(admin.ModelAdmin):
 
 admin.site.register(EventType)
 admin.site.register(Location, LocationAdmin)
-admin.site.register(Event, EventAdmin)
+admin.site.register(OldEvent, EventAdmin)
 

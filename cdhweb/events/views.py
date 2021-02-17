@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 import icalendar
 
-from cdhweb.events.models import Event
+from cdhweb.events.models import OldEvent
 from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
 from cdhweb.resources.utils import absolutize_url
 
@@ -17,12 +17,12 @@ from cdhweb.resources.utils import absolutize_url
 class EventMixinView(object):
     '''View mixin that sets model to Event and returns a
     published Event queryset.'''
-    model = Event
+    model = OldEvent
 
     def get_queryset(self):
         '''use displayable manager to find published events only'''
         # (or draft profiles for logged in users with permission to view)
-        return Event.objects.published()  # TODO: published(for_user=self.request.user)
+        return OldEvent.objects.published()  # TODO: published(for_user=self.request.user)
 
 
 class EventSemesterDates(object):
@@ -34,7 +34,7 @@ class EventSemesterDates(object):
         events. Semesters are Spring (through May), Summer (through
         August), and Fall.'''
         date_list = []
-        dates = Event.objects.published() \
+        dates = OldEvent.objects.published() \
                      .dates('start_time', 'month', order='ASC')
         for date in dates:
             # determine semester based on the month
@@ -172,7 +172,7 @@ class EventRedirectView(RedirectView):
     query_string = False
 
     def get_redirect_url(self, *args, **kwargs):
-        event = get_object_or_404(Event, pk=kwargs['pk'])
+        event = get_object_or_404(OldEvent, pk=kwargs['pk'])
         return event.get_absolute_url()
 
 
