@@ -7,7 +7,7 @@ import pytest
 import pytz
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from django.urls import resolve, reverse
+from django.urls import reverse
 from django.utils import timezone
 from mezzanine.core.models import CONTENT_STATUS_DRAFT
 from mezzanine.pages.models import RichTextPage

@@ -2,11 +2,12 @@ from datetime import datetime, timedelta
 
 import icalendar
 import pytest
+import pytz
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from wagtail.tests.utils import WagtailPageTests
 
-from cdhweb.events.models import Event, EventType, EventsLinkPage
+from cdhweb.events.models import Event, EventsLinkPage, EventType
 
 
 class TestEvent:
@@ -16,14 +17,16 @@ class TestEvent:
         # make start time into a known datetime for testing
         jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
         workshop.start_time = jan15
-        assert str(workshop) == "testing workshop - January 15, 2015"
+        assert str(workshop) == "testing workshop - Jan 15, 2015"
 
     def test_get_url(self, workshop):
         """event URL should include two-digit month, year, and slug"""
         # make start time into a known datetime for testing; january -> 01
         jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
         workshop.start_time = jan15
-        assert 0
+        workshop.end_time = jan15
+        assert workshop.get_url().split("/")[-4:] == \
+            ["events", "2015", "01", "testing-workshop"]
 
     def test_when(self, workshop):
         """event should report time lowercased, without repeating am/pm"""
@@ -54,7 +57,7 @@ class TestEvent:
 
         # different timezone should get localized to current timezone
         workshop.start_time = datetime(
-            2015, 1, 15, hour=20, tzinfo=timezone.UTC)
+            2015, 1, 15, hour=20, tzinfo=pytz.UTC)
         workshop.end_time = workshop.start_time + timedelta(hours=12)
         assert "3:00 pm" in workshop.when()
 
@@ -93,12 +96,12 @@ class TestEvent:
         assert ical["summary"] == workshop.title
         # Dates are in this format, as bytes: 20150115T160000
         assert ical["dtstart"].to_ical() == \
-            workshop.start_time.strftime("%Y%m%dT%H%M%S").encode()
+            workshop.start_time.strftime("%Y%m%dT%H%M%SZ").encode()
         assert ical["dtend"].to_ical() == \
-            workshop.end_time.strftime("%Y%m%dT%H%M%S").encode()
+            workshop.end_time.strftime("%Y%m%dT%H%M%SZ").encode()
         assert ical["location"] == workshop.location.display_name
         # description should have tags stripped
-        assert workshop.description in ical["description"].to_ical().decode()
+        assert str(workshop.description) in ical["description"].to_ical().decode()
         assert fullurl in ical["description"].to_ical().decode()
         # change event to a virtual location & add join url
         workshop.location = zoom_location
@@ -124,9 +127,8 @@ class TestEvent:
             end_time=timezone.now(),
             location=cdh_location
         )
-        events_link_page.add_child(instance=reading_grp)
         with pytest.raises(ValidationError):
-            events_link_page.save()
+            events_link_page.add_child(instance=reading_grp)
         # add a type; should succeed
         reading_grp_type = EventType.objects.get_or_create(name="Reading Group")[
             0]
