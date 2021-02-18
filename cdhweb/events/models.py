@@ -282,6 +282,7 @@ class Event(Page, ClusterableModel):
         FieldRowPanel((ImageChooserPanel("thumbnail"),
                        ImageChooserPanel("image")), "Images"),
         StreamFieldPanel("description"),
+        # FIXME why does this cause recursion errors?
         # InlinePanel("speakers", label="Speakers")
     ]
     promote_panels = Page.promote_panels + [
@@ -302,9 +303,8 @@ class Event(Page, ClusterableModel):
     def clean(self):
         """Validate that a type was specified for this event."""
         # NOTE we can't cascade deletes to wagtail pages without corrupting the
-        # page tree. Instead, we use SET_NULL, and then add a delete handler
-        # to EventType to delete all relevant events manually. We still need
-        # to make sure that it's impossible to create an Event without a type.
+        # page tree. Instead, we use SET_NULL and a clean() handler so that we
+        # can make sure that it's impossible to create an Event without a type.
         # More info: https://github.com/wagtail/wagtail/issues/1602
         if not self.type:
             raise ValidationError("Event must specify a type.")
@@ -312,8 +312,8 @@ class Event(Page, ClusterableModel):
     def get_url_parts(self, *args, **kwargs):
         """Custom event page URLs of the form /events/2014/03/my-event."""
         site_id, root_url, page_path = super().get_url_parts(*args, **kwargs)
-        events_path = page_path.rsplit("/", 1)[0]   # everything but the slug
-        date_path = "%d/%02d/" % (self.start_time.year, self.start_time.month)
+        events_path = page_path.rstrip("/").rsplit("/", 1)[0]   # remove slug
+        date_path = "/%d/%02d/" % (self.start_time.year, self.start_time.month)
         return site_id, root_url, events_path + date_path + self.slug
 
     def get_ical_url(self):
@@ -383,7 +383,7 @@ class Event(Page, ClusterableModel):
             else:
                 event.add("location", self.location.display_name)
         event.add("description",
-                  "\n".join([strip_tags(self.content), "", absurl]))
+                  "\n".join([strip_tags(self.description), "", absurl]))
         return event
 
 
