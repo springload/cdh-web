@@ -316,6 +316,14 @@ class Event(Page, ClusterableModel):
         date_path = "%d/%02d/" % (self.start_time.year, self.start_time.month)
         return site_id, root_url, events_path + date_path + self.slug
 
+    def get_ical_url(self):
+        """URL to download this event as a .ics (iCal) file."""
+        return reverse('event:ical', kwargs={
+            'year': self.start_time.year,
+            # force two-digit month
+            'month': '%02d' % self.start_time.month,
+            'slug': self.slug})
+
     def is_virtual(self):
         """If an event takes place in a virtual location, it is virtual"""
         if self.location:
