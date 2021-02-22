@@ -196,13 +196,14 @@ class Project(Page, ClusterableModel):
         "Working Group", default=False, help_text="Project is a long-term collaborative group associated with the CDH.")
     image = models.ForeignKey('wagtailimages.image', null=True,
                               blank=True, on_delete=models.SET_NULL,
-                              related_name='+')
+                              related_name='+', help_text="Image for display on project detail page (optional)")
     thumbnail = models.ForeignKey('wagtailimages.image', null=True,
                                   blank=True, on_delete=models.SET_NULL,
-                                  related_name='+')
+                                  related_name='+', help_text="Image for display on project card (optional)")
     members = models.ManyToManyField(Person, through="Membership")
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
     updated = models.DateTimeField(auto_now=True, null=True, editable=False)
+    # TODO attachments (#245)
 
     # can only be created underneath special link page
     parent_page_types = ["projects.ProjectsLinkPage"]
@@ -234,6 +235,8 @@ class Project(Page, ClusterableModel):
 
     # custom manager/queryset logic
     objects = ProjectManager()
+
+    context_object_name = "project"
 
     def __str__(self):
         return self.title
