@@ -40,6 +40,9 @@ class EventType(models.Model):
 
     objects = EventTypeManager()
 
+    class Meta:
+        ordering = ("name",)
+
     def __str__(self):
         return self.name
 
@@ -58,6 +61,9 @@ class Location(models.Model):
 
     def __str__(self):
         return self.short_name or self.name
+
+    class Meta:
+        ordering = ("name",)
 
     @property
     def display_name(self):
@@ -295,7 +301,7 @@ class Event(Page, ClusterableModel):
     context_object_name = "event"
 
     class Meta:
-        ordering = ("start_time",)
+        ordering = ("-start_time",)
 
     def __str__(self):
         return " - ".join([self.title, self.start_time.strftime("%b %d, %Y")])
