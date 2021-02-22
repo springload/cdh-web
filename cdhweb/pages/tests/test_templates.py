@@ -1,5 +1,6 @@
 import pytest
 from django.urls import reverse
+from django.utils.dateformat import format 
 from pytest_django.asserts import assertContains, assertTemplateNotUsed
 
 from cdhweb.pages.models import CaptionedImageBlock, SVGImageBlock
@@ -63,26 +64,30 @@ class TestHomePage:
         """homepage should display highlighted projects as cards"""
         response = client.get(homepage.relative_url(site))
 
-        # should be 4 random projects in context, since none highlighted
-        assert len(response.context["projects"]) == 4
+        # should be no projects in context, since none highlighted
+        assert len(response.context["projects"]) == 0
 
         # highlight some projects; only those should be displayed
-        projects["derrida"].highlighted = True
-        projects["pliny"].highlighted = True
+        derrida = projects["derrida"]
+        pliny = projects["pliny"]
+        derrida.highlight = True
+        pliny.highlight = True
+        derrida.save()
+        pliny.save()
         response = client.get(homepage.relative_url(site))
         assert len(response.context["projects"]) == 2
-        assert projects["derrida"] in response.context["projects"]
-        assert projects["pliny"] in response.context["projects"]
+        assert derrida in response.context["projects"]
+        assert pliny in response.context["projects"]
 
         # should display title, short description, and link
-        assertContains(response, projects["derrida"].short_description)
-        assertContains(response, projects["derrida"].title)
-        assertContains(response, projects["derrida"].get_url())
+        assertContains(response, derrida.short_description)
+        assertContains(response, derrida.title)
+        assertContains(response, derrida.get_url())
 
         # unpublished projects shouldn't be displayed
-        projects["derrida"].unpublish()
+        derrida.unpublish()
         response = client.get(homepage.relative_url(site))
-        assert projects["derrida"] not in response.context["projects"]
+        assert derrida not in response.context["projects"]
 
     def test_empty_events(self, client, site, homepage):
         """homepage should display message when no events are available"""
@@ -95,18 +100,18 @@ class TestHomePage:
         response = client.get(homepage.relative_url(site))
 
         # should have link to event list
-        self.assertContains(response, reverse("events:upcoming"))
+        assertContains(response, reverse("events:upcoming"))
 
         # only one event in context, since others already happened
         assert len(response.context["events"]) == 1
         assert events["workshop"] not in response.context["events"]
         assert events["lecture"] not in response.context["events"]
 
-        # shows event title, date/time, speakers, and link to view
-        assertContains(response, events["deadline"].get_absolute_url())
+        # shows event title, start/end time, and link to view
+        assertContains(response, events["deadline"].get_url())
         assertContains(response, events["deadline"].title)
-        assertContains(response, events["deadline"].start_time)
-        assertContains(response, events["deadline"].end_time)
+        assertContains(response, format(events["deadline"].start_time, "F j"))
+        assertContains(response, format(events["deadline"].end_time, "j"))
 
         # shouldn't show if not published
         events["deadline"].unpublish()
