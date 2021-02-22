@@ -22,14 +22,15 @@ def project_exodus():
         # create project page
         project_page = Project(
             title=project.title,
-            slug=convert_slug(project.slug),
-            image=get_wagtail_image(project.image),
-            thumbnail=get_wagtail_image(project.thumb),
             highlight=project.highlight,
             cdh_built=project.cdh_built,
+            slug=convert_slug(project.slug),
             working_group=project.working_group,
+            image=get_wagtail_image(project.image),
+            search_description=project.description,
+            thumbnail=get_wagtail_image(project.thumb),
             short_description=project.short_description,
-            long_description=to_streamfield(project.long_description)
+            long_description=to_streamfield(project.long_description),
         )
 
         # add it as child of project landing page so slugs are correct
