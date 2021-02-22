@@ -313,11 +313,16 @@ class Person(ClusterableModel):
 
     @property
     def profile_url(self):
-        """Use an internal profile if available, otherwise try website url"""
-        if self.profile:
+        """Provide the link to profile on this site if there is one;
+        otherwise look for an associated website url"""
+        try:
             return self.profile.get_url()
-        elif self.related_links.filter(type__name="Website").exists():
-            return self.related_links.filter(type__name="Website").first().url
+            # NOTE: should we check profile published/draft status here?
+        except Profile.DoesNotExist:
+
+            website = self.related_links.filter(type__name="Website").first()
+            if website:
+                return website.url
 
     @receiver(pre_delete, sender="people.Person")
     def cleanup_profile(sender, **kwargs):
