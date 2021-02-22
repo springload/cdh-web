@@ -90,6 +90,15 @@ class TestPerson(TestCase):
         assert str(self.person) == "tom jones"
 
 
+def test_profile_url(student, staffer_profile, faculty_pi):
+    # student fixture has neither profile nor website link
+    assert not student.profile_url
+    # staff person has local profile
+    assert staffer_profile.person.profile_url == staffer_profile.get_url()
+    # faculty pi has a profile url
+    assert faculty_pi.profile_url == 'example.com'
+
+
 class TestPersonQuerySet(TestCase):
 
     def setUp(self):

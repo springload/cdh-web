@@ -188,7 +188,7 @@ class AffiliateListView(PersonListView):
     def get_queryset(self):
         # filter to affiliates, annotate with grant years, and order by name
         return super().get_queryset().affiliates().grant_years() \
-                      .order_by('user__last_name')
+                      .order_by('last_name')
 
     def display_label(self, person):
         # use grant information as label
