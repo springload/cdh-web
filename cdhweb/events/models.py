@@ -317,14 +317,18 @@ class Event(Page, ClusterableModel):
 
     def get_url_parts(self, *args, **kwargs):
         """Custom event page URLs of the form /events/2014/03/my-event."""
-        site_id, root_url, page_path = super().get_url_parts(*args, **kwargs)
-        events_path = page_path.rstrip("/").rsplit("/", 1)[0]   # remove slug
-        date_path = "/%d/%02d/" % (self.start_time.year, self.start_time.month)
-        return site_id, root_url, events_path + date_path + self.slug
+        site_id, root_url, _ = super().get_url_parts(*args, **kwargs)
+        page_path = reverse("events:detail", kwargs={
+            "year": self.start_time.year,
+            # force two-digit month
+            "month": "%02d" % self.start_time.month,
+            "slug": self.slug,
+        })
+        return site_id, root_url, page_path
 
     def get_ical_url(self):
         """URL to download this event as a .ics (iCal) file."""
-        return reverse('event:ical', kwargs={
+        return reverse('events:ical', kwargs={
             'year': self.start_time.year,
             # force two-digit month
             'month': '%02d' % self.start_time.month,

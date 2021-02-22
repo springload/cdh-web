@@ -25,7 +25,7 @@ class TestEvent:
         jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
         workshop.start_time = jan15
         workshop.end_time = jan15
-        assert workshop.get_url().split("/")[-4:] == \
+        assert workshop.get_url().strip("/").split("/") == \
             ["events", "2015", "01", "testing-workshop"]
 
     def test_when(self, workshop):
