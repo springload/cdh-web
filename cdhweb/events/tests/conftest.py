@@ -21,7 +21,7 @@ def workshop(db, events_link_page, cdh_location):
     workshop_type = EventType.objects.get_or_create(name="Workshop")[0]
     workshop = Event(
         title="testing workshop",
-        description="my workshop description",
+        content="my workshop description",
         start_time=yesterday,
         end_time=yesterday + timedelta(hours=2),
         location=cdh_location,
@@ -39,7 +39,7 @@ def lecture(db, events_link_page, zoom_location):
     lecture_type = EventType.objects.get_or_create(name="Lecture")[0]
     lecture = Event(
         title="testing lecture",
-        description="my lecture description",
+        content="my lecture description",
         start_time=last_month,
         end_time=last_month + timedelta(hours=1),
         location=zoom_location,
@@ -57,7 +57,7 @@ def deadline(db, events_link_page):
     deadline_type = EventType.objects.get_or_create(name="Deadline")[0]
     deadline = Event(
         title="testing deadline",
-        description="my deadline description",
+        content="my deadline description",
         start_time=tomorrow,
         end_time=tomorrow,
         type=deadline_type

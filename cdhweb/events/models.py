@@ -241,7 +241,7 @@ class EventTag(TaggedItemBase):
 class Event(Page, ClusterableModel):
     """Page type for an event, such as a workshop, lecture, or conference."""
 
-    description = StreamField(BodyContentBlock, blank=True)
+    content = StreamField(BodyContentBlock, blank=True)
     sponsor = models.CharField(max_length=80, null=True, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
@@ -281,7 +281,7 @@ class Event(Page, ClusterableModel):
                        FieldPanel("attendance")), "Tracking"),
         FieldRowPanel((ImageChooserPanel("thumbnail"),
                        ImageChooserPanel("image")), "Images"),
-        StreamFieldPanel("description"),
+        StreamFieldPanel("content"),
         # FIXME why does this cause recursion errors?
         # InlinePanel("speakers", label="Speakers")
     ]
@@ -383,7 +383,7 @@ class Event(Page, ClusterableModel):
             else:
                 event.add("location", self.location.display_name)
         event.add("description",
-                  "\n".join([strip_tags(self.description), "", absurl]))
+                  "\n".join([strip_tags(self.content), "", absurl]))
         return event
 
 

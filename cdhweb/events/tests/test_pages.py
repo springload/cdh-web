@@ -101,7 +101,7 @@ class TestEvent:
             workshop.end_time.strftime("%Y%m%dT%H%M%SZ").encode()
         assert ical["location"] == workshop.location.display_name
         # description should have tags stripped
-        assert str(workshop.description) in ical["description"].to_ical().decode()
+        assert str(workshop.content) in ical["description"].to_ical().decode()
         assert fullurl in ical["description"].to_ical().decode()
         # change event to a virtual location & add join url
         workshop.location = zoom_location
@@ -122,7 +122,7 @@ class TestEvent:
         # create without a type; should fail
         reading_grp = Event(
             title="testing reading group",
-            description="my description",
+            content="my description",
             start_time=timezone.now(),
             end_time=timezone.now(),
             location=cdh_location
@@ -134,7 +134,7 @@ class TestEvent:
             0]
         reading_grp = Event(
             title="testing reading group",
-            description="my description",
+            content="my description",
             start_time=timezone.now(),
             end_time=timezone.now(),
             location=cdh_location,
