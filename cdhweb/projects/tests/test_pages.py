@@ -1,6 +1,6 @@
 from wagtail.tests.utils import WagtailPageTests
 
-from cdhweb.pages.models import HomePage, RelatedLinkType
+from cdhweb.pages.models import RelatedLinkType
 from cdhweb.people.models import Person
 from cdhweb.projects.models import (Grant, GrantType, Project,
                                     ProjectRelatedLink, ProjectsLinkPage)
