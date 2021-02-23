@@ -149,8 +149,7 @@ class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
             raise Http404("No Event found found matching the query")
         return obj
 
-    def dispatch(self, request, *args, **kwargs):
-        """Serve the relevant Event page using Wagtail's `Page.serve()`."""
+    def get(self, request, *args, **kwargs):
         return self.get_object().serve(request)
 
 
