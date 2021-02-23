@@ -138,7 +138,7 @@ class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
 
     def get_object(self, queryset=None):
         if queryset is None:
-            queryset = self.get_queryset()
+            queryset = self.get_queryset().live()
         queryset = queryset.filter(slug=self.kwargs['slug'],
                                    start_time__year=self.kwargs['year'],
                                    start_time__month=self.kwargs['month'])
