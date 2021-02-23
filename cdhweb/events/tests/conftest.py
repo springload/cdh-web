@@ -1,4 +1,5 @@
 from datetime import timedelta
+from datetime import timezone as tz
 
 import pytest
 from django.utils import timezone
@@ -68,6 +69,22 @@ def deadline(db, events_link_page):
 
 
 @pytest.fixture
+def course(db, events_link_page):
+    """a course that happened spring 2017"""
+    course_type = EventType.objects.get_or_create(name="Course")[0]
+    course = Event(
+        title="testing course",
+        content="my course description",
+        start_time=timezone.datetime(2017, 2, 2, tzinfo=tz.utc),
+        end_time=timezone.datetime(2017, 4, 27, tzinfo=tz.utc),
+        type=course_type
+    )
+    events_link_page.add_child(instance=course)
+    events_link_page.save()
+    return course
+
+
+@pytest.fixture
 def cdh_location(db):
     """the CDH, as an event location"""
     cdh = Location.objects.get_or_create(
@@ -88,10 +105,11 @@ def zoom_location(db):
 
 
 @pytest.fixture
-def events(db, workshop, lecture, deadline):
+def events(db, workshop, lecture, deadline, course):
     """convenience fixture to create several events and associated models"""
     return {
         "workshop": workshop,
         "lecture": lecture,
         "deadline": deadline,
+        "course": course,
     }

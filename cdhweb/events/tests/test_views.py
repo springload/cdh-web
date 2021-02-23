@@ -3,11 +3,13 @@ from datetime import timedelta
 from unittest.mock import patch
 
 import icalendar
-import pytest
 from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains
 from wagtail.core.models import Page
+
+from cdhweb.events.models import Event
+from cdhweb.events.views import EventSemesterDates
 
 
 class TestEventDetailView:
@@ -103,7 +105,6 @@ class TestUpcomingEventsView:
         assert events["workshop"] not in response.context["events"]
         assert events["lecture"] not in response.context["events"]
 
-    @pytest.mark.skip("todo")
     def test_semester_dates(self, client, events):
         """should create list of all semesters for linking to views"""
         response = client.get(reverse("events:upcoming"))
@@ -111,19 +112,19 @@ class TestUpcomingEventsView:
 
     def test_last_modified(self, client, events):
         """should send last modified date with response"""
-        # set last updated date on one event to most recent
-        workshop = events["workshop"]
-        workshop.updated = timezone.now() + timedelta(days=1)
-        workshop.save()
+        # get last modified date for most recent event
+        most_recent = Event.objects.order_by("updated").first()
+        lmod = most_recent.updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
         # most recent modified date will appear as response header
         response = client.get(reverse("events:upcoming"))
-        lmod = workshop.updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
         assert response["Last-Modified"] == lmod
 
     def test_not_modified(self, client, events):
         """should serve 304 if event has not been modified"""
-        # request using current last mod date; should report unchanged
-        lmod = events["workshop"].updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        # get last modified date for most recent event
+        most_recent = Event.objects.order_by("updated").first()
+        lmod = most_recent.updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        # request using most recent mod date; should report unchanged
         response = client.get(reverse("events:upcoming"),
                               HTTP_IF_MODIFIED_SINCE=lmod)
         assert response.status_code == 304
@@ -145,12 +146,21 @@ class TestEventSemesterArchiveView:
             reverse("events:by-semester", args=["spring", 2099]))
         assert response.status_code == 404
 
-    @pytest.mark.skip("todo")
     def test_event_archive(self, client, events):
-        """should display all past events from requested semester"""
-        # workshop was this semester; other events not shown
+        """should display all events from requested semester"""
+        # all events were this semester except the course from 2017
+        now = timezone.now()
+        this_semester = EventSemesterDates.get_semester(now).lower()
         response = client.get(
-            reverse("events:by-semester", args=["spring", 2099]))
+            reverse("events:by-semester", args=[this_semester, now.year]))
         assert events["workshop"] in response.context["events"]
-        assert events["deadline"] not in response.context["events"]
+        assert events["lecture"] in response.context["events"]
+        assert events["deadline"] in response.context["events"]
+        assert events["course"] not in response.context["events"]
+        # request spring 2017 only; should see course
+        response = client.get(
+            reverse("events:by-semester", args=["spring", 2017]))
+        assert events["course"] in response.context["events"]
+        assert events["workshop"] not in response.context["events"]
         assert events["lecture"] not in response.context["events"]
+        assert events["deadline"] not in response.context["events"]
