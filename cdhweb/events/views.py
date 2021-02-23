@@ -160,7 +160,7 @@ class EventRedirectView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         event = get_object_or_404(Event, pk=kwargs['pk'])
-        return event.get_absolute_url()
+        return event.get_full_url()
 
 
 class EventIcalView(EventDetailView):
