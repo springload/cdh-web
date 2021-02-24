@@ -129,19 +129,6 @@ class TestEvent:
         )
         with pytest.raises(ValidationError):
             events_link_page.add_child(instance=reading_grp)
-        # add a type; should succeed
-        reading_grp_type = EventType.objects.get_or_create(name="Reading Group")[
-            0]
-        reading_grp = Event(
-            title="testing reading group",
-            content="my description",
-            start_time=timezone.now(),
-            end_time=timezone.now(),
-            location=cdh_location,
-            type=reading_grp_type
-        )
-        events_link_page.add_child(instance=reading_grp)
-        events_link_page.save()
 
 
 class TestEventPage(WagtailPageTests):
