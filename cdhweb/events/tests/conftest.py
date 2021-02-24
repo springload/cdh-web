@@ -3,8 +3,9 @@ from datetime import timezone as tz
 
 import pytest
 from django.utils import timezone
+from cdhweb.people.models import Person
 from cdhweb.events.models import Event, EventType, EventsLinkPage, Location
-
+from cdhweb.pages.exodus import to_streamfield
 
 @pytest.fixture
 def events_link_page(db, homepage):
@@ -22,7 +23,7 @@ def workshop(db, events_link_page, cdh_location):
     workshop_type = EventType.objects.get_or_create(name="Workshop")[0]
     workshop = Event(
         title="testing workshop",
-        content="my workshop description",
+        content=to_streamfield("<p>my workshop description</p>"),
         start_time=yesterday,
         end_time=yesterday + timedelta(hours=2),
         location=cdh_location,
@@ -40,14 +41,18 @@ def lecture(db, events_link_page, zoom_location):
     lecture_type = EventType.objects.get_or_create(name="Lecture")[0]
     lecture = Event(
         title="testing lecture",
-        content="my lecture description",
+        content=to_streamfield("<p>my lecture description</p>"),
         start_time=last_month,
         end_time=last_month + timedelta(hours=1),
         location=zoom_location,
         type=lecture_type,
+        join_url="https://princeton.zoom.us/my/zoomroom"
     )
     events_link_page.add_child(instance=lecture)
     events_link_page.save()
+    lecturer = Person.objects.create(first_name="john", last_name="lecturer",
+                                    institution="princeton university")
+    lecture.speakers.add(lecturer)
     return lecture
 
 
@@ -58,7 +63,7 @@ def deadline(db, events_link_page):
     deadline_type = EventType.objects.get_or_create(name="Deadline")[0]
     deadline = Event(
         title="testing deadline",
-        content="my deadline description",
+        content=to_streamfield("<p>my deadline description</p>"),
         start_time=tomorrow,
         end_time=tomorrow,
         type=deadline_type
@@ -74,7 +79,7 @@ def course(db, events_link_page):
     course_type = EventType.objects.get_or_create(name="Course")[0]
     course = Event(
         title="testing course",
-        content="my course description",
+        content=to_streamfield("<p>my course description</p>"),
         start_time=timezone.datetime(2017, 2, 2, tzinfo=tz.utc),
         end_time=timezone.datetime(2017, 4, 27, tzinfo=tz.utc),
         type=course_type
