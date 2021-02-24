@@ -5,6 +5,7 @@ import pytest
 import pytz
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.utils.html import strip_tags
 from wagtail.tests.utils import WagtailPageTests
 
 from cdhweb.events.models import Event, EventsLinkPage
@@ -101,7 +102,7 @@ class TestEvent:
             workshop.end_time.strftime("%Y%m%dT%H%M%SZ").encode()
         assert ical["location"] == workshop.location.display_name
         # description should have tags stripped
-        assert str(workshop.content) in ical["description"].to_ical().decode()
+        assert strip_tags(workshop.content) in ical["description"].to_ical().decode()
         assert fullurl in ical["description"].to_ical().decode()
         # change event to a virtual location & add join url
         workshop.location = zoom_location
