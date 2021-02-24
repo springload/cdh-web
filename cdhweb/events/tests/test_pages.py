@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from wagtail.tests.utils import WagtailPageTests
 
-from cdhweb.events.models import Event, EventsLinkPage, EventType
+from cdhweb.events.models import Event, EventsLinkPage
 
 
 class TestEvent:
