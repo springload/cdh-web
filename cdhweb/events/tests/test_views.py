@@ -132,7 +132,8 @@ class TestUpcomingEventsView:
     def test_head(self, client, events):
         """should respond to http HEAD request to check for modification"""
         # request using current last mod date; should report unchanged
-        lmod = events["workshop"].updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        most_recent = Event.objects.order_by("updated").first()
+        lmod = most_recent.updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
         response = client.get(reverse("events:upcoming"),
                               HTTP_IF_MODIFIED_SINCE=lmod)
         assert response.status_code == 304
