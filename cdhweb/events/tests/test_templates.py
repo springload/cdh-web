@@ -1,3 +1,4 @@
+from django.utils.timezone import localtime
 from django.template.defaultfilters import date
 from django.urls import reverse
 from pytest_django.asserts import assertContains, assertNotContains
@@ -73,7 +74,7 @@ class TestEventArchiveTemplate:
         response = client.get(reverse("events:upcoming"))
         assertContains(response, "<h1>Upcoming Events</h1>", html=True)
         # semester view
-        response = client.get(reverse("events:by-semester", args={
+        response = client.get(reverse("events:by-semester", kwargs={
             "semester": "spring",
             "year": "2017"
         }))
@@ -108,11 +109,11 @@ class TestEventArchiveTemplate:
         """event archive page should list event date/time on cards"""
         response = client.get(reverse("events:upcoming"))
         # start/end dates (same month/day)
-        assertContains(response, date(workshop.start_time, "F j"))
-        assertContains(response, date(workshop.end_time, "j"))
+        assertContains(response, date(localtime(workshop.start_time), "F j"))
+        assertContains(response, date(localtime(workshop.end_time), "j"))
         # start/end times (same day)
-        assertContains(response, date(workshop.start_time, "g:i"))
-        assertContains(response, date(workshop.end_time, "g:i A"))
+        assertContains(response, date(localtime(workshop.start_time), "g:i"))
+        assertContains(response, date(localtime(workshop.end_time), "g:i A"))
 
     def test_event_location(self, client, workshop):
         """event archive page should list event location on cards"""
