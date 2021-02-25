@@ -298,7 +298,7 @@ class GrantType(models.Model):
 class Grant(DateRange):
     '''A specific grant associated with a project'''
     project = ParentalKey(
-        Project, null=True, on_delete=models.CASCADE, related_name="grants")
+        Project, null=True, on_delete=models.SET_NULL, related_name="grants")
     old_project = models.ForeignKey(
         OldProject, null=True, editable=False, on_delete=models.SET_NULL)
     grant_type = models.ForeignKey(GrantType, on_delete=models.CASCADE)
@@ -326,7 +326,7 @@ class Role(models.Model):
 
 class Membership(DateRange):
     '''Project membership - joins project, user, and role.'''
-    project = ParentalKey(Project, on_delete=models.CASCADE, null=True,
+    project = ParentalKey(Project, on_delete=models.SET_NULL, null=True,
                           related_name="memberships")
     old_project = models.ForeignKey(
         OldProject, null=True, editable=False, on_delete=models.SET_NULL)
@@ -352,7 +352,7 @@ class Membership(DateRange):
 
 class ProjectRelatedLink(RelatedLink):
     '''Through-model for associating projects with relatedlinks'''
-    project = ParentalKey(Project, on_delete=models.CASCADE, null=True,
+    project = ParentalKey(Project, on_delete=models.SET_NULL, null=True,
                           related_name="related_links")
     old_project = models.ForeignKey(
         OldProject, null=True, editable=False, on_delete=models.SET_NULL)
