@@ -1,10 +1,13 @@
 {% load wagtailcore_tags wagtailimages_tags %}
 {# display a single event in card format #}
 {# FIXME: significant overlap with event_detail, esp. for schema properties #}
+{% if event.thumbnail %}
+    {% image event.thumbnail max-310x240 as event_thumb %}
+{% endif %}
 <div class="card event" typeof="schema:Event">
     <a property="schema:url" href="{{ event.get_url }}">
         <div class="event-type">{{ event.type }}</div>
-        <div class="image" {% if event.thumbnail %}style="background-image:url('{{ MEDIA_URL }}{{ event.thumbnail }}')"{% endif %}></div>
+        <div class="image" {% if event.thumbnail %}style="background-image:url('{{ event_thumb.url }}')"{% endif %}></div>
         <div class="content">
             <h2 property="schema:name">{{ event.title }}</h2>
             <div class="presenter">
