@@ -315,14 +315,19 @@ class Event(Page, ClusterableModel):
 
     def get_url_parts(self, *args, **kwargs):
         """Custom event page URLs of the form /events/2014/03/my-event."""
-        site_id, root_url, _ = super().get_url_parts(*args, **kwargs)
-        page_path = reverse("events:detail", kwargs={
-            "year": self.start_time.year,
-            # force two-digit month
-            "month": "%02d" % self.start_time.month,
-            "slug": self.slug,
-        })
-        return site_id, root_url, page_path
+        url_parts = super().get_url_parts(*args, **kwargs)
+        # NOTE evidently this can sometimes be None; unclear why – perhaps it
+        # gets called in a context where the request is unavailable? Only
+        # happens in QA, not locally.
+        if url_parts:
+            site_id, root_url, _ = url_parts
+            page_path = reverse("events:detail", kwargs={
+                "year": self.start_time.year,
+                # force two-digit month
+                "month": "%02d" % self.start_time.month,
+                "slug": self.slug,
+            })
+            return site_id, root_url, page_path
 
     def get_ical_url(self):
         """URL to download this event as a .ics (iCal) file."""
