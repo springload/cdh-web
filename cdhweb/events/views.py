@@ -156,16 +156,6 @@ class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
         return self.get_object().serve(request)
 
 
-class EventRedirectView(RedirectView):
-    '''Redirect from CDH website v1.0 pk-based urls to new date + slug urls'''
-    permanent = True
-    query_string = False
-
-    def get_redirect_url(self, *args, **kwargs):
-        event = get_object_or_404(Event, pk=kwargs['pk'])
-        return event.get_full_url()
-
-
 class EventIcalView(EventDetailView):
     '''Download event information as ical'''
 
