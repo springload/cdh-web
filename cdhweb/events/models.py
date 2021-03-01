@@ -18,7 +18,6 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
-                                         InlinePanel, MultiFieldPanel,
                                          StreamFieldPanel)
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Page, PageManager, PageQuerySet
@@ -288,8 +287,7 @@ class Event(Page, ClusterableModel):
         FieldRowPanel((ImageChooserPanel("thumbnail"),
                        ImageChooserPanel("image")), "Images"),
         StreamFieldPanel("content"),
-        # FIXME why does this cause recursion errors?
-        # InlinePanel("speakers", label="Speakers")
+        FieldPanel("speakers")
     ]
     promote_panels = Page.promote_panels + [
         FieldPanel("tags")
