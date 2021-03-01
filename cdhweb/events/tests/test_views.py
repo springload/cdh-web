@@ -59,22 +59,6 @@ class TestEventDetailView:
         assert response.status_code == 304
 
 
-class TestEventRedirectView:
-
-    def test_redirect_by_id(self, client, workshop):
-        """should permanently redirect to new date/slug url via 301"""
-        url = reverse("events:by-id", kwargs={"pk": workshop.pk})
-        response = client.get(url)
-        assert response.status_code == 301
-        assert response.url == workshop.get_full_url()
-
-    def test_invalid_id(self, client, workshop):
-        """should return a 404 for nonexistent event ids"""
-        url = reverse("events:by-id", kwargs={"pk": 45})
-        response = client.get(url)
-        assert response.status_code == 404
-
-
 class TestEventIcalView:
 
     def test_ical_response(self, client, workshop):
@@ -113,8 +97,9 @@ class TestUpcomingEventsView:
     def test_last_modified(self, client, events):
         """should send last modified date with response"""
         # get last modified date for most recent event
-        most_recent = Event.objects.order_by("updated").first()
-        lmod = most_recent.updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        most_recent = Event.objects.order_by("-updated").first()
+        lmod = most_recent.updated.replace(microsecond=0) \
+                          .strftime("%a, %d %b %Y %H:%M:%S GMT")
         # most recent modified date will appear as response header
         response = client.get(reverse("events:upcoming"))
         assert response["Last-Modified"] == lmod
@@ -122,8 +107,9 @@ class TestUpcomingEventsView:
     def test_not_modified(self, client, events):
         """should serve 304 if event has not been modified"""
         # get last modified date for most recent event
-        most_recent = Event.objects.order_by("updated").first()
-        lmod = most_recent.updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        most_recent = Event.objects.order_by("-updated").first()
+        lmod = most_recent.updated.replace(microsecond=0) \
+                          .strftime("%a, %d %b %Y %H:%M:%S GMT")
         # request using most recent mod date; should report unchanged
         response = client.get(reverse("events:upcoming"),
                               HTTP_IF_MODIFIED_SINCE=lmod)
@@ -132,10 +118,11 @@ class TestUpcomingEventsView:
     def test_head(self, client, events):
         """should respond to http HEAD request to check for modification"""
         # request using current last mod date; should report unchanged
-        most_recent = Event.objects.order_by("updated").first()
-        lmod = most_recent.updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        response = client.get(reverse("events:upcoming"),
-                              HTTP_IF_MODIFIED_SINCE=lmod)
+        most_recent = Event.objects.order_by("-updated").first()
+        lmod = most_recent.updated.replace(microsecond=0) \
+                          .strftime("%a, %d %b %Y %H:%M:%S GMT")
+        response = client.head(reverse("events:upcoming"),
+                               HTTP_IF_MODIFIED_SINCE=lmod)
         assert response.status_code == 304
 
 
