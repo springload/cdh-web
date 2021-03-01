@@ -1,11 +1,11 @@
 {% load wagtailcore_tags wagtailimages_tags %}
 
 {# default card display for a project #}
-{% if project.image %}
-    {% image project.thumbnail max-310x240 as project_img %}
+{% if project.thumbnail %}
+    {% image project.thumbnail max-310x240 as project_thumb %}
 {% endif %}
 <div class="card project {% if large %}project-large{% endif %}"
-{% if project.image %}style="background-image:url('{{ project_img.url }}')"{% endif %}>
+{% if project.image %}style="background-image:url('{{ project_thumb.url }}')"{% endif %}>
 {% if project.cdh_built %}<div class="cdh-built">Built by CDH</div>{% endif %}
 {% if project.website_url %}<a class="external" title="Project Website" href="{{ project.website_url }}"> </a>{% endif %}
     <a href="{{ project.get_url }}">
