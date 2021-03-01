@@ -1,9 +1,10 @@
+{% load wagtailcore_tags wagtailimages_tags %}
 {# display a single event in card format #}
 {# FIXME: significant overlap with event_detail, esp. for schema properties #}
 <div class="card event" typeof="schema:Event">
-    <a property="schema:url" href="{{ event.get_absolute_url }}">
-        <div class="event-type">{{ event.event_type }}</div>
-        <div class="image" {% if event.thumb %}style="background-image:url('{{ MEDIA_URL }}{{ event.thumb }}')"{% endif %}></div>
+    <a property="schema:url" href="{{ event.get_url }}">
+        <div class="event-type">{{ event.type }}</div>
+        <div class="image" {% if event.thumbnail %}style="background-image:url('{{ MEDIA_URL }}{{ event.thumbnail }}')"{% endif %}></div>
         <div class="content">
             <h2 property="schema:name">{{ event.title }}</h2>
             <div class="presenter">
@@ -41,5 +42,5 @@
         </div>
     </a>
     {# description is recommended for schema.org #}
-    <div style="display:none" property="schema:description">{{ event.content|safe }}</div>
+    <div style="display:none" property="schema:description">{{ event.search_description }}</div>
 </div>

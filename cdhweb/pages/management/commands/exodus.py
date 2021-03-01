@@ -19,6 +19,8 @@ from mezzanine.pages.models import Page as MezzaninePage
 from wagtail.core.models import Collection, Page, Site, get_root_collection_id
 from wagtail.images.models import Image
 
+from cdhweb.events.exodus import event_exodus
+from cdhweb.events.models import EventsLinkPage
 from cdhweb.pages.exodus import (convert_slug, create_contentpage,
                                  create_homepage, create_landingpage,
                                  create_link_page, form_pages,
@@ -111,19 +113,17 @@ class Command(BaseCommand):
         except MezzaninePage.DoesNotExist:
             projects = None
 
-        # create a dummy top-level events/ page for event pages to go under
-        if MezzaninePage.objects.filter(slug="events").exists():
-            events = ContentPage(
-                title="Events",
-                slug="events",
-                seo_title="Events"
+        # create a LinkPage to serve as the events/ root (event list page)
+        try:
+            old_events = MezzaninePage.objects.get(slug="events")
+            events = EventsLinkPage(
+                title=old_events.title,
+                link_url=old_events.slug
             )
             homepage.add_child(instance=events)
             homepage.save()
-            # mark events content page as migrated
-            self.migrated.append(
-                MezzaninePage.objects.get(slug='events').pk)
-        else:
+            self.migrated.append(old_events.pk)
+        except MezzaninePage.DoesNotExist:
             events = None
 
         # manually migrate the top-level people/ page to a special subtype
@@ -207,6 +207,9 @@ class Command(BaseCommand):
 
         # projects, memberships, grants, roles
         project_exodus()
+
+        # events
+        event_exodus()
 
         # report on unmigrated pages
         unmigrated = MezzaninePage.objects.exclude(

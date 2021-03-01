@@ -1,7 +1,7 @@
 import datetime
 
 from django.conf import settings
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, response
 from django.views.generic.base import RedirectView
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView
 from django.views.generic.detail import DetailView
@@ -20,33 +20,33 @@ class EventMixinView(object):
     model = Event
 
     def get_queryset(self):
-        '''use displayable manager to find published events only'''
-        # (or draft profiles for logged in users with permission to view)
-        return Event.objects.published()  # TODO: published(for_user=self.request.user)
+        '''use manager to find published events only'''
+        return Event.objects.live()
 
 
 class EventSemesterDates(object):
     '''Mixin to return list of event semester dates based on
     event dates in the system.'''
 
+    @staticmethod
+    def get_semester(date):
+        """Return the semester a date occurs in as a string."""
+        # determine semester based on the month
+        if date.month <= 5:
+            return "Spring"
+        if date.month <= 8:
+            return "Summer"
+        return "Fall"
+
     def get_semester_date_list(self):
         '''Get a list of semester labels (semester and year) for published
         events. Semesters are Spring (through May), Summer (through
         August), and Fall.'''
         date_list = []
-        dates = Event.objects.published() \
-                     .dates('start_time', 'month', order='ASC')
+        dates = Event.objects.live().dates('start_time', 'month', order='ASC')
         for date in dates:
-            # determine semester based on the month
-            if date.month <= 5:
-                semester = 'Spring'
-            elif date.month <= 8:
-                semester = 'Summer'
-            else:
-                semester = 'Fall'
-
             # add semester + year to list if not already present
-            sem_date = (semester, date.year)
+            sem_date = (self.get_semester(date), date.year)
             if sem_date not in date_list:
                 date_list.append(sem_date)
         return date_list
@@ -66,7 +66,8 @@ class UpcomingEventsView(EventMixinView, ArchiveIndexView, EventSemesterDates,
     # that affects the archive date list as well; restricting to upcoming
     # events in get_context_data instaed
     def get_context_data(self, *args, **kwargs):
-        context = super(UpcomingEventsView, self).get_context_data(*args, **kwargs)
+        context = super(UpcomingEventsView, self).get_context_data(
+            *args, **kwargs)
         event_qs = context['events']
         context.update({
             'events': event_qs.upcoming(),
@@ -113,10 +114,10 @@ class EventSemesterArchiveView(EventMixinView, YearArchiveView,
         # generate dates for start and end with current year
         month, year = self.semester_dates[semester]['start']
         start = datetime.datetime(int(self.kwargs['year']), month, year,
-            tzinfo=timezone.get_default_timezone())
+                                  tzinfo=timezone.get_default_timezone())
         month, year = self.semester_dates[semester]['end']
         end = datetime.datetime(int(self.kwargs['year']), month, year,
-            tzinfo=timezone.get_default_timezone())
+                                tzinfo=timezone.get_default_timezone())
         items = items.filter(start_time__gte=start, start_time__lte=end)
 
         return (date_list, items, context)
@@ -125,7 +126,8 @@ class EventSemesterArchiveView(EventMixinView, YearArchiveView,
         return self.get_semester_date_list()
 
     def get_context_data(self, *args, **kwargs):
-        context = super(EventSemesterArchiveView, self).get_context_data(*args, **kwargs)
+        context = super(EventSemesterArchiveView,
+                        self).get_context_data(*args, **kwargs)
         context.update({
             'title': '%s %s' % (self.kwargs['semester'].title(),
                                 self.kwargs['year'])
@@ -138,10 +140,10 @@ class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
 
     def get_object(self, queryset=None):
         if queryset is None:
-            queryset = self.get_queryset()
+            queryset = self.get_queryset().live()
         queryset = queryset.filter(slug=self.kwargs['slug'],
-                start_time__year=self.kwargs['year'],
-                start_time__month=self.kwargs['month'])
+                                   start_time__year=self.kwargs['year'],
+                                   start_time__month=self.kwargs['month'])
         try:
             # Get the single item from the filtered queryset
             obj = queryset.get()
@@ -149,42 +151,21 @@ class EventDetailView(EventMixinView, DetailView, LastModifiedMixin):
             raise Http404("No Event found found matching the query")
         return obj
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(EventDetailView, self).get_context_data(*args, **kwargs)
-        # also set object as page for common page display functionality
-        context['page'] = self.object
-        if self.object.image or self.object.image:
-            context.update({
-                'twitter_card_type': 'summary_large_image',
-                # generic preview image - prefer thumbnail'
-                'preview_image': absolutize_url(''.join([settings.MEDIA_URL,
-                    str(self.object.thumb or self.object.image)])),
-                # larger image - prefer fullsize
-                'twitter_image': absolutize_url(''.join([settings.MEDIA_URL,
-                    str(self.object.image or self.object.thumb)])),
-            })
-        return context
-
-
-class EventRedirectView(RedirectView):
-    '''Redirect from CDH website v1.0 pk-based urls to new date + slug urls'''
-    permanent = True
-    query_string = False
-
-    def get_redirect_url(self, *args, **kwargs):
-        event = get_object_or_404(Event, pk=kwargs['pk'])
-        return event.get_absolute_url()
+    def get(self, request, *args, **kwargs):
+        """Serve the requested Event using Wagtail's `Page.serve()`."""
+        return self.get_object().serve(request)
 
 
 class EventIcalView(EventDetailView):
     '''Download event information as ical'''
 
-    def render_to_response(self, context, **response_kwargs):
+    def get(self, request, *args, **kwargs):
+        event = self.get_object()
         cal = icalendar.Calendar()
-        cal.add_component(self.object.ical_event())
+        cal.add_component(event.ical_event())
         response = HttpResponse(cal.to_ical(), content_type="text/calendar")
         response['Content-Disposition'] = 'attachment; filename="%s.ics"' \
-            % self.object.slug
+            % event.slug
         return response
 
 
@@ -206,4 +187,3 @@ class EventIcalView(EventDetailView):
 #         response = HttpResponse(cal.to_ical(), content_type="text/calendar")
 #         response['Content-Disposition'] = 'attachment; filename="CDH-calendar.ics"'
 #         return response
-

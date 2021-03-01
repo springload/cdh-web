@@ -196,13 +196,14 @@ class Project(Page, ClusterableModel):
         "Working Group", default=False, help_text="Project is a long-term collaborative group associated with the CDH.")
     image = models.ForeignKey('wagtailimages.image', null=True,
                               blank=True, on_delete=models.SET_NULL,
-                              related_name='+')
+                              related_name='+', help_text="Image for display on project detail page (optional)")
     thumbnail = models.ForeignKey('wagtailimages.image', null=True,
                                   blank=True, on_delete=models.SET_NULL,
-                                  related_name='+')
+                                  related_name='+', help_text="Image for display on project card (optional)")
     members = models.ManyToManyField(Person, through="Membership")
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
     updated = models.DateTimeField(auto_now=True, null=True, editable=False)
+    # TODO attachments (#245)
 
     # can only be created underneath special link page
     parent_page_types = ["projects.ProjectsLinkPage"]
@@ -234,6 +235,8 @@ class Project(Page, ClusterableModel):
 
     # custom manager/queryset logic
     objects = ProjectManager()
+
+    context_object_name = "project"
 
     def __str__(self):
         return self.title
@@ -295,7 +298,7 @@ class GrantType(models.Model):
 class Grant(DateRange):
     '''A specific grant associated with a project'''
     project = ParentalKey(
-        Project, null=True, on_delete=models.CASCADE, related_name="grants")
+        Project, null=True, on_delete=models.SET_NULL, related_name="grants")
     old_project = models.ForeignKey(
         OldProject, null=True, editable=False, on_delete=models.SET_NULL)
     grant_type = models.ForeignKey(GrantType, on_delete=models.CASCADE)
@@ -323,7 +326,7 @@ class Role(models.Model):
 
 class Membership(DateRange):
     '''Project membership - joins project, user, and role.'''
-    project = ParentalKey(Project, on_delete=models.CASCADE, null=True,
+    project = ParentalKey(Project, on_delete=models.SET_NULL, null=True,
                           related_name="memberships")
     old_project = models.ForeignKey(
         OldProject, null=True, editable=False, on_delete=models.SET_NULL)
@@ -349,7 +352,7 @@ class Membership(DateRange):
 
 class ProjectRelatedLink(RelatedLink):
     '''Through-model for associating projects with relatedlinks'''
-    project = ParentalKey(Project, on_delete=models.CASCADE, null=True,
+    project = ParentalKey(Project, on_delete=models.SET_NULL, null=True,
                           related_name="related_links")
     old_project = models.ForeignKey(
         OldProject, null=True, editable=False, on_delete=models.SET_NULL)

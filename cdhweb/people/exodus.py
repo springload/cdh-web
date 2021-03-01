@@ -29,7 +29,8 @@ def people_exodus():
             image=get_wagtail_image(profile.image) if profile.image else get_wagtail_image(
                 profile.thumb) if profile.thumb else None,
             education=profile.education,
-            bio=to_streamfield(profile.bio)
+            bio=to_streamfield(profile.bio),
+            search_description=profile.description,
         )
         # added as child of people landing page so slugs are correct
         people_landing.add_child(instance=profile_page)

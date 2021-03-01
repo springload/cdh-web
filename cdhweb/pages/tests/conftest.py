@@ -1,8 +1,9 @@
 import json
 
 import pytest
-from cdhweb.pages.models import ContentPage, HomePage, LandingPage
 from wagtail.core.models import Page, Site
+
+from cdhweb.pages.models import ContentPage, HomePage, LandingPage
 
 
 @pytest.fixture

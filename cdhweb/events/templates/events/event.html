@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load wagtailcore_tags wagtailimages_tags %}
 
 {% block page-subtitle %}{{ event.title }} | Events | {% endblock %}
 
@@ -14,12 +15,8 @@
 
 {% block main %}
 <div typeof="schema:Event" class="event-detail">
-
 <header>
     <h1 property="schema:name">{{ event.title }}</h1>
-    {% if event.excerpt %}
-    <p class="short_description">{{ event.excerpt }}</p>
-    {% endif %}
 </header>
 
 <div class="details">
@@ -31,19 +28,18 @@
         <h3><a property="schema:name"
             {% if person.profile_url %}href="{{ person.profile_url }}"{% endif %}>
             {{ person }}</a></h3>
-        {% if person.profile.institution %}
+        {% if person.institution %}
         <p class="affiliation">
-            {{ person.profile.institution }}
+            {{ person.institution }}
         </p>
         {% endif %}
     </li>
-    {# todo: affiliation?  #}
     {% endfor %}
     </ul>
     {% endif %}
     {# don't repeat event type if it is an exact match (i.e. reading group) #}
-    {% if event.event_type.name != event.title %}
-    <p>{{ event.event_type }}</p>
+    {% if event.type.name != event.title %}
+    <p>{{ event.type }}</p>
     {% endif %}
     <meta property="schema:startDate" content="{{ event.start_time|date:'c' }}"/>
     <meta property="schema:endDate" content="{{ event.end_time|date:'c' }}"/>
@@ -63,20 +59,24 @@
     {% endif %}
 
     <div class="ical">
-        <p><a href="{{ event.get_ical_url}}">Export to iCal</a></p>
+        <p><a href="{{ event.get_ical_url }}">Export to iCal</a></p>
     </div>
 </div>
 
 <div class="description">
     {% if event.image %}
-    <img property="schema:image" src="{{ MEDIA_URL }}{{ event.image }}" alt=""/>
+        {% image event.image width-735 as event_img %}
+        <img src="{{ event_img.url }}" alt="{{ event.title }}" property="schema:image"/>
     {% endif %}
     <meta property="schema:url" content="{{ event.full_url }}"/>
-
-    <div property="schema:description">{{ event.content|safe }}</div>
+    <div property="schema:description">
+    {% for block in event.content %}
+        {% include_block block %}
+    {% endfor %}
+    </div>
 </div>
-</div>
 
+</div>
 {% endblock %}
 
 

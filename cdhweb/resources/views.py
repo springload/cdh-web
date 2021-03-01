@@ -17,18 +17,20 @@ class LastModifiedMixin(View):
         return self.get_object().updated
 
     def dispatch(self, request, *args, **kwargs):
-        response = super(LastModifiedMixin, self).dispatch(request, *args, **kwargs)
+        response = super(LastModifiedMixin, self).dispatch(
+            request, *args, **kwargs)
         # NOTE: remove microseconds so that comparison will pass,
         # since microseconds are not included in the last-modified header
 
         last_modified = self.last_modified()
         if last_modified:
             last_modified = self.last_modified().replace(microsecond=0)
-            response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+            response['Last-Modified'] = last_modified.strftime(
+                '%a, %d %b %Y %H:%M:%S GMT')
             last_modified = last_modified.timestamp()
 
         return get_conditional_response(request,
-            last_modified=last_modified, response=response)
+                                        last_modified=last_modified, response=response)
 
 
 class LastModifiedListMixin(LastModifiedMixin):
@@ -64,7 +66,7 @@ class Homepage(TemplateView):
 
         # find the next three upcoming, published events
         # TODO: (maybe) published(for_user=request.user) \
-        upcoming_events = Event.objects.published().upcoming()[:3]
+        upcoming_events = Event.objects.live().upcoming()[:3]
 
         return {
             'updates': updates,

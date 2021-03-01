@@ -228,7 +228,7 @@ class HomePage(Page):
         context['projects'] = projects[:4]
 
         # add up to 3 upcoming, published events
-        context['events'] = Event.objects.published().upcoming()[:3]
+        context['events'] = Event.objects.live().upcoming()[:3]
 
         return context
 

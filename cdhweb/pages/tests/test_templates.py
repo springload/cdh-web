@@ -1,6 +1,9 @@
 import pytest
-from cdhweb.pages.models import CaptionedImageBlock, SVGImageBlock
+from django.urls import reverse
+from django.utils.dateformat import format 
 from pytest_django.asserts import assertContains, assertTemplateNotUsed
+
+from cdhweb.pages.models import CaptionedImageBlock, SVGImageBlock
 
 
 class TestHomePage:
@@ -57,57 +60,34 @@ class TestHomePage:
         response = client.get(homepage.relative_url(site))
         assertTemplateNotUsed(response, "projects/snippets/project_card.html")
 
-    @pytest.mark.skip("todo")
-    def test_highlighted_projects(self, client, site, homepage, derrida):
+    def test_highlighted_projects(self, client, site, homepage, projects):
         """homepage should display highlighted projects as cards"""
         response = client.get(homepage.relative_url(site))
-        # test how projects are displayed on the home page
-        """
-        today = timezone.now()
-        site = Site.objects.first()
-        projects = Project.objects.bulk_create(
-            [Project(title='Meeting %s' % a, slug=a, highlight=True,
-                     site=site, short_description='This is project %s' % a)
-             for a in string.ascii_letters[:5]]
-        )
-        grtype = GrantType.objects.create(grant_type='Sponsored Project')
-        # add grant that covers the current date
-        grant_start = today - timedelta(days=2)
-        grant_end = today + timedelta(days=7)
-        Grant.objects.bulk_create(
-            [Grant(project=proj, grant_type=grtype,
-                   start_date=grant_start, end_date=grant_end)
-             for proj in Project.objects.all()]
-        )
 
-        response = self.client.get(index_url)
-        # should be 4 random projects in context
-        assert len(response.context['projects']) == 4
+        # should be no projects in context, since none highlighted
+        assert len(response.context["projects"]) == 0
 
-        # test that highlight flag is honored
-        # - delete one project so that all four will be present
-        Project.objects.first().delete()
-        # get next project and mark not highlighted
-        inactive_proj = Project.objects.first()
-        inactive_proj.highlight = False
-        inactive_proj.save()
-        response = self.client.get(index_url)
-        assert inactive_proj not in response.context['projects']
+        # highlight some projects; only those should be displayed
+        derrida = projects["derrida"]
+        pliny = projects["pliny"]
+        derrida.highlight = True
+        pliny.highlight = True
+        derrida.save()
+        pliny.save()
+        response = client.get(homepage.relative_url(site))
+        assert len(response.context["projects"]) == 2
+        assert derrida in response.context["projects"]
+        assert pliny in response.context["projects"]
 
-        # get next active project and remove grant
-        noncurrent_proj = Project.objects.highlighted().first()
-        noncurrent_proj.grant_set.all().delete()
-        response = self.client.get(index_url)
-        # highlight means it should be included even without grant
-        assert noncurrent_proj in response.context['projects']
-        # check that brief project details are displayed
-        projects = Project.objects.highlighted()
-        for proj in projects:
-            self.assertContains(response, proj.get_absolute_url())
-            self.assertContains(response, proj.title)
-            self.assertContains(response, proj.short_description)
-            # NOTE: currently not testing thumbnail included
-        """
+        # should display title, short description, and link
+        assertContains(response, derrida.short_description)
+        assertContains(response, derrida.title)
+        assertContains(response, derrida.get_url())
+
+        # unpublished projects shouldn't be displayed
+        derrida.unpublish()
+        response = client.get(homepage.relative_url(site))
+        assert derrida not in response.context["projects"]
 
     def test_empty_events(self, client, site, homepage):
         """homepage should display message when no events are available"""
@@ -115,42 +95,28 @@ class TestHomePage:
         assertTemplateNotUsed(response, "events/snippets/event_card.html")
         assertContains(response, "Next semester's events are being scheduled.")
 
-    @pytest.mark.skip("todo")
-    def test_upcoming_events(self, client, site, homepage):
+    def test_upcoming_events(self, client, site, homepage, events):
         """homepage should display upcoming events as cards"""
-        # TODO actually check that events appear once events are exodized
+        response = client.get(homepage.relative_url(site))
 
-        """
-        self.assertContains(response, reverse('event:upcoming'),
-                            msg_prefix='should link to upcoming events (in lieue of an archive)')
+        # should have link to event list
+        assertContains(response, reverse("events:upcoming"))
 
-        # test how events are displayed on the home page
-        event_type = EventType.objects.first()
-        yesterday = today - timedelta(days=1)
-        tomorrow = today + timedelta(days=1)
-        past_event = Event.objects.create(start_time=yesterday,
-                                          end_time=yesterday, event_type=event_type, title='Old News')
-        Event.objects.bulk_create(
-            [Event(start_time=tomorrow, end_time=tomorrow, title='event %s' % a,
-                   slug=a, event_type=event_type, site=site)
-             for a in string.ascii_letters[:5]]
-        )
+        # only one event in context, since others already happened
+        assert len(response.context["events"]) == 1
+        assert events["workshop"] not in response.context["events"]
+        assert events["lecture"] not in response.context["events"]
 
-        response = self.client.get(index_url)
-        # only three events in context
-        assert len(response.context['events']) == 3
-        # past event not displayed
-        assert past_event not in response.context['events']
-        self.assertContains(response, event_type, count=3)
-        for event in Event.objects.published().upcoming()[:3]:
-            self.assertContains(response, event.get_absolute_url())
-            self.assertContains(response, event.title)
-            # TODO: date/time
+        # shows event title, start/end time, and link to view
+        assertContains(response, events["deadline"].get_url())
+        assertContains(response, events["deadline"].title)
+        assertContains(response, format(events["deadline"].start_time, "F j"))
+        assertContains(response, format(events["deadline"].end_time, "j"))
 
-        # TODO: not yet testing speakers displayed
-
-        # not yet testing published/unpublished
-        """
+        # shouldn't show if not published
+        events["deadline"].unpublish()
+        response = client.get(homepage.relative_url(site))
+        assert events["deadline"] not in response.context["events"]
 
 
 class TestLandingPage:
