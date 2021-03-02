@@ -57,18 +57,24 @@ def user_group_exodus():
     - Removes any groups outside Wagtail default Moderators and Editors
     - Removes all users with the is_staff flag set to False
     - Removes all users with the is_active flag set to False
-    - Moves all remaining users into the Editors group
+    - Moves all remaining users into the Moderators group
 
     Historically, many users were given the is_superuser flag to avoid a bug
     with Mezzanine permissions. In Wagtail, this is no longer necessary. In
     addition, there are two new default groups: Moderators and Editors.
+    
+    This function moves everyone into the Moderators group, so that they are
+    able to manage and publish all resources. If desired, some users may need
+    to be later moved to the Editors group to de-escalate their permissions. 
+    This can be accomplished via the Wagtail admin or in console.
 
     Users with is_staff or is_active set to False (preventing login) will be 
     deleted, since there's no need to keep them in the new system. User accounts
     are no longer associated with content (instead, People are).
 
-    Note that you will still need to assign users to the Moderators group and
-    turn on is_superuser manually after this runs. This can be done in console.
+    Note that, if desired, you will still need to give users superuser after
+    this has been run. This can be done via the `--admin` flag on `createcasuser`
+    or via the django shell.
     """
 
     # get models and error if any aren't present - they should be since
@@ -92,10 +98,10 @@ def user_group_exodus():
     if non_staff:
         logging.info("removed %d non-staff users" % non_staff)
 
-    # assign all remaining users to editors group; remove superuser.
+    # assign all remaining users to moderators group; remove superuser.
     for user in User.objects.all():
-        logging.debug("adding user %s to wagtail editors" % user)
-        editors.user_set.add(user)
+        logging.debug("adding user %s to wagtail moderators" % user)
+        moderators.user_set.add(user)
         user.is_superuser = False
         user.save()
-    logging.info("total %d wagtail editors" % editors.user_set.count())
+    logging.info("total %d wagtail moderators" % moderators.user_set.count())
