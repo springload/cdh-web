@@ -124,9 +124,6 @@ class BlogPostTag(TaggedItemBase):
 class BlogPost(Page, ClusterableModel):
     """A Blog post, implemented as a Wagtail page."""
 
-    # Default value used when there are no authors for a post
-    DEFAULT_AUTHORS = "CDH Staff"
-
     authors = models.ManyToManyField("people.Person", related_name="posts")
     content = StreamField(BodyContentBlock, blank=True)
     featured_image = models.ForeignKey("wagtailimages.image", null=True, blank=True,
@@ -174,9 +171,7 @@ class BlogPost(Page, ClusterableModel):
 
     @property
     def author_list(self):
-        """Comma-separated list of author names, or 'CDH Staff' if none."""
-        if not self.authors.exists():
-            return self.DEFAULT_AUTHORS
+        """Comma-separated list of author names."""
         return ", ".join(str(author) for author in self.authors.all())
 
     def get_url_parts(self, *args, **kwargs):
