@@ -15,7 +15,7 @@ from django.core.management.base import BaseCommand, CommandParser
 from django.db.models import Q
 from django.test import override_settings
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
-from mezzanine.pages.models import Page as MezzaninePage
+from mezzanine.pages.models import Page as MezzaninePage, Link as MezzanineLink
 from wagtail.core.models import Collection, Page, Site, get_root_collection_id
 from wagtail.images.models import Image
 
@@ -131,9 +131,18 @@ class Command(BaseCommand):
             events = None
 
         # create a LinkPage to serve as the updates/ root (blog list page)
-        updates = BlogLinkPage(title="Events", link_url="events")
-        homepage.add_child(instance=updates)
-        homepage.save()
+        try:
+            old_updates = MezzanineLink.objects.get(slug="/updates/")
+            updates = BlogLinkPage(
+                title=old_updates.title,
+                link_url=old_updates.slug
+            )
+            homepage.add_child(instance=updates)
+            homepage.save()
+            self.migrated.append(old_updates.pk)
+        except MezzaninePage.DoesNotExist:
+            logging.warning("no updates/ page tree found; skipping blog")
+            updates = None
 
         # manually migrate the top-level people/ page to a special subtype
         try:
@@ -200,6 +209,13 @@ class Command(BaseCommand):
                 if page.pk not in self.migrated:
                     create_link_page(page, projects)
                     self.migrated.append(page.pk)
+
+        # migrate blog pages
+        if updates:
+            blog_pages = MezzaninePage.objects.filter(
+                slug__startswith="updates/")
+            for page in blog_pages:
+                self.migrate_pages(page, updates)
 
         # migrate all remaining pages, starting with pages with no parent
         # (i.e., top level pages)
