@@ -53,10 +53,10 @@ class Homepage(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         # use up to 6 featured posts if there are any
-        updates = BlogPost.objects.featured().published().recent()[:6]
+        updates = BlogPost.objects.featured().live().recent()[:6]
         if not updates.exists():
             # otherwise use 3 most recent posts
-            updates = BlogPost.objects.published().recent()[:3]
+            updates = BlogPost.objects.live().recent()[:3]
 
         # get highlighted, published projects
         # TODO: (maybe) published(for_user=request.user)
