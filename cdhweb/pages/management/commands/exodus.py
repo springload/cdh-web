@@ -19,13 +19,15 @@ from mezzanine.pages.models import Page as MezzaninePage
 from wagtail.core.models import Collection, Page, Site, get_root_collection_id
 from wagtail.images.models import Image
 
+from cdhweb.blog.exodus import blog_exodus
+from cdhweb.blog.models import BlogLinkPage
 from cdhweb.events.exodus import event_exodus
 from cdhweb.events.models import EventsLinkPage
 from cdhweb.pages.exodus import (convert_slug, create_contentpage,
                                  create_homepage, create_landingpage,
                                  create_link_page, form_pages,
                                  get_wagtail_image)
-from cdhweb.pages.models import ContentPage, HomePage
+from cdhweb.pages.models import HomePage
 from cdhweb.people.exodus import people_exodus, user_group_exodus
 from cdhweb.people.models import PeopleLandingPage
 from cdhweb.projects.exodus import project_exodus
@@ -111,6 +113,7 @@ class Command(BaseCommand):
             homepage.save()
             self.migrated.append(old_projects.pk)
         except MezzaninePage.DoesNotExist:
+            logging.warning("no projects/ page tree found; skipping projects")
             projects = None
 
         # create a LinkPage to serve as the events/ root (event list page)
@@ -124,7 +127,13 @@ class Command(BaseCommand):
             homepage.save()
             self.migrated.append(old_events.pk)
         except MezzaninePage.DoesNotExist:
+            logging.warning("no events/ page tree found; skipping events")
             events = None
+
+        # create a LinkPage to serve as the updates/ root (blog list page)
+        updates = BlogLinkPage(title="Events", link_url="events")
+        homepage.add_child(instance=updates)
+        homepage.save()
 
         # manually migrate the top-level people/ page to a special subtype
         try:
@@ -146,6 +155,7 @@ class Command(BaseCommand):
             # mark as migrated
             self.migrated.append(old_people.pk)
         except MezzaninePage.DoesNotExist:
+            logging.warning("no people/ page tree found; skipping people")
             people = None
 
         # migrate children of homepage
@@ -202,14 +212,17 @@ class Command(BaseCommand):
         # profiles, people
         people_exodus()
 
-        # exodize user groups to wagtail moderators/editors
-        user_group_exodus()
-
         # projects, memberships, grants, roles
         project_exodus()
 
         # events
         event_exodus()
+
+        # blog posts
+        blog_exodus()
+
+        # exodize user groups to wagtail moderators/editors
+        user_group_exodus()
 
         # report on unmigrated pages
         unmigrated = MezzaninePage.objects.exclude(
