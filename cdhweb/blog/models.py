@@ -128,7 +128,6 @@ class BlogPost(Page, ClusterableModel):
     featured_image = models.ForeignKey("wagtailimages.image", null=True, blank=True,
                                        on_delete=models.SET_NULL, related_name="+",
                                        help_text="Appears on the homepage carousel when post is featured.")
-    related_posts = models.ManyToManyField("self", blank=True)
     tags = ClusterTaggableManager(through=BlogPostTag, blank=True)
     updated = models.DateTimeField(auto_now=True, null=True, editable=False)
     is_featured = models.BooleanField(
@@ -144,7 +143,6 @@ class BlogPost(Page, ClusterableModel):
     content_panels = Page.content_panels + [
         FieldRowPanel((ImageChooserPanel("featured_image"),
                        FieldPanel("is_featured"))),
-        PageChooserPanel("related_posts"),
         StreamFieldPanel("content"),
     ]
     promote_panels = Page.promote_panels + [

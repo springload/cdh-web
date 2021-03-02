@@ -40,7 +40,6 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(auto_now=True, null=True)),
                 ('is_featured', models.BooleanField(default=False, help_text='Show the post in the carousel on the homepage.')),
                 ('featured_image', models.ForeignKey(blank=True, help_text='Appears on the homepage carousel when post is featured.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.Image')),
-                ('related_posts', models.ManyToManyField(blank=True, related_name='_blogpostpage_related_posts_+', to='blog.BlogPostPage')),
             ],
             options={
                 'ordering': ('-first_published_at',),
