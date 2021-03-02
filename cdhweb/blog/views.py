@@ -6,7 +6,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView, \
     MonthArchiveView
 
-from cdhweb.blog.models import BlogPost
+from cdhweb.blog.models import OldBlogPost
 from cdhweb.resources.utils import absolutize_url
 from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
 
@@ -14,12 +14,12 @@ from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
 class BlogPostMixinView(object):
     '''View mixin that sets model to Blogpost and returns a
     published BlogPost queryset.'''
-    model = BlogPost
+    model = OldBlogPost
 
     def get_queryset(self):
         # use displayable manager to find published events only
         # (or draft profiles for logged in users with permission to view)
-        return BlogPost.objects.published()  # TODO: published(for_user=self.request.user)
+        return OldBlogPost.objects.published()  # TODO: published(for_user=self.request.user)
 
 
 class BlogPostArchiveMixin(BlogPostMixinView, LastModifiedListMixin):
@@ -42,7 +42,7 @@ class BlogYearArchiveView(BlogPostArchiveMixin, YearArchiveView):
     def get_context_data(self, *args, **kwargs):
         context = super(BlogYearArchiveView, self).get_context_data(*args, **kwargs)
         context.update({
-            'date_list': BlogPost.objects.dates('publish_date', 'month', order='DESC'),
+            'date_list': OldBlogPost.objects.dates('publish_date', 'month', order='DESC'),
             'title': self.kwargs['year']
         })
         return context
@@ -57,7 +57,7 @@ class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
         # current requested month/year for display
         date = datetime.strptime('%(year)s %(month)s' % self.kwargs, '%Y %m')
         context.update({
-            'date_list': BlogPost.objects.dates('publish_date', 'month', order='DESC'),
+            'date_list': OldBlogPost.objects.dates('publish_date', 'month', order='DESC'),
             'title': date.strftime('%B %Y')
         })
         return context
@@ -86,7 +86,7 @@ class RssBlogPostFeed(Feed):
 
     def items(self):
         '''ten most recent blog posts, ordered by publish date'''
-        return BlogPost.objects.published().order_by('-publish_date')[:10]
+        return OldBlogPost.objects.published().order_by('-publish_date')[:10]
 
     def item_title(self, item):
         '''blog post title'''

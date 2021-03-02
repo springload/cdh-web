@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from mezzanine.core.admin import DisplayableAdmin, OwnableAdmin
 from mezzanine.twitter.admin import TweetableAdminMixin
 
-from .models import  BlogPost
+from .models import OldBlogPost
 
 
 class BlogPostAdmin(TweetableAdminMixin, DisplayableAdmin, OwnableAdmin):
@@ -61,4 +61,4 @@ class BlogPostAdmin(TweetableAdminMixin, DisplayableAdmin, OwnableAdmin):
         return {'users': [request.user]}
 
 
-admin.site.register(BlogPost, BlogPostAdmin)
+admin.site.register(OldBlogPost, BlogPostAdmin)

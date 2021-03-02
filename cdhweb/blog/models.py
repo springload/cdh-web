@@ -58,7 +58,7 @@ class BlogPostQuerySet(PageQuerySet):
         return self.order_by('-first_published_at')
 
 
-class BlogPost(Displayable, MultiOwnable, RichText, AdminThumbMixin):
+class OldBlogPost(Displayable, MultiOwnable, RichText, AdminThumbMixin):
     """
     A blog post with multiple authors. Based on
     :class:`mezzanine.blog.models.BlogPost`.
@@ -118,10 +118,10 @@ BlogPostManager = PageManager.from_queryset(BlogPostQuerySet)
 class BlogPostTag(TaggedItemBase):
     """Tags for Blog posts."""
     content_object = ParentalKey(
-        "blog.BlogPostPage", on_delete=models.CASCADE, related_name="tagged_items")
+        "blog.BlogPost", on_delete=models.CASCADE, related_name="tagged_items")
 
 
-class BlogPostPage(Page, ClusterableModel):
+class BlogPost(Page, ClusterableModel):
     """A Blog post, implemented as a Wagtail page."""
 
     content = StreamField(BodyContentBlock, blank=True)
@@ -194,4 +194,4 @@ class BlogLinkPage(LinkPage):
     parent_page_types = []
     # NOTE the only allowed child page type is a BlogPost; this is so that
     # Events made in the admin automatically are created here.
-    subpage_types = [BlogPostPage]
+    subpage_types = [BlogPost]

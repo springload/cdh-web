@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.html import escape
 from mezzanine.core.models import CONTENT_STATUS_DRAFT
 
-from cdhweb.blog.models import BlogPost
+from cdhweb.blog.models import OldBlogPost
 from cdhweb.blog.views import RssBlogPostFeed
 from cdhweb.blog.sitemaps import BlogPostSitemap
 
@@ -16,7 +16,7 @@ class TestBlog(TestCase):
 
     def test_get_absolute_url(self):
         jan15 = datetime(2016, 1, 15)
-        post = BlogPost(publish_date=jan15, slug='news-and-updates')
+        post = OldBlogPost(publish_date=jan15, slug='news-and-updates')
         # single-digit months should be converted to two-digit for url
         resolved_url = resolve(post.get_absolute_url())
         assert resolved_url.namespace == 'blog'
@@ -28,22 +28,22 @@ class TestBlog(TestCase):
     def test_short_title(self):
         '''test that truncated titles are correctly generated'''
         # truncate with ellipsis for titles > 75char
-        post = BlogPost(
+        post = OldBlogPost(
             title="Congratulations to Valedictorian Jin Yun Chow '17 and Salutatorian Grant Storey '17")
         assert len(post.short_title) == 65
         assert post.short_title.endswith('…')
         # do nothing for titles < 75char
-        post = BlogPost(title="Congratulations!")
+        post = OldBlogPost(title="Congratulations!")
         assert post.short_title == post.title
 
     def test_short_description(self):
         '''test that truncated descriptions are correctly generated'''
         # truncate with ellipsis for descriptions > 250char
-        post = BlogPost(description="The CDH is hiring! \u00a0We are looking for a curious, committed, and collegial colleague to join our Development and Design Team as our second Digital Humanities\u00a0Developer. You will work with database designers, UX designers, project managers, fellow programmers\u00a0and the faculty, students and staff of Princeton University to create innovating\u00a0projects and contribute back to the Open Source software community. \u00a0")
+        post = OldBlogPost(description="The CDH is hiring! \u00a0We are looking for a curious, committed, and collegial colleague to join our Development and Design Team as our second Digital Humanities\u00a0Developer. You will work with database designers, UX designers, project managers, fellow programmers\u00a0and the faculty, students and staff of Princeton University to create innovating\u00a0projects and contribute back to the Open Source software community. \u00a0")
         assert len(post.short_description) == 250
         assert post.short_description.endswith('…')
         # do nothing for descriptions < 250char
-        post = BlogPost(description="The CDH is hiring!")
+        post = OldBlogPost(description="The CDH is hiring!")
         assert post.short_description == post.description
 
 
@@ -52,7 +52,7 @@ class TestViews(TestCase):
 
     @skip("fixme")
     def test_rss_feed(self):
-        post = BlogPost.objects.get(pk=1)
+        post = OldBlogPost.objects.get(pk=1)
 
         response = self.client.get(reverse('blog:rss'))
         assert response['content-type'] == 'application/rss+xml; charset=utf-8'
@@ -64,7 +64,7 @@ class TestViews(TestCase):
         self.assertContains(response, escape(post.content[:100]))
 
         # post with author
-        authorpost = BlogPost.objects.filter(users__isnull=False).first()
+        authorpost = OldBlogPost.objects.filter(users__isnull=False).first()
         self.assertContains(response, str(authorpost.users.first()))
 
         # draft post should *NOT* be included
@@ -88,7 +88,7 @@ class TestViews(TestCase):
         # title displays
         self.assertContains(response, 'Latest Updates')
 
-        for post in BlogPost.objects.published():
+        for post in OldBlogPost.objects.published():
             self.assertContains(response, post.title)
             self.assertContains(response, post.get_absolute_url())
             self.assertContains(response, post.description)
@@ -105,8 +105,8 @@ class TestViews(TestCase):
         self.assertContains(response, reverse('blog:atom'), count=2)
 
     def test_blogpost_detail(self):
-        post = BlogPost.objects.order_by('publish_date').first()
-        second_post = BlogPost.objects.order_by('publish_date')[1]
+        post = OldBlogPost.objects.order_by('publish_date').first()
+        second_post = OldBlogPost.objects.order_by('publish_date')[1]
         response = self.client.get(post.get_absolute_url())
 
         self.assertContains(response, post.title)
@@ -154,11 +154,11 @@ class TestViews(TestCase):
 
         # date filtering is really django logic, this is just
         # a sanity check for display
-        for post in BlogPost.objects.published().filter(publish_date__year=2017):
+        for post in OldBlogPost.objects.published().filter(publish_date__year=2017):
             self.assertContains(response, post.title)
             self.assertContains(response, post.get_absolute_url())
 
-        for post in BlogPost.objects.published().exclude(publish_date__year=2017):
+        for post in OldBlogPost.objects.published().exclude(publish_date__year=2017):
             self.assertNotContains(response, post.title)
             self.assertNotContains(response, post.get_absolute_url())
 
@@ -172,12 +172,12 @@ class TestViews(TestCase):
 
         # date filtering is really django logic, this is just
         # a sanity check for display
-        for post in BlogPost.objects.filter(publish_date__year=2017,
+        for post in OldBlogPost.objects.filter(publish_date__year=2017,
                                             publish_date__month=9):
             self.assertContains(response, post.title)
             self.assertContains(response, post.get_absolute_url())
 
-        for post in BlogPost.objects.exclude(publish_date__year=2017,
+        for post in OldBlogPost.objects.exclude(publish_date__year=2017,
                                              publish_date__month=9):
             self.assertNotContains(response, post.title)
             self.assertNotContains(response, post.get_absolute_url())
@@ -186,23 +186,23 @@ class TestViews(TestCase):
 class TestBlogPostQuerySet(TestCase):
 
     def test_featured(self):
-        post = BlogPost.objects.create()
+        post = OldBlogPost.objects.create()
 
-        assert not BlogPost.objects.featured().exists()
+        assert not OldBlogPost.objects.featured().exists()
 
         post.is_featured = True
         post.save()
-        assert BlogPost.objects.featured().exists()
+        assert OldBlogPost.objects.featured().exists()
 
     def test_recent(self):
         # use django timezone util for timezone-aware datetime
         yesterday = timezone.now() - timedelta(days=1)
         oldest = timezone.now() - timedelta(days=10)
-        today_post = BlogPost.objects.create(publish_date=timezone.now())
-        yesterday_post = BlogPost.objects.create(publish_date=yesterday)
-        oldest_post = BlogPost.objects.create(publish_date=oldest)
+        today_post = OldBlogPost.objects.create(publish_date=timezone.now())
+        yesterday_post = OldBlogPost.objects.create(publish_date=yesterday)
+        oldest_post = OldBlogPost.objects.create(publish_date=oldest)
 
-        recent = list(BlogPost.objects.recent())
+        recent = list(OldBlogPost.objects.recent())
         # most recent listed first
         assert today_post == recent[0]
         assert yesterday_post == recent[1]
@@ -217,17 +217,17 @@ class TestBlogPostSitemap(TestCase):
         items = sitemap.items()
 
         # all published posts are present
-        for post in BlogPost.objects.published():
+        for post in OldBlogPost.objects.published():
             assert post in items
 
         # draft post is not present
-        draft_post = BlogPost.objects.get(pk=3)
+        draft_post = OldBlogPost.objects.get(pk=3)
         assert draft_post not in items
 
         # featured posts have priority 0.6
-        featured_post = BlogPost.objects.get(pk=1)
+        featured_post = OldBlogPost.objects.get(pk=1)
         assert sitemap.priority(featured_post) == 0.6
 
         # non-featured posts have default priority
-        non_featured_post = BlogPost.objects.get(pk=23)
+        non_featured_post = OldBlogPost.objects.get(pk=23)
         assert sitemap.priority(non_featured_post) is None
