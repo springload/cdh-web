@@ -12,7 +12,7 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
-                                         PageChooserPanel, StreamFieldPanel)
+                                         StreamFieldPanel)
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
@@ -124,6 +124,10 @@ class BlogPostTag(TaggedItemBase):
 class BlogPost(Page, ClusterableModel):
     """A Blog post, implemented as a Wagtail page."""
 
+    # Default value used when there are no authors for a post
+    DEFAULT_AUTHORS = "CDH Staff"
+
+    authors = models.ManyToManyField("people.Person", related_name="posts")
     content = StreamField(BodyContentBlock, blank=True)
     featured_image = models.ForeignKey("wagtailimages.image", null=True, blank=True,
                                        on_delete=models.SET_NULL, related_name="+",
@@ -143,6 +147,7 @@ class BlogPost(Page, ClusterableModel):
     content_panels = Page.content_panels + [
         FieldRowPanel((ImageChooserPanel("featured_image"),
                        FieldPanel("is_featured"))),
+        FieldPanel("authors"),
         StreamFieldPanel("content"),
     ]
     promote_panels = Page.promote_panels + [
@@ -165,7 +170,14 @@ class BlogPost(Page, ClusterableModel):
     @property
     def short_description(self):
         """Shorter description with ellipsis."""
-        return Truncator(self.seo_description).chars(250)
+        return Truncator(self.search_description).chars(250)
+
+    @property
+    def author_list(self):
+        """Comma-separated list of author names, or 'CDH Staff' if none."""
+        if not self.authors.exists():
+            return self.DEFAULT_AUTHORS
+        return ", ".join(str(author) for author in self.authors.all())
 
     def get_url_parts(self, *args, **kwargs):
         """Custom blog post URLs of the form /updates/2014/03/01/my-post."""
