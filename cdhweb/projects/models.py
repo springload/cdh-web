@@ -255,6 +255,10 @@ class Project(Page, ClusterableModel):
 
     def current_memberships(self):
         """:class:`MembershipQueryset` of current members sorted by role"""
+        # NOTE memberships is a FakeQuerySet from modelcluster.ParentalKey when
+        # the page is being previewed in wagtail, so Q lookups are not possible.
+        # see: https://github.com/wagtail/django-modelcluster/issues/121
+        memberships = Membership.objects.filter(project__pk=self.pk)
         # uses memberships rather than members so that we can retain role
         # information attached to the membership
         today = timezone.now().date()
@@ -263,7 +267,7 @@ class Project(Page, ClusterableModel):
         latest_grant = self.latest_grant()
         if latest_grant and latest_grant.end_date and \
            latest_grant.end_date < today:
-            return self.memberships \
+            return memberships \
                 .filter(start_date__lte=latest_grant.end_date) \
                 .filter(
                     models.Q(end_date__gte=latest_grant.start_date) |
@@ -271,10 +275,12 @@ class Project(Page, ClusterableModel):
                 )
 
         # otherwise, return current members based on date
-        return self.memberships.filter(start_date__lte=today) \
+        return memberships \
+            .filter(start_date__lte=today) \
             .filter(
-                models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
-        )
+                models.Q(end_date__gte=today) |
+                models.Q(end_date__isnull=True)
+            )
 
     def alums(self):
         """:class:`PersonQueryset` of past members sorted by last name"""

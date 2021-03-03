@@ -55,7 +55,11 @@
     <section class="grant-history">
         <h2>CDH Grant History</h2>
         <ul>
-            {% for grant in project.grants.reverse %}
+            {% comment %}
+            FakeQuerySet doesn't support .reverse() so we have to use .all()
+            with 'reversed' instead of .reverse() when the page is previewed
+            {% endcomment %}
+            {% for grant in project.grants.all reversed %}
             <li>{{ grant.years }} {{ grant.grant_type }}</li>
             {% endfor %}
         </ul>
