@@ -31,6 +31,7 @@ class ProfileAdmin(ThumbnailMixin, ModelAdmin):
     menu_icon = "user"
     list_display = ("admin_thumb", "title", "live")
     list_display_add_buttons = "title"
+    list_filter = ("person__pu_status", "person__cdh_staff")
     list_per_page = 25
     search_fields = ("title",)
     thumb_image_field_name = "image"
