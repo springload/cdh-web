@@ -4,10 +4,13 @@ import bleach
 from django.apps import apps
 from django.conf import settings
 from django.db import models
+from django.db.models.fields import Field
 from django.template.defaultfilters import striptags, truncatechars_html
-from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, StreamFieldPanel
 from wagtail.core.blocks import (RichTextBlock, StreamBlock, StructBlock,
                                  TextBlock)
+from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
+from wagtailmenus.panels import linkpage_tab
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
 from wagtail.documents.blocks import DocumentChooserBlock
@@ -150,7 +153,16 @@ class PagePreviewDescriptionMixin(models.Model):
 
 
 class LinkPage(AbstractLinkPage):
-    pass
+    """Link page for controlling appearance in menus of non-Page content."""
+    # NOTE these pages can have slugs, but the slug isn't editable in the admin
+    # by default. We override the editing interface to introduce a "promote"
+    # panel as with other Page models containing the form field for the slug.
+    # see: https://github.com/rkhleics/wagtailmenus/blob/master/wagtailmenus/panels.py#L79-L93
+    edit_handler = TabbedInterface([
+        linkpage_tab,
+        ObjectList((MultiFieldPanel((FieldPanel("slug"),)),),
+                   heading="Promote")
+    ])
 
 
 class ContentPage(Page, PagePreviewDescriptionMixin):
