@@ -91,7 +91,9 @@ def create_link_page(page, parent):
     # link page is needed for menus; should use existing title and full slug
     new_page = LinkPage(
         title=page.title,
-        link_url=page.slug)
+        link_url=page.slug,
+        slug=convert_slug(page.slug)
+    )
     parent.add_child(instance=new_page)
 
     # if the page is not blank, create a page intro snippet with the content

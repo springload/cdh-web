@@ -107,7 +107,8 @@ class Command(BaseCommand):
             old_projects = MezzaninePage.objects.get(slug="projects")
             projects = ProjectsLinkPage(
                 title=old_projects.title,
-                link_url=old_projects.slug
+                link_url=old_projects.slug,
+                slug=convert_slug(old_projects.slug),
             )
             homepage.add_child(instance=projects)
             homepage.save()
@@ -121,7 +122,8 @@ class Command(BaseCommand):
             old_events = MezzaninePage.objects.get(slug="events")
             events = EventsLinkPage(
                 title=old_events.title,
-                link_url=old_events.slug
+                link_url=old_events.slug,
+                slug=convert_slug(old_events.slug),
             )
             homepage.add_child(instance=events)
             homepage.save()
@@ -135,7 +137,8 @@ class Command(BaseCommand):
             old_updates = MezzanineLink.objects.get(slug="/updates/")
             updates = BlogLinkPage(
                 title=old_updates.title,
-                link_url=old_updates.slug
+                link_url=old_updates.slug,
+                slug=convert_slug(old_updates.slug),
             )
             homepage.add_child(instance=updates)
             homepage.save()
