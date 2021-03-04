@@ -50,12 +50,11 @@ class MultiOwnable(models.Model):
 class Author(Orderable):
     """Ordered relationship between Person and BlogPost."""
     post = ParentalKey("blog.BlogPost", related_name="authors")
-    person = models.ForeignKey(
-        "people.Person", on_delete=models.CASCADE, related_name="+")
+    person = models.ForeignKey("people.Person", on_delete=models.CASCADE)
     panels = [FieldPanel("person")]
 
     def __str__(self) -> str:
-        return "%s on %s" % self.person, self.post
+        return "%s on %s" % (self.person, self.post)
 
 
 class BlogPostQuerySet(PageQuerySet):
@@ -63,10 +62,6 @@ class BlogPostQuerySet(PageQuerySet):
     def featured(self):
         '''return blog posts that are marked as featured'''
         return self.filter(is_featured=True)
-
-    def recent(self):
-        '''sort blog posts by first publication date'''
-        return self.order_by('-first_published_at')
 
 
 class OldBlogPost(Displayable, MultiOwnable, RichText, AdminThumbMixin):
@@ -184,6 +179,9 @@ class BlogPost(Page, ClusterableModel):
     def author_list(self):
         """Comma-separated list of author names."""
         return ", ".join(str(author.person) for author in self.authors.all())
+
+    def __str__(self):
+        return "\"%s\" (%s)" % (self.short_title, self.first_published_at)
 
     def get_url_parts(self, *args, **kwargs):
         """Custom blog post URLs of the form /updates/2014/03/01/my-post."""

@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('sort_order', models.IntegerField(blank=True, editable=False, null=True)),
-                ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='people.Person')),
+                ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='people.Person')),
                 ('post', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='authors', to='blog.BlogPost')),
             ],
             options={

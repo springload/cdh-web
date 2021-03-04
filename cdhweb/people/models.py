@@ -225,6 +225,7 @@ class Person(ClusterableModel):
         max_length=50, blank=True, help_text="Office phone number")
     office_location = models.CharField(
         max_length=255, blank=True, help_text="Office number and building")
+    posts = models.ManyToManyField(to="blog.BlogPost", through="blog.Author")
 
     PU_STATUS_CHOICES = (
         ('fac', 'Faculty'),
