@@ -12,8 +12,8 @@ class PersonAdmin(ThumbnailMixin, ModelAdmin):
     list_display_add_buttons = "first_name"
     search_fields = ("first_name", "last_name", "user__username")
     list_filter = ("pu_status", "cdh_staff")
-    list_export = ("first_name", "last_name", "admin_thumb", "current_title",
-                   "cdh_staff")
+    list_export = ("first_name", "last_name", "most_recent_title", "department",
+                   "cdh_staff", "pu_status", "latest_grant", "profile_url")
     list_per_page = 25
     export_filename = "cdhweb-people"
     thumb_image_field_name = "image"

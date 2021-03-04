@@ -288,6 +288,12 @@ class Person(ClusterableModel):
             return current_positions.first().title
 
     @property
+    def most_recent_title(self):
+        """Return the most recent of any titles held by this Person."""
+        if self.positions.exists():
+            return self.positions.first().title
+
+    @property
     def latest_grant(self):
         '''most recent grants where this person has director role'''
         # find projects where they are director, then get newest grant
