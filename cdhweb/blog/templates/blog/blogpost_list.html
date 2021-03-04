@@ -18,10 +18,10 @@
                 {% endif %}
                 {% for author in post.authors.all %}
                     {# on profile page, we don't need to show author if it's the profile user #}
-                    {% if not profile or author.id is not profile.person.id %}
+                    {% if not profile or author.person.id is not profile.person.id %}
                     <span property="schema:author" typeof="schema:Person">
-                        <a {% if author.profile_url %}property="schema:url" href="{{ author.profile_url }}"{% endif %}>
-                        <span property="schema:name">{{ author }}</span></a>{% if not forloop.last %}, {% endif %}
+                        <a {% if author.person.profile_url %}property="schema:url" href="{{ author.person.profile_url }}"{% endif %}>
+                        <span property="schema:name">{{ author.person }}</span></a>{% if not forloop.last %}, {% endif %}
                     </span>
                     {% endif %}
                 {% endfor %}
