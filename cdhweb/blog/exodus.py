@@ -5,7 +5,7 @@ from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
 from cdhweb.people.models import Person
 from cdhweb.pages.exodus import convert_slug, get_wagtail_image, to_streamfield
-from cdhweb.blog.models import BlogPost, BlogLinkPage, OldBlogPost
+from cdhweb.blog.models import BlogPost, BlogLinkPage, OldBlogPost, Author
 
 
 def blog_exodus():
@@ -49,11 +49,11 @@ def blog_exodus():
         # transfer authors
         for user in post.users.all():
             person = Person.objects.get(user=user)
-            post_page.authors.add(person)
+            Author.objects.create(person=person, post=post_page)
 
         # if no author, use default
         if not post.users.exists():
-            post_page.authors.add(default_author)
+            Author.objects.create(person=default_author, post=post_page)
 
         # NOTE no tags to migrate
         # TODO transfer attachments

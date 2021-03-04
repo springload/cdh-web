@@ -12,9 +12,9 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
-                                         StreamFieldPanel)
+                                         InlinePanel, MultiFieldPanel, StreamFieldPanel)
 from wagtail.core.fields import StreamField
-from wagtail.core.models import Page, PageManager, PageQuerySet
+from wagtail.core.models import Orderable, Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 from cdhweb.pages.models import BodyContentBlock, LinkPage
@@ -45,6 +45,17 @@ class MultiOwnable(models.Model):
         '''comma-separated list of authors'''
         return ', '.join(str(user) for user in self.users.all())
     author_list.short_description = 'Authors'
+
+
+class Author(Orderable):
+    """Ordered relationship between Person and BlogPost."""
+    post = ParentalKey("blog.BlogPost", related_name="authors")
+    person = models.ForeignKey(
+        "people.Person", on_delete=models.CASCADE, related_name="+")
+    panels = [FieldPanel("person")]
+
+    def __str__(self) -> str:
+        return "%s on %s" % self.person, self.post
 
 
 class BlogPostQuerySet(PageQuerySet):
@@ -124,7 +135,6 @@ class BlogPostTag(TaggedItemBase):
 class BlogPost(Page, ClusterableModel):
     """A Blog post, implemented as a Wagtail page."""
 
-    authors = models.ManyToManyField("people.Person", related_name="posts")
     content = StreamField(BodyContentBlock, blank=True)
     featured_image = models.ForeignKey("wagtailimages.image", null=True, blank=True,
                                        on_delete=models.SET_NULL, related_name="+",
@@ -144,7 +154,8 @@ class BlogPost(Page, ClusterableModel):
     content_panels = Page.content_panels + [
         FieldRowPanel((ImageChooserPanel("featured_image"),
                        FieldPanel("is_featured"))),
-        FieldPanel("authors"),
+        MultiFieldPanel(
+            (InlinePanel("authors", label="Author"),), heading="Authors"),
         StreamFieldPanel("content"),
     ]
     promote_panels = Page.promote_panels + [
@@ -172,7 +183,7 @@ class BlogPost(Page, ClusterableModel):
     @property
     def author_list(self):
         """Comma-separated list of author names."""
-        return ", ".join(str(author) for author in self.authors.all())
+        return ", ".join(str(author.person) for author in self.authors.all())
 
     def get_url_parts(self, *args, **kwargs):
         """Custom blog post URLs of the form /updates/2014/03/01/my-post."""
