@@ -230,9 +230,9 @@ class HomePage(Page):
         Event = apps.get_model("events", "event")
 
         # add up to 6 featured updates, otherwise use 3 most recent updates
-        updates = BlogPost.objects.featured().published().recent()[:6]
+        updates = BlogPost.objects.live().featured()[:6]
         if not updates.exists():
-            updates = BlogPost.objects.published().recent()[:3]
+            updates = BlogPost.objects.live()[:3]
         context['updates'] = updates
 
         # add up to 4 randomly selected highlighted, published projects

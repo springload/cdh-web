@@ -1,7 +1,8 @@
 import pytest
 from django.urls import reverse
-from django.utils.dateformat import format 
-from pytest_django.asserts import assertContains, assertTemplateNotUsed
+from django.utils.dateformat import format
+from pytest_django.asserts import (assertContains, assertTemplateNotUsed,
+                                   assertTemplateUsed)
 
 from cdhweb.pages.models import CaptionedImageBlock, SVGImageBlock
 
@@ -18,42 +19,40 @@ class TestHomePage:
         response = client.get(homepage.relative_url(site))
         assertContains(response, homepage.body[0].value.source)
 
-    @pytest.mark.skip("todo")
-    def test_blog_posts(self, client, site, homepage):
-        """homepage should display featured blog posts in carousel"""
-        # TODO actually check that featured posts appear once blog is exodized
+    def test_empty_posts(self, client, site, homepage):
+        """homepage should not render carousel if no blog posts exist"""
         response = client.get(homepage.relative_url(site))
         assertTemplateNotUsed(response, "snippets/carousel.html")
 
-        """
-        # add some posts but don't feature any yet; should display most recent 3
-        for n in range(1, 8):
-            BlogPost.objects.create(title='Post %s' % n)
-        response = self.client.get(index_url)
-        assert len(response.context['updates']) == 3
-        self.assertTemplateUsed(response, 'snippets/carousel.html')
-        self.assertContains(response, '<div id="carousel')
-        # one "active" slide, the rest are normal
-        self.assertContains(
-            response, '<div class="post-update active">', count=1)
-        self.assertContains(response, '<div class="post-update">', count=2)
-        # feature all of the posts; should display most recent 6
-        for post in BlogPost.objects.all():
-            post.is_featured = True
-            post.save()
-        response = self.client.get(index_url)
-        assert len(response.context['updates']) == 6
-        self.assertTemplateUsed(response, 'snippets/carousel.html')
-        self.assertContains(response, '<div id="carousel')
-        self.assertContains(
-            response, '<div class="post-update active">', count=1)
-        self.assertContains(response, '<div class="post-update">', count=5)
+    def test_blog_posts(self, client, site, homepage, blog_posts):
+        """homepage should display featured blog posts in carousel"""
+        response = client.get(homepage.relative_url(site))
+        assertTemplateUsed(response, "snippets/carousel.html")
 
-        # ensure all displayed posts have a title and link
-        for post in BlogPost.objects.all()[:6]:
-            self.assertContains(response, post.get_absolute_url())
-            self.assertContains(response, post.title)
-        """
+        # no posts featured, so most recent ones should be in context
+        assert len(response.context["updates"] == 2)
+
+        # feature some posts; only those should be displayed
+        announcement = blog_posts["announcement"]
+        project_feature = blog_posts["project_feature"]
+        announcement.is_featured = True
+        project_feature.is_featured = True
+        announcement.save()
+        project_feature.save()
+        response = client.get(homepage.relative_url(site))
+        assert len(response.context["updates"]) == 2
+        assert announcement in response.context["updates"]
+        assert project_feature in response.context["updates"]
+
+        # should display short title, short description, and link
+        assertContains(response, announcement.short_title)
+        assertContains(response, announcement.short_description)
+        assertContains(response, announcement.get_url())
+
+        # unpublished posts shouldn't be displayed
+        announcement.unpublish()
+        response = client.get(homepage.relative_url(site))
+        assert announcement not in response.context["updates"]
 
     def test_empty_projects(self, client, site, homepage):
         """homepage should not render projects if none exist"""
