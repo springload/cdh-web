@@ -95,18 +95,18 @@ class TestProfile:
             blog_link_page.save()
             Author.objects.create(post=post, person=person)
             posts[title] = post
-        posts["three"].unpublish()
+        posts["four"].unpublish()
 
-        # only 3 most recent published posts should be in context
-        # "one", "two", "four"
+        # only 3 most recent *published* posts should be in context, in order
+        # with most recent first: "five", "three", "two"
         factory = RequestFactory()
         request = factory.get(profile.get_url())
         context = profile.get_context(request)
-        assert posts["one"] in context["recent_posts"]
-        assert posts["two"] in context["recent_posts"]
-        assert posts["three"] not in context["recent_posts"]
-        assert posts["four"] in context["recent_posts"]
-        assert posts["five"] not in context["recent_posts"]
+        assert context["recent_posts"][0] == posts["five"]
+        assert context["recent_posts"][1] == posts["three"]
+        assert context["recent_posts"][2] == posts["two"]
+        assert posts["four"] not in context["recent_posts"]
+        assert posts["one"] not in context["recent_posts"]
 
 
 class TestProfilePage(WagtailPageTests):
