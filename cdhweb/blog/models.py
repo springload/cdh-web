@@ -17,7 +17,7 @@ from wagtail.core.fields import StreamField
 from wagtail.core.models import Orderable, Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import BodyContentBlock, LinkPage
+from cdhweb.pages.models import BodyContentBlock, LinkPage, PagePreviewDescriptionMixin
 from cdhweb.resources.models import Attachment
 
 
@@ -58,6 +58,13 @@ class Author(Orderable):
 
 
 class BlogPostQuerySet(PageQuerySet):
+
+    def recent(self):
+        """Order blog posts by date published."""
+        # NOTE we can't use ordering on the model to do this by default, so we
+        # have to make sure to call this method instead. See:
+        # https://docs.wagtail.io/en/stable/topics/pages.html#page-queryset-ordering
+        return self.order_by("-first_published_at")
 
     def featured(self):
         '''return blog posts that are marked as featured'''
@@ -127,10 +134,10 @@ class BlogPostTag(TaggedItemBase):
         "blog.BlogPost", on_delete=models.CASCADE, related_name="tagged_items")
 
 
-class BlogPost(Page, ClusterableModel):
+class BlogPost(Page, ClusterableModel, PagePreviewDescriptionMixin):
     """A Blog post, implemented as a Wagtail page."""
 
-    content = StreamField(BodyContentBlock, blank=True)
+    body = StreamField(BodyContentBlock, blank=True)
     featured_image = models.ForeignKey("wagtailimages.image", null=True, blank=True,
                                        on_delete=models.SET_NULL, related_name="+",
                                        help_text="Appears on the homepage carousel when post is featured.")
@@ -151,7 +158,7 @@ class BlogPost(Page, ClusterableModel):
                        FieldPanel("is_featured"))),
         MultiFieldPanel(
             (InlinePanel("authors", label="Author"),), heading="Authors"),
-        StreamFieldPanel("content"),
+        StreamFieldPanel("body"),
     ]
     promote_panels = Page.promote_panels + [
         FieldPanel("tags")
@@ -162,9 +169,6 @@ class BlogPost(Page, ClusterableModel):
 
     context_object_name = "post"
 
-    class Meta:
-        ordering = ("first_published_at",)
-
     @property
     def short_title(self):
         """Shorter title with ellipsis."""
@@ -173,7 +177,7 @@ class BlogPost(Page, ClusterableModel):
     @property
     def short_description(self):
         """Shorter description with ellipsis."""
-        return Truncator(self.search_description).chars(250)
+        return Truncator(self.get_description()).chars(250)
 
     @property
     def author_list(self):

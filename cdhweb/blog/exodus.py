@@ -30,7 +30,7 @@ def blog_exodus():
             slug=convert_slug(post.slug),
             is_featured=post.is_featured,
             search_description=post.description,
-            content=to_streamfield(post.content),
+            body=to_streamfield(post.content),
             featured_image=get_wagtail_image(post.featured_image)
         )
 
