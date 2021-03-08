@@ -440,7 +440,7 @@ class Profile(Page):
         # add to context and set open graph metadata
         context.update({
             "opengraph_type": "profile",
-            "recent_posts": self.person.posts.live()[:3]
+            "recent_posts": self.person.posts.live().recent()[:3]
         })
         return context
 

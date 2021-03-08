@@ -232,7 +232,7 @@ class HomePage(Page):
         # add up to 6 featured updates, otherwise use 3 most recent updates
         updates = BlogPost.objects.live().featured()[:6]
         if not updates.exists():
-            updates = BlogPost.objects.live()[:3]
+            updates = BlogPost.objects.live().recent()[:3]
         context['updates'] = updates
 
         # add up to 4 randomly selected highlighted, published projects
