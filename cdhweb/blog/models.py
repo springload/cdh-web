@@ -163,7 +163,7 @@ class BlogPost(Page, ClusterableModel):
     context_object_name = "post"
 
     class Meta:
-        ordering = ("-first_published_at",)
+        ordering = ("first_published_at",)
 
     @property
     def short_title(self):
