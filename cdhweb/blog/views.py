@@ -37,7 +37,8 @@ class BlogYearArchiveView(BlogPostArchiveMixin, YearArchiveView):
     '''Blog post archive by year'''
 
     def get_context_data(self, *args, **kwargs):
-        context = super(BlogYearArchiveView, self).get_context_data(*args, **kwargs)
+        context = super(BlogYearArchiveView,
+                        self).get_context_data(*args, **kwargs)
         context.update({
             'date_list': BlogPost.objects.dates(self.date_field, 'month', order='DESC'),
             'title': self.kwargs['year']
@@ -50,7 +51,8 @@ class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
     month_format = '%m'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(BlogMonthArchiveView, self).get_context_data(*args, **kwargs)
+        context = super(BlogMonthArchiveView,
+                        self).get_context_data(*args, **kwargs)
         # current requested month/year for display
         date = datetime.strptime('%(year)s %(month)s' % self.kwargs, '%Y %m')
         context.update({
@@ -63,14 +65,30 @@ class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
 class BlogDetailView(BlogPostMixinView, DetailView, LastModifiedMixin):
     '''Blog post detail view'''
 
+    context_object_name = "post"
+
     def get_context_data(self, *args, **kwargs):
+        """Add next/previous post to context."""
         context = super(BlogDetailView, self).get_context_data(*args, **kwargs)
-        # also set object as page for common page display functionality
+
+        # NOTE mezzanine Displayable previously handled this; we need to do it
+        # manually for Wagtail. See:
+        # http://mezzanine.jupo.org/docs/_modules/mezzanine/core/models.html#Displayable.get_next_by_publish_date
+        next = self.model.objects.filter(
+            first_published_at__gt=self.object.first_published_at).order_by("first_published_at")
+        if next.exists():
+            next = next[0]
+        else:
+            next = None
+        prev = self.model.objects.filter(
+            first_published_at__lt=self.object.first_published_at).order_by("-first_published_at")
+        if prev.exists():
+            prev = prev[0]
+        else:
+            prev = None
+
         context.update({
-            'page': self.object,
-            'opengraph_type': 'article',
-            'next': self.object.get_next_by_publish_date(),
-            'previous': self.object.get_previous_by_publish_date(),
+            'opengraph_type': 'article', 'next': next, 'previous': prev
         })
         return context
 
