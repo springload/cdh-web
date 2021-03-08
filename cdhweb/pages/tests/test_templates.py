@@ -30,7 +30,7 @@ class TestHomePage:
         assertTemplateUsed(response, "snippets/carousel.html")
 
         # no posts featured, so most recent ones should be in context
-        assert len(response.context["updates"] == 2)
+        assert len(response.context["updates"]) == 2
 
         # feature some posts; only those should be displayed
         announcement = blog_posts["announcement"]
