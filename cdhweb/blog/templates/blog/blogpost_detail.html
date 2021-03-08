@@ -1,14 +1,14 @@
 {% extends 'blog/base.html' %}
-{% load mezzanine_tags humanize %}
+{% load wagtailcore_tags humanize %}
 {# simple blog post page; adapted in part from mezzanine blog post template #}
 
 {% block page-subtitle %}{{ post.title }} | {{ block.super }}{% endblock %}
 
 {% block headattrs %} xmlns:article="http://ogp.me/ns/article#"{% endblock %}
 {% block extra-head %}
-    <meta name="article.published_time" content="{{ post.publish_date.isoformat }}"/>
-    <meta name="article.modified_time" content="{{ post.updated.isoformat }}"/>
-    {% if post.users.exists %}
+    <meta name="article.published_time" content="{{ post.first_published_at.isoformat }}"/>
+    <meta name="article.modified_time" content="{{ post.last_published_at.isoformat }}"/>
+    {% if post.authors.exists %}
       {% for author in post.authors.all %}
         {% if author.person.profile_url %}
         {# facebook requires url; provide local or external if we have it #}
@@ -26,13 +26,13 @@
 <article typeof="schema:BlogPosting" class="blogpost">
     <header>
         <h1 property="schema:headline">{{ post.title }}</h1>
-        <meta property="schema:url schema:mainEntityOfPage" content="{{ post.get_absolute_url }}"/>
+        <meta property="schema:url schema:mainEntityOfPage" content="{% pageurl post %}"/>
         {# FIXME: do we need full url here? #}
-        <meta property="schema:datePublished" content="{{ post.publish_date|date:"c" }}"/>
-        <meta property="schema:dateModified" content="{{ post.updated|date:"c" }}"/>
+        <meta property="schema:datePublished" content="{{ post.first_published_at|date:"c" }}"/>
+        <meta property="schema:dateModified" content="{{ post.last_published_at|date:"c" }}"/>
 
         <div class="byline">
-        {% if post.users.exists %}
+        {% if post.authors.exists %}
         <div class="authors">
         {% for author in post.authors.all %}
             <span property="schema:author" typeof="schema:Person">
@@ -42,7 +42,7 @@
         {% endfor %}
         </div><br/>
         {% endif %}
-        <span class="date-published">{{ post.publish_date|date:"F j, Y" }}</span>
+        <span class="date-published">{{ post.first_published_at|date:"F j, Y" }}</span>
         {# NOTE: google structured data testing tool claims publisher and image are required #}
             <div property="schema:publisher" style="display:none">
               <span typeof="schema:Organization">
@@ -54,12 +54,10 @@
     </header>
 
     <div class="content" property="schema:articleBody">
-    {{ post.content|richtext_filters|safe }}
+    {% for block in post.body %}
+        {% include_block block %}
+    {% endfor %}
     </div>
-
-    {% if post.keywords.exists %}
-    <div class="keywords">Keywords: {{ post.keywords.all|join:', ' }}</div>
-    {% endif %}
 
 
 </article>
@@ -70,10 +68,10 @@
     {% if next or previous %}
     <div class="next-previous">
         {% if previous %}
-        <p class="prev"><a rel="prev" href="{{ previous.get_absolute_url }}">{{ previous }}</a></p>
+        <p class="prev"><a rel="prev" href="{% pageurl previous %}">{{ previous }}</a></p>
         {% endif %}
         {% if next %}
-        <p class="next"><a rel="next" href="{{ next.get_absolute_url }}">{{ next }}</a></p>
+        <p class="next"><a rel="next" href="{% pageurl next %}">{{ next }}</a></p>
         {% endif %}
     </div>
     {% endif %}
