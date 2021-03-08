@@ -6,7 +6,7 @@ class TestAuthor:
     def test_str(self, project_feature):
         """author should be identified by person and post"""
         author = project_feature.authors.first()
-        assert str(author) == "Staffer on \"Making progress on the Cool Project\" (%s)" % \
+        assert str(author) == "Tom on \"Making progress on the Cool Project\" (%s)" % \
             project_feature.first_published_at
 
 
