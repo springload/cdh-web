@@ -29,22 +29,18 @@ class TestPeopleLandingPage(WagtailPageTests):
 
 class TestProfile:
 
-    def setUp(self, people_landing_page):
-        """create person for testing"""
-        self.person = Person.objects.create(
-            first_name="tom", last_name="jones")
-
     def test_can_create(self, people_landing_page):
         """should be creatable as child of people landing page"""
+        person = Person.objects.create(first_name="tom", last_name="jones")
         profile = Profile(
             title="tom r. jones",
-            person=self.person,
+            person=person,
             education=rich_text("school"),
             bio=json.dumps([{"type": "paragraph", "value": "about me"}])
         )
         people_landing_page.add_child(instance=profile)
         people_landing_page.save()
-        assert self.person.profile == profile
+        assert person.profile == profile
 
     def test_person_required(self, people_landing_page):
         """profile page must be for an existing person"""
@@ -57,26 +53,23 @@ class TestProfile:
 
     def test_delete_handler(self, people_landing_page):
         """deleting person should delete corresponding profile"""
+        person = Person.objects.create(first_name="tom", last_name="jones")
         people_landing_page.add_child(instance=Profile(
             title="tom r. jones",
-            person=self.person,
+            person=person,
         ))
         people_landing_page.save()
-        self.person.delete()
+        person.delete()
         assert Profile.objects.count() == 0
 
     def test_recent_blogposts(self, people_landing_page, blog_link_page):
         """profile should have person's most recent blog posts in context"""
-        # FIXME create a user since BlogPost still currently assoc. with User
-        User = get_user_model()
-        tom = User.objects.create_user(username="tom")
-        self.person.user = tom
-
         # create the profile page
+        person = Person.objects.create(first_name="tom", last_name="jones")
         profile = Profile(
             title="tom jones",
             slug="tom-jones",
-            person=self.person,
+            person=person,
         )
         people_landing_page.add_child(instance=profile)
         people_landing_page.save()
@@ -100,20 +93,20 @@ class TestProfile:
                 datetime.datetime(2021, 1, i + 1))
             blog_link_page.add_child(instance=post)
             blog_link_page.save()
-            Author.objects.create(post=post, person=tom)
+            Author.objects.create(post=post, person=person)
             posts[title] = post
-        posts["four"].unpublish()
+        posts["three"].unpublish()
 
         # only 3 most recent published posts should be in context
-        # "five", "three", "two"
+        # "one", "two", "four"
         factory = RequestFactory()
         request = factory.get(profile.get_url())
         context = profile.get_context(request)
-        assert posts["five"] in context["recent_posts"]
-        assert posts["three"] in context["recent_posts"]
+        assert posts["one"] in context["recent_posts"]
         assert posts["two"] in context["recent_posts"]
-        assert posts["four"] not in context["recent_posts"]
-        assert posts["one"] not in context["recent_posts"]
+        assert posts["three"] not in context["recent_posts"]
+        assert posts["four"] in context["recent_posts"]
+        assert posts["five"] not in context["recent_posts"]
 
 
 class TestProfilePage(WagtailPageTests):
