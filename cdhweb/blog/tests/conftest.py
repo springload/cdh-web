@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 import pytest
 from django.utils import timezone
@@ -58,8 +58,8 @@ def project_feature(db, blog_link_page, grad_pm):
 
 @pytest.fixture
 def article(db, blog_link_page, staffer, postdoc):
-    """an article co-written by a staff member and a postdoc from a year ago"""
-    one_year_ago = timezone.now() - timedelta(weeks=52)
+    """an article co-written by a staff member and a postdoc in 2019"""
+    in_2019 = timezone.make_aware(datetime(2019, 3, 4, 8, 25))
     post = BlogPost(
         title="We wrote an article together, and it got published on the CDH website",
         body=json.dumps([{
@@ -69,7 +69,7 @@ def article(db, blog_link_page, staffer, postdoc):
     )
     blog_link_page.add_child(instance=post)
     blog_link_page.save()
-    post.first_published_at = one_year_ago
+    post.first_published_at = in_2019
     post.save()
     Author.objects.create(person=staffer, post=post)
     Author.objects.create(person=postdoc, post=post)
