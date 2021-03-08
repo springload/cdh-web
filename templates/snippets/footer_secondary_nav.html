@@ -1,6 +1,7 @@
 {# secondary navigation menus for inclusion in the footer #}
+{% load wagtailcore_tags %}
 {% for page in page_branch %}
     {% if page.in_menu %}
-    <li><a href="{{ page.get_absolute_url }}">{{ page.title }}</a>
+    <li><a href="{% pageurl page %}">{{ page.title }}</a>
     {% endif %}
 {% endfor %}

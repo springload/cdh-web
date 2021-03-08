@@ -1,4 +1,4 @@
-{% load pages_tags i18n %}
+{% load wagtailcore_tags pages_tags i18n %}
 {# top level menu, with secondary nav for current site section #}
 {# adapted from mezzanine pages/menus/primary.html template #}
 <div class="nav-main">
@@ -11,7 +11,7 @@
                 <a
                     id="{{ page.html_id }}"
                     role="menuitem"
-                    href="{{ page.get_absolute_url }}"
+                    href="{% pageurl page %}"
                     {% if forloop.first %} tabindex="0"{% else %} tabindex="-1"{% endif %}
                     {% if page.has_childen_in_menu %}
                     aria-owns="{{ page.html_id }}-secondary"

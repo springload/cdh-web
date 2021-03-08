@@ -1,4 +1,4 @@
-{% load pages_tags %}
+{% load wagtailcore_tags pages_tags %}
 {# tertiary navigation, where applicable #}
 <ul id="{{ page.html_id }}-tertiary" class="tertiary-nav" aria-labelledby="{{ page.html_id }}">
     {% for page in page_branch %}
@@ -6,7 +6,7 @@
     <li role="none">
         <a
             role="menuitem"
-            href="{{ page.get_absolute_url }}"
+            href="{% pageurl page %}"
             tabindex="-1"
             {% if page.is_current %} aria-current="page"{% endif %}>
             {{ page.title }}
