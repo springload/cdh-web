@@ -36,6 +36,11 @@ class TestBlogPost:
         assert article.authors.all()[0].person == postdoc
         assert article.authors.all()[1].person == staffer
 
+    def test_str(self, article):
+        """blog post should display as title + formatted date"""
+        assert str(article) == \
+            "\"We wrote an article together, and it got published on the CDH we…\" (March 4, 2019)"
+
     def test_get_url(self, article):
         """blog post should be accessed via custom url with y/m/d info"""
         # should pad with zeroes and include year, month, day, slug
