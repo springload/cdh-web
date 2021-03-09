@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils.text import Truncator
+from django.utils.dateformat import format
 from django.utils.translation import ugettext_lazy as _
 from mezzanine.core.fields import FileField
 from mezzanine.core.models import Displayable, RichText
@@ -185,7 +186,7 @@ class BlogPost(Page, ClusterableModel, PagePreviewDescriptionMixin):
         return ", ".join(str(author.person) for author in self.authors.all())
 
     def __str__(self):
-        return "\"%s\" (%s)" % (self.short_title, self.first_published_at)
+        return "\"%s\" (%s)" % (self.short_title, format(self.first_published_at, "F j, Y"))
 
     def get_url_parts(self, *args, **kwargs):
         """Custom blog post URLs of the form /updates/2014/03/01/my-post."""
