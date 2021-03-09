@@ -322,11 +322,10 @@ class Person(ClusterableModel):
     def profile_url(self):
         """Provide the link to profile on this site if there is one;
         otherwise look for an associated website url"""
-        try:
+        # only use published profile, if it exists
+        if self.profile and self.profile.live:
             return self.profile.get_url()
-            # NOTE: should we check profile published/draft status here?
-        except Profile.DoesNotExist:
-
+        else:
             website = self.related_links.filter(type__name="Website").first()
             if website:
                 return website.url
