@@ -3,11 +3,10 @@ from cdhweb.blog.models import BlogPost
 
 class TestAuthor:
 
-    def test_str(self, project_feature):
+    def test_str(self, article):
         """author should be identified by person and post"""
-        author = project_feature.authors.first()
-        assert str(author) == "Tom on \"Making progress on the Cool Project\" (%s)" % \
-            project_feature.first_published_at
+        author = article.authors.first()
+        assert str(author) == "Staffer on \"We wrote an article together, and it got published on the CDH we…\" (March 4, 2019)"
 
 
 class TestBlogPostQuerySet:
