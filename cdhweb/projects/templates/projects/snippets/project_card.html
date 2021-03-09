@@ -8,7 +8,7 @@
 {% if project.image %}style="background-image:url('{{ project_thumb.url }}')"{% endif %}>
 {% if project.cdh_built %}<div class="cdh-built">Built by CDH</div>{% endif %}
 {% if project.website_url %}<a class="external" title="Project Website" href="{{ project.website_url }}"> </a>{% endif %}
-    <a href="{% pageurl project %}">
+    <a href="{{ project.get_url }}">
     <div class="content">
         <h2>{{ project.title|safe }}</h2>
         <p>{{ project.short_description|safe }}</p>

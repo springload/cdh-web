@@ -1,4 +1,4 @@
-{% load wagtailcore_tags pages_tags %}
+{% load pages_tags %}
 {# secondary and tertiary naviation for the top-level of the site #}
 <div class="nav-card menu-{{ page.html_id }}">
     <div class="inner">
@@ -9,7 +9,7 @@
                 <a
                     id="{{ page.html_id }}"
                     role="menuitem"
-                    href="{% pageurl page %}"
+                    href="{{ page.get_absolute_url }}"
                     tabindex="-1"
                     {% if page.has_children_in_menu %} aria-owns="{{ page.html_id }}-tertiary"{% endif %}
                     {% if page.is_current %} aria-current="page"{% endif %}>{{ page.title }}</a>

@@ -6,7 +6,7 @@
     {# link to event, if speaker has upcoming one #}
     {% if show_events and person.user.event_set.published.upcoming %}
         {% with person.user.event_set.published.upcoming.first as event %}
-        <a class="external event" title="{{ event.title }}" href="{% pageurl event %}"></a>
+        <a class="external event" title="{{ event.title }}" href="{{ event.get_absolute_url }}"></a>
         {% endwith %}
     {% endif %}
 

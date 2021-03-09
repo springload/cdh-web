@@ -1,4 +1,4 @@
-{% load wagtailcore_tags pages_tags i18n %}
+{% load pages_tags i18n %}
 {# display full top-level and secondary navigation in the footer #}
 {# adapted from mezzanine pages/menus/primary.html template #}
 <ul>
@@ -11,7 +11,7 @@
             {% if page.has_children_in_menu %}
             <a class="toggle"><span class="button">+</span></a> {# toggle for mobile menu #}
             {% endif %}
-            <a href="{% pageurl page %}">{{ page.title }}</a>
+            <a href="{{ page.get_absolute_url }}">{{ page.title }}</a>
             {% if page.has_children_in_menu %}
             <ul class="submenu">
                 {% page_menu page "snippets/footer_secondary_nav.html" %}

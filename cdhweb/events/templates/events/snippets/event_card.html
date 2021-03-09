@@ -5,7 +5,7 @@
     {% image event.thumbnail max-310x240 as event_thumb %}
 {% endif %}
 <div class="card event" typeof="schema:Event">
-    <a property="schema:url" href="{% pageurl event %}">
+    <a property="schema:url" href="{{ event.get_url }}">
         <div class="event-type">{{ event.type }}</div>
         <div class="image" {% if event.thumbnail %}style="background-image:url('{{ event_thumb.url }}')"{% endif %}></div>
         <div class="content">

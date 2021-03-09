@@ -1,11 +1,10 @@
-{% load wagtailcore_tags %}
 <div id="carousel">
     {% for post in updates %}
     <div class="post-update{% if forloop.first %} active{% endif %}">
         <header{% if post.featured_image %} style="background-image: url('{{ MEDIA_URL }}{{ post.featured_image }}')"{% endif %}>
             <div class="header-overlay"></div>
         </header>
-        <a href="{% pageurl post %}">
+        <a href="{{ post.get_absolute_url }}">
         <div class="post-update-text">
                 <div class="quote">"</div>
                 <div class="heading">Updates</div>
