@@ -4,7 +4,7 @@ from django.urls import reverse
 from pytest_django.asserts import (assertContains, assertNotContains,
                                    assertTemplateUsed)
 
-from cdhweb.pages.exodus import to_streamfield
+from cdhweb.pages.exodus import to_streamfield_safe
 from cdhweb.pages.models import PageIntro, RelatedLinkType
 from cdhweb.projects.models import ProjectRelatedLink
 
@@ -71,7 +71,7 @@ class TestProjectDetail:
     def test_long_description(self, client, derrida):
         """project detail page should display long description if set"""
         # set a long description for derrida
-        derrida.long_description = to_streamfield("<b>About Derrida</b>")
+        derrida.long_description = to_streamfield_safe("<b>About Derrida</b>")
         derrida.save()
 
         # should display with rich text

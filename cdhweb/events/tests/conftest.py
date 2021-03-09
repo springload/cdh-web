@@ -5,7 +5,7 @@ import pytest
 from django.utils import timezone
 from cdhweb.people.models import Person
 from cdhweb.events.models import Event, EventType, EventsLinkPage, Location
-from cdhweb.pages.exodus import to_streamfield
+from cdhweb.pages.exodus import to_streamfield_safe
 
 @pytest.fixture
 def events_link_page(db, homepage):
@@ -23,7 +23,7 @@ def workshop(db, events_link_page, cdh_location):
     workshop_type = EventType.objects.get_or_create(name="Workshop")[0]
     workshop = Event(
         title="testing workshop",
-        content=to_streamfield("<p>my workshop description</p>"),
+        content=to_streamfield_safe("<p>my workshop description</p>"),
         start_time=yesterday,
         end_time=yesterday + timedelta(hours=2),
         location=cdh_location,
@@ -41,7 +41,7 @@ def lecture(db, events_link_page, zoom_location):
     lecture_type = EventType.objects.get_or_create(name="Lecture")[0]
     lecture = Event(
         title="testing lecture",
-        content=to_streamfield("<p>my lecture description</p>"),
+        content=to_streamfield_safe("<p>my lecture description</p>"),
         start_time=last_month,
         end_time=last_month + timedelta(hours=1),
         location=zoom_location,
@@ -63,7 +63,7 @@ def deadline(db, events_link_page):
     deadline_type = EventType.objects.get_or_create(name="Deadline")[0]
     deadline = Event(
         title="testing deadline",
-        content=to_streamfield("<p>my deadline description</p>"),
+        content=to_streamfield_safe("<p>my deadline description</p>"),
         start_time=tomorrow,
         end_time=tomorrow,
         type=deadline_type
@@ -79,7 +79,7 @@ def course(db, events_link_page):
     course_type = EventType.objects.get_or_create(name="Course")[0]
     course = Event(
         title="testing course",
-        content=to_streamfield("<p>my course description</p>"),
+        content=to_streamfield_safe("<p>my course description</p>"),
         start_time=timezone.datetime(2017, 2, 2, tzinfo=tz.utc),
         end_time=timezone.datetime(2017, 4, 27, tzinfo=tz.utc),
         type=course_type
