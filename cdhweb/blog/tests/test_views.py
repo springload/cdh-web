@@ -1,5 +1,16 @@
 class TestBlogPostDetailView:
 
+    def test_context_obj(self, client, announcement):
+        """blog post detail view should serve blog post in context"""
+        response = client.get(announcement.get_url())
+        assert response.context["post"] == announcement
+
+    def test_draft_404(self, client, announcement):
+        """blog post detail view should serve 404 for draft posts"""
+        announcement.unpublish()
+        response = client.get(announcement.get_url())
+        assert response.status_code == 404
+
     def test_next_prev(self, client, blog_posts):
         """blog post detail view should have next/prev posts in context"""
         article = blog_posts["article"]
