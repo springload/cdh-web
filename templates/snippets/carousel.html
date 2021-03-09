@@ -1,10 +1,14 @@
+{% load wagtailcore_tags wagtailimages_tags %}
 <div id="carousel">
     {% for post in updates %}
+    {% if post.featured_image %}
+    {% image post.featured_image fill-1440x680 as post_img %}
+    {% endif %}
     <div class="post-update{% if forloop.first %} active{% endif %}">
-        <header{% if post.featured_image %} style="background-image: url('{{ MEDIA_URL }}{{ post.featured_image }}')"{% endif %}>
+        <header{% if post_img %} style="background-image: url('{{ post_img.url }}')"{% endif %}>
             <div class="header-overlay"></div>
         </header>
-        <a href="{{ post.get_absolute_url }}">
+        <a href="{% pageurl post %}">
         <div class="post-update-text">
                 <div class="quote">"</div>
                 <div class="heading">Updates</div>
@@ -18,7 +22,7 @@
     {% if updates|length > 1 %}
     <div id="post-controls">
         {% for post in updates %}
-            <a href="javascript:void(0);" title="Show slide {{post.title}}">
+            <a href="javascript:void(0);" title="Show slide {{ post.title }}">
                 <div class="dot{% if forloop.first %} active{% endif %}" data-index="{{ forloop.counter0 }}"></div>
             </a>
         {% endfor %}
