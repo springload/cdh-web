@@ -58,8 +58,9 @@ def project_feature(db, blog_link_page, grad_pm):
 
 @pytest.fixture
 def article(db, blog_link_page, staffer, postdoc):
-    """an article co-written by a staff member and a postdoc in 2019"""
+    """an article by a staff member and a postdoc from 2019; updated in 2020"""
     in_2019 = timezone.make_aware(datetime(2019, 3, 4, 8, 25))
+    in_2020 = timezone.make_aware(datetime(2020, 1, 15, 20, 12))
     post = BlogPost(
         title="We wrote an article together, and it got published on the CDH website",
         body=json.dumps([{
@@ -70,6 +71,7 @@ def article(db, blog_link_page, staffer, postdoc):
     blog_link_page.add_child(instance=post)
     blog_link_page.save()
     post.first_published_at = in_2019
+    post.last_published_at = in_2020
     post.save()
     Author.objects.create(person=staffer, post=post)
     Author.objects.create(person=postdoc, post=post)
