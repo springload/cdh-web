@@ -11,9 +11,10 @@ class BlogPostAdmin(ThumbnailMixin, ModelAdmin):
     list_display_add_buttons = "title"
     list_filter = ("featured", "first_published_at")
     list_export = ("title", "author_list", "first_published_at", "featured",
-                   "featured_image", "tags", "content")
+                   "featured_image", "tags", "body")
     export_filename = "cdhweb-blogposts"
-    search_fields = ("title", "author_list", "content")
+    search_fields = ("title", "authors__person__first_name",
+                     "authors__person__last_name", "body")
     exclude_from_explorer = True
     thumb_image_field_name = "featured_image"
     thumb_col_header_text = "image"
