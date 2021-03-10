@@ -45,8 +45,8 @@ class TestHomePage:
         assert project_feature in response.context["updates"]
 
         # should display short title, short description, and link
-        assertContains(response, announcement.short_title)
-        assertContains(response, announcement.short_description)
+        assertContains(response, "A Big Announcement!")
+        assertContains(response, "here's the text of the announcement")
         assertContains(response, announcement.get_url())
 
         # unpublished posts shouldn't be displayed
