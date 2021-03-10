@@ -17,9 +17,6 @@ def blog_exodus():
         logging.error("no blog link page; aborting blog exodus")
         return
 
-    # fetch default blog post author ("CDH Staff" person)
-    default_author = Person.objects.get_or_create(first_name="CDH Staff")[0]
-
     # create new blog posts
     for post in OldBlogPost.objects.all():
         logging.debug("found mezzanine blogpost %s" % post)
@@ -50,10 +47,6 @@ def blog_exodus():
         for user in post.users.all():
             person = Person.objects.get(user=user)
             Author.objects.create(person=person, post=post_page)
-
-        # if no author, use default
-        if not post.users.exists():
-            Author.objects.create(person=default_author, post=post_page)
 
         # NOTE no tags to migrate
         # TODO transfer attachments

@@ -4,7 +4,6 @@ from datetime import timedelta, datetime
 import pytest
 from django.utils import timezone
 
-from cdhweb.people.models import Person
 from cdhweb.blog.models import BlogLinkPage, BlogPost, Author
 
 
@@ -19,7 +18,7 @@ def blog_link_page(db, homepage):
 
 @pytest.fixture
 def announcement(db, blog_link_page):
-    """an announcement published yesterday with no specific author (CDH Staff)"""
+    """an announcement published yesterday with no author"""
     yesterday = timezone.now() - timedelta(days=1)
     post = BlogPost(
         title="A Big Announcement!",
@@ -32,8 +31,6 @@ def announcement(db, blog_link_page):
     blog_link_page.save()
     post.first_published_at = yesterday
     post.save()
-    cdh_staff = Person.objects.get_or_create(first_name="CDH Staff")[0]
-    Author.objects.create(person=cdh_staff, post=post)
     return post
 
 
