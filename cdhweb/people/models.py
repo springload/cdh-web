@@ -290,8 +290,9 @@ class Person(ClusterableModel):
     @property
     def most_recent_title(self):
         """Return the most recent of any titles held by this Person."""
-        if self.positions.exists():
-            return self.positions.first().title
+        most_recent_position = self.positions.first()
+        if most_recent_position:
+            return most_recent_position.title
 
     @property
     def latest_grant(self):
