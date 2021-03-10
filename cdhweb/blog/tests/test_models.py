@@ -17,7 +17,7 @@ class TestBlogPostQuerySet:
         assert not BlogPost.objects.featured().exists()
         # feature one
         post = BlogPost.objects.order_by("?").first()
-        post.is_featured = True
+        post.featured = True
         post.save()
         # should be returned in queryset
         assert BlogPost.objects.featured().count() == 1

@@ -28,7 +28,7 @@ def blog_exodus():
         post_page = BlogPost(
             title=post.title,
             slug=convert_slug(post.slug),
-            is_featured=post.is_featured,
+            featured=post.is_featured,
             search_description=post.description,
             body=to_streamfield(post.content),
             featured_image=get_wagtail_image(post.featured_image)

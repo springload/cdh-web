@@ -7,10 +7,10 @@ class BlogPostAdmin(ThumbnailMixin, ModelAdmin):
     model = BlogPost
     menu_icon = "edit"
     list_display = ("admin_thumb", "title", "author_list",
-                    "first_published_at", "live", "is_featured")
+                    "first_published_at", "live", "featured")
     list_display_add_buttons = "title"
-    list_filter = ("is_featured", "first_published_at")
-    list_export = ("title", "author_list", "first_published_at", "is_featured",
+    list_filter = ("featured", "first_published_at")
+    list_export = ("title", "author_list", "first_published_at", "featured",
                    "featured_image", "tags", "content")
     export_filename = "cdhweb-blogposts"
     search_fields = ("title", "author_list", "content")

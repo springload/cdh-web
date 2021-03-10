@@ -69,7 +69,7 @@ class BlogPostQuerySet(PageQuerySet):
 
     def featured(self):
         '''return blog posts that are marked as featured'''
-        return self.filter(is_featured=True)
+        return self.filter(featured=True)
 
 
 class OldBlogPost(Displayable, MultiOwnable, RichText, AdminThumbMixin):
@@ -144,7 +144,7 @@ class BlogPost(Page, ClusterableModel, PagePreviewDescriptionMixin):
                                        help_text="Appears on the homepage carousel when post is featured.")
     tags = ClusterTaggableManager(through=BlogPostTag, blank=True)
     updated = models.DateTimeField(auto_now=True, null=True, editable=False)
-    is_featured = models.BooleanField(
+    featured = models.BooleanField(
         default=False, help_text="Show the post in the carousel on the homepage.")
     # TODO attachments (#245)
 
@@ -156,7 +156,7 @@ class BlogPost(Page, ClusterableModel, PagePreviewDescriptionMixin):
     # admin edit configuration
     content_panels = Page.content_panels + [
         FieldRowPanel((ImageChooserPanel("featured_image"),
-                       FieldPanel("is_featured"))),
+                       FieldPanel("featured"))),
         MultiFieldPanel(
             (InlinePanel("authors", label="Author"),), heading="Authors"),
         StreamFieldPanel("body"),

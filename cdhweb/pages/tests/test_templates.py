@@ -35,8 +35,8 @@ class TestHomePage:
         # feature some posts; only those should be displayed
         announcement = blog_posts["announcement"]
         project_feature = blog_posts["project_feature"]
-        announcement.is_featured = True
-        project_feature.is_featured = True
+        announcement.featured = True
+        project_feature.featured = True
         announcement.save()
         project_feature.save()
         response = client.get(homepage.relative_url(site))
