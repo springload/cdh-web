@@ -420,7 +420,7 @@ PUCAS_LDAP = {
     },
     # local method to populate profile fields based on available
     # ldap information
-    'EXTRA_USER_INIT': 'cdhweb.people.models.init_profile_from_ldap'
+    'EXTRA_USER_INIT': 'cdhweb.people.models.init_person_from_ldap'
 }
 
 
