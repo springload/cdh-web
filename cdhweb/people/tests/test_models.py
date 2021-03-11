@@ -402,8 +402,9 @@ class TestInitProfileFromLDAP(TestCase):
         self.staff_person = Person.objects.get(user=self.staff_user)
 
     def test_email(self):
-        """user email should be converted to lower case"""
+        """user email should be converted to lower case and added to person"""
         assert self.staff_user.email == "staff@example.com"
+        assert self.staff_person.email == "staff@example.com"
 
     def test_person_created(self):
         """person should be created to match user"""
