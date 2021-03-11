@@ -7,14 +7,16 @@ from wagtail.contrib.modeladmin.options import (ModelAdmin, ModelAdminGroup,
 class EventAdmin(ThumbnailMixin, ModelAdmin):
     model = Event
     menu_icon = "date"
-    list_display = ("admin_thumb", "title", "type",
+    list_display = ("admin_thumb", "title", "type", "speaker_list",
                     "start_time", "end_time", "live")
     list_display_add_buttons = "title"
     list_filter = ("start_time", "end_time", "type")
     list_export = ("title", "type", "start_time", "end_time", "location", "sponsor",
-                   "speakers", "attendance", "join_url", "content", "tags", "updated")
+                   "speaker_list", "attendance", "join_url", "content", "tags", "updated")
     export_filename = "cdhweb-events"
-    search_fields = ("title", "content", "type", "sponsor", "location")
+    search_fields = ("title", "speakers__person__first_name",
+                     "speakers__person__last_name", "content", "type", 
+                     "sponsor", "location")
     exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"
     thumb_col_header_text = "thumbnail"

@@ -11,9 +11,9 @@
         <div class="content">
             <h2 property="schema:name">{{ event.title }}</h2>
             <div class="presenter">
-                {% for person in event.speakers.all %}
+                {% for speaker in event.speakers.all %}
                 <div property="schema:performer" typeof="schema:Person">
-                    <span property="schema:name">{{ person }}</span>
+                    <span property="schema:name">{{ speaker.person }}</span>
                 </div>
                 {% endfor %}
             </div>

@@ -5,7 +5,7 @@ from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
 from cdhweb.people.models import Person
 from cdhweb.pages.exodus import convert_slug, get_wagtail_image, to_streamfield
-from cdhweb.events.models import OldEvent, Event, EventsLinkPage
+from cdhweb.events.models import OldEvent, Event, EventsLinkPage, Speaker
 
 
 def event_exodus():
@@ -48,7 +48,7 @@ def event_exodus():
         # add speakers
         for user in event.speakers.all():
             person = Person.objects.get(user=user)
-            event_page.speakers.add(person)
+            Speaker.objects.create(person=person, event=event_page)
 
         # NOTE no tags to migrate
         # TODO transfer attachments

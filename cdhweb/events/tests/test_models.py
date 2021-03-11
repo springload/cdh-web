@@ -4,6 +4,15 @@ from django.core.exceptions import ValidationError
 from cdhweb.events.models import EventType, Location, Event
 
 
+class TestSpeaker:
+
+    def test_str(self, lecture):
+        """speaker should be identified by person and event"""
+        speaker = lecture.speakers.first()
+        assert str(speaker) == "john lecturer at testing lecture - %s" % \
+            lecture.start_time.strftime("%b %d, %Y")
+
+
 class TestEventType:
 
     def test_str(self):

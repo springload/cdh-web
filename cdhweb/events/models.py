@@ -6,6 +6,7 @@ import icalendar
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import strip_tags
@@ -18,13 +19,13 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
+                                         InlinePanel, MultiFieldPanel,
                                          StreamFieldPanel)
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 from cdhweb.pages.models import BodyContentBlock, LinkPage
-from cdhweb.people.models import Person
 from cdhweb.resources.models import Attachment, ExcerptMixin
 from cdhweb.resources.utils import absolutize_url
 
@@ -243,6 +244,19 @@ class EventTag(TaggedItemBase):
         "events.Event", on_delete=models.CASCADE, related_name="tagged_items")
 
 
+class Speaker(models.Model):
+    """Relationship between Person and Event."""
+    event = ParentalKey("events.Event", related_name="speakers")
+    person = models.ForeignKey("people.Person", on_delete=models.CASCADE)
+    panels = [FieldPanel("person")]
+
+    class Meta:
+        ordering = ("person__last_name", "person__first_name")
+
+    def __str__(self) -> str:
+        return "%s at %s" % (self.person, self.event)
+
+
 class Event(Page, ClusterableModel):
     """Page type for an event, such as a workshop, lecture, or conference."""
 
@@ -253,9 +267,6 @@ class Event(Page, ClusterableModel):
     location = models.ForeignKey(Location, null=True, blank=True,
                                  on_delete=models.SET_NULL)
     type = models.ForeignKey(EventType, null=True, on_delete=models.SET_NULL)
-    speakers = models.ManyToManyField(Person, blank=True,
-                                      help_text="Guest lecturer(s) or Workshop leader(s)",
-                                      related_name="events")
     attendance = models.PositiveIntegerField(null=True, blank=True,
                                              help_text="Total number of people who attended the event. (Internal only, for reporting purposes.)")
     join_url = models.URLField(verbose_name="Join URL", null=True, blank=True,
@@ -286,8 +297,9 @@ class Event(Page, ClusterableModel):
                        FieldPanel("attendance")), "Tracking"),
         FieldRowPanel((ImageChooserPanel("thumbnail"),
                        ImageChooserPanel("image")), "Images"),
+        MultiFieldPanel(
+            (InlinePanel("speakers", label="Speaker"),), heading="Speakers"),
         StreamFieldPanel("content"),
-        FieldPanel("speakers")
     ]
     promote_panels = Page.promote_panels + [
         FieldPanel("tags")
@@ -303,6 +315,11 @@ class Event(Page, ClusterableModel):
 
     def __str__(self):
         return " - ".join([self.title, self.start_time.strftime("%b %d, %Y")])
+
+    @property
+    def speaker_list(self):
+        """Comma-separated list of speaker names."""
+        return ", ".join(str(speaker.person) for speaker in self.speakers.all())
 
     def clean(self):
         """Validate that a type was specified for this event."""
