@@ -15,17 +15,19 @@ from django.core.management.base import BaseCommand, CommandParser
 from django.db.models import Q
 from django.test import override_settings
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
-from mezzanine.pages.models import Page as MezzaninePage
+from mezzanine.pages.models import Page as MezzaninePage, Link as MezzanineLink
 from wagtail.core.models import Collection, Page, Site, get_root_collection_id
 from wagtail.images.models import Image
 
+from cdhweb.blog.exodus import blog_exodus
+from cdhweb.blog.models import BlogLinkPage
 from cdhweb.events.exodus import event_exodus
 from cdhweb.events.models import EventsLinkPage
 from cdhweb.pages.exodus import (convert_slug, create_contentpage,
                                  create_homepage, create_landingpage,
                                  create_link_page, form_pages,
                                  get_wagtail_image)
-from cdhweb.pages.models import ContentPage, HomePage
+from cdhweb.pages.models import HomePage
 from cdhweb.people.exodus import people_exodus, user_group_exodus
 from cdhweb.people.models import PeopleLandingPage
 from cdhweb.projects.exodus import project_exodus
@@ -105,12 +107,14 @@ class Command(BaseCommand):
             old_projects = MezzaninePage.objects.get(slug="projects")
             projects = ProjectsLinkPage(
                 title=old_projects.title,
-                link_url=old_projects.slug
+                link_url=old_projects.slug,
+                slug=convert_slug(old_projects.slug),
             )
             homepage.add_child(instance=projects)
             homepage.save()
             self.migrated.append(old_projects.pk)
         except MezzaninePage.DoesNotExist:
+            logging.warning("no projects/ page tree found; skipping projects")
             projects = None
 
         # create a LinkPage to serve as the events/ root (event list page)
@@ -118,13 +122,30 @@ class Command(BaseCommand):
             old_events = MezzaninePage.objects.get(slug="events")
             events = EventsLinkPage(
                 title=old_events.title,
-                link_url=old_events.slug
+                link_url=old_events.slug,
+                slug=convert_slug(old_events.slug),
             )
             homepage.add_child(instance=events)
             homepage.save()
             self.migrated.append(old_events.pk)
         except MezzaninePage.DoesNotExist:
+            logging.warning("no events/ page tree found; skipping events")
             events = None
+
+        # create a LinkPage to serve as the updates/ root (blog list page)
+        try:
+            old_updates = MezzanineLink.objects.get(slug="/updates/")
+            updates = BlogLinkPage(
+                title=old_updates.title,
+                link_url=old_updates.slug,
+                slug=convert_slug(old_updates.slug),
+            )
+            homepage.add_child(instance=updates)
+            homepage.save()
+            self.migrated.append(old_updates.pk)
+        except MezzaninePage.DoesNotExist:
+            logging.warning("no updates/ page tree found; skipping blog")
+            updates = None
 
         # manually migrate the top-level people/ page to a special subtype
         try:
@@ -146,6 +167,7 @@ class Command(BaseCommand):
             # mark as migrated
             self.migrated.append(old_people.pk)
         except MezzaninePage.DoesNotExist:
+            logging.warning("no people/ page tree found; skipping people")
             people = None
 
         # migrate children of homepage
@@ -191,6 +213,13 @@ class Command(BaseCommand):
                     create_link_page(page, projects)
                     self.migrated.append(page.pk)
 
+        # migrate blog pages
+        if updates:
+            blog_pages = MezzaninePage.objects.filter(
+                slug__startswith="updates/")
+            for page in blog_pages:
+                self.migrate_pages(page, updates)
+
         # migrate all remaining pages, starting with pages with no parent
         # (i.e., top level pages)
         for page in MezzaninePage.objects.filter(parent__isnull=True):
@@ -202,14 +231,17 @@ class Command(BaseCommand):
         # profiles, people
         people_exodus()
 
-        # exodize user groups to wagtail moderators/editors
-        user_group_exodus()
-
         # projects, memberships, grants, roles
         project_exodus()
 
         # events
         event_exodus()
+
+        # blog posts
+        blog_exodus()
+
+        # exodize user groups to wagtail moderators/editors
+        user_group_exodus()
 
         # report on unmigrated pages
         unmigrated = MezzaninePage.objects.exclude(

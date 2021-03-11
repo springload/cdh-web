@@ -12,8 +12,8 @@ class PersonAdmin(ThumbnailMixin, ModelAdmin):
     list_display_add_buttons = "first_name"
     search_fields = ("first_name", "last_name", "user__username")
     list_filter = ("pu_status", "cdh_staff")
-    list_export = ("first_name", "last_name", "admin_thumb", "current_title",
-                   "cdh_staff")
+    list_export = ("first_name", "last_name", "most_recent_title", "department",
+                   "cdh_staff", "pu_status", "latest_grant", "profile_url")
     list_per_page = 25
     export_filename = "cdhweb-people"
     thumb_image_field_name = "image"
@@ -31,6 +31,7 @@ class ProfileAdmin(ThumbnailMixin, ModelAdmin):
     menu_icon = "user"
     list_display = ("admin_thumb", "title", "live")
     list_display_add_buttons = "title"
+    list_filter = ("person__pu_status", "person__cdh_staff")
     list_per_page = 25
     search_fields = ("title",)
     thumb_image_field_name = "image"

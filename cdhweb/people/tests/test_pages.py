@@ -1,6 +1,5 @@
 import json
 import datetime
-from mezzanine.core.models import CONTENT_STATUS_DRAFT, CONTENT_STATUS_PUBLISHED
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -11,9 +10,9 @@ from wagtail.core.models import Page
 from wagtail.tests.utils import WagtailPageTests
 from wagtail.tests.utils.form_data import rich_text
 
-from cdhweb.pages.models import HomePage, PageIntro, LinkPage
+from cdhweb.pages.models import PageIntro, LinkPage
 from cdhweb.people.models import PeopleLandingPage, Person, Profile
-from cdhweb.blog.models import BlogPost
+from cdhweb.blog.models import BlogPost, Author
 
 
 class TestPeopleLandingPage(WagtailPageTests):
@@ -28,75 +27,52 @@ class TestPeopleLandingPage(WagtailPageTests):
             PeopleLandingPage, [Profile, LinkPage])
 
 
-class TestProfile(WagtailPageTests):
+class TestProfile:
 
-    def setUp(self):
-        """create page tree and person for testing"""
-        root = Page.objects.get(title="Root")
-        home = HomePage(title="home", slug="")
-        root.add_child(instance=home)
-        root.save()
-        self.lp = PeopleLandingPage(
-            title="people", slug="people", tagline="people of the cdh")
-        home.add_child(instance=self.lp)
-        home.save()
-        self.person = Person.objects.create(
-            first_name="tom", last_name="jones")
-
-    def test_parent_pages(self):
-        """only allowed parent is people landing page"""
-        self.assertAllowedParentPageTypes(Profile, [PeopleLandingPage])
-
-    def test_child_pages(self):
-        """no allowed children"""
-        self.assertAllowedSubpageTypes(Profile, [])
-
-    def test_can_create(self):
+    def test_can_create(self, people_landing_page):
         """should be creatable as child of people landing page"""
+        person = Person.objects.create(first_name="tom", last_name="jones")
         profile = Profile(
             title="tom r. jones",
-            person=self.person,
+            person=person,
             education=rich_text("school"),
             bio=json.dumps([{"type": "paragraph", "value": "about me"}])
         )
-        self.lp.add_child(instance=profile)
-        self.lp.save()
-        assert self.person.profile == profile
+        people_landing_page.add_child(instance=profile)
+        people_landing_page.save()
+        assert person.profile == profile
 
-    def test_person_required(self):
+    def test_person_required(self, people_landing_page):
         """profile page must be for an existing person"""
         with pytest.raises(ValidationError):
-            self.lp.add_child(instance=Profile(
+            people_landing_page.add_child(instance=Profile(
                 title="tom r. jones",
                 education=rich_text("school"),
                 bio=json.dumps([{"type": "paragraph", "value": "about me"}])
             ))
 
-    def test_delete_handler(self):
+    def test_delete_handler(self, people_landing_page):
         """deleting person should delete corresponding profile"""
-        self.lp.add_child(instance=Profile(
+        person = Person.objects.create(first_name="tom", last_name="jones")
+        people_landing_page.add_child(instance=Profile(
             title="tom r. jones",
-            person=self.person,
+            person=person,
         ))
-        self.lp.save()
-        self.person.delete()
+        people_landing_page.save()
+        person.delete()
         assert Profile.objects.count() == 0
 
-    def test_recent_blogposts(self):
+    def test_recent_blogposts(self, people_landing_page, blog_link_page):
         """profile should have person's most recent blog posts in context"""
-        # FIXME create a user since BlogPost still currently assoc. with User
-        User = get_user_model()
-        tom = User.objects.create_user(username="tom")
-        self.person.user = tom
-
         # create the profile page
+        person = Person.objects.create(first_name="tom", last_name="jones")
         profile = Profile(
             title="tom jones",
             slug="tom-jones",
-            person=self.person,
+            person=person,
         )
-        self.lp.add_child(instance=profile)
-        self.lp.save()
+        people_landing_page.add_child(instance=profile)
+        people_landing_page.save()
 
         # context obj with blog posts is empty
         factory = RequestFactory()
@@ -113,25 +89,35 @@ class TestProfile(WagtailPageTests):
         posts = {}
         for i, title in enumerate(["one", "two", "three", "four", "five"]):
             post = BlogPost(title=title)
-            post.publish_date = timezone.make_aware(datetime.datetime(2021, 1, i + 1))
-            if title == "four":
-                post.status = CONTENT_STATUS_DRAFT
-            else:
-                post.status = CONTENT_STATUS_PUBLISHED
-            post.save()
-            post.users.add(tom)
+            post.first_published_at = timezone.make_aware(
+                datetime.datetime(2021, 1, i + 1))
+            blog_link_page.add_child(instance=post)
+            blog_link_page.save()
+            Author.objects.create(post=post, person=person)
             posts[title] = post
+        posts["four"].unpublish()
 
-        # only 3 most recent published posts should be in context
-        # "five", "three", "two"
+        # only 3 most recent *published* posts should be in context, in order
+        # with most recent first: "five", "three", "two"
         factory = RequestFactory()
         request = factory.get(profile.get_url())
         context = profile.get_context(request)
-        assert posts["five"] in context["recent_posts"]
-        assert posts["three"] in context["recent_posts"]
-        assert posts["two"] in context["recent_posts"]
+        assert context["recent_posts"][0] == posts["five"]
+        assert context["recent_posts"][1] == posts["three"]
+        assert context["recent_posts"][2] == posts["two"]
         assert posts["four"] not in context["recent_posts"]
         assert posts["one"] not in context["recent_posts"]
+
+
+class TestProfilePage(WagtailPageTests):
+
+    def test_parent_pages(self):
+        """only allowed parent is people landing page"""
+        self.assertAllowedParentPageTypes(Profile, [PeopleLandingPage])
+
+    def test_child_pages(self):
+        """no allowed children"""
+        self.assertAllowedSubpageTypes(Profile, [])
 
 
 @pytest.mark.django_db

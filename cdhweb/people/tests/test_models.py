@@ -90,13 +90,16 @@ class TestPerson(TestCase):
         assert str(self.person) == "tom jones"
 
 
-def test_profile_url(student, staffer_profile, faculty_pi):
+def test_profile_url(student, staffer, staffer_profile, faculty_pi):
     # student fixture has neither profile nor website link
     assert not student.profile_url
-    # staff person has local profile
-    assert staffer_profile.person.profile_url == staffer_profile.get_url()
     # faculty pi has a profile url
     assert faculty_pi.profile_url == 'example.com'
+    # staff person has local profile
+    assert staffer.profile_url == staffer_profile.get_url()
+    # unpublish; should be no more profile url
+    staffer_profile.unpublish()
+    assert not staffer.profile_url
 
 
 class TestPersonQuerySet(TestCase):

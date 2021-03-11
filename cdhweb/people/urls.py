@@ -1,17 +1,18 @@
-from django.conf.urls import url
+from django.urls import path
 from django.views.generic.base import RedirectView
 
 from cdhweb.people import views
 
-app_name = 'people'
+app_name = "people"
 urlpatterns = [
-    url(r'^staff/$', views.StaffListView.as_view(), name='staff'),
-    url(r'^students/$', views.StudentListView.as_view(), name='students'),
-    url(r'^affiliates/$', views.AffiliateListView.as_view(), name='affiliates'),
-    url(r'^executive-committee/$', views.ExecListView.as_view(), name='exec-committee'),
+    path("staff/", views.StaffListView.as_view(), name="staff"),
+    path("students/", views.StudentListView.as_view(), name="students"),
+    path("affiliates/", views.AffiliateListView.as_view(), name="affiliates"),
+    path("executive-committee/", views.ExecListView.as_view(), name="exec-committee"),
+    # speakers list was deleted; serve 410 gone
+    path("speakers/", views.speakerlist_gone),
     # redirect from /people/faculty -> /people/affiliates
-    url(r'^faculty/$', RedirectView.as_view(url='/people/affiliates/', permanent=True)),
+    path("faculty/", RedirectView.as_view(url="/people/affiliates/", permanent=True)),
     # redirect from /people/postdocs -> /people/staff
-    url(r'^postdocs/$', RedirectView.as_view(url='/people/staff/', permanent=True)),
-    url(r'^speakers/$', views.speakerlist_gone),
+    path("postdocs/", RedirectView.as_view(url="/people/staff/", permanent=True)),
 ]

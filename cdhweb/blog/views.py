@@ -7,25 +7,22 @@ from django.views.generic.dates import ArchiveIndexView, YearArchiveView, \
     MonthArchiveView
 
 from cdhweb.blog.models import BlogPost
-from cdhweb.resources.utils import absolutize_url
 from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
 
 
 class BlogPostMixinView(object):
-    '''View mixin that sets model to Blogpost and returns a
-    published BlogPost queryset.'''
+    """Mixin that sets model to BlogPost and orders/filters queryset."""
     model = BlogPost
 
     def get_queryset(self):
-        # use displayable manager to find published events only
-        # (or draft profiles for logged in users with permission to view)
-        return BlogPost.objects.published()  # TODO: published(for_user=self.request.user)
+        """Return published posts with most recent first."""
+        return BlogPost.objects.live().recent()
 
 
 class BlogPostArchiveMixin(BlogPostMixinView, LastModifiedListMixin):
     '''Mixin with common settings for blogpost archive views'''
-    date_field = 'publish_date'
-    context_object_name = 'blogposts'
+    date_field = 'first_published_at'
+    context_object_name = 'posts'
     make_object_list = True
     paginate_by = 12
     template_name = 'blog/blogpost_archive.html'
@@ -40,9 +37,10 @@ class BlogYearArchiveView(BlogPostArchiveMixin, YearArchiveView):
     '''Blog post archive by year'''
 
     def get_context_data(self, *args, **kwargs):
-        context = super(BlogYearArchiveView, self).get_context_data(*args, **kwargs)
+        context = super(BlogYearArchiveView,
+                        self).get_context_data(*args, **kwargs)
         context.update({
-            'date_list': BlogPost.objects.dates('publish_date', 'month', order='DESC'),
+            'date_list': BlogPost.objects.dates(self.date_field, 'month', order='DESC'),
             'title': self.kwargs['year']
         })
         return context
@@ -53,11 +51,12 @@ class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
     month_format = '%m'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(BlogMonthArchiveView, self).get_context_data(*args, **kwargs)
+        context = super(BlogMonthArchiveView,
+                        self).get_context_data(*args, **kwargs)
         # current requested month/year for display
         date = datetime.strptime('%(year)s %(month)s' % self.kwargs, '%Y %m')
         context.update({
-            'date_list': BlogPost.objects.dates('publish_date', 'month', order='DESC'),
+            'date_list': BlogPost.objects.dates(self.date_field, 'month', order='DESC'),
             'title': date.strftime('%B %Y')
         })
         return context
@@ -66,14 +65,30 @@ class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
 class BlogDetailView(BlogPostMixinView, DetailView, LastModifiedMixin):
     '''Blog post detail view'''
 
+    context_object_name = "post"
+
     def get_context_data(self, *args, **kwargs):
+        """Add next/previous post to context."""
         context = super(BlogDetailView, self).get_context_data(*args, **kwargs)
-        # also set object as page for common page display functionality
+
+        # NOTE mezzanine Displayable previously handled this; we need to do it
+        # manually for Wagtail. See:
+        # http://mezzanine.jupo.org/docs/_modules/mezzanine/core/models.html#Displayable.get_next_by_publish_date
+        next = self.model.objects.filter(
+            first_published_at__gt=self.object.first_published_at).order_by("first_published_at")
+        if next.exists():
+            next = next[0]
+        else:
+            next = None
+        prev = self.model.objects.filter(
+            first_published_at__lt=self.object.first_published_at).order_by("-first_published_at")
+        if prev.exists():
+            prev = prev[0]
+        else:
+            prev = None
+
         context.update({
-            'page': self.object,
-            'opengraph_type': 'article',
-            'next': self.object.get_next_by_publish_date(),
-            'previous': self.object.get_previous_by_publish_date(),
+            'opengraph_type': 'article', 'next': next, 'previous': prev
         })
         return context
 
@@ -86,7 +101,7 @@ class RssBlogPostFeed(Feed):
 
     def items(self):
         '''ten most recent blog posts, ordered by publish date'''
-        return BlogPost.objects.published().order_by('-publish_date')[:10]
+        return BlogPost.objects.live().recent()[:10]
 
     def item_title(self, item):
         '''blog post title'''
@@ -94,11 +109,11 @@ class RssBlogPostFeed(Feed):
 
     def item_description(self, item):
         '''blog post description, for feed content'''
-        return item.content
+        return item.body
 
     def item_link(self, item):
         '''absolute link to blog post'''
-        return absolutize_url(item.get_absolute_url())
+        return item.get_full_url()
 
     def item_author_name(self, item):
         '''author of the blog post; comma-separated list for multiple'''
@@ -107,22 +122,22 @@ class RssBlogPostFeed(Feed):
     def item_author_link(self, item):
         '''link to author profile page, if there is only one author and
         the author has a published profile'''
-        if item.users.count() == 1:
-            author = item.users.first()
-            if author.published():
-                return absolutize_url(author.get_absolute_url())
+        if item.authors.count() == 1:
+            author = item.authors.first().person
+            if author.profile and author.profile.live:
+                return author.profile.get_full_url()
 
     def item_pubdate(self, item):
         '''publication date'''
-        return item.publish_date
+        return item.first_published_at
 
     def item_updatedate(self, item):
         '''last modified date'''
-        return item.updated
+        return item.last_published_at
 
     def item_categories(self, item):
         '''keyword category terms'''
-        return [str(kw) for kw in item.keywords.all()]
+        return [str(tag) for tag in item.tags.all()]
 
 
 class AtomBlogPostFeed(RssBlogPostFeed):

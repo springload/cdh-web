@@ -225,6 +225,7 @@ class Person(ClusterableModel):
         max_length=50, blank=True, help_text="Office phone number")
     office_location = models.CharField(
         max_length=255, blank=True, help_text="Office number and building")
+    posts = models.ManyToManyField(to="blog.BlogPost", through="blog.Author")
 
     PU_STATUS_CHOICES = (
         ('fac', 'Faculty'),
@@ -287,6 +288,13 @@ class Person(ClusterableModel):
             return current_positions.first().title
 
     @property
+    def most_recent_title(self):
+        """Return the most recent of any titles held by this Person."""
+        most_recent_position = self.positions.first()
+        if most_recent_position:
+            return most_recent_position.title
+
+    @property
     def latest_grant(self):
         '''most recent grants where this person has director role'''
         # find projects where they are director, then get newest grant
@@ -313,13 +321,13 @@ class Person(ClusterableModel):
 
     @property
     def profile_url(self):
-        """Provide the link to profile on this site if there is one;
+        """Provide the link to published profile on this site if there is one;
         otherwise look for an associated website url"""
         try:
-            return self.profile.get_url()
-            # NOTE: should we check profile published/draft status here?
+            profile = self.profile
+            if profile.live:
+                return profile.get_url()
         except Profile.DoesNotExist:
-
             website = self.related_links.filter(type__name="Website").first()
             if website:
                 return website.url
@@ -429,21 +437,12 @@ class Profile(Page):
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""
         context = super().get_context(request)
-
-        # TODO BlogPost still associated to user; will break when blog models
-        # are migrated/exodized to wagtail
-
-        if self.person.user:
-            # get 3 most recent published posts with this person as author
-            recent_posts = BlogPost.objects.filter(
-                users__id=self.person.user.id).published()[:3]
-
-            # add to context and set open graph metadata
-            context.update({
-                "opengraph_type": "profile",
-                "recent_posts": recent_posts
-            })
-
+        # get 3 most recent published posts with this person as author;
+        # add to context and set open graph metadata
+        context.update({
+            "opengraph_type": "profile",
+            "recent_posts": self.person.posts.live().recent()[:3]
+        })
         return context
 
     def clean(self):

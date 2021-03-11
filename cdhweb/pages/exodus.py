@@ -4,6 +4,7 @@ import json
 import logging
 import os
 
+from bs4 import BeautifulSoup
 from django.utils.html import strip_tags
 from wagtail.images.models import Image
 
@@ -26,7 +27,18 @@ def convert_slug(slug):
 
 def to_streamfield(content):
     """Output a json object for given richtext as a "migrated" streamfield."""
-    return json.dumps([{"type": "migrated", "value": content}])
+    # Wagtail chokes on unclosed <img> tags, throwing: "Unmatched tags:
+    # expected img, got figure". There may be other issues lurking in the html
+    # from mezzanine. Instead of trying to parse it with a regex, we let a real
+    # parser (BeautifulSoup) do the work.
+    pretty_content = BeautifulSoup(content, "lxml").prettify()
+    return json.dumps([{"type": "migrated", "value": pretty_content}])
+
+
+def to_streamfield_safe(content):
+    """Same as to_streamfield, but does no HTML validation and creates a block
+    of type 'paragraph' instead of migrated. Used for testing."""
+    return json.dumps([{"type": "paragraph", "value": content}])
 
 
 def get_wagtail_image(image):
@@ -91,7 +103,9 @@ def create_link_page(page, parent):
     # link page is needed for menus; should use existing title and full slug
     new_page = LinkPage(
         title=page.title,
-        link_url=page.slug)
+        link_url=page.slug,
+        slug=convert_slug(page.slug)
+    )
     parent.add_child(instance=new_page)
 
     # if the page is not blank, create a page intro snippet with the content

@@ -6,3 +6,5 @@ from cdhweb.pages.tests.conftest import site, homepage
 # now this does what we want, although it pollutes the namespace somewhat
 from cdhweb.events.tests.conftest import *
 from cdhweb.projects.tests.conftest import *
+from cdhweb.people.tests.conftest import *
+from cdhweb.blog.tests.conftest import *
