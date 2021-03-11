@@ -201,6 +201,7 @@ class Person(ClusterableModel):
     # in 3.x it is a distinct model with 1-1 optional relationship to User
     first_name = models.CharField('first name', max_length=150)
     last_name = models.CharField('last name', max_length=150)
+    email = models.EmailField(null=True, blank=True)
     user = models.OneToOneField(
         User,
         on_delete=models.SET_NULL,
@@ -256,9 +257,12 @@ class Person(ClusterableModel):
             FieldPanel("job_title"),
             FieldPanel("department"),
             FieldPanel("institution"),
-            FieldPanel("phone_number"),
-            FieldPanel("office_location"),
         ), heading="Employment"),
+        MultiFieldPanel((
+            FieldPanel("phone_number"),
+            FieldPanel("email"),
+            FieldPanel("office_location"),
+        ), heading="Contact"),
         InlinePanel("positions", heading="Positions"),
         InlinePanel("related_links", heading="Related Links")
     ]
@@ -434,6 +438,8 @@ class Profile(Page):
     parent_page_types = ["people.PeopleLandingPage"]
     subpage_types = []
 
+    context_object_name = "profile"
+
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""
         context = super().get_context(request)
@@ -493,6 +499,10 @@ def init_person_from_ldap(user, ldapinfo):
 
     # populate Person fields with data we can pull from ldap, if they are empty
     person, _created = Person.objects.get_or_create(user=user)
+
+    # if no email set for Person, use ldap email
+    if not person.email:
+        person.email = user.email
 
     # set first/last name basic on basic whitespace split; can adjust later
     first_name, *_others, last_name = str(ldapinfo.displayName).split()

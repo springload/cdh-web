@@ -30,7 +30,13 @@ class TestProfile(TestCase):
         # set up user/person/profile
         User = get_user_model()
         self.user = User.objects.create_user(username="tom")
-        self.person = Person.objects.create(user=self.user, first_name="tom")
+        self.person = Person.objects.create(
+            user=self.user,
+            first_name="tom",
+            email="tom@princeton.edu",
+            phone_number="609-000-0000",
+            office_location="on campus",
+        )
         self.profile = Profile(
             person=self.person,
             title="tom r. jones",
@@ -55,6 +61,22 @@ class TestProfile(TestCase):
         """profile page should display person's bio"""
         response = self.client.get(self.profile.relative_url(self.site))
         self.assertContains(response, "<b>about me</b>", html=True)
+
+    def test_email(self):
+        """profile page should display person's email"""
+        response = self.client.get(self.profile.relative_url(self.site))
+        self.assertContains(
+            response, '<a href="mailto:tom@princeton.edu">tom@princeton.edu</a>', html=True)
+
+    def test_phone_number(self):
+        """profile page should display person's phone number"""
+        response = self.client.get(self.profile.relative_url(self.site))
+        self.assertContains(response, "<p>609-000-0000</p>", html=True)
+
+    def test_office_location(self):
+        """profile page should display person's office location"""
+        response = self.client.get(self.profile.relative_url(self.site))
+        self.assertContains(response, "<p>on campus</p>", html=True)
 
     def test_positions(self):
         """profile page should display all positions held by its person"""
