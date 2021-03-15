@@ -4,7 +4,7 @@ from datetime import timezone as tz
 import pytest
 from django.utils import timezone
 from cdhweb.people.models import Person
-from cdhweb.events.models import Event, EventType, EventsLinkPage, Location
+from cdhweb.events.models import Event, EventType, EventsLinkPage, Location, Speaker
 from cdhweb.pages.exodus import to_streamfield_safe
 
 @pytest.fixture
@@ -52,7 +52,7 @@ def lecture(db, events_link_page, zoom_location):
     events_link_page.save()
     lecturer = Person.objects.create(first_name="john", last_name="lecturer",
                                     institution="princeton university")
-    lecture.speakers.add(lecturer)
+    Speaker.objects.create(person=lecturer, event=lecture)
     return lecture
 
 

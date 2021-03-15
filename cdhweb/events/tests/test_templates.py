@@ -103,7 +103,7 @@ class TestEventArchiveTemplate:
         """event archive page should list event speakers on cards"""
         # lecture has one speaker
         response = client.get(reverse("events:upcoming"))
-        assertContains(response, str(lecture.speakers.first()))
+        assertContains(response, str(lecture.speakers.first().person))
 
     def test_event_date_time(self, client, workshop):
         """event archive page should list event date/time on cards"""

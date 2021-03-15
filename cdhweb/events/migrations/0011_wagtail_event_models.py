@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(auto_now=True, null=True)),
                 ('image', models.ForeignKey(blank=True, help_text='Image for display on event detail page (optional)', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.Image')),
                 ('location', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='events.Location')),
-                ('speakers', models.ManyToManyField(blank=True, help_text='Guest lecturer(s) or Workshop leader(s)', to='people.Person', related_name="events")),
+                ('speakers', modelcluster.fields.ParentalManyToManyField(blank=True, help_text='Guest lecturer(s) or Workshop leader(s)', related_name='events', to='people.Person')),
             ],
             options={
                 'ordering': ('start_time',),

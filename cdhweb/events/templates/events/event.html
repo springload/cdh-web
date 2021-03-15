@@ -22,15 +22,15 @@
 <div class="details">
     {% if event.speakers.exists %}
     <ul>
-    {% for person in event.speakers.all %}
+    {% for speaker in event.speakers.all %}
     {# performer == presenter #}
     <li property="schema:performer" typeof="schema:Person">
         <h3><a property="schema:name"
-            {% if person.profile_url %}href="{{ person.profile_url }}"{% endif %}>
-            {{ person }}</a></h3>
-        {% if person.institution %}
+            {% if speaker.person.profile_url %}href="{{ speaker.person.profile_url }}"{% endif %}>
+            {{ speaker.person }}</a></h3>
+        {% if speaker.person.institution %}
         <p class="affiliation">
-            {{ person.institution }}
+            {{ speaker.person.institution }}
         </p>
         {% endif %}
     </li>

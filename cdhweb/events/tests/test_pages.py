@@ -8,7 +8,8 @@ from django.utils import timezone
 from django.utils.html import strip_tags
 from wagtail.tests.utils import WagtailPageTests
 
-from cdhweb.events.models import Event, EventsLinkPage
+from cdhweb.events.models import Event, EventsLinkPage, Speaker
+from cdhweb.people.models import Person
 
 
 class TestEvent:
@@ -102,7 +103,8 @@ class TestEvent:
             workshop.end_time.strftime("%Y%m%dT%H%M%SZ").encode()
         assert ical["location"] == workshop.location.display_name
         # description should have tags stripped
-        assert strip_tags(workshop.content) in ical["description"].to_ical().decode()
+        assert strip_tags(
+            workshop.content) in ical["description"].to_ical().decode()
         assert fullurl in ical["description"].to_ical().decode()
         # change event to a virtual location & add join url
         workshop.location = zoom_location
@@ -130,6 +132,16 @@ class TestEvent:
         )
         with pytest.raises(ValidationError):
             events_link_page.add_child(instance=reading_grp)
+
+    def test_speaker_list(self, lecture):
+        """event should list speaker names in order"""
+        # currently has one speaker
+        assert lecture.speaker_list == "john lecturer"
+        # add another speaker to the event
+        speaker2 = Person.objects.create(first_name="sam", last_name="brown")
+        Speaker.objects.create(event=lecture, person=speaker2)
+        # order by last name, then first
+        assert lecture.speaker_list == "sam brown, john lecturer"
 
 
 class TestEventPage(WagtailPageTests):
