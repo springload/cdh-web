@@ -5,7 +5,7 @@ from django.views.generic.list import ListView
 from django.urls import reverse
 
 from cdhweb.people.models import Person
-from cdhweb.resources.views import LastModifiedListMixin
+from cdhweb.pages.views import LastModifiedListMixin
 
 
 class PersonListView(ListView, LastModifiedListMixin):

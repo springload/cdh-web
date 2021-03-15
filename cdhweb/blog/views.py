@@ -7,7 +7,7 @@ from django.views.generic.dates import ArchiveIndexView, YearArchiveView, \
     MonthArchiveView
 
 from cdhweb.blog.models import BlogPost
-from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
+from cdhweb.pages.views import LastModifiedMixin, LastModifiedListMixin
 
 
 class BlogPostMixinView(object):
