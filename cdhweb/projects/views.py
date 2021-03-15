@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.views.generic.list import ListView
 
 from cdhweb.projects.models import Project
-from cdhweb.resources.views import LastModifiedListMixin
+from cdhweb.pages.views import LastModifiedListMixin
 
 
 class ProjectListView(ListView, LastModifiedListMixin):

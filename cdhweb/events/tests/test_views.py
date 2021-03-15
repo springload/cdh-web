@@ -7,7 +7,6 @@ from django.utils import timezone
 from pytest_django.asserts import assertContains
 from wagtail.core.models import Page
 
-from cdhweb.events.models import Event
 from cdhweb.events.views import EventSemesterDates
 
 
@@ -35,27 +34,6 @@ class TestEventDetailView:
         workshop.unpublish()
         response = client.get(workshop.get_url())
         assert response.status_code == 404
-
-    def test_last_modified(self, client, workshop):
-        """should send last modified date with response"""
-        # last modified date will appear as response header
-        response = client.get(workshop.get_url())
-        lmod = workshop.updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        assert response["Last-Modified"] == lmod
-
-    def test_not_modified(self, client, workshop):
-        """should serve 304 if event has not been modified"""
-        # request using current last mod date; should report unchanged
-        lmod = workshop.updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        response = client.get(workshop.get_url(), HTTP_IF_MODIFIED_SINCE=lmod)
-        assert response.status_code == 304
-
-    def test_head(self, client, workshop):
-        """should respond to http HEAD request to check for modification"""
-        # request using current last mod date; should report unchanged
-        lmod = workshop.updated.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        response = client.head(workshop.get_url(), HTTP_IF_MODIFIED_SINCE=lmod)
-        assert response.status_code == 304
 
 
 class TestEventIcalView:
@@ -92,37 +70,6 @@ class TestUpcomingEventsView:
         """should create list of all semesters for linking to views"""
         response = client.get(reverse("events:upcoming"))
         assert response.context["date_list"]
-
-    def test_last_modified(self, client, events):
-        """should send last modified date with response"""
-        # get last modified date for most recent event
-        most_recent = Event.objects.order_by("-updated").first()
-        lmod = most_recent.updated.replace(microsecond=0) \
-                          .strftime("%a, %d %b %Y %H:%M:%S GMT")
-        # most recent modified date will appear as response header
-        response = client.get(reverse("events:upcoming"))
-        assert response["Last-Modified"] == lmod
-
-    def test_not_modified(self, client, events):
-        """should serve 304 if event has not been modified"""
-        # get last modified date for most recent event
-        most_recent = Event.objects.order_by("-updated").first()
-        lmod = most_recent.updated.replace(microsecond=0) \
-                          .strftime("%a, %d %b %Y %H:%M:%S GMT")
-        # request using most recent mod date; should report unchanged
-        response = client.get(reverse("events:upcoming"),
-                              HTTP_IF_MODIFIED_SINCE=lmod)
-        assert response.status_code == 304
-
-    def test_head(self, client, events):
-        """should respond to http HEAD request to check for modification"""
-        # request using current last mod date; should report unchanged
-        most_recent = Event.objects.order_by("-updated").first()
-        lmod = most_recent.updated.replace(microsecond=0) \
-                          .strftime("%a, %d %b %Y %H:%M:%S GMT")
-        response = client.head(reverse("events:upcoming"),
-                               HTTP_IF_MODIFIED_SINCE=lmod)
-        assert response.status_code == 304
 
 
 class TestEventSemesterArchiveView:

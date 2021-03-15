@@ -1,50 +1,10 @@
 from random import shuffle
 
-from django.views.generic.base import View, TemplateView
-from django.utils.cache import get_conditional_response
+from django.views.generic.base import TemplateView
 
 from cdhweb.blog.models import BlogPost
-
 from cdhweb.events.models import Event
-
 from cdhweb.projects.models import Project
-
-
-class LastModifiedMixin(View):
-
-    def last_modified(self):
-        # for single-object displayable
-        return self.get_object().updated
-
-    def dispatch(self, request, *args, **kwargs):
-        response = super(LastModifiedMixin, self).dispatch(
-            request, *args, **kwargs)
-        # NOTE: remove microseconds so that comparison will pass,
-        # since microseconds are not included in the last-modified header
-
-        last_modified = self.last_modified()
-        if last_modified:
-            last_modified = self.last_modified().replace(microsecond=0)
-            response['Last-Modified'] = last_modified.strftime(
-                '%a, %d %b %Y %H:%M:%S GMT')
-            last_modified = last_modified.timestamp()
-
-        return get_conditional_response(request,
-                                        last_modified=last_modified, response=response)
-
-
-class LastModifiedListMixin(LastModifiedMixin):
-
-    lastmodified_attr = 'updated'
-
-    def last_modified(self):
-        # for list object displayable
-        # NOTE: this will error if there are no published items
-        queryset = self.get_queryset()
-        if queryset.exists():
-            # use the configured lastmodified attribute to get date updated
-            return getattr(queryset.order_by(self.lastmodified_attr).first(),
-                           self.lastmodified_attr)
 
 
 class Homepage(TemplateView):

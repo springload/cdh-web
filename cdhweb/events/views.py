@@ -10,7 +10,7 @@ from django.utils import timezone
 import icalendar
 
 from cdhweb.events.models import Event
-from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
+from cdhweb.pages.views import LastModifiedMixin, LastModifiedListMixin
 from cdhweb.resources.utils import absolutize_url
 
 
