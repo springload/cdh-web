@@ -41,6 +41,11 @@ def project_exodus():
         if project.status != CONTENT_STATUS_PUBLISHED:
             project_page.unpublish()
 
+        # set publication dates
+        project_page.first_published_at = project.publish_date
+        project_page.last_published_at = project.updated
+        project_page.save()
+
         # transfer memberships
         for membership in project.membership_set.all():
             membership.project = project_page

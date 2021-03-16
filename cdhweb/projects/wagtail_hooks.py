@@ -13,7 +13,7 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
     list_filter = ("grants__grant_type",)
     list_export = ("title", "working_group", "cdh_built", "tags",
                    "short_description", "long_description", "website_url",
-                   "updated")
+                   "last_published_at")
     search_fields = ("title", "short_description", "long_description")
     export_filename = "cdhweb-projects"
     exclude_from_explorer = True

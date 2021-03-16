@@ -278,7 +278,6 @@ class Event(Page, ClusterableModel):
                                   on_delete=models.SET_NULL, related_name="+",
                                   help_text="Image for display on event card (optional)")
     tags = ClusterTaggableManager(through=EventTag, blank=True)
-    updated = models.DateTimeField(auto_now=True, null=True, editable=False)
     # TODO attachments (#245)
 
     # can only be created underneath special link page

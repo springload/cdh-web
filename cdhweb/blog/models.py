@@ -143,7 +143,6 @@ class BlogPost(Page, ClusterableModel, PagePreviewDescriptionMixin):
                                        on_delete=models.SET_NULL, related_name="+",
                                        help_text="Appears on the homepage carousel when post is featured.")
     tags = ClusterTaggableManager(through=BlogPostTag, blank=True)
-    updated = models.DateTimeField(auto_now=True, null=True, editable=False)
     featured = models.BooleanField(
         default=False, help_text="Show the post in the carousel on the homepage.")
     # TODO attachments (#245)

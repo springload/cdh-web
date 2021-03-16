@@ -32,12 +32,19 @@ def people_exodus():
             bio=to_streamfield(profile.bio),
             search_description=profile.description,
         )
+
         # added as child of people landing page so slugs are correct
         people_landing.add_child(instance=profile_page)
         people_landing.save()
+
         # if the old profile wasn't published, unpublish the new one
         if profile.status != CONTENT_STATUS_PUBLISHED:
             profile_page.unpublish()
+
+        # set publication dates
+        profile_page.first_published_at = profile.publish_date
+        profile_page.last_published_at = profile.updated
+        profile_page.save()
 
     # for people with profile, set larger image as wagtail image for person
     for profile in OldProfile.objects.filter(user__person__isnull=False):
@@ -45,6 +52,7 @@ def people_exodus():
         if profile.image:
             person.image = get_wagtail_image(profile.image)
             person.save()
+
         # if no large image but we do have thumbnail, use it as a fallback
         elif profile.thumb:
             person.image = get_wagtail_image(profile.thumb)

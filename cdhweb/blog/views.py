@@ -13,6 +13,7 @@ from cdhweb.pages.views import LastModifiedMixin, LastModifiedListMixin
 class BlogPostMixinView(object):
     """Mixin that sets model to BlogPost and orders/filters queryset."""
     model = BlogPost
+    lastmodified_attr = "last_published_at"
 
     def get_queryset(self):
         """Return published posts with most recent first."""

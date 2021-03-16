@@ -9,6 +9,7 @@ class ProjectListView(ListView, LastModifiedListMixin):
     """Base class for project list views."""
 
     model = Project
+    lastmodified_attr = "last_published_at"
 
     #: title for this category of projects
     page_title = "Projects"

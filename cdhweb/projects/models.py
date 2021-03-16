@@ -202,7 +202,6 @@ class Project(Page, ClusterableModel):
                                   related_name='+', help_text="Image for display on project card (optional)")
     members = models.ManyToManyField(Person, through="Membership")
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
-    updated = models.DateTimeField(auto_now=True, null=True, editable=False)
     # TODO attachments (#245)
 
     # can only be created underneath special link page

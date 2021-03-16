@@ -45,6 +45,11 @@ def event_exodus():
         if event.status != CONTENT_STATUS_PUBLISHED:
             event_page.unpublish()
 
+        # set publication dates
+        event_page.first_published_at = event.publish_date
+        event_page.last_published_at = event.updated
+        event_page.save()
+
         # add speakers
         for user in event.speakers.all():
             person = Person.objects.get(user=user)

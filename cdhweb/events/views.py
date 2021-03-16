@@ -1,23 +1,20 @@
 import datetime
 
-from django.conf import settings
-from django.http import HttpResponse, Http404, response
-from django.views.generic.base import RedirectView
+import icalendar
+from django.http import Http404, HttpResponse
+from django.utils import timezone
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView
 from django.views.generic.detail import DetailView
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
-import icalendar
 
 from cdhweb.events.models import Event
-from cdhweb.pages.views import LastModifiedMixin, LastModifiedListMixin
-from cdhweb.resources.utils import absolutize_url
+from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
 
 
 class EventMixinView(object):
     '''View mixin that sets model to Event and returns a
     published Event queryset.'''
     model = Event
+    lastmodified_attr = "last_published_at"
 
     def get_queryset(self):
         '''use manager to find published events only'''
@@ -82,7 +79,8 @@ class UpcomingEventsView(EventMixinView, ArchiveIndexView, EventSemesterDates,
         upcoming = self.get_queryset().upcoming()
         # don't error if there are no upcoming events
         if upcoming.exists():
-            return upcoming.order_by('updated').first().updated
+            return getattr(upcoming.order_by(self.lastmodified_attr).first(),
+                           self.lastmodified_attr)
 
 
 class EventSemesterArchiveView(EventMixinView, YearArchiveView,
