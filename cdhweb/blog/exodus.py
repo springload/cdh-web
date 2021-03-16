@@ -43,8 +43,9 @@ def blog_exodus():
         if post.status != CONTENT_STATUS_PUBLISHED:
             post_page.unpublish()
 
-        # set publication date
+        # set publication dates
         post_page.first_published_at = post.publish_date
+        post_page.last_published_at = post.updated
         post_page.save()
 
         # transfer authors
