@@ -109,7 +109,7 @@ class RssBlogPostFeed(Feed):
 
     def item_description(self, item):
         '''blog post description, for feed content'''
-        return item.body
+        return item.get_description()
 
     def item_link(self, item):
         '''absolute link to blog post'''
@@ -117,21 +117,24 @@ class RssBlogPostFeed(Feed):
 
     def item_author_name(self, item):
         '''author of the blog post; comma-separated list for multiple'''
-        return ', '.join([str(auth) for auth in item.users.all()])
+        return item.author_list
+
+    def item_author_email(self, item):
+        '''author email, if there is only one author'''
+        if item.authors.count() == 1:
+            return item.authors.first().person.email
 
     def item_author_link(self, item):
         '''link to author profile page, if there is only one author and
         the author has a published profile'''
         if item.authors.count() == 1:
-            author = item.authors.first().person
-            if author.profile and author.profile.live:
-                return author.profile.get_full_url()
+            return item.authors.first().person.profile_url
 
     def item_pubdate(self, item):
         '''publication date'''
         return item.first_published_at
 
-    def item_updatedate(self, item):
+    def item_updateddate(self, item):
         '''last modified date'''
         return item.last_published_at
 

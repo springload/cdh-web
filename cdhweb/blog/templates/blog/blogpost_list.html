@@ -33,7 +33,7 @@
     </header>
     {# don't display descriptions on profile #}
     {% if not profile %}
-    <div>{{ post.description|safe }}</div>
+    <div>{{ post.get_description|safe }}</div>
     {% endif %}
 </article>
 {% endfor %}

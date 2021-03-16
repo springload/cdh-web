@@ -19,7 +19,7 @@ def blog_link_page(db, homepage):
 @pytest.fixture
 def announcement(db, blog_link_page):
     """an announcement published yesterday with no author"""
-    yesterday = timezone.now() - timedelta(days=1)
+    yesterday = timezone.make_aware(datetime.today() - timedelta(days=1))
     post = BlogPost(
         title="A Big Announcement!",
         body=json.dumps([{
@@ -30,6 +30,7 @@ def announcement(db, blog_link_page):
     blog_link_page.add_child(instance=post)
     blog_link_page.save()
     post.first_published_at = yesterday
+    post.last_published_at = yesterday
     post.save()
     return post
 
@@ -37,7 +38,7 @@ def announcement(db, blog_link_page):
 @pytest.fixture
 def project_feature(db, blog_link_page, grad_pm):
     """a post about a sponsored project published 4 weeks ago with one author"""
-    one_month_ago = timezone.now() - timedelta(weeks=4)
+    one_month_ago = timezone.make_aware(datetime.today() - timedelta(weeks=4))
     post = BlogPost(
         title="Making progress on the Cool Project",
         body=json.dumps([{
@@ -48,6 +49,7 @@ def project_feature(db, blog_link_page, grad_pm):
     blog_link_page.add_child(instance=post)
     blog_link_page.save()
     post.first_published_at = one_month_ago
+    post.last_published_at = one_month_ago
     post.save()
     Author.objects.create(person=grad_pm, post=post)
     return post

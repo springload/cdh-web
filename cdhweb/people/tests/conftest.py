@@ -1,10 +1,11 @@
-from cdhweb.pages.models import RelatedLinkType
 from datetime import date, timedelta
 
 import pytest
 
-from cdhweb.people.models import PeopleLandingPage, Person, PersonRelatedLink, Position, Profile, Title
-from cdhweb.projects.models import Grant, GrantType, Project, Role, Membership
+from cdhweb.pages.models import RelatedLinkType
+from cdhweb.people.models import (PeopleLandingPage, Person, PersonRelatedLink,
+                                  Position, Profile, Title)
+from cdhweb.projects.models import Grant, GrantType, Membership, Project, Role
 
 
 def create_person_with_position(position, start_date=None, end_date=None,
@@ -78,8 +79,8 @@ def grad_pi(db, projects_link_page):
 
 @pytest.fixture
 def grad_pm(db, projects_link_page):
-    person = Person.objects.create(
-        first_name='Tom', cdh_staff=False, pu_status='graduate')
+    person = Person.objects.create(first_name='Tom', cdh_staff=False,
+        pu_status='graduate', email='tom@princeton.edu')
     project = Project(title='Reconstructing the Past')
     projects_link_page.add_child(instance=project)
     projects_link_page.save()
