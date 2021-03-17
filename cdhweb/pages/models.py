@@ -1,26 +1,29 @@
-from random import shuffle
+from urllib.parse import urlparse, urlunparse
 
 import bleach
 from django.apps import apps
 from django.conf import settings
 from django.db import models
-from django.db.models.fields import Field
 from django.template.defaultfilters import striptags, truncatechars_html
-from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, StreamFieldPanel
+from modelcluster.models import ClusterableModel
+from taggit.managers import TaggableManager
+from wagtail.admin.edit_handlers import (FieldPanel, MultiFieldPanel,
+                                         ObjectList, StreamFieldPanel,
+                                         TabbedInterface)
 from wagtail.core.blocks import (RichTextBlock, StreamBlock, StructBlock,
                                  TextBlock)
-from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
-from wagtailmenus.panels import linkpage_tab
 from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Page
+from wagtail.core.models import CollectionMember, Page
 from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail.documents.models import (AbstractDocument, Document,
+                                      DocumentQuerySet)
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 from wagtailmenus.models import AbstractLinkPage
-
+from wagtailmenus.panels import linkpage_tab
 
 #: common features for paragraph text
 PARAGRAPH_FEATURES = [
@@ -262,9 +265,22 @@ class PageIntro(models.Model):
         return self.page.title
 
 
+class DisplayUrlMixin(models.Model):
+    """Mixin that provides a single required URL field and a display method."""
+    url = models.URLField()
+
+    class Meta:
+        abstract = True
+
+    @property
+    def display_url(self):
+        """URL cleaned up for display, with scheme and extra params removed."""
+        scheme, netloc, path, params, query, fragment = urlparse(self.url)
+        return urlunparse(None, netloc, path, None, None, None)
+
+
 class RelatedLinkType(models.Model):
-    '''Resource type for associating particular kinds of URLs
-    with people and projects (e.g., project url, GitHub, Twitter, etc)'''
+    """Link types for RelatedLinks, with sort order determined by type."""
     name = models.CharField(max_length=255)
     sort_order = models.PositiveIntegerField(default=0, blank=False,
                                              null=False)
@@ -276,22 +292,76 @@ class RelatedLinkType(models.Model):
         return self.name
 
 
-class RelatedLink(models.Model):
-    type = models.ForeignKey(RelatedLinkType, on_delete=models.CASCADE)
-    url = models.URLField()
+class RelatedLink(DisplayUrlMixin, models.Model):
+    """Abstract typed relationship between a URL and a model. Used for personal
+    URLs like Twitter, project links like Github, etc.
+    """
 
-    panels = [
-        FieldPanel('type'),
-        FieldPanel('url'),
-    ]
+    type = models.ForeignKey(RelatedLinkType, on_delete=models.CASCADE)
+    panels = (FieldPanel('type'), FieldPanel('url'),)
 
     class Meta:
         abstract = True
 
-    @property
-    def display_url(self):
-        '''url cleaned up for display, with leading http(s):// removed'''
-        if self.url.startswith('https://'):
-            return self.url[8:]
-        elif self.url.startswith('http://'):
-            return self.url[7:]
+
+class Attachment(AbstractDocument):
+    """An uploaded file that can be associated with a Page."""
+    author = models.CharField(max_length=255, blank=True,
+                              help_text="Citation or list of authors")
+
+    admin_form_fields = Document.admin_form_fields + ("author",)
+
+    def __str__(self):
+        """Attachment title, author(s) if present, and content type."""
+        parts = [super().__str__()]
+        if self.author:
+            parts.append(", %s" % self.author)
+        # wagtail autodetects content type so it's always set; if it can't
+        # figure it out it falls back to "application/octet-stream". see:
+        # https://github.com/wagtail/wagtail/blob/master/wagtail/documents/models.py#L169-L175
+        parts.append(" (%s)" % self.content_type)
+        return "".join(parts)
+
+
+class ExternalLink(DisplayUrlMixin, CollectionMember, index.Indexed, models.Model):
+    """An externally hosted link or file that can be associated with a Page."""
+    # replicate the same fields as Document but with URL instead of file; see:
+    # https://github.com/wagtail/wagtail/blob/master/wagtail/documents/models.py#L27-L37
+    title = models.CharField(max_length=255)
+    author = models.CharField(max_length=255, blank=True,
+                              help_text="Citation or list of authors")
+    created_at = models.DateTimeField(auto_now_add=True)
+    added_by_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        editable=False,
+        on_delete=models.SET_NULL
+    )
+    tags = TaggableManager(blank=True)
+
+    # adapted from AbstractDocument but with "added_by_user" and URL instead; see:
+    # https://github.com/wagtail/wagtail/blob/master/wagtail/documents/models.py#L47-L56
+    search_fields = CollectionMember.search_fields + [
+        index.SearchField('title', partial_match=True, boost=10),
+        index.AutocompleteField('title'),
+        index.FilterField('title'),
+        index.SearchField('url', partial_match=True),
+        index.RelatedFields('tags', [
+            index.SearchField('name', partial_match=True, boost=10),
+            index.AutocompleteField('name'),
+        ]),
+        index.FilterField('added_by_user'),
+    ]
+
+    # same QS/manager and form fields as Attachment
+    objects = DocumentQuerySet.as_manager()
+    admin_form_fields = Attachment.admin_form_fields
+
+    def __str__(self):
+        """Attachment title, author(s) if present, and URL."""
+        parts = [self.title]
+        if self.author:
+            parts.append(", %s" % self.author)
+        parts.append(" (%s)" % self.display_url)
+        return "".join(parts)
