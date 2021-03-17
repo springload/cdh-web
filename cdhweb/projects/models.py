@@ -327,6 +327,13 @@ class Role(models.Model):
     def __str__(self):
         return self.title
 
+    def __lt__(self, other):
+        # NOTE we need to order Memberships using role sort order by default,
+        # but modelcluster doesn't support ordering via related lookups, so
+        # we can't order by role__sort_order on Membership. Instead we do this.
+        # see: https://github.com/wagtail/django-modelcluster/issues/45
+        return self.sort_order < other.sort_order
+
 
 class Membership(DateRange):
     '''Project membership - joins project, user, and role.'''
@@ -338,7 +345,7 @@ class Membership(DateRange):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ('role__sort_order', 'person__last_name')
+        ordering = ('role', 'person')
 
     # admin edit configuration
     panels = [
