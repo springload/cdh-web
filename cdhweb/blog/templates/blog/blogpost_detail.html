@@ -54,9 +54,7 @@
     </header>
 
     <div class="content" property="schema:articleBody">
-    {% for block in post.body %}
-        {% include_block block %}
-    {% endfor %}
+        {% include_block post.body %}
     </div>
 
 

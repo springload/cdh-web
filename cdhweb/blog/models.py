@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
-from django.utils.text import Truncator
 from django.utils.dateformat import format
+from django.utils.text import Truncator
 from django.utils.translation import ugettext_lazy as _
 from mezzanine.core.fields import FileField
 from mezzanine.core.models import Displayable, RichText
@@ -13,12 +13,13 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
-                                         InlinePanel, MultiFieldPanel, StreamFieldPanel)
-from wagtail.core.fields import StreamField
+                                         InlinePanel, MultiFieldPanel,
+                                         StreamFieldPanel)
 from wagtail.core.models import Orderable, Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import BodyContentBlock, LinkPage, PagePreviewDescriptionMixin
+from cdhweb.pages.models import (BasePage, LinkPage,
+                                 PagePreviewDescriptionMixin)
 from cdhweb.resources.models import Attachment
 
 
@@ -135,10 +136,8 @@ class BlogPostTag(TaggedItemBase):
         "blog.BlogPost", on_delete=models.CASCADE, related_name="tagged_items")
 
 
-class BlogPost(Page, ClusterableModel, PagePreviewDescriptionMixin):
+class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
     """A Blog post, implemented as a Wagtail page."""
-
-    body = StreamField(BodyContentBlock, blank=True)
     featured_image = models.ForeignKey("wagtailimages.image", null=True, blank=True,
                                        on_delete=models.SET_NULL, related_name="+",
                                        help_text="Appears on the homepage carousel when post is featured.")
@@ -159,6 +158,7 @@ class BlogPost(Page, ClusterableModel, PagePreviewDescriptionMixin):
         MultiFieldPanel(
             (InlinePanel("authors", label="Author"),), heading="Authors"),
         StreamFieldPanel("body"),
+        StreamFieldPanel("attachments")
     ]
     promote_panels = Page.promote_panels + [
         FieldPanel("tags")

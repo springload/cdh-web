@@ -31,9 +31,9 @@ def event_exodus():
             start_time=event.start_time,
             attendance=event.attendance,
             slug=convert_slug(event.slug),
+            body=to_streamfield(event.content),
             search_description=event.description,
             image=get_wagtail_image(event.image),
-            content=to_streamfield(event.content),
             thumbnail=get_wagtail_image(event.thumb),
         )
 

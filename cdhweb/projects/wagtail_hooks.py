@@ -12,9 +12,9 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
     list_display_add_buttons = "title"
     list_filter = ("grants__grant_type",)
     list_export = ("title", "working_group", "cdh_built", "tags",
-                   "short_description", "long_description", "website_url",
+                   "short_description", "body", "website_url",
                    "last_published_at")
-    search_fields = ("title", "short_description", "long_description")
+    search_fields = ("title", "short_description", "body")
     export_filename = "cdhweb-projects"
     exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"

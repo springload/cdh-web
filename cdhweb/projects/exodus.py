@@ -30,7 +30,7 @@ def project_exodus():
             search_description=project.description,
             thumbnail=get_wagtail_image(project.thumb),
             short_description=project.short_description,
-            long_description=to_streamfield(project.long_description),
+            body=to_streamfield(project.long_description),
         )
 
         # add it as child of project landing page so slugs are correct

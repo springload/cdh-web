@@ -29,7 +29,7 @@ def people_exodus():
             image=get_wagtail_image(profile.image) if profile.image else get_wagtail_image(
                 profile.thumb) if profile.thumb else None,
             education=profile.education,
-            bio=to_streamfield(profile.bio),
+            body=to_streamfield(profile.bio),
             search_description=profile.description,
         )
 

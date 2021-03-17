@@ -70,9 +70,7 @@
     {% endif %}
     <meta property="schema:url" content="{{ event.full_url }}"/>
     <div property="schema:description">
-    {% for block in event.content %}
-        {% include_block block %}
-    {% endfor %}
+    {% include_block event.body %}
     </div>
 </div>
 
