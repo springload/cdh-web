@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         ('wagtailcore', '0060_fix_workflow_unique_constraint'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('taggit', '0003_taggeditem_add_unique_index'),
-        ('cdhpages', '0005_wagtailadmin_perms'),
+        ('cdhpages', '0004_merge_migration'),
     ]
 
     operations = [

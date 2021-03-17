@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('wagtailcore', '0059_apply_collection_ordering'),
-        ('cdhpages', '0005_wagtailadmin_perms'),
+        ('cdhpages', '0006_wagtailadmin_perms'),
         ('taggit', '0003_taggeditem_add_unique_index'),
         ('wagtailimages', '0022_uploadedimage'),
         ('blog', '0006_unproxy_user'),

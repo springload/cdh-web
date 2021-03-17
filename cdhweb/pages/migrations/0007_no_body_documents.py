@@ -11,7 +11,7 @@ import wagtail.images.blocks
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cdhpages', '0006_basepage_attachments'),
+        ('cdhpages', '0006_wagtailadmin_perms'),
     ]
 
     operations = [

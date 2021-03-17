@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         ('wagtailcore', '0059_apply_collection_ordering'),
         ('wagtailimages', '0022_uploadedimage'),
         ('people', '0026_modeladmin_perms'),
-        ('cdhpages', '0005_wagtailadmin_perms'),
+        ('cdhpages', '0006_wagtailadmin_perms'),
         ('taggit', '0003_taggeditem_add_unique_index'),
         ('events', '0010_unproxy_user'),
     ]
