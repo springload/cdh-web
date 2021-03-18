@@ -25,7 +25,7 @@ from cdhweb.events.exodus import event_exodus
 from cdhweb.events.models import EventsLinkPage
 from cdhweb.pages.exodus import (convert_slug, create_contentpage,
                                  create_homepage, create_landingpage,
-                                 create_link_page, form_pages,
+                                 create_link_page, exodize_attachments, form_pages,
                                  get_wagtail_image)
 from cdhweb.pages.models import HomePage
 from cdhweb.people.exodus import people_exodus, user_group_exodus
@@ -293,6 +293,8 @@ class Command(BaseCommand):
                     "converting link page to content page %s " % page)
                 # TODO: adapt new create_link_page method for these links
             new_page = create_contentpage(page)
+            # move any attachments
+            exodize_attachments(page, new_page)
 
         parent.add_child(instance=new_page)
         parent.save()
