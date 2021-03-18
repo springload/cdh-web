@@ -71,8 +71,8 @@
         {% page_menu page 'snippets/child_pages.html' %}
     {% endif %}
 
-    {% if page.attachments.exists %}
-        {% include 'snippets/attachments.html' with attachments=page.attachments.all %}
+    {% if page.attachments %}
+        {% include 'snippets/attachments.html' %}
     {% endif %}
 
         {% block content-footer %}
