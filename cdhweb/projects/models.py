@@ -11,12 +11,11 @@ from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
                                          InlinePanel, StreamFieldPanel)
-from wagtail.core.fields import StreamField
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import (BodyContentBlock, LinkPage, RelatedLink,
-                                 RelatedLinkType)
+from cdhweb.pages.models import (BasePage, LinkPage,
+                                 RelatedLink, RelatedLinkType)
 from cdhweb.people.models import Person
 from cdhweb.resources.models import Attachment, DateRange, ExcerptMixin
 
@@ -183,11 +182,10 @@ class ProjectTag(TaggedItemBase):
         "projects.Project", on_delete=models.CASCADE, related_name="tagged_items")
 
 
-class Project(Page, ClusterableModel):
+class Project(BasePage, ClusterableModel):
     """Page type for a CDH sponsored project or working group."""
     short_description = models.CharField(max_length=255, blank=True,
                                          help_text="Brief tagline for display on project card in browse view")
-    long_description = StreamField(BodyContentBlock, blank=True)
     highlight = models.BooleanField(default=False,
                                     help_text="Include in randomized project display on the home page.")
     cdh_built = models.BooleanField("CDH Built", default=False,
@@ -217,7 +215,7 @@ class Project(Page, ClusterableModel):
         FieldRowPanel((ImageChooserPanel("thumbnail"),
                        ImageChooserPanel("image")), "Images"),
         FieldPanel("short_description"),
-        StreamFieldPanel("long_description"),
+        StreamFieldPanel("body"),
         InlinePanel("related_links", label="Links"),
         InlinePanel("grants", panels=[FieldRowPanel((
             FieldPanel("start_date"), FieldPanel("end_date")
@@ -227,6 +225,7 @@ class Project(Page, ClusterableModel):
             FieldPanel("end_date"))),
             FieldPanel("person"), FieldPanel("role")
         ], label="Members"),
+        StreamFieldPanel("attachments")
     ]
     promote_panels = Page.promote_panels + [
         FieldPanel("tags")
@@ -328,6 +327,13 @@ class Role(models.Model):
     def __str__(self):
         return self.title
 
+    def __lt__(self, other):
+        # NOTE we need to order Memberships using role sort order by default,
+        # but modelcluster doesn't support ordering via related lookups, so
+        # we can't order by role__sort_order on Membership. Instead we do this.
+        # see: https://github.com/wagtail/django-modelcluster/issues/45
+        return self.sort_order < other.sort_order
+
 
 class Membership(DateRange):
     '''Project membership - joins project, user, and role.'''
@@ -339,7 +345,7 @@ class Membership(DateRange):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ('role__sort_order', 'person__last_name')
+        ordering = ('role', 'person')
 
     # admin edit configuration
     panels = [

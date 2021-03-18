@@ -6,10 +6,13 @@ import os
 
 from bs4 import BeautifulSoup
 from django.utils.html import strip_tags
+from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.images.models import Image
+from wagtail.core.blocks.stream_block import StreamValue
+from wagtail.snippets.blocks import SnippetChooserBlock
 
 from cdhweb.pages.models import (ContentPage, HomePage, LandingPage, LinkPage,
-                                 PageIntro)
+                                 PageIntro, ExternalAttachment, LocalAttachment)
 
 
 def is_blank(content):
@@ -51,6 +54,37 @@ def get_wagtail_image(image):
     except Image.DoesNotExist as err:
         logging.warning("%s: %s" % (image, err))
         return None
+
+
+def exodize_attachments(mezzanine_page, wagtail_page):
+    """Convert all mezzanine page attachments and attach to the wagtail page."""
+    if mezzanine_page.attachments.exists():
+        # convert all attachment to new models
+        new_attachments = []
+        for attachment in mezzanine_page.attachments.all():
+            # if it has a URL, create an ExternalAttachment or use existing
+            if attachment.url:
+                logging.debug("exodizing link attachment %s" % attachment)
+                new_attachments.append(ExternalAttachment.objects.get_or_create(
+                    url=attachment.url,
+                    title=attachment.title,
+                    author=attachment.author,
+                )[0])
+            # otherwise create a LocalAttachment (Document) or use existing
+            else:
+                logging.debug("exodizing uploaded attachment %s" % attachment)
+                new_attachments.append(LocalAttachment.objects.get_or_create(
+                    file=attachment.file,
+                    title=attachment.title,
+                    author=attachment.author,
+                )[0])
+        # associate new attachments with new wagtail page
+        attachments_field = [("link" if attachment.url else "document", attachment)
+                             for attachment in new_attachments]
+        logging.debug("attachments for %s: %s" %
+                      (wagtail_page, attachments_field))
+        wagtail_page.attachments = attachments_field
+    return wagtail_page
 
 
 def create_homepage(page):

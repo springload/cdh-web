@@ -69,9 +69,9 @@ class TestProjectDetail:
         assertContains(response, "%s Research Partnership" % rpg.years)
 
     def test_long_description(self, client, derrida):
-        """project detail page should display long description if set"""
+        """project detail page should display long description (body) if set"""
         # set a long description for derrida
-        derrida.long_description = to_streamfield_safe("<b>About Derrida</b>")
+        derrida.body = to_streamfield_safe("<b>About Derrida</b>")
         derrida.save()
 
         # should display with rich text

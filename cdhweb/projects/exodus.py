@@ -3,7 +3,7 @@ import logging
 
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
-from cdhweb.pages.exodus import convert_slug, get_wagtail_image, to_streamfield
+from cdhweb.pages.exodus import convert_slug, exodize_attachments, get_wagtail_image, to_streamfield
 from cdhweb.projects.models import OldProject, Project, ProjectsLinkPage
 
 
@@ -30,7 +30,7 @@ def project_exodus():
             search_description=project.description,
             thumbnail=get_wagtail_image(project.thumb),
             short_description=project.short_description,
-            long_description=to_streamfield(project.long_description),
+            body=to_streamfield(project.long_description),
         )
 
         # add it as child of project landing page so slugs are correct
@@ -64,5 +64,7 @@ def project_exodus():
             link.save()
             logging.debug("updated related link %s" % link)
 
+        # transfer attachments
+        exodize_attachments(project, project_page)
+        
         # NOTE no tags to migrate
-        # TODO transfer attachments

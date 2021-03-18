@@ -15,8 +15,8 @@ def create_pages_permissions(apps, schema_editor):
     the use of `modeladmin`) will not have permissions set up and will not be
     visible in Wagtail unless permissions are manually added.
 
-    For Pages, the only relevant model is the `PageIntro` snippet. All users
-    should be able to manage these snippets.
+    For Pages, the only relevant models are the `PageIntro` and `ExternalLink`
+    snippets. All users should be able to manage these snippets.
     """
 
     # ensure that permissions exist for all models in the module; in context of
@@ -38,20 +38,32 @@ def create_pages_permissions(apps, schema_editor):
     change_pageintro = Permission.objects.get(codename="change_pageintro")
     delete_pageintro = Permission.objects.get(codename="delete_pageintro")
     view_pageintro = Permission.objects.get(codename="view_pageintro")
+    add_externalattachment = Permission.objects.get(
+        codename="add_externalattachment")
+    change_externalattachment = Permission.objects.get(
+        codename="change_externalattachment")
+    delete_externalattachment = Permission.objects.get(
+        codename="delete_externalattachment")
+    view_externalattachment = Permission.objects.get(
+        codename="view_externalattachment")
 
-    # give moderators and editors all permissions on PageIntro
+    # give moderators and editors all permissions on PageIntro and ExternalLink
     moderators.permissions.add(
         add_pageintro, change_pageintro, delete_pageintro, view_pageintro,
+        add_externalattachment, change_externalattachment,
+        delete_externalattachment, view_externalattachment,
     )
     editors.permissions.add(
         add_pageintro, change_pageintro, delete_pageintro, view_pageintro,
+        add_externalattachment, change_externalattachment,
+        delete_externalattachment, view_externalattachment,
     )
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cdhpages', '0004_merge_migration'),
+        ('cdhpages', '0005_basepage_attachments'),
     ]
 
     operations = [

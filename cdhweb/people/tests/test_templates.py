@@ -42,7 +42,7 @@ class TestProfile(TestCase):
             title="tom r. jones",
             slug="tom-jones",
             education="<ul><li>college dropout</li></ul>",
-            bio=json.dumps([{"type": "paragraph", "value": "<b>about me</b>"}])
+            body=json.dumps([{"type": "paragraph", "value": "<b>about me</b>"}])
         )
         lp.add_child(instance=self.profile)
         lp.save()
@@ -58,7 +58,7 @@ class TestProfile(TestCase):
         self.assertContains(response, "<li>college dropout</li>", html=True)
 
     def test_bio(self):
-        """profile page should display person's bio"""
+        """profile page should display person's bio (body content)"""
         response = self.client.get(self.profile.relative_url(self.site))
         self.assertContains(response, "<b>about me</b>", html=True)
 

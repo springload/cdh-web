@@ -43,9 +43,7 @@
 </div>
 
 <div class="bio">
-    {% for block in profile.bio %}
-        {% include_block block %}
-    {% endfor %}
+    {% include_block profile.body %}
 </div>
 
 {% if recent_posts %}

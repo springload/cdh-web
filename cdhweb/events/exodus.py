@@ -3,9 +3,10 @@ import logging
 
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
+from cdhweb.events.models import Event, EventsLinkPage, OldEvent, Speaker
+from cdhweb.pages.exodus import (convert_slug, exodize_attachments,
+                                 get_wagtail_image, to_streamfield)
 from cdhweb.people.models import Person
-from cdhweb.pages.exodus import convert_slug, get_wagtail_image, to_streamfield
-from cdhweb.events.models import OldEvent, Event, EventsLinkPage, Speaker
 
 
 def event_exodus():
@@ -31,9 +32,9 @@ def event_exodus():
             start_time=event.start_time,
             attendance=event.attendance,
             slug=convert_slug(event.slug),
+            body=to_streamfield(event.content),
             search_description=event.description,
             image=get_wagtail_image(event.image),
-            content=to_streamfield(event.content),
             thumbnail=get_wagtail_image(event.thumb),
         )
 
@@ -55,5 +56,7 @@ def event_exodus():
             person = Person.objects.get(user=user)
             Speaker.objects.create(person=person, event=event_page)
 
+        # transfer attachments
+        exodize_attachments(event, event_page)
+        
         # NOTE no tags to migrate
-        # TODO transfer attachments

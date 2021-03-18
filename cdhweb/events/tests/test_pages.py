@@ -104,7 +104,7 @@ class TestEvent:
         assert ical["location"] == workshop.location.display_name
         # description should have tags stripped
         assert strip_tags(
-            workshop.content) in ical["description"].to_ical().decode()
+            workshop.body) in ical["description"].to_ical().decode()
         assert fullurl in ical["description"].to_ical().decode()
         # change event to a virtual location & add join url
         workshop.location = zoom_location
@@ -125,7 +125,7 @@ class TestEvent:
         # create without a type; should fail
         reading_grp = Event(
             title="testing reading group",
-            content="my description",
+            body="my description",
             start_time=timezone.now(),
             end_time=timezone.now(),
             location=cdh_location

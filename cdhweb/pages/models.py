@@ -1,26 +1,29 @@
-from random import shuffle
+from urllib.parse import urlparse, urlunparse
+import json
 
 import bleach
 from django.apps import apps
 from django.conf import settings
 from django.db import models
-from django.db.models.fields import Field
 from django.template.defaultfilters import striptags, truncatechars_html
-from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, StreamFieldPanel
+from taggit.managers import TaggableManager
+from wagtail.admin.edit_handlers import (FieldPanel, 
+                                         MultiFieldPanel, ObjectList,
+                                         StreamFieldPanel, TabbedInterface)
 from wagtail.core.blocks import (RichTextBlock, StreamBlock, StructBlock,
                                  TextBlock)
-from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
-from wagtailmenus.panels import linkpage_tab
+from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Page
+from wagtail.core.models import CollectionMember, Page
 from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail.documents.models import AbstractDocument, DocumentQuerySet
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 from wagtailmenus.models import AbstractLinkPage
-
+from wagtailmenus.panels import linkpage_tab
 
 #: common features for paragraph text
 PARAGRAPH_FEATURES = [
@@ -82,13 +85,18 @@ class BodyContentBlock(StreamBlock):
     paragraph = RichTextBlock(features=["h2"] + PARAGRAPH_FEATURES)
     image = CaptionedImageBlock()
     svg_image = SVGImageBlock()
-    document = DocumentChooserBlock()
     embed = EmbedBlock()
     #: used to hold content migrated from mezzanine via a "kitchen-sink"
     #: approach; virtually all html tags are allowed. should NOT be used when
     #: creating new pages.
     migrated = RichTextBlock(
         features=settings.RICHTEXT_ALLOWED_TAGS, icon="warning")
+
+
+class AttachmentBlock(StreamBlock):
+    """Page attachments, including local files and external URLs."""
+    document = DocumentChooserBlock()
+    link = SnippetChooserBlock("cdhpages.ExternalAttachment")
 
 
 class PagePreviewDescriptionMixin(models.Model):
@@ -151,7 +159,6 @@ class PagePreviewDescriptionMixin(models.Model):
             return self.search_description
         return striptags(self.get_description())
 
-
 class LinkPage(AbstractLinkPage):
     """Link page for controlling appearance in menus of non-Page content."""
     # NOTE these pages can have slugs, but the slug isn't editable in the admin
@@ -165,24 +172,33 @@ class LinkPage(AbstractLinkPage):
     ])
 
 
-class ContentPage(Page, PagePreviewDescriptionMixin):
-    '''Basic content page model.'''
-
+class BasePage(Page):
+    """Abstract Page class from which all Wagtail page types are derived."""
     #: main page text
     body = StreamField(BodyContentBlock, blank=True)
+    #: relationship to uploaded documents and external links
+    attachments = StreamField(AttachmentBlock, blank=True)
+    # index body content to make it searchable
+    search_fields = Page.search_fields + [index.SearchField('body')]
 
-    # TODO attachments
+    class Meta:
+        abstract = True
+
+
+class ContentPage(BasePage, PagePreviewDescriptionMixin):
+    '''Basic content page model.'''
 
     content_panels = Page.content_panels + [
         FieldPanel('description'),
         StreamFieldPanel('body'),
+        StreamFieldPanel("attachments")
     ]
 
     parent_page_types = ['HomePage', 'LandingPage', 'ContentPage']
     subpage_types = ['ContentPage']
 
 
-class LandingPage(Page):
+class LandingPage(BasePage):
     '''Page type that aggregates and displays multiple :class:`ContentPage`s.'''
 
     #: short sentence overlaid on the header image
@@ -190,10 +206,8 @@ class LandingPage(Page):
     #: image that will be used for the header
     header_image = models.ForeignKey('wagtailimages.image', null=True,
                                      blank=True, on_delete=models.SET_NULL, related_name='+')  # no reverse relationship
-    #: main page text
-    body = StreamField(BodyContentBlock, blank=True)
 
-    search_fields = Page.search_fields + [index.SearchField('body')]
+    
     content_panels = Page.content_panels + [
         FieldPanel('tagline'),
         ImageChooserPanel('header_image'),
@@ -204,13 +218,9 @@ class LandingPage(Page):
     subpage_types = ['ContentPage']
 
 
-class HomePage(Page):
+class HomePage(BasePage):
     '''A home page that aggregates and displays featured content.'''
 
-    #: main page text
-    body = StreamField(BodyContentBlock, blank=True)
-
-    search_fields = Page.search_fields + [index.SearchField('body')]
     content_panels = Page.content_panels + [StreamFieldPanel('body')]
 
     parent_page_types = [Page]  # only root
@@ -262,9 +272,23 @@ class PageIntro(models.Model):
         return self.page.title
 
 
+class DisplayUrlMixin(models.Model):
+    """Mixin that provides a single required URL field and a display method."""
+    url = models.URLField()
+
+    class Meta:
+        abstract = True
+
+    @property
+    def display_url(self):
+        """URL cleaned up for display, with scheme and extra params removed."""
+        # keep only the domain/subdomains and path; stripping slashes from result
+        scheme, netloc, path, params, query, fragment = urlparse(self.url)
+        return urlunparse(("", netloc, path, "", "", "")).lstrip("//").rstrip("/")
+
+
 class RelatedLinkType(models.Model):
-    '''Resource type for associating particular kinds of URLs
-    with people and projects (e.g., project url, GitHub, Twitter, etc)'''
+    """Link types for RelatedLinks, with sort order determined by type."""
     name = models.CharField(max_length=255)
     sort_order = models.PositiveIntegerField(default=0, blank=False,
                                              null=False)
@@ -276,22 +300,65 @@ class RelatedLinkType(models.Model):
         return self.name
 
 
-class RelatedLink(models.Model):
-    type = models.ForeignKey(RelatedLinkType, on_delete=models.CASCADE)
-    url = models.URLField()
+class RelatedLink(DisplayUrlMixin, models.Model):
+    """Abstract typed relationship between a URL and a model. Used for personal
+    URLs like Twitter, project links like Github, etc.
+    """
 
-    panels = [
-        FieldPanel('type'),
-        FieldPanel('url'),
-    ]
+    type = models.ForeignKey(RelatedLinkType, on_delete=models.CASCADE)
+    panels = (FieldPanel('type'), FieldPanel('url'),)
 
     class Meta:
         abstract = True
 
-    @property
-    def display_url(self):
-        '''url cleaned up for display, with leading http(s):// removed'''
-        if self.url.startswith('https://'):
-            return self.url[8:]
-        elif self.url.startswith('http://'):
-            return self.url[7:]
+
+class LocalAttachment(AbstractDocument):
+    """A locally hosted file that can be associated with a Page."""
+    author = models.CharField(max_length=255, blank=True,
+                              help_text="Citation or list of authors")
+
+    admin_form_fields = ("title", "author", "file", "collection", "tags")
+
+    def __str__(self):
+        """Attachment title, author(s) if present, and file extension (type)."""
+        parts = [super().__str__()]
+        if self.author:
+            parts.append(", %s" % self.author)
+        parts.append(" (%s)" % self.file_extension)
+        return "".join(parts)
+
+@register_snippet
+class ExternalAttachment(DisplayUrlMixin, CollectionMember, index.Indexed, models.Model):
+    """An externally hosted link or file that can be associated with a Page."""
+    # replicate the same fields as Document but with URL instead of file; see:
+    # https://github.com/wagtail/wagtail/blob/master/wagtail/documents/models.py#L27-L37
+    title = models.CharField(max_length=255)
+    author = models.CharField(max_length=255, blank=True,
+                              help_text="Citation or list of authors")
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    tags = TaggableManager(blank=True)
+
+    # adapted from AbstractDocument but with URL instead; see:
+    # https://github.com/wagtail/wagtail/blob/master/wagtail/documents/models.py#L47-L56
+    search_fields = CollectionMember.search_fields + [
+        index.SearchField('title', partial_match=True, boost=10),
+        index.AutocompleteField('title'),
+        index.FilterField('title'),
+        index.SearchField('url', partial_match=True),
+        index.RelatedFields('tags', [
+            index.SearchField('name', partial_match=True, boost=10),
+            index.AutocompleteField('name'),
+        ]),
+    ]
+
+    # same QS/manager and form fields as Attachment
+    objects = DocumentQuerySet.as_manager()
+    admin_form_fields = ("title", "author", "url", "collection", "tags")
+
+    def __str__(self):
+        """Attachment title, author(s) if present, and URL."""
+        parts = [self.title]
+        if self.author:
+            parts.append(", %s" % self.author)
+        parts.append(" (%s)" % self.display_url)
+        return "".join(parts)

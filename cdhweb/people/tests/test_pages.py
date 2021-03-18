@@ -36,7 +36,7 @@ class TestProfile:
             title="tom r. jones",
             person=person,
             education=rich_text("school"),
-            bio=json.dumps([{"type": "paragraph", "value": "about me"}])
+            body=json.dumps([{"type": "paragraph", "value": "about me"}])
         )
         people_landing_page.add_child(instance=profile)
         people_landing_page.save()
@@ -48,7 +48,7 @@ class TestProfile:
             people_landing_page.add_child(instance=Profile(
                 title="tom r. jones",
                 education=rich_text("school"),
-                bio=json.dumps([{"type": "paragraph", "value": "about me"}])
+                body=json.dumps([{"type": "paragraph", "value": "about me"}])
             ))
 
     def test_delete_handler(self, people_landing_page):

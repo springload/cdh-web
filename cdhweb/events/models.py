@@ -6,7 +6,6 @@ import icalendar
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import strip_tags
@@ -21,11 +20,10 @@ from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
                                          InlinePanel, MultiFieldPanel,
                                          StreamFieldPanel)
-from wagtail.core.fields import StreamField
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import BodyContentBlock, LinkPage
+from cdhweb.pages.models import LinkPage, BasePage
 from cdhweb.resources.models import Attachment, ExcerptMixin
 from cdhweb.resources.utils import absolutize_url
 
@@ -257,10 +255,9 @@ class Speaker(models.Model):
         return "%s at %s" % (self.person, self.event)
 
 
-class Event(Page, ClusterableModel):
+class Event(BasePage, ClusterableModel):
     """Page type for an event, such as a workshop, lecture, or conference."""
 
-    content = StreamField(BodyContentBlock, blank=True)
     sponsor = models.CharField(max_length=80, null=True, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
@@ -298,7 +295,8 @@ class Event(Page, ClusterableModel):
                        ImageChooserPanel("image")), "Images"),
         MultiFieldPanel(
             (InlinePanel("speakers", label="Speaker"),), heading="Speakers"),
-        StreamFieldPanel("content"),
+        StreamFieldPanel("body"),
+        StreamFieldPanel("attachments")
     ]
     promote_panels = Page.promote_panels + [
         FieldPanel("tags")
@@ -412,7 +410,7 @@ class Event(Page, ClusterableModel):
             else:
                 event.add("location", self.location.display_name)
         event.add("description",
-                  "\n".join([strip_tags(self.content), "", absurl]))
+                  "\n".join([strip_tags(self.body), "", absurl]))
         return event
 
 

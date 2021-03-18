@@ -128,6 +128,9 @@ WAGTAIL_USAGE_COUNT_ENABLED = True
 # enable feature detection in images
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = True
 
+# custom document model
+WAGTAILDOCS_DOCUMENT_MODEL = "cdhpages.LocalAttachment"
+
 
 ########################
 # MAIN DJANGO SETTINGS #

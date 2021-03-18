@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django.db.models import Q
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
-from cdhweb.pages.exodus import convert_slug, get_wagtail_image, to_streamfield
+from cdhweb.pages.exodus import convert_slug, exodize_attachments, get_wagtail_image, to_streamfield
 from cdhweb.people.models import OldProfile, PeopleLandingPage, Person, Profile
 
 
@@ -29,7 +29,7 @@ def people_exodus():
             image=get_wagtail_image(profile.image) if profile.image else get_wagtail_image(
                 profile.thumb) if profile.thumb else None,
             education=profile.education,
-            bio=to_streamfield(profile.bio),
+            body=to_streamfield(profile.bio),
             search_description=profile.description,
         )
 
@@ -45,6 +45,9 @@ def people_exodus():
         profile_page.first_published_at = profile.publish_date
         profile_page.last_published_at = profile.updated
         profile_page.save()
+
+        # move attachments
+        exodize_attachments(profile, profile_page)
 
     # for people with profile, set larger image as wagtail image for person
     for profile in OldProfile.objects.filter(user__person__isnull=False):

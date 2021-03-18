@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.utils import timezone
 from mezzanine.core.fields import FileField
 from mezzanine.core.fields import RichTextField as MezzanineRichTextField
-from mezzanine.core.models import CONTENT_STATUS_PUBLISHED, Displayable
+from mezzanine.core.models import Displayable
 from mezzanine.utils.models import AdminThumbMixin, upload_to
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
@@ -17,12 +17,11 @@ from taggit.managers import TaggableManager
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
                                          InlinePanel, MultiFieldPanel,
                                          StreamFieldPanel)
-from wagtail.core.fields import RichTextField, StreamField
+from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.blog.models import BlogPost
-from cdhweb.pages.models import (PARAGRAPH_FEATURES, BodyContentBlock,
+from cdhweb.pages.models import (PARAGRAPH_FEATURES, BasePage,
                                  LandingPage, LinkPage, RelatedLink)
 from cdhweb.resources.models import Attachment, DateRange
 
@@ -285,6 +284,13 @@ class Person(ClusterableModel):
             return self.user.username
         return "Person %d" % self.pk
 
+    def __lt__(self, other):
+        # NOTE we need to order Memberships using person name by default,
+        # but modelcluster doesn't support ordering via related lookups, so
+        # we can't order by person__last_name on Membership. Instead we do this.
+        # see: https://github.com/wagtail/django-modelcluster/issues/45
+        return str(self) < str(other)
+
     @property
     def current_title(self):
         """Return the first of any non-expired titles held by this Person."""
@@ -417,7 +423,7 @@ class OldProfile(Displayable, AdminThumbMixin):
         return self.user.current_title
 
 
-class Profile(Page):
+class Profile(BasePage):
     """Profile page for a Person, managed via wagtail."""
     person = models.OneToOneField(
         Person, help_text="Corresponding person for this profile",
@@ -426,14 +432,14 @@ class Profile(Page):
                               blank=True, on_delete=models.SET_NULL,
                               related_name='+')  # no reverse relationship
     education = RichTextField(features=PARAGRAPH_FEATURES, blank=True)
-    bio = StreamField(BodyContentBlock, blank=True)
 
     # admin edit configuration
     content_panels = Page.content_panels + [
         FieldRowPanel(
             (FieldPanel("person"), ImageChooserPanel("image")), "Person"),
         FieldPanel("education"),
-        StreamFieldPanel("bio"),
+        StreamFieldPanel("body"),
+        StreamFieldPanel("attachments")
     ]
 
     parent_page_types = ["people.PeopleLandingPage"]

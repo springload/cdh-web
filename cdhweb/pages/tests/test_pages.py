@@ -3,7 +3,7 @@ from wagtail.tests.utils import WagtailPageTests
 from wagtail.tests.utils.form_data import (nested_form_data, rich_text,
                                            streamfield)
 
-from cdhweb.pages.models import ContentPage, HomePage, LandingPage, RelatedLinkType
+from cdhweb.pages.models import ContentPage, HomePage, LandingPage
 
 
 class TestHomePage(WagtailPageTests):
@@ -69,9 +69,3 @@ class TestContentPage(WagtailPageTests):
     def test_subpages(self):
         """content page can only have other content pages as children"""
         self.assertAllowedSubpageTypes(ContentPage, [ContentPage])
-
-
-class TestRelatedLinkType:
-    def test_str(self):
-        restype = RelatedLinkType(name='twitter')
-        assert str(restype) == restype.name
