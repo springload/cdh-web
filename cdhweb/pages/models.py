@@ -281,9 +281,9 @@ class DisplayUrlMixin(models.Model):
     @property
     def display_url(self):
         """URL cleaned up for display, with scheme and extra params removed."""
-        # keep only the domain/subdomains and path; stripping "//" from result
+        # keep only the domain/subdomains and path; stripping slashes from result
         scheme, netloc, path, params, query, fragment = urlparse(self.url)
-        return urlunparse(("", netloc, path, "", "", ""))[2:]
+        return urlunparse(("", netloc, path, "", "", "")).lstrip("//").rstrip("/")
 
 
 class RelatedLinkType(models.Model):
