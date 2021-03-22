@@ -8,6 +8,8 @@ import os.path
 import shutil
 import warnings
 from collections import defaultdict
+from operator import attrgetter
+from itertools import chain
 
 from django.conf import settings
 from django.core.files.images import ImageFile
@@ -27,11 +29,12 @@ from cdhweb.pages.exodus import (convert_slug, create_contentpage,
                                  create_homepage, create_landingpage,
                                  create_link_page, exodize_attachments, form_pages,
                                  get_wagtail_image)
-from cdhweb.pages.models import HomePage
+from cdhweb.pages.models import ExternalAttachment, HomePage, LocalAttachment
 from cdhweb.people.exodus import people_exodus, user_group_exodus
 from cdhweb.people.models import PeopleLandingPage
 from cdhweb.projects.exodus import project_exodus
 from cdhweb.projects.models import ProjectsLinkPage
+from cdhweb.resources.models import Attachment
 
 # log levels as integers for verbosity option
 LOG_LEVELS = {
@@ -254,6 +257,19 @@ class Command(BaseCommand):
         for page in unmigrated:
             print('\t%s — slug/url %s)' % (page, page.slug))
 
+        # report on unmigrated attachments
+        attachment_pages = set(chain.from_iterable(
+            [a.pages.all() for a in Attachment.objects.all()]))
+        new_attachment_pages = list(filter(lambda p: getattr(
+            p, "attachments", None) is not None, Page.objects.all()))
+        n_old_pages = len(attachment_pages)
+        n_new_pages = len(new_attachment_pages)
+        logging.info("%d mezzanine and %d wagtail pages with attachments",
+                     (n_old_pages, n_new_pages))
+        if n_old_pages != n_new_pages:
+            logging.warning("%d pages with umigrated attachments",
+                            n_old_pages - n_new_pages)
+
         # delete mezzanine pages here? (but keep for testing migration)
 
     def get_collection(self, name):
@@ -294,10 +310,11 @@ class Command(BaseCommand):
                 # TODO: adapt new create_link_page method for these links
             new_page = create_contentpage(page)
             # move any attachments
-            exodize_attachments(page, new_page)
 
         parent.add_child(instance=new_page)
         parent.save()
+
+        exodize_attachments(page, new_page)
 
         # set publication status
         if page.status != CONTENT_STATUS_PUBLISHED:
