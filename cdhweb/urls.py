@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic.base import RedirectView, TemplateView
 from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.contrib.sitemaps.views import sitemap
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
@@ -41,6 +42,9 @@ urlpatterns = [
     # - all blog urls are now under updates/
     re_path(r'^blog(?P<blog_url>.*)$',
             RedirectView.as_view(url='/updates%(blog_url)s', permanent=True)),
+
+    # sitemaps
+    path("sitemap.xml", sitemap),
 
     # wagtail paths
     # NOTE temporarily make wagtail pages available at pages/ so that they can
