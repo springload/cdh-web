@@ -290,6 +290,17 @@ class Project(BasePage, ClusterableModel):
             .exclude(membership__in=self.current_memberships()) \
             .order_by("last_name")
 
+    def get_sitemap_urls(self, request):
+        """Override sitemap to prioritize projects built by CDH with a website."""
+        # output is a list of dict; there should only ever be one element. see:
+        # https://docs.wagtail.io/en/stable/reference/contrib/sitemaps.html#urls
+        urls = super().get_sitemap_urls(request=request)
+        if self.website_url and self.cdh_built:
+            urls[0]["priority"] = 0.7
+        elif self.website_url or self.cdh_built:
+            urls[0]["priority"] = 0.6
+        return urls
+
 
 class GrantType(models.Model):
     '''Model to track kinds of grants'''
