@@ -58,10 +58,14 @@ def get_wagtail_image(image):
 
 def exodize_attachments(mezzanine_page, wagtail_page):
     """Convert all mezzanine page attachments and attach to the wagtail page."""
-    if mezzanine_page.old_attachments.exists():
+    # derived Displayables like Project have attachments defined directly as a
+    # m2m; other pages may not and so we need to use the reverse relationship
+    attachments = getattr(mezzanine_page, "attachments", None) or \
+        mezzanine_page.old_attachments
+    if attachments.exists():
         # convert all attachment to new models
         new_attachments = []
-        for attachment in mezzanine_page.old_attachments.all():
+        for attachment in attachments.all():
             # if it has a URL, create an ExternalAttachment or use existing
             if attachment.url:
                 logging.debug("exodizing link attachment %s" % attachment)
@@ -79,11 +83,12 @@ def exodize_attachments(mezzanine_page, wagtail_page):
                     author=attachment.author,
                 )[0])
         # associate new attachments with new wagtail page
-        attachments_field = [("link" if attachment.url else "document", attachment)
+        attachments_field = [("link" if isinstance(attachment, ExternalAttachment) else "document", attachment)
                              for attachment in new_attachments]
         logging.debug("attachments for %s: %s" %
                       (wagtail_page, attachments_field))
         wagtail_page.attachments = attachments_field
+        wagtail_page.save()
     return wagtail_page
 
 
