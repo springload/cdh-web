@@ -43,7 +43,7 @@ class Attachment(models.Model):
     attachment_type = models.CharField(max_length=255, choices=type_choices)
 
     pages = models.ManyToManyField(
-        Page, related_name='attachments', blank=True)
+        Page, related_name='old_attachments', blank=True)
 
     def __str__(self):
         parts = [self.title]

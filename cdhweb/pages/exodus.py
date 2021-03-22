@@ -58,10 +58,10 @@ def get_wagtail_image(image):
 
 def exodize_attachments(mezzanine_page, wagtail_page):
     """Convert all mezzanine page attachments and attach to the wagtail page."""
-    if mezzanine_page.attachments.exists():
+    if mezzanine_page.old_attachments.exists():
         # convert all attachment to new models
         new_attachments = []
-        for attachment in mezzanine_page.attachments.all():
+        for attachment in mezzanine_page.old_attachments.all():
             # if it has a URL, create an ExternalAttachment or use existing
             if attachment.url:
                 logging.debug("exodizing link attachment %s" % attachment)
