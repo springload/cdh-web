@@ -9,7 +9,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from wagtail.core.models import Page, Site
 
-from cdhweb.pages.models import ContentPage, HomePage, LandingPage
+from cdhweb.pages.models import ContentPage, ExternalAttachment, HomePage, LandingPage
 from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
 
 
@@ -59,6 +59,16 @@ def content_page(db, landing_page):
     landing_page.add_child(instance=content)
     landing_page.save()
     return content
+
+
+@pytest.fixture
+def attachment(db):
+    """Create a testing external (link) attachment."""
+    return ExternalAttachment.objects.create(
+        title="Example Attachment",
+        url="http://example.com/",
+        author="Example Author",
+    )
 
 
 class MyModel:

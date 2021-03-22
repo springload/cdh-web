@@ -152,6 +152,16 @@ class TestContentPage:
         response = client.get(content_page.relative_url(site))
         assertContains(response, "<p>content of the content page</p>")
 
+    def test_attachments(self, client, content_page, attachment):
+        """content page should display attachments if present"""
+        # no attachments, shouldn't render template
+        response = client.get(content_page.get_url())
+        assertTemplateNotUsed(response, "snippets/attachments.html")
+        # add an attachment, should render template + info
+        content_page.attachments = [("link", attachment)]
+        content_page.save()
+        response = client.get(content_page.get_url())
+        assertTemplateUsed(response, "snippets/attachments.html")
 
 class TestPagesMenus:
 
