@@ -46,6 +46,18 @@ class TestBlogPost:
         # should pad with zeroes and include year, month, day, slug
         assert article.get_url() == "/updates/2019/03/04/%s/" % article.slug
 
+    def test_sitemap(self, rf, article):
+        """blog post should have increased priority in sitemap if featured"""
+        # post that's not featured doesn't set priority (default is 0.5)
+        request = rf.get(article.get_url())
+        sitemap_urls = article.get_sitemap_urls(request=request)
+        assert "priority" not in sitemap_urls[0]
+        # featured post gets slightly increased priority (0.6)
+        article.featured = True
+        article.save()
+        request = rf.get(article.get_url())
+        sitemap_urls = article.get_sitemap_urls(request=request)
+        assert sitemap_urls[0]["priority"] == 0.6
 
 class TestBlogPostPage(WagtailPageTests):
 

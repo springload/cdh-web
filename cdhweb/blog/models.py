@@ -204,6 +204,15 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
             })
             return site_id, root_url, page_path
 
+    def get_sitemap_urls(self, request):
+        """Override sitemap listings to add priority for featured posts."""
+        # output is a list of dict; there should only ever be one element. see:
+        # https://docs.wagtail.io/en/stable/reference/contrib/sitemaps.html#urls
+        urls = super().get_sitemap_urls(request=request)
+        if self.featured:
+            urls[0]["priority"] = 0.6   # default is 0.5; slight increase
+        return urls
+
 
 class BlogLinkPage(LinkPage):
     """Container page that defines where blog posts can be created."""
