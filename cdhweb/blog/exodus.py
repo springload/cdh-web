@@ -4,7 +4,7 @@ import logging
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
 from cdhweb.blog.models import Author, BlogLinkPage, BlogPost, OldBlogPost
-from cdhweb.pages.exodus import (convert_slug, exodize_attachments,
+from cdhweb.pages.exodus import (convert_slug, exodize_attachments, exodize_history,
                                  get_wagtail_image, to_streamfield)
 from cdhweb.people.models import Person
 
@@ -38,16 +38,16 @@ def blog_exodus():
 
         # add it as a child of blog landing page so slugs are correct
         blog_link.add_child(instance=post_page)
-        blog_link.save()
+        blog_link.save(log_action=False)
 
         # if the old post wasn't published, unpublish the new one
         if post.status != CONTENT_STATUS_PUBLISHED:
-            post_page.unpublish()
+            post_page.unpublish(log_action=False)
 
         # set publication dates
         post_page.first_published_at = post.publish_date
         post_page.last_published_at = post.updated
-        post_page.save()
+        post_page.save(log_action=False)
 
         # transfer authors
         for user in post.users.all():
@@ -56,5 +56,6 @@ def blog_exodus():
 
         # transfer attachments
         exodize_attachments(post, post_page)
+        exodize_history(post, post_page)
 
         # NOTE no tags to migrate

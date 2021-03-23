@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django.db.models import Q
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
-from cdhweb.pages.exodus import convert_slug, exodize_attachments, get_wagtail_image, to_streamfield
+from cdhweb.pages.exodus import convert_slug, exodize_attachments, exodize_history, get_wagtail_image, to_streamfield
 from cdhweb.people.models import OldProfile, PeopleLandingPage, Person, Profile
 
 
@@ -35,19 +35,20 @@ def people_exodus():
 
         # added as child of people landing page so slugs are correct
         people_landing.add_child(instance=profile_page)
-        people_landing.save()
+        people_landing.save(log_action=False)
 
         # if the old profile wasn't published, unpublish the new one
         if profile.status != CONTENT_STATUS_PUBLISHED:
-            profile_page.unpublish()
+            profile_page.unpublish(log_action=False)
 
         # set publication dates
         profile_page.first_published_at = profile.publish_date
         profile_page.last_published_at = profile.updated
-        profile_page.save()
+        profile_page.save(log_action=False)
 
         # move attachments
         exodize_attachments(profile, profile_page)
+        exodize_history(profile, profile_page)
 
     # for people with profile, set larger image as wagtail image for person
     for profile in OldProfile.objects.filter(user__person__isnull=False):
@@ -100,6 +101,7 @@ def user_group_exodus():
 
     # remove any users who had login disabled for some reason, except the
     # script user
+    """
     non_staff = 0
     for user in User.objects.filter(Q(is_staff=False) | Q(is_active=False)) \
                             .exclude(username=settings.SCRIPT_USERNAME):
@@ -108,11 +110,12 @@ def user_group_exodus():
         user.delete()
     if non_staff:
         logging.info("removed %d non-staff users" % non_staff)
+    """
 
     # assign all remaining users to moderators group; remove superuser.
     for user in User.objects.all():
         logging.debug("adding user %s to wagtail moderators" % user)
         moderators.user_set.add(user)
-        user.is_superuser = False
+        # user.is_superuser = False
         user.save()
     logging.info("total %d wagtail moderators" % moderators.user_set.count())
