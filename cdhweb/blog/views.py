@@ -75,13 +75,13 @@ class BlogDetailView(BlogPostMixinView, DetailView, LastModifiedMixin):
         # NOTE mezzanine Displayable previously handled this; we need to do it
         # manually for Wagtail. See:
         # http://mezzanine.jupo.org/docs/_modules/mezzanine/core/models.html#Displayable.get_next_by_publish_date
-        next = self.model.objects.filter(
+        next = self.model.objects.filter(live=True,
             first_published_at__gt=self.object.first_published_at).order_by("first_published_at")
         if next.exists():
             next = next[0]
         else:
             next = None
-        prev = self.model.objects.filter(
+        prev = self.model.objects.filter(live=True,
             first_published_at__lt=self.object.first_published_at).order_by("-first_published_at")
         if prev.exists():
             prev = prev[0]
