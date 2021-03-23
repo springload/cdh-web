@@ -103,9 +103,9 @@ def create_homepage(page):
     )
 
 
-def create_landingpage(page):
+def create_landingpage(page, page_type=LandingPage):
     """Create and return a Wagtail landing page based on a Mezzanine page."""
-    return LandingPage(
+    return page_type(
         title=page.title,
         tagline=page.landingpage.tagline,   # landing pages have a tagline
         header_image=get_wagtail_image(page.landingpage.image),

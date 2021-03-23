@@ -13,9 +13,8 @@
                 {% include "snippets/footer_secondary_nav.html" with navpages=child_pages content_only=1 %}
             </ul>
         {% endwith %}
-        </li>
-    </ul>
-<ul>
+    </li>
+</ul>
 {% for navpage in toplevel_pages %}
     {% if navpage.landingpage or navpage.linkpage %} {# exclude content pages #}
     {# footer has 6 columns; ul breaks to next column #}

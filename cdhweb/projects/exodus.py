@@ -4,15 +4,15 @@ import logging
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
 from cdhweb.pages.exodus import convert_slug, exodize_attachments, get_wagtail_image, to_streamfield
-from cdhweb.projects.models import OldProject, Project, ProjectsLinkPage
+from cdhweb.projects.models import OldProject, Project, ProjectsLandingPage
 
 
 def project_exodus():
     """exodize all project models"""
     # get the top-level projects link page
     try:
-        project_link = ProjectsLinkPage.objects.get()
-    except ProjectsLinkPage.DoesNotExist:
+        project_link = ProjectsLandingPage.objects.get()
+    except ProjectsLandingPage.DoesNotExist:
         return
 
     # create new project pages
@@ -66,5 +66,5 @@ def project_exodus():
 
         # transfer attachments
         exodize_attachments(project, project_page)
-        
+
         # NOTE no tags to migrate

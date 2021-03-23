@@ -14,7 +14,7 @@ from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import (BasePage, LinkPage,
+from cdhweb.pages.models import (BasePage, LandingPage, LinkPage,
                                  RelatedLink, RelatedLinkType)
 from cdhweb.people.models import Person
 from cdhweb.resources.models import Attachment, DateRange, ExcerptMixin
@@ -202,8 +202,8 @@ class Project(BasePage, ClusterableModel):
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
     # TODO attachments (#245)
 
-    # can only be created underneath special link page
-    parent_page_types = ["projects.ProjectsLinkPage"]
+    # can only be created underneath project landing page
+    parent_page_types = ["projects.ProjectsLandingPage"]
     # no allowed subpages
     subpage_types = []
 
@@ -383,11 +383,14 @@ class ProjectRelatedLink(RelatedLink):
         return "%s – %s (%s)" % (self.project, self.type, self.display_url)
 
 
-class ProjectsLinkPage(LinkPage):
+class ProjectsLandingPage(LandingPage):
     """Container page that defines where Project pages can be created."""
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []
     # NOTE the only allowed child page type is a Project; this is so that
     # Projects made in the admin automatically are created here.
-    subpage_types = [Project]
+    subpage_types = [Project, LinkPage]
+    # use the regular landing page template
+    template = LandingPage.template
+

@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from wagtail.core.models import Page
 from cdhweb.pages.models import HomePage
-from cdhweb.projects.models import ProjectsLinkPage, Project
+from cdhweb.projects.models import ProjectsLandingPage, Project
 
 
 class TestTitle(TestCase):
@@ -128,7 +128,8 @@ class TestPersonQuerySet(TestCase):
         home = HomePage(title="home", slug="")
         root.add_child(instance=home)
         root.save()
-        link = ProjectsLinkPage(title="projects", link_url="projects")
+        link = ProjectsLandingPage(title="projects", slug="projects",
+                                   tagline="let's collaborate")
         home.add_child(instance=link)
         home.save()
         self.project = Project(title="project")

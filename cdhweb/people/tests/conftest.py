@@ -60,12 +60,12 @@ def student(db):
 
 
 @pytest.fixture
-def grad_pi(db, projects_link_page):
+def grad_pi(db, projects_landing_page):
     person = Person.objects.create(
         first_name='Tom', cdh_staff=False, pu_status='graduate')
     project = Project(title='Chinese Exchange Poems')
-    projects_link_page.add_child(instance=project)
-    projects_link_page.save()
+    projects_landing_page.add_child(instance=project)
+    projects_landing_page.save()
     project_director = Role.objects.get_or_create(title='Project Director')[0]
     Membership.objects.create(
         project=project, person=person, role=project_director,
@@ -78,12 +78,12 @@ def grad_pi(db, projects_link_page):
 
 
 @pytest.fixture
-def grad_pm(db, projects_link_page):
+def grad_pm(db, projects_landing_page):
     person = Person.objects.create(first_name='Tom', cdh_staff=False,
         pu_status='graduate', email='tom@princeton.edu')
     project = Project(title='Reconstructing the Past')
-    projects_link_page.add_child(instance=project)
-    projects_link_page.save()
+    projects_landing_page.add_child(instance=project)
+    projects_landing_page.save()
     project_manager = Role.objects.get_or_create(title='Project Manager')[0]
     Membership.objects.create(
         project=project, person=person, role=project_manager,
@@ -96,12 +96,12 @@ def grad_pm(db, projects_link_page):
 
 
 @pytest.fixture
-def faculty_pi(db, projects_link_page):
+def faculty_pi(db, projects_landing_page):
     person = Person.objects.create(
         first_name='Josh', cdh_staff=False, pu_status='fac')
     project = Project(title='MEP')
-    projects_link_page.add_child(instance=project)
-    projects_link_page.save()
+    projects_landing_page.add_child(instance=project)
+    projects_landing_page.save()
     project_director = Role.objects.get_or_create(title='Project Director')[0]
     dataset_curation = GrantType.objects.get_or_create(
         grant_type='Dataset Curation')[0]
@@ -118,12 +118,12 @@ def faculty_pi(db, projects_link_page):
 
 
 @pytest.fixture
-def staff_pi(db, projects_link_page):
+def staff_pi(db, projects_landing_page):
     person = Person.objects.create(
         first_name='Thomas', cdh_staff=False, pu_status='stf')
     project = Project(title='SVP')
-    projects_link_page.add_child(instance=project)
-    projects_link_page.save()
+    projects_landing_page.add_child(instance=project)
+    projects_landing_page.save()
     project_director = Role.objects.get_or_create(title='Project Director')[0]
     dataset_curation = GrantType.objects.get_or_create(
         grant_type='Dataset Curation')[0]
