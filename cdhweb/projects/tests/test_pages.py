@@ -1,6 +1,6 @@
 from wagtail.tests.utils import WagtailPageTests
 
-from cdhweb.pages.models import RelatedLinkType
+from cdhweb.pages.models import RelatedLink, RelatedLinkType
 from cdhweb.people.models import Person
 from cdhweb.projects.models import (Grant, GrantType, Project,
                                     ProjectRelatedLink, ProjectsLinkPage)
@@ -58,6 +58,30 @@ class TestProject:
         assert chloe not in alums
         assert renee not in alums
 
+    def test_sitemap(self, rf, derrida):
+        """project should increase sitemap priority if built by cdh with site"""
+        # project not built by cdh and without site doesn't set priority
+        request = rf.get(derrida.get_url())
+        sitemap_urls = derrida.get_sitemap_urls(request=request)
+        assert "priority" not in sitemap_urls[0]
+        # built by cdh gets slightly increased priority (0.6)
+        derrida.cdh_built = True
+        derrida.save()
+        sitemap_urls = derrida.get_sitemap_urls(request=request)
+        assert sitemap_urls[0]["priority"] == 0.6
+        # having a website also gets slightly increased priority (0.6)
+        derrida.cdh_built = False
+        derrida.save()
+        website = RelatedLinkType.objects.get_or_create(name="Website")[0]
+        ProjectRelatedLink.objects.create(project=derrida, type=website,
+            url="https://derridas-margins.princeton.edu")
+        sitemap_urls = derrida.get_sitemap_urls(request=request)
+        assert sitemap_urls[0]["priority"] == 0.6
+        # having both site and cdh built gets highest priority (0.7)
+        derrida.cdh_built = True
+        derrida.save()
+        sitemap_urls = derrida.get_sitemap_urls(request=request)
+        assert sitemap_urls[0]["priority"] == 0.7
 
 class TestProjectPage(WagtailPageTests):
 

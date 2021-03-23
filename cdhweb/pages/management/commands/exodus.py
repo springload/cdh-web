@@ -105,6 +105,10 @@ class Command(BaseCommand):
         site.save()
         Page.objects.filter(depth=2).exclude(pk=homepage.pk).delete()
 
+        # set the site's hostname so that sitemaps will be valid
+        site.hostname = "cdh.princeton.edu"
+        site.save()
+
         # create a LinkPage to serve as the projects/ root (project list page)
         try:
             old_projects = MezzaninePage.objects.get(slug="projects")
