@@ -67,24 +67,27 @@ def user_group_exodus():
     """Convert groups from Mezzanine configuration to Wagtail configuration.
 
     - Removes any groups outside Wagtail default Moderators and Editors
-    - Removes all users with the is_staff flag set to False
-    - Removes all users with the is_active flag set to False
+    - Removes all users who have never logged in/made a change to the site
     - Moves all remaining users into the Moderators group
+    - Marks any users without a current CDH position as inactive (no login)
+    - Whitelists RSK and NB as superusers
 
     Historically, many users were given the is_superuser flag to avoid a bug
     with Mezzanine permissions. In Wagtail, this is no longer necessary. In
     addition, there are two new default groups: Moderators and Editors.
-    
+
     This function moves everyone into the Moderators group, so that they are
     able to manage and publish all resources. If desired, some users may need
     to be later moved to the Editors group to de-escalate their permissions. 
-    This can be accomplished via the Wagtail admin or in console.
+    This can be accomplished via the Wagtail admin or in console; it needs to
+    be done by a superuser.
 
-    Users with is_staff or is_active set to False (preventing login) will be 
-    deleted, since there's no need to keep them in the new system. User accounts
-    are no longer associated with content (instead, People are).
+    Users that have never logged in will be deleted, since they are not tied to
+    any history or changes in the site. If a user account is connected to a
+    Person that has an expired CDH position, that account will be marked as
+    inactive to prevent logins.
 
-    Note that, if desired, you will still need to give users superuser after
+    Note that, if desired, you may still need to give some users superuser after
     this has been run. This can be done via the `--admin` flag on `createcasuser`
     or via the django shell.
     """
@@ -99,23 +102,38 @@ def user_group_exodus():
     # had an unused "Content Editor" group that should be deleted
     Group.objects.exclude(pk__in=(moderators.pk, editors.pk)).delete()
 
-    # remove any users who had login disabled for some reason, except the
-    # script user
-    """
-    non_staff = 0
-    for user in User.objects.filter(Q(is_staff=False) | Q(is_active=False)) \
-                            .exclude(username=settings.SCRIPT_USERNAME):
-        non_staff += 1
-        logging.debug("removing user %s with is_staff=False" % user)
-        user.delete()
-    if non_staff:
-        logging.info("removed %d non-staff users" % non_staff)
-    """
+    # remove any users who have never logged in, except script user. this way
+    # old accounts can still be associated with their changes/log entries
+    no_actions = User.objects.filter(last_login__isnull=True) \
+                             .exclude(username=settings.SCRIPT_USERNAME)
+    logging.debug("removing %d users with no logins/changes" %
+                  no_actions.count())
+    no_actions.delete()
 
-    # assign all remaining users to moderators group; remove superuser.
-    for user in User.objects.all():
+    # for anyone without a current CDH position, mark user account as inactive.
+    # remove superuser permissions and add the user to the moderators group
+    for user in User.objects.exclude(username=settings.SCRIPT_USERNAME):
         logging.debug("adding user %s to wagtail moderators" % user)
         moderators.user_set.add(user)
-        # user.is_superuser = False
+        user.is_superuser = False
         user.save()
+        try:
+            person = Person.objects.get(user=user)
+            if not person.current_title:
+                logging.debug("marking user %s non-active" % user)
+                user.is_active = False
+                user.save()
+        except Person.DoesNotExist:
+            pass
+
+    # whitelist rsk and nb as superusers for convenience
+    for username in ["rkoeser", "nbudak"]:
+        try:
+            user = User.objects.get(username=username)
+            logging.debug("marking user %s superuser" % user)
+            user.is_superuser = True
+            user.save()
+        except User.DoesNotExist:
+            pass
+
     logging.info("total %d wagtail moderators" % moderators.user_set.count())
