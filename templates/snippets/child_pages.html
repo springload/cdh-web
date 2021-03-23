@@ -3,6 +3,8 @@
 {% if child_pages %}
 <div class="attachments page-children">
     {% for childpage in child_pages %}
+        {# exlude profile and project pages #}
+        {% if not childpage.profile and not childpage.project %}
         {% with page_url=childpage.get_url %}
             <div class="attachment card {{ page_url|url_to_icon }}">
                 <a href="{{ page_url }}">
@@ -10,6 +12,7 @@
                 </a>
             </div>
         {% endwith %}
+        {% endif %}
     {% endfor %}
 </div>
 {% endif %}

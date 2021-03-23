@@ -67,7 +67,8 @@
     </div>
 
     {# display child pages as attachments if this page has any children #}
-    {% include 'snippets/child_pages.html' with child_pages=page.get_children.live.in_menu %}
+    {# NOTE: child pages are no longer treated as a menu; all published child pages will be shown (with the exception of profile and project pages) #}
+    {% include 'snippets/child_pages.html' with child_pages=page.get_children.live %}
 
     {% if page.attachments %}
         {% include 'snippets/attachments.html' %}

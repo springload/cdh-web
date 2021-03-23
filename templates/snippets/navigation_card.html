@@ -6,12 +6,11 @@
         {% for navpage in navpages %}
             <li role="none">
                 <a
-                    id="{{ navpage.slug }}"
                     role="menuitem"
                     href="{{ navpage.get_url }}"
                     tabindex="-1"
                     {% if navpage.get_children.live.in_menu %} aria-owns="{{ navpage.slug }}-tertiary"{% endif %}
-                    {% if navpage == page %} aria-current="page"{% endif %}>{{ navpage.title }}</a>
+                    {% if navpage.get_url == request.path %} aria-current="page"{% endif %}>{{ navpage.title }}</a>
                 {% include "snippets/tertiary_navigation.html" with navpages=navpage.get_children.live.in_menu %}
             </li>
         {% endfor %}
