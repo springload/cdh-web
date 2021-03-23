@@ -3,16 +3,27 @@
 import json
 import logging
 import os
+from json.decoder import JSONDecodeError
 
 from bs4 import BeautifulSoup
+from django.conf import settings
+from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 from django.utils.html import strip_tags
-from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail.core.models import PageLogEntry
 from wagtail.images.models import Image
-from wagtail.core.blocks.stream_block import StreamValue
-from wagtail.snippets.blocks import SnippetChooserBlock
 
-from cdhweb.pages.models import (ContentPage, HomePage, LandingPage, LinkPage,
-                                 PageIntro, ExternalAttachment, LocalAttachment)
+from cdhweb.pages.models import (ContentPage, ExternalAttachment, HomePage,
+                                 LandingPage, LinkPage, LocalAttachment,
+                                 PageIntro)
+
+LOG_ENTRY_ACTIONS = {
+    CHANGE: "wagtail.edit",
+    ADDITION: "wagtail.create",
+    DELETION: "wagtail.delete"
+}
 
 
 def is_blank(content):
@@ -88,7 +99,83 @@ def exodize_attachments(mezzanine_page, wagtail_page):
         logging.debug("attachments for %s: %s" %
                       (wagtail_page, attachments_field))
         wagtail_page.attachments = attachments_field
-        wagtail_page.save()
+        wagtail_page.save(log_action=False)
+    return wagtail_page
+
+
+def exodize_history(mezzanine_page, wagtail_page):
+    """Create log entries for new wagtail page corresponding to old page.
+
+    Also adds a log entry noting that the page was exodized.
+    """
+    # make sure the page has only one real creation event; we want to use
+    # the date it was created in mezzanine
+    creation = PageLogEntry.objects.get(page=wagtail_page,
+                                        action="wagtail.create")
+    creation.delete()
+
+    # get all the old admin log entries for this page. in some cases (seems to
+    # happen for regular content pages) there will be none; in this case we
+    # will end up creating a new revision with a timestamp of right now, and
+    # the only log entry will be marking the exodus
+    ctype = ContentType.objects.get_for_model(mezzanine_page)
+    entries = LogEntry.objects.filter(object_id=mezzanine_page.pk,
+                                      content_type_id=ctype.pk)
+    User = get_user_model()
+    if entries.exists():
+        logging.debug("exodizing %d log entries for %s" %
+                      (entries.count(), mezzanine_page))
+        last_user = User.objects.get(pk=entries.last().user_id)
+        last_edit = entries.last().action_time
+    else:
+        last_user = None
+        last_edit = timezone.now()
+
+    # create log entries for new wagtail page to match old page.
+    # if there's any data about the change, we can store it as a JSON
+    # string with the entry. it's not visible in admin, but it can be
+    # used later. this is sometimes populated and sometimes not
+    for entry in entries:
+        try:
+            data = json.loads(entry.get_change_message())
+        except JSONDecodeError:
+            data = None
+        PageLogEntry.objects.log_action(
+            instance=wagtail_page,
+            data=data,
+            action=LOG_ENTRY_ACTIONS[entry.action_flag],
+            timestamp=entry.action_time,
+            title=entry.object_repr,
+            user=User.objects.get(pk=entry.user_id)
+        )
+
+    # create an initial wagtail revision pointing to the most recent page data.
+    # without this, the "history" button won't display in the admin until you
+    # create a new draft or publish for the first time.
+    script_user = User.objects.get(username=settings.SCRIPT_USERNAME)
+    revision = wagtail_page.save_revision(
+        user=last_user or script_user,
+        changed=False,
+        log_action=False
+    )
+    revision.created_at = last_edit
+    revision.save()
+    wagtail_page.latest_revision_created_at = last_edit
+    wagtail_page.save(log_action=False)
+
+
+    # add a custom entry logging the actual exodus. see `wagtail_hooks.py`
+    # for the definition of the custom "exodus" action.
+    PageLogEntry.objects.log_action(
+        instance=wagtail_page,
+        data={
+            "old_pk": mezzanine_page.pk,
+            "old_slug": mezzanine_page.slug,
+            "old_title": mezzanine_page.title
+        },
+        action="cdhweb.exodus",
+        user=script_user
+    )
     return wagtail_page
 
 
@@ -158,6 +245,8 @@ def create_link_page(page, parent):
         PageIntro.objects.create(page=new_page,
                                  paragraph=page.richtextpage.content)
 
+    return new_page
+
 
 def form_pages():
     """migrate embedded google forms from mezzanine templates"""
@@ -169,7 +258,7 @@ def form_pages():
             {"type": "migrated", "value": consults.body[0].value.source},
             {"type": "migrated", "value": '<iframe title="Consultation Request Form" height="2400" src="https://docs.google.com/forms/d/e/1FAIpQLScerpyeQAgp91Iy66c1rKbKSwbSpeuB5yHh14l3G9C86eUjsA/viewform?embedded=true">Loading...</iframe>'}
         ])
-        consults.save()
+        consults.save(log_action=False)
     # # do the same for cosponsorship page
     if ContentPage.objects.filter(slug="cosponsor").exists():
         cosponsor = ContentPage.objects.get(slug="cosponsor")
@@ -177,4 +266,4 @@ def form_pages():
             {"type": "migrated", "value": cosponsor.body[0].value.source},
             {"type": "migrated", "value": '<iframe title="Cosponsorship Request Form" height="3250" src="https://docs.google.com/forms/d/e/1FAIpQLSeP40DBM7n8GYgW_i99nRxY5T5P39DrIWyIwq9LggIwu4r5jQ/viewform?embedded=true">Loading...</iframe>'}
         ])
-        cosponsor.save()
+        cosponsor.save(log_action=False)
