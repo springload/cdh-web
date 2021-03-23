@@ -116,7 +116,9 @@ class Command(BaseCommand):
                 title=old_projects.title,
                 link_url=old_projects.slug,
                 slug=convert_slug(old_projects.slug),
-                show_in_menus=any(old_projects.in_menus)
+                # map mezzanine main nav/footer to wagtail in menu
+                show_in_menus=any(val in old_projects.in_menus
+                                  for val in ['1', '3'])
             )
             homepage.add_child(instance=projects)
             homepage.save()
@@ -132,7 +134,7 @@ class Command(BaseCommand):
                 title=old_events.title,
                 link_url=old_events.slug,
                 slug=convert_slug(old_events.slug),
-                show_in_menus=any(old_events.in_menus)
+                show_in_menus=True,
             )
             homepage.add_child(instance=events)
             homepage.save()
@@ -148,7 +150,7 @@ class Command(BaseCommand):
                 title=old_updates.title,
                 link_url=old_updates.slug,
                 slug=convert_slug(old_updates.slug),
-                show_in_menus=any(old_updates.in_menus)
+                show_in_menus=True
             )
             homepage.add_child(instance=updates)
             homepage.save()
@@ -171,7 +173,7 @@ class Command(BaseCommand):
                     "value": old_people.landingpage.content,
                 }]),
                 search_description=old_people.description,
-                show_in_menus=any(old_people.in_menus)
+                show_in_menus=True
             )
             homepage.add_child(instance=people)
             homepage.save()

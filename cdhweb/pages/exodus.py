@@ -113,8 +113,9 @@ def create_landingpage(page):
         seo_title=page._meta_title or page.title,
         body=to_streamfield(page.landingpage.content),
         search_description=page.description,    # store even if generated
-        # if included in any menu previously, set show in menus to true
-        show_in_menus=any(page.in_menus)
+        # map mezzanine main nav/footer to wagtail in menu
+        show_in_menus=any(val in page.in_menus
+                          for val in ['1', '3'])
         # NOTE not migrating search keywords
     )
 
@@ -129,8 +130,9 @@ def create_contentpage(page):
         body=to_streamfield(page.richtextpage.content) if hasattr(
             page, "richtextpage") else to_streamfield(""),
         search_description=page.description,    # store even if generated
-        # if included in any menu previously, set show in menus to true
-        show_in_menus=any(page.in_menus)
+        # map mezzanine main nav/footer to wagtail in menu
+        show_in_menus=any(val in page.in_menus
+                          for val in ['1', '3'])
         # NOTE not migrating search keywords
         # NOTE not login-restricting pages since we don't use it
         # NOTE not setting expiry date; handled manually
