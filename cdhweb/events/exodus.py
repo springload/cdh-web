@@ -3,9 +3,11 @@ import logging
 
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
-from cdhweb.events.models import Event, EventsLinkPage, OldEvent, Speaker
-from cdhweb.pages.exodus import (convert_slug, exodize_attachments, exodize_history,
-                                 get_wagtail_image, to_streamfield)
+from cdhweb.events.models import (Event, EventsLinkPage, EventTag, OldEvent,
+                                  Speaker)
+from cdhweb.pages.exodus import (convert_slug, exodize_attachments,
+                                 exodize_history, get_wagtail_image,
+                                 to_streamfield)
 from cdhweb.people.models import Person
 
 
@@ -60,4 +62,7 @@ def event_exodus():
         exodize_attachments(event, event_page)
         exodize_history(event, event_page)
         
-        # NOTE no tags to migrate
+        # exodize tags
+        for tag in event.tags.all():
+            logging.debug("exodizing event tag %s" % tag)
+            EventTag.objects.create(content_object=event_page, tag=tag)
