@@ -23,7 +23,7 @@ S @1x W: 736px H: 320px, @2x W: 1472px H: 640px
 <header {% if page.header_image %}style="background-image:url('{{ header_img.url }}')"
     {% else %}class="no-background"{% endif %}>
     <div>
-    <a href="{% url 'home' %}" class="home">/</a><h1>{{ page.title }}</h1>
+    <a href="{% pageurl site.root_page %}" class="home">/</a><h1>{{ page.title }}</h1>
     <p>{{ page.tagline }}</p>
     </div>
 </header>
