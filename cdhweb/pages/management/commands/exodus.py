@@ -113,9 +113,7 @@ class Command(BaseCommand):
 
         # also delete any log entries referencing pages from previous runs, 
         # otherwise they'll stick around and point to nothing since PKs change.
-        # objects.delete() isn't implemented so we do it via iterating
-        for entry in PageLogEntry.objects.all():
-            entry.delete()
+        PageLogEntry.objects.all().delete()
 
         # set the site's hostname so that sitemaps will be valid
         site.hostname = "cdh.princeton.edu"
