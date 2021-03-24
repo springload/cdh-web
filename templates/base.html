@@ -15,7 +15,9 @@
       gtag('config', 'UA-87887700-1', {'anonymize_ip': true});
     </script>
     {% endif %}
-    <title>{% block page-title %}{% if page %}{{ page.seo_title }}{% endif %}{% endblock %} – CDH@Princeton</title>
+    {% block title %}
+    <title>{% block page-title %}{% firstof page.seo_title page.title page_title %}{% endblock %} – CDH@Princeton</title>
+    {% endblock %}
     {% if SHOW_TEST_WARNING %} {# test variant favicon to help differentiate test/prod sites #}
     <link rel="shortcut icon" href="{% static 'favicon-test.ico' %}">
     {% else %}
