@@ -2,8 +2,6 @@
 {% load wagtailcore_tags humanize %}
 {# simple blog post page; adapted in part from mezzanine blog post template #}
 
-{% block page-subtitle %}{{ page.title }} | {{ block.super }}{% endblock %}
-
 {% block headattrs %} xmlns:article="http://ogp.me/ns/article#"{% endblock %}
 {% block extra-head %}
     <meta name="article.published_time" content="{{ page.first_published_at.isoformat }}"/>

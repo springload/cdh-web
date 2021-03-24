@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
-{% block page-subtitle %}{{ page.title }} | Events | {% endblock %}
-
 {% block extra-head %}
     <meta name="twitter:label1" content="Date"/>
     <meta name="twitter:data1" content="{{ page.when }}"/>

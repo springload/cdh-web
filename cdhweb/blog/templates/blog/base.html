@@ -1,13 +1,11 @@
 {% extends 'base.html' %}
 {# base template for blog pages with rss/atom header links for autodiscovery #}
 
-{% block page-subtitle %}Updates | {% endblock %}
-
 {% block extra-head %}
 <link rel="alternate" type="application/rss+xml" href="{% url 'blog:rss' %}"
-    title="Updates | Center for Digital Humanities @ Princeton University"/>
+    title="Updates – CDH@Princeton"/>
 <link rel="alternate" type="application/atom+xml" href="{% url 'blog:atom' %}"
-    title="Updates | Center for Digital Humanities @ Princeton University"/>
+    title="Updates – CDH@Princeton"/>
 {% endblock %}
 
 
