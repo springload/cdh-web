@@ -463,5 +463,5 @@ class Command(BaseCommand):
         # list should be ignored and end up at the end
         for slug in reversed(self.nav_order):
             page_to_move = homepage.get_children().get(slug=slug)
-            # make this page the first child
-            page_to_move.move(homepage, 'first-child')
+            # make this page the first child; don't log the move
+            page_to_move.move(homepage, 'first-child', log_action=False)
