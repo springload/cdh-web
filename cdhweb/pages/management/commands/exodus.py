@@ -111,7 +111,7 @@ class Command(BaseCommand):
                     .exclude(pk=homepage.pk) \
                     .delete()
 
-        # also delete any log entries referencing pages from previous runs, 
+        # also delete any log entries referencing pages from previous runs,
         # otherwise they'll stick around and point to nothing since PKs change.
         PageLogEntry.objects.all().delete()
 
@@ -477,5 +477,5 @@ class Command(BaseCommand):
         # list should be ignored and end up at the end
         for slug in reversed(self.nav_order):
             page_to_move = homepage.get_children().get(slug=slug)
-            # make this page the first child; don't log the move
-            page_to_move.move(homepage, 'first-child', log_action=False)
+            # make this page the first child
+            page_to_move.move(homepage, 'first-child')
