@@ -267,6 +267,9 @@ class Command(BaseCommand):
         # exodize user groups to wagtail moderators/editors
         user_group_exodus()
 
+        # re-order top level pages to match desired nav order
+        self.adjust_toplevel_order(homepage)
+
         # report on unmigrated pages
         unmigrated = MezzaninePage.objects.exclude(
             pk__in=self.migrated)
@@ -446,3 +449,19 @@ class Command(BaseCommand):
                     # seems to mean that height/width calculation failed
                     # (usually non-images)
                     logging.warning("%s: %s" % (imgpath, err))
+
+    nav_order = [
+        # landing pages in order
+        'people', 'projects', 'research', 'engage', 'events', 'updates',
+        # top-level content pages in order
+        'about', 'annual-report', 'history', 'contact', 'credits'
+    ]
+
+    def adjust_toplevel_order(self, homepage):
+        # find and move each child page to first child
+        # in reverse of desired order; any pages not in our
+        # list should be ignored and end up at the end
+        for slug in reversed(self.nav_order):
+            page_to_move = homepage.get_children().get(slug=slug)
+            # make this page the first child
+            page_to_move.move(homepage, 'first-child')
