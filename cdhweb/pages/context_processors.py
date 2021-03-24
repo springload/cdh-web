@@ -1,5 +1,3 @@
-from wagtail.core.models import Site
-
 from cdhweb.pages.models import PageIntro
 
 
@@ -16,7 +14,3 @@ def page_intro(request):
     if page_intro:
         return {'page_intro': page_intro}
     return {}
-
-
-def wagtail_site(request):
-    return {'site': Site.find_for_request(request)}

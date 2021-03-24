@@ -304,7 +304,6 @@ TEMPLATES = [
                 'cdhweb.context_extras',
                 'cdhweb.context_processors.template_settings',
                 'cdhweb.pages.context_processors.page_intro',
-                'cdhweb.pages.context_processors.wagtail_site',
             ],
             "builtins": [
                 "mezzanine.template.loader_tags",
