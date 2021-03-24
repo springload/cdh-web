@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 from django.utils.dateformat import format
 from pytest_django.asserts import (assertContains, assertTemplateNotUsed,
-                                   assertTemplateUsed)
+                                   assertTemplateUsed, assertNotContains)
 
 from cdhweb.pages.models import CaptionedImageBlock, SVGImageBlock
 
@@ -163,27 +163,32 @@ class TestContentPage:
         response = client.get(content_page.get_url())
         assertTemplateUsed(response, "snippets/attachments.html")
 
+
 class TestPagesMenus:
 
-    @pytest.mark.skip("todo")
-    def test_child_pages_attachment(self, client):
-        """
-        about = Page.objects.get(title='About')
-        annual_report = Page.objects.get(title='Annual Report')
-        response = client.get(about.get_absolute_url())
+    def test_child_pages_attachment(self, client, content_page):
+        # content page fixture has no child pages
+        response = client.get(content_page.get_url())
+        assertTemplateUsed(response, 'snippets/child_pages.html')
+        # page-children attachment section should not be present
+        assertNotContains(
+            response, '<div class="attachments page-children">')
+
+        # landing page has a child page (the content page)
+        response = client.get(content_page.get_parent().get_url())
+        assertTemplateUsed(response, 'snippets/child_pages.html')
         # page-children attachment section should be present
         assertContains(
             response, '<div class="attachments page-children">')
         # child page title and url should be present
-        assertContains(response, annual_report.title)
-        assertContains(response, annual_report.get_absolute_url())
+        assertContains(response, content_page.title)
+        assertContains(response, content_page.get_url())
 
-        # delete child page to check behavior without
-        annual_report.delete()
-        response = client.get(about.get_absolute_url())
-        # should not error, should not contain page-children attachment section
-        assertNotContains(response, '<div class="attachments page-children">')
-        """
+        # unpublish to confirm only live pages are listed
+        content_page.unpublish()
+        response = client.get(content_page.get_parent().get_url())
+        assertNotContains(
+            response, '<div class="attachments page-children">')
 
 
 class TestCaptionedImageBlock:
