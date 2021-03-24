@@ -122,8 +122,7 @@ class TestProjectLists:
         # create link page for project list
         sponsored_projects = LinkPage(
             title='Sponsored Projects',
-            link_url='/projects/sponsored/',
-            slug='sponsored')
+            link_url='projects/sponsored')
         projects_landing_page.add_child(instance=sponsored_projects)
         # create a snippet for the sponsored projects page
         PageIntro.objects.create(page=sponsored_projects,
