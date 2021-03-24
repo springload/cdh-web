@@ -1,29 +1,43 @@
-{% load pages_tags i18n %}
+{% load i18n %}
 {# display full top-level and secondary navigation in the footer #}
 {# adapted from mezzanine pages/menus/primary.html template #}
+
+{% with toplevel_pages=site.root_page.get_children.live.in_menu %}
 <ul>
-{% for page in page_branch %}
-    {% if page.in_menu %}
+    {# special case: home & top-level content pages #}
+    <li class='menu-header'>
+        <a class="toggle"><span class="button">+</span></a> {# toggle for mobile menu #}
+        <a href="{{ site.root_page.get_url }}">{{ site.root_page.title }}</a>
+        {% with child_pages=site.root_page.get_children.live.in_menu %}
+            <ul class="submenu">
+                {% include "snippets/footer_secondary_nav.html" with navpages=child_pages content_only=1 %}
+            </ul>
+        {% endwith %}
+    </li>
+</ul>
+<ul>
+{% for navpage in toplevel_pages %}
+    {% if navpage.landingpage or navpage.linkpage %} {# exclude content pages #}
     {# footer has 6 columns; ul breaks to next column #}
-    {% if not forloop.first and forloop.counter <= 6 %}<ul>{% endif %}
+    {% if not forloop.first and forloop.counter <= 5 %}<ul>{% endif %}
         <li class='menu-header'>
+            {% with child_pages=navpage.get_children.live.in_menu %}
             {# set page_branch for submenu if there is one #}
-            {% if page.has_children_in_menu %}
+            {% if child_pages %}
             <a class="toggle"><span class="button">+</span></a> {# toggle for mobile menu #}
             {% endif %}
-            <a href="{{ page.get_absolute_url }}">{{ page.title }}</a>
-            {% if page.has_children_in_menu %}
+            <a href="{{ navpage.get_url }}">{{ navpage.title }}</a>
+            {% if child_pages %}
             <ul class="submenu">
-                {% page_menu page "snippets/footer_secondary_nav.html" %}
+                {% include "snippets/footer_secondary_nav.html" with navpages=child_pages %}
             </ul>
             {% endif %}
+            {% endwith %}
         </li>
-        {% if forloop.counter < 6 %}
+        {% if forloop.counter > 5 %}
         </ul>
         {% endif %}
     {% endif %}
 {% endfor %}
-{% if user.is_staff %} {# convenience admin link for logged in users #}
-    <li class='menu-header'><a class="admin-link" href="{% url 'admin:index' %}"><span>Admin</span></a></li>
-{% endif %}
 </ul>
+{% endwith %}

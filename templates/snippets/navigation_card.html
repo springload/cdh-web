@@ -1,24 +1,20 @@
-{% load pages_tags %}
 {# secondary and tertiary naviation for the top-level of the site #}
-<div class="nav-card menu-{{ page.html_id }}">
+{% if navpages %}
+<div class="nav-card menu-{{ navpage.slug }}">
     <div class="inner">
-        <ul id="{{ page.html_id }}-secondary" class="secondary-nav" role="menu" aria-labelledby="{{ page.html_id }}">
-        {% for page in page_branch %}
-            {% if '1' in page.in_menus %} {# workaround pages_tags limitation: explicitly check for primary nav option #}
+        <ul id="{{ navpage.slug }}-secondary" class="secondary-nav" role="menu" aria-labelledby="{{ navpage.slug }}">
+        {% for navpage in navpages %}
             <li role="none">
                 <a
-                    id="{{ page.html_id }}"
                     role="menuitem"
-                    href="{{ page.get_absolute_url }}"
+                    href="{{ navpage.get_url }}"
                     tabindex="-1"
-                    {% if page.has_children_in_menu %} aria-owns="{{ page.html_id }}-tertiary"{% endif %}
-                    {% if page.is_current %} aria-current="page"{% endif %}>{{ page.title }}</a>
-                {% if page.has_children_in_menu %}
-                    {% page_menu page "snippets/tertiary_navigation.html" %}
-                {% endif %}
+                    {% if navpage.get_children.live.in_menu %} aria-owns="{{ navpage.slug }}-tertiary"{% endif %}
+                    {% if navpage.get_url == request.path %} aria-current="page"{% endif %}>{{ navpage.title }}</a>
+                {% include "snippets/tertiary_navigation.html" with navpages=navpage.get_children.live.in_menu %}
             </li>
-            {% endif %}
         {% endfor %}
         </ul>
     </div>
 </div>
+{% endif %}

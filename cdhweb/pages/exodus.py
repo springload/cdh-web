@@ -45,7 +45,7 @@ def to_streamfield_safe(content):
 
 
 def get_wagtail_image(image):
-    """get the migrated wagtail image for a foreign-key image using image file 
+    """get the migrated wagtail image for a foreign-key image using image file
     basename, which is migrated as image title"""
     if not image:
         return None
@@ -103,9 +103,9 @@ def create_homepage(page):
     )
 
 
-def create_landingpage(page):
+def create_landingpage(page, page_type=LandingPage):
     """Create and return a Wagtail landing page based on a Mezzanine page."""
-    return LandingPage(
+    return page_type(
         title=page.title,
         tagline=page.landingpage.tagline,   # landing pages have a tagline
         header_image=get_wagtail_image(page.landingpage.image),
@@ -113,7 +113,9 @@ def create_landingpage(page):
         seo_title=page._meta_title or page.title,
         body=to_streamfield(page.landingpage.content),
         search_description=page.description,    # store even if generated
-        # TODO not setting menu placement yet
+        # map mezzanine main nav/footer to wagtail in menu
+        show_in_menus=any(val in page.in_menus
+                          for val in ['1', '3'])
         # NOTE not migrating search keywords
     )
 
@@ -128,7 +130,9 @@ def create_contentpage(page):
         body=to_streamfield(page.richtextpage.content) if hasattr(
             page, "richtextpage") else to_streamfield(""),
         search_description=page.description,    # store even if generated
-        # TODO not setting menu placement yet
+        # map mezzanine main nav/footer to wagtail in menu
+        show_in_menus=any(val in page.in_menus
+                          for val in ['1', '3'])
         # NOTE not migrating search keywords
         # NOTE not login-restricting pages since we don't use it
         # NOTE not setting expiry date; handled manually
@@ -143,7 +147,8 @@ def create_link_page(page, parent):
     new_page = LinkPage(
         title=page.title,
         link_url=page.slug,
-        slug=convert_slug(page.slug)
+        slug=convert_slug(page.slug),
+
     )
     parent.add_child(instance=new_page)
 

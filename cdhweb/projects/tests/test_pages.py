@@ -1,9 +1,9 @@
 from wagtail.tests.utils import WagtailPageTests
 
-from cdhweb.pages.models import RelatedLink, RelatedLinkType
+from cdhweb.pages.models import LinkPage, RelatedLinkType
 from cdhweb.people.models import Person
 from cdhweb.projects.models import (Grant, GrantType, Project,
-                                    ProjectRelatedLink, ProjectsLinkPage)
+                                    ProjectRelatedLink, ProjectsLandingPage)
 
 
 class TestProject:
@@ -83,23 +83,24 @@ class TestProject:
         sitemap_urls = derrida.get_sitemap_urls(request=request)
         assert sitemap_urls[0]["priority"] == 0.7
 
+
 class TestProjectPage(WagtailPageTests):
 
     def test_parent_pages(self):
         """project can only be created under projects link page"""
-        self.assertAllowedParentPageTypes(Project, [ProjectsLinkPage])
+        self.assertAllowedParentPageTypes(Project, [ProjectsLandingPage])
 
     def test_subpages(self):
         """project page can't have children"""
         self.assertAllowedSubpageTypes(Project, [])
 
 
-class TestProjectsLinkPage(WagtailPageTests):
+class TestProjectsLandingPage(WagtailPageTests):
 
     def test_parentpage_types(self):
         """projects link page should not be creatable in admin"""
-        self.assertAllowedParentPageTypes(ProjectsLinkPage, [])
+        self.assertAllowedParentPageTypes(ProjectsLandingPage, [])
 
     def test_subpage_types(self):
         """projects link page only allowed child is project page"""
-        self.assertAllowedSubpageTypes(ProjectsLinkPage, [Project])
+        self.assertAllowedSubpageTypes(ProjectsLandingPage, [Project, LinkPage])

@@ -1,6 +1,7 @@
 {# secondary navigation menus for inclusion in the footer #}
-{% for page in page_branch %}
-    {% if page.in_menu %}
-    <li><a href="{{ page.get_absolute_url }}">{{ page.title }}</a>
+{% for navpage in navpages %}
+    {# check for optional flag to include content pages only #}
+    {% if not content_only or navpage.contentpage %}
+    <li><a href="{{ navpage.get_url }}">{{ navpage.title }}</a>
     {% endif %}
 {% endfor %}

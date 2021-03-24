@@ -58,7 +58,7 @@
         </div>
     </header>
     {% include 'snippets/test_banner.html' %}
-    
+
     {% block content %}
         {% block content-header %}
         {% endblock %}
@@ -67,9 +67,8 @@
     </div>
 
     {# display child pages as attachments if this page has any children #}
-    {% if page.children.exists %}
-        {% page_menu page 'snippets/child_pages.html' %}
-    {% endif %}
+    {# NOTE: child pages are no longer treated as a menu; all published child pages will be shown (with the exception of profile and project pages) #}
+    {% include 'snippets/child_pages.html' with child_pages=page.get_children.live %}
 
     {% if page.attachments %}
         {% include 'snippets/attachments.html' %}
@@ -83,11 +82,9 @@
     <footer>
         {% include 'snippets/subscribe.html' %}
 
-        {% comment 're-add footer menu when exodized' %}
         <section class="footer-menu" id="footermenu">
-            {% page_menu "snippets/footer_menu.html" %}
+            {% include "snippets/footer_menu.html" %}
         </section>
-        {% endcomment %}
 
         <section class="contact" typeof="schema:Organization">
         {# RDFa markup for organization and address #}

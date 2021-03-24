@@ -19,6 +19,7 @@ from django.test import override_settings
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 from mezzanine.pages.models import Page as MezzaninePage, Link as MezzanineLink
 from wagtail.core.models import Collection, Page, Site, get_root_collection_id
+from wagtail.contrib.redirects.models import Redirect
 from wagtail.images.models import Image
 
 from cdhweb.blog.exodus import blog_exodus
@@ -29,11 +30,12 @@ from cdhweb.pages.exodus import (convert_slug, create_contentpage,
                                  create_homepage, create_landingpage,
                                  create_link_page, exodize_attachments, form_pages,
                                  get_wagtail_image)
-from cdhweb.pages.models import ExternalAttachment, HomePage, LocalAttachment
+from cdhweb.pages.models import ExternalAttachment, HomePage, LocalAttachment,\
+    LinkPage
 from cdhweb.people.exodus import people_exodus, user_group_exodus
 from cdhweb.people.models import PeopleLandingPage
 from cdhweb.projects.exodus import project_exodus
-from cdhweb.projects.models import ProjectsLinkPage
+from cdhweb.projects.models import ProjectsLandingPage
 from cdhweb.resources.models import Attachment
 
 # log levels as integers for verbosity option
@@ -109,21 +111,6 @@ class Command(BaseCommand):
         site.hostname = "cdh.princeton.edu"
         site.save()
 
-        # create a LinkPage to serve as the projects/ root (project list page)
-        try:
-            old_projects = MezzaninePage.objects.get(slug="projects")
-            projects = ProjectsLinkPage(
-                title=old_projects.title,
-                link_url=old_projects.slug,
-                slug=convert_slug(old_projects.slug),
-            )
-            homepage.add_child(instance=projects)
-            homepage.save()
-            self.migrated.append(old_projects.pk)
-        except MezzaninePage.DoesNotExist:
-            logging.warning("no projects/ page tree found; skipping projects")
-            projects = None
-
         # create a LinkPage to serve as the events/ root (event list page)
         try:
             old_events = MezzaninePage.objects.get(slug="events")
@@ -131,6 +118,7 @@ class Command(BaseCommand):
                 title=old_events.title,
                 link_url=old_events.slug,
                 slug=convert_slug(old_events.slug),
+                show_in_menus=True,
             )
             homepage.add_child(instance=events)
             homepage.save()
@@ -146,6 +134,7 @@ class Command(BaseCommand):
                 title=old_updates.title,
                 link_url=old_updates.slug,
                 slug=convert_slug(old_updates.slug),
+                show_in_menus=True
             )
             homepage.add_child(instance=updates)
             homepage.save()
@@ -168,6 +157,7 @@ class Command(BaseCommand):
                     "value": old_people.landingpage.content,
                 }]),
                 search_description=old_people.description,
+                show_in_menus=True
             )
             homepage.add_child(instance=people)
             homepage.save()
@@ -199,16 +189,43 @@ class Command(BaseCommand):
                     create_link_page(page, people)
                     self.migrated.append(page.pk)
 
-        # migrate project pages
+        # project pages
+        # migrate old landing page at projects/about to projects/
+        try:
+            old_projects_landing = MezzaninePage.objects.get(
+                slug="projects/about")
+            projects = create_landingpage(old_projects_landing,
+                                          page_type=ProjectsLandingPage)
+            # revise the slug and add as a child of the home page
+            projects.slug = "projects"
+            homepage.add_child(instance=projects)
+            homepage.save()
+            self.migrated.append(old_projects_landing.pk)
+            # create redirect from old landing page to new page
+            Redirect.add_redirect(
+                '/projects/about/', redirect_to=projects, is_permanent=True)
+        except MezzaninePage.DoesNotExist:
+            logging.warning("no projects landing page found; skipping projects")
+            pass
+
         if projects:
-            # old landing page at projects/about
+            # create a LinkPage for sponsored projects list at new url
             try:
-                old_projects_landing = MezzaninePage.objects.get(
-                    slug="projects/about")
-                projects_landing = create_landingpage(old_projects_landing)
-                projects.add_child(instance=projects_landing)
+                old_projects = MezzaninePage.objects.get(slug="projects")
+                sponsored_projects = LinkPage(
+                    title=old_projects.title,
+                    link_url=old_projects.slug,
+                    slug='sponsored',  # override with new slug
+                    # map mezzanine main nav/footer to wagtail in menu
+                    show_in_menus=any(val in old_projects.in_menus
+                                      for val in ['1', '3'])
+                )
+                # add as child of new projects landing page
+                projects.add_child(instance=sponsored_projects)
                 projects.save()
-                self.migrated.append(old_projects_landing.pk)
+                self.migrated.append(old_projects.pk)
+                # note that we can't add a redirect for this change,
+                # since the old url needs to resolve to the new landing page
             except MezzaninePage.DoesNotExist:
                 pass
 
@@ -249,6 +266,9 @@ class Command(BaseCommand):
 
         # exodize user groups to wagtail moderators/editors
         user_group_exodus()
+
+        # re-order top level pages to match desired nav order
+        self.adjust_toplevel_order(homepage)
 
         # report on unmigrated pages
         unmigrated = MezzaninePage.objects.exclude(
@@ -429,3 +449,19 @@ class Command(BaseCommand):
                     # seems to mean that height/width calculation failed
                     # (usually non-images)
                     logging.warning("%s: %s" % (imgpath, err))
+
+    nav_order = [
+        # landing pages in order
+        'people', 'projects', 'research', 'engage', 'events', 'updates',
+        # top-level content pages in order
+        'about', 'annual-report', 'history', 'contact', 'credits'
+    ]
+
+    def adjust_toplevel_order(self, homepage):
+        # find and move each child page to first child
+        # in reverse of desired order; any pages not in our
+        # list should be ignored and end up at the end
+        for slug in reversed(self.nav_order):
+            page_to_move = homepage.get_children().get(slug=slug)
+            # make this page the first child; don't log the move
+            page_to_move.move(homepage, 'first-child', log_action=False)

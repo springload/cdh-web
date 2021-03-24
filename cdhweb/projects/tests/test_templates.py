@@ -5,7 +5,7 @@ from pytest_django.asserts import (assertContains, assertNotContains,
                                    assertTemplateUsed)
 
 from cdhweb.pages.exodus import to_streamfield_safe
-from cdhweb.pages.models import PageIntro, RelatedLinkType
+from cdhweb.pages.models import LinkPage, PageIntro, RelatedLinkType
 from cdhweb.projects.models import ProjectRelatedLink
 
 
@@ -98,7 +98,7 @@ class TestProjectLists:
         assertContains(response, "<h1>DH Working Groups</h1>")
         assertNotContains(response, "<h2>Past Projects</h2>")
 
-        # make all projects past: delete all grants except latest; end yesterday    
+        # make all projects past: delete all grants except latest; end yesterday
         for _, project in projects.items():
             grant = project.latest_grant()
             project.grants.exclude(pk=grant.pk).delete()
@@ -117,10 +117,15 @@ class TestProjectLists:
         response = client.get(reverse("projects:working-groups"))
         assertNotContains(response, "<h2>Past Projects</h2>")
 
-    def test_page_intro(self, client, projects_link_page):
+    def test_page_intro(self, client, projects_landing_page):
         """project list pages should display an intro snippet if set"""
+        # create link page for project list
+        sponsored_projects = LinkPage(
+            title='Sponsored Projects',
+            link_url='projects/sponsored')
+        projects_landing_page.add_child(instance=sponsored_projects)
         # create a snippet for the sponsored projects page
-        PageIntro.objects.create(page=projects_link_page,
+        PageIntro.objects.create(page=sponsored_projects,
                                  paragraph="<i>test content</i>")
 
         # visit and check that it renders
