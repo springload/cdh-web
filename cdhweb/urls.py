@@ -51,10 +51,10 @@ urlpatterns = [
     # coexist with mezzanine urls
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-    path("pages/", include(wagtail_urls)),
+    # enable if needed to test mezzanine pages
+    # path("mezz", include("mezzanine.urls")),
 
-    # let mezzanine handle everything else
-    re_path(r"", include("mezzanine.urls")),
+    path("", include(wagtail_urls)),
 ]
 
 # serve static files in development - automatically activates in DEBUG; see
