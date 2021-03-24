@@ -3,8 +3,9 @@ import logging
 
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
-from cdhweb.pages.exodus import convert_slug, exodize_attachments, \
-    get_wagtail_image, to_streamfield
+from cdhweb.pages.exodus import (convert_slug, exodize_attachments,
+                                 exodize_history, get_wagtail_image,
+                                 to_streamfield)
 from cdhweb.projects.models import OldProject, Project, ProjectsLandingPage
 
 
@@ -36,16 +37,16 @@ def project_exodus():
 
         # add it as child of project landing page so slugs are correct
         project_landing.add_child(instance=project_page)
-        project_landing.save()
+        project_landing.save(log_action=False)
 
         # if the old project wasn't published, unpublish the new one
         if project.status != CONTENT_STATUS_PUBLISHED:
-            project_page.unpublish()
+            project_page.unpublish(log_action=False)
 
         # set publication dates
         project_page.first_published_at = project.publish_date
         project_page.last_published_at = project.updated
-        project_page.save()
+        project_page.save(log_action=False)
 
         # transfer memberships
         for membership in project.membership_set.all():
@@ -67,5 +68,6 @@ def project_exodus():
 
         # transfer attachments
         exodize_attachments(project, project_page)
-
+        exodize_history(project, project_page)
+        
         # NOTE no tags to migrate

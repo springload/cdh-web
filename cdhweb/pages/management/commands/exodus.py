@@ -8,7 +8,6 @@ import os.path
 import shutil
 import warnings
 from collections import defaultdict
-from operator import attrgetter
 from itertools import chain
 
 from django.conf import settings
@@ -17,9 +16,11 @@ from django.core.management.base import BaseCommand, CommandParser
 from django.db.models import Q
 from django.test import override_settings
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
-from mezzanine.pages.models import Page as MezzaninePage, Link as MezzanineLink
-from wagtail.core.models import Collection, Page, Site, get_root_collection_id
+from mezzanine.pages.models import Link as MezzanineLink
+from mezzanine.pages.models import Page as MezzaninePage
 from wagtail.contrib.redirects.models import Redirect
+from wagtail.core.models import (Collection, Page, PageLogEntry, Site,
+                                 get_root_collection_id)
 from wagtail.images.models import Image
 
 from cdhweb.blog.exodus import blog_exodus
@@ -28,10 +29,10 @@ from cdhweb.events.exodus import event_exodus
 from cdhweb.events.models import EventsLinkPage
 from cdhweb.pages.exodus import (convert_slug, create_contentpage,
                                  create_homepage, create_landingpage,
-                                 create_link_page, exodize_attachments, form_pages,
+                                 create_link_page, exodize_attachments,
+                                 exodize_history, form_pages,
                                  get_wagtail_image)
-from cdhweb.pages.models import ExternalAttachment, HomePage, LocalAttachment,\
-    LinkPage
+from cdhweb.pages.models import HomePage, LinkPage
 from cdhweb.people.exodus import people_exodus, user_group_exodus
 from cdhweb.people.models import PeopleLandingPage
 from cdhweb.projects.exodus import project_exodus
@@ -97,15 +98,22 @@ class Command(BaseCommand):
             )
         root = Page.objects.get(depth=1)
         root.add_child(instance=homepage)
-        root.save()
+        root.save(log_action=False)
+        exodize_history(old_homepage, homepage)
 
         # point the default site at the new homepage and delete any others.
         # if they are deleted prior to switching site.root_page, the site will
-        # also be deleted in a cascade, which we don't want
+        # also be deleted in a cascade, which we don't want.
         site = Site.objects.get()
         site.root_page = homepage
         site.save()
-        Page.objects.filter(depth=2).exclude(pk=homepage.pk).delete()
+        Page.objects.filter(depth=2) \
+                    .exclude(pk=homepage.pk) \
+                    .delete()
+
+        # also delete any log entries referencing pages from previous runs, 
+        # otherwise they'll stick around and point to nothing since PKs change.
+        PageLogEntry.objects.all().delete()
 
         # set the site's hostname so that sitemaps will be valid
         site.hostname = "cdh.princeton.edu"
@@ -121,7 +129,8 @@ class Command(BaseCommand):
                 show_in_menus=True,
             )
             homepage.add_child(instance=events)
-            homepage.save()
+            homepage.save(log_action=False)
+            exodize_history(old_events, events)
             self.migrated.append(old_events.pk)
         except MezzaninePage.DoesNotExist:
             logging.warning("no events/ page tree found; skipping events")
@@ -137,7 +146,8 @@ class Command(BaseCommand):
                 show_in_menus=True
             )
             homepage.add_child(instance=updates)
-            homepage.save()
+            homepage.save(log_action=False)
+            exodize_history(old_updates, updates)
             self.migrated.append(old_updates.pk)
         except MezzaninePage.DoesNotExist:
             logging.warning("no updates/ page tree found; skipping blog")
@@ -160,8 +170,8 @@ class Command(BaseCommand):
                 show_in_menus=True
             )
             homepage.add_child(instance=people)
-            homepage.save()
-            # mark as migrated
+            homepage.save(log_action=False)
+            exodize_history(old_people, people)
             self.migrated.append(old_people.pk)
         except MezzaninePage.DoesNotExist:
             logging.warning("no people/ page tree found; skipping people")
@@ -199,7 +209,8 @@ class Command(BaseCommand):
             # revise the slug and add as a child of the home page
             projects.slug = "projects"
             homepage.add_child(instance=projects)
-            homepage.save()
+            homepage.save(log_action=False)
+            exodize_history(old_projects_landing, projects)
             self.migrated.append(old_projects_landing.pk)
             # create redirect from old landing page to new page
             Redirect.add_redirect(
@@ -222,7 +233,8 @@ class Command(BaseCommand):
                 )
                 # add as child of new projects landing page
                 projects.add_child(instance=sponsored_projects)
-                projects.save()
+                projects.save(log_action=False)
+                exodize_history(old_projects, sponsored_projects)
                 self.migrated.append(old_projects.pk)
                 # note that we can't add a redirect for this change,
                 # since the old url needs to resolve to the new landing page
@@ -234,7 +246,8 @@ class Command(BaseCommand):
                 .filter(Q(slug__startswith="projects")).order_by('-slug')
             for page in project_pages:
                 if page.pk not in self.migrated:
-                    create_link_page(page, projects)
+                    new_page = create_link_page(page, projects)
+                    exodize_history(page, new_page)
                     self.migrated.append(page.pk)
 
         # migrate blog pages
@@ -284,15 +297,15 @@ class Command(BaseCommand):
         # report on unmigrated attachments
         attachment_pages = set(chain.from_iterable(
             [a.pages.all() for a in Attachment.objects.all()]))
-        new_attachment_pages = list(filter(lambda p: getattr(
-            p, "attachments", None) is not None, Page.objects.all()))
+        new_attachment_pages = list(filter(lambda p: hasattr(p, "attachments"),
+                                           Page.objects.all()))
         n_old_pages = len(attachment_pages)
         n_new_pages = len(new_attachment_pages)
-        logging.info("%d mezzanine and %d wagtail pages with attachments",
-                     (n_old_pages, n_new_pages))
-        if n_old_pages != n_new_pages:
-            logging.warning("%d pages with umigrated attachments",
-                            n_old_pages - n_new_pages)
+        if n_old_pages > n_new_pages:
+            missing_pages = set([p.title for p in attachment_pages]) - \
+                set([p.title for p in new_attachment_pages])
+            logging.warning("%d pages with umigrated attachments: %s" % (
+                            n_old_pages - n_new_pages, ", ".join(missing_pages)))
 
         # delete mezzanine pages here? (but keep for testing migration)
 
@@ -333,16 +346,17 @@ class Command(BaseCommand):
                     "converting link page to content page %s " % page)
                 # TODO: adapt new create_link_page method for these links
             new_page = create_contentpage(page)
-            # move any attachments
 
         parent.add_child(instance=new_page)
-        parent.save()
+        parent.save(log_action=False)
 
+        # move any attachments & log entries
         exodize_attachments(page, new_page)
+        exodize_history(page, new_page)
 
         # set publication status
         if page.status != CONTENT_STATUS_PUBLISHED:
-            new_page.unpublish()
+            new_page.unpublish(log_action=False)
 
         # add to list of migrated pages
         self.migrated.append(page.pk)

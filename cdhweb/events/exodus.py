@@ -4,7 +4,7 @@ import logging
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
 from cdhweb.events.models import Event, EventsLinkPage, OldEvent, Speaker
-from cdhweb.pages.exodus import (convert_slug, exodize_attachments,
+from cdhweb.pages.exodus import (convert_slug, exodize_attachments, exodize_history,
                                  get_wagtail_image, to_streamfield)
 from cdhweb.people.models import Person
 
@@ -40,16 +40,16 @@ def event_exodus():
 
         # add it as child of event landing page so slugs are correct
         event_link.add_child(instance=event_page)
-        event_link.save()
+        event_link.save(log_action=False)
 
         # if the old event wasn't published, unpublish the new one
         if event.status != CONTENT_STATUS_PUBLISHED:
-            event_page.unpublish()
+            event_page.unpublish(log_action=False)
 
         # set publication dates
         event_page.first_published_at = event.publish_date
         event_page.last_published_at = event.updated
-        event_page.save()
+        event_page.save(log_action=False)
 
         # add speakers
         for user in event.speakers.all():
@@ -58,5 +58,6 @@ def event_exodus():
 
         # transfer attachments
         exodize_attachments(event, event_page)
+        exodize_history(event, event_page)
         
         # NOTE no tags to migrate
