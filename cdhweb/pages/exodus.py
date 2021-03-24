@@ -114,19 +114,23 @@ def exodize_history(mezzanine_page, wagtail_page):
                                         action="wagtail.create")
     creation.delete()
 
-    # get all the old admin log entries for this page. in some cases (seems to
-    # happen for regular content pages) there will be none; in this case we
-    # will end up creating a new revision with a timestamp of right now, and
-    # the only log entry will be marking the exodus
-    ctype = ContentType.objects.get_for_model(mezzanine_page)
+    # get all the old admin log entries for this page. content pages will
+    # have entries associated with their most specific subclass, but other
+    # page models won't, so we just use get_for_model directly. save the 
+    # user and timestamp from the most recent edit for later.
+    try:
+        specific_model = getattr(mezzanine_page, mezzanine_page.content_model)
+    except AttributeError:
+        specific_model = mezzanine_page
+    ctype = ContentType.objects.get_for_model(specific_model)
     entries = LogEntry.objects.filter(object_id=mezzanine_page.pk,
                                       content_type_id=ctype.pk)
     User = get_user_model()
     if entries.exists():
         logging.debug("exodizing %d log entries for %s" %
                       (entries.count(), mezzanine_page))
-        last_user = User.objects.get(pk=entries.last().user_id)
-        last_edit = entries.last().action_time
+        last_user = User.objects.get(pk=entries.first().user_id)
+        last_edit = entries.first().action_time
     else:
         last_user = None
         last_edit = timezone.now()
