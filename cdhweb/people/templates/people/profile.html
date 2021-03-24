@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
-{% block page-subtitle %}{{ profile.title }} | People | {% endblock %}
+{% block page-subtitle %}{{ page.title }} | People | {% endblock %}
 
 {% block main %}
 <div class="profile">
 <header>
-    <h1>{{ profile.title }}</h1>
+    <h1>{{ page.title }}</h1>
     {# display all positions, current first; dates for non-current #}
-    {% for position in profile.person.positions.all %}
+    {% for position in page.person.positions.all %}
         <p class="title">{% if not position.is_current %}
             {{ position.start_date.year }}{% if position.end_date.year != position.start_date.year%}-{{ position.end_date.year }}{% endif %}
             {% endif %}
@@ -20,30 +20,30 @@
 <div class="links">
     {# NOTE equiv to contributors in project #}
     <ul>
-    {% for link in profile.person.related_links.all %}
+    {% for link in page.person.related_links.all %}
         <li><a href="{{ link.url }}">{{ link.type.name }}</a></li>
     {% endfor %}
     </ul>
 </div>
 
-{% if profile.image %}
-    {% image profile.image fill-790x632 as profile_img %}
-    <img src="{{ profile_img.url }}" alt="{{ profile.title }}"/>
+{% if page.image %}
+    {% image page.image fill-790x632 as profile_img %}
+    <img src="{{ profile_img.url }}" alt="{{ page.title }}"/>
 {% endif %}
 
 <div class="education">
-    {{ profile.education|richtext }}
-    <a href="mailto:{{ profile.person.email }}">{{ profile.person.email }}</a>
-    {% if profile.person.phone_number %}
-        <p>{{ profile.person.phone_number }}</p>
+    {{ page.education|richtext }}
+    <a href="mailto:{{ page.person.email }}">{{ page.person.email }}</a>
+    {% if page.person.phone_number %}
+        <p>{{ page.person.phone_number }}</p>
     {% endif %}
-    {% if profile.person.office_location %}
-        <p>{{ profile.person.office_location }}</p>
+    {% if page.person.office_location %}
+        <p>{{ page.person.office_location }}</p>
     {% endif %}
 </div>
 
 <div class="bio">
-    {% include_block profile.body %}
+    {% include_block page.body %}
 </div>
 
 {% if recent_posts %}

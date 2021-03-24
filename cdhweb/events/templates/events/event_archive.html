@@ -33,7 +33,7 @@
 </section>
 {% endif %}
 
-{% for event in events %}
+{% for page in events %}
     {% include 'events/snippets/event_card.html' %}
 {% empty %}
     {# semester event archive will 404 for no events; upcoming does not #}
@@ -55,7 +55,7 @@
 
 {% if past.exists %}
 <h2>Past Events</h2>
-    {% for event in past reversed %}  {# display in chronological order #}
+    {% for page in past reversed %}  {# display in chronological order #}
         {% include 'events/snippets/event_card.html' %}
     {% endfor %}
 {% endif %}

@@ -445,8 +445,6 @@ class Profile(BasePage):
     parent_page_types = ["people.PeopleLandingPage"]
     subpage_types = []
 
-    context_object_name = "profile"
-
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""
         context = super().get_context(request)

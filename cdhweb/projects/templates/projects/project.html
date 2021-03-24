@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
-{% block page-subtitle %}{{ project.title }} | Projects | {% endblock %}
+{% block page-subtitle %}{{ page.title }} | Projects | {% endblock %}
 
 {% block main %}
 <div class="project-detail">
 <header>
-    <h1>{{ project.title }}</h1>
-    <p class="short_description">{{ project.short_description }}</p>
+    <h1>{{ page.title }}</h1>
+    <p class="short_description">{{ page.short_description }}</p>
 </header>
 
 <div class="links">
   <ul>
-    {% for link in project.related_links.all %}
+    {% for link in page.related_links.all %}
         {% with link_type=link.type.name %}
         <li class="{{ link_type|lower }}"><a href="{{ link.url }}">
             {# Special case: display project URL to make it visible & memorable  #}
@@ -27,29 +27,29 @@
 <div class="contributors">
     <ul>
     {# display project members for the current (or most recent) grant #}
-    {% for membership in project.current_memberships %}
+    {% for membership in page.current_memberships %}
     {# TODO: can we pluralize by checking role for next item in index? #}
         {% ifchanged %}<li class="role"><h3>{{ membership.role }}</h3></li>{% endifchanged %}
         {% include 'projects/snippets/project_membership.html' with member=membership.person %}
     {% endfor %}
     {# include project alumni  #}
-    {% if project.alums %}
-        <li class="role"><h3>Project Alum{{ project.alums|pluralize }}</h3></li>
-        {% for member in project.alums %}
+    {% if page.alums %}
+        <li class="role"><h3>Project Alum{{ page.alums|pluralize }}</h3></li>
+        {% for member in page.alums %}
             {% include 'projects/snippets/project_membership.html' %}
         {% endfor %}
     {% endif %}
     </ul>
-{% if project.cdh_built %}<div class="cdh-built">Built by CDH</div>{% endif %}
+{% if page.cdh_built %}<div class="cdh-built">Built by CDH</div>{% endif %}
 </div>
 
 <div class="description">
-    {% if project.image %}
-        {% image project.image width-735 as project_img %}
-        <img src="{{ project_img.url }}" alt="{{ project.title }}"/>
+    {% if page.image %}
+        {% image page.image width-735 as project_img %}
+        <img src="{{ project_img.url }}" alt="{{ page.title }}"/>
     {% endif %}
-    {% include_block project.body %}
-    {% if project.grants.exists %}
+    {% include_block page.body %}
+    {% if page.grants.exists %}
     <section class="grant-history">
         <h2>CDH Grant History</h2>
         <ul>
@@ -57,7 +57,7 @@
             FakeQuerySet doesn't support .reverse() so we have to use .all()
             with 'reversed' instead of .reverse() when the page is previewed
             {% endcomment %}
-            {% for grant in project.grants.all reversed %}
+            {% for grant in page.grants.all reversed %}
             <li>{{ grant.years }} {{ grant.grant_type }}</li>
             {% endfor %}
         </ul>

@@ -27,7 +27,7 @@
 
 <section class="events">
 <h2><a href="{% url 'event:upcoming' %}">Upcoming Events</a></h2>
-{% for event in events %}
+{% for page in events %}
     {% include 'events/snippets/event_card.html' %}
 {% empty %}
     <div>
@@ -39,7 +39,7 @@
 
 <section class="projects">
 <h2><a href="{% slugurl 'projects' %}">Projects</a></h2>
-{% for project in projects %}
+{% for page in projects %}
     {% include 'projects/snippets/project_card.html' %}
 {% endfor %}
 </section>

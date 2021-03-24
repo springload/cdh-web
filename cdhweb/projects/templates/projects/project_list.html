@@ -29,13 +29,13 @@
 {% endif %}
 
 {# current projects #}
-{% for project in current %}
+{% for page in current %}
     {% include 'projects/snippets/project_card.html' with large=1 %}
 {% endfor %}
 
 {% if past %} {# display past if any #}
 <h2>{{ past_title }}</h2>
-{% for project in past %}
+{% for page in past %}
     {% include 'projects/snippets/project_card.html' with large=1 %}
 {% endfor %}
 {% endif %}

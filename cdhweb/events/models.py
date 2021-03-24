@@ -305,8 +305,6 @@ class Event(BasePage, ClusterableModel):
     # custom manager/queryset logic
     objects = EventManager()
 
-    context_object_name = "event"
-
     class Meta:
         ordering = ("-start_time",)
 

@@ -167,8 +167,6 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
     # custom manager/queryset logic
     objects = BlogPostManager()
 
-    context_object_name = "post"
-
     @property
     def short_title(self):
         """Shorter title with ellipsis."""
