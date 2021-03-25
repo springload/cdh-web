@@ -16,7 +16,8 @@ class TestHomePage:
 
     def test_page_content(self, client, site, homepage):
         """homepage editable content should display"""
-        response = client.get(homepage.relative_url(site))
+        response = client.get(homepage.get_url())
+        assertTemplateUsed(response, "cdhpages/home_page.html")
         assertContains(response, homepage.body[0].value.source)
 
     def test_empty_posts(self, client, site, homepage):

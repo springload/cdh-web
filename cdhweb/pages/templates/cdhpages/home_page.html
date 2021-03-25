@@ -44,5 +44,8 @@
 {% endfor %}
 </section>
 
+{% endblock %}
 
+{% block child-pages %}
+    {% include 'snippets/child_pages.html' with child_pages=page.get_children.live content_only=1 %}
 {% endblock %}

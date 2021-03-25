@@ -1,4 +1,4 @@
-{% load static pages_tags mezzanine_tags fullurl wagtailuserbar %}
+{% load static compress wagtailuserbar wagtailcore_tags %}
 <!DOCTYPE html>
 <html lang='en' xmlns:schema="http://schema.org/" prefix="og: http://ogp.me/ns# profile: http://ogp.me/ns/profile#" {% block headattrs %}{% endblock %}>
 <head>
@@ -50,10 +50,10 @@
                 <a class="menu-toggle" name="menu"><i class="fa fa-bars" aria-hidden="true"></i></a>
             </nav>
             <nav id='mainmenu'>
-                <a href='{% url 'home' %}' class='home-page'>
+                <a href='{% pageurl site.root_page %}' class='home-page'>
                   <img alt="home" src='{% static "img/CDH_logo.svg" %}' />
                 </a>
-                {% page_menu "snippets/primary_navigation.html" %}
+                {% include "snippets/primary_navigation.html" %}
             </nav>
         </div>
     </header>
@@ -68,7 +68,9 @@
 
     {# display child pages as attachments if this page has any children #}
     {# NOTE: child pages are no longer treated as a menu; all published child pages will be shown (with the exception of profile and project pages) #}
+    {% block child-pages %}
     {% include 'snippets/child_pages.html' with child_pages=page.get_children.live %}
+    {% endblock %}
 
     {% if page.attachments %}
         {% include 'snippets/attachments.html' %}
@@ -102,7 +104,7 @@
 
                     <meta property="schema:alternateName" content="Center for Digital Humanities @ Princeton University" />
                     <meta property="schema:alternateName" content="CDH @ Princeton University" />
-                    <meta property="schema:url" content="{% fullurl 'home' %}"/>
+                    <meta property="schema:url" content="{{ site.root_page.get_full_url }}"/>
 
                     <meta property="schema:logo" content='{% static "img/CDH_logo.svg" %}' />
                 </div>
@@ -128,12 +130,11 @@
                     <img src="{% static 'img/PUsig1-bw-bs.svg' %}" alt="Princeton University"/>
                 </div>
                 <div class="copyright">
-                    ©2017 Trustees of <span property="schema:parentOrganization" typeof="schema:Organization">
+                    &copy;{% now 'Y' %} Trustees of <span property="schema:parentOrganization" typeof="schema:Organization">
                     <a href="https://www.princeton.edu" property="schema:url"><span property="schema:name">Princeton University</span></a></span>
                 </div>
-                <a class="a11y" href="https://accessibility.princeton.edu/">Accessibility</a>
                 <a class="a11y" href="https://accessibility.princeton.edu/accessibility-assistance">Accessibility Assistance</a>
-                <div class="sw-version">v. {{ SW_VERSION }}</div>
+                <a class="sw-version" href="https://github.com/Princeton-CDH/cdh-web">v. {{ SW_VERSION }}</a>
             </div>
 
         </section>

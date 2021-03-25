@@ -18,7 +18,7 @@
 <ul>
 {% for navpage in toplevel_pages %}
     {% if navpage.landingpage or navpage.linkpage %} {# exclude content pages #}
-    {# footer has 6 columns; ul breaks to next column #}
+ {# footer has 6 columns; ul breaks to next column #}
     {% if not forloop.first and forloop.counter <= 5 %}<ul>{% endif %}
         <li class='menu-header'>
             {% with child_pages=navpage.get_children.live.in_menu %}
@@ -34,10 +34,9 @@
             {% endif %}
             {% endwith %}
         </li>
-        {% if forloop.counter > 5 %}
+        {% if forloop.counter < 5 %}
         </ul>
         {% endif %}
     {% endif %}
 {% endfor %}
-</ul>
 {% endwith %}

@@ -10,7 +10,6 @@ from wagtail.contrib.sitemaps.views import sitemap
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-from cdhweb.resources import views as resource_views
 
 admin.autodiscover()
 
@@ -28,7 +27,6 @@ urlpatterns = [
                                                    content_type='text/plain')),
     re_path(r'^favicon\.ico$', RedirectView.as_view(
         url=FAVICON, permanent=True)),
-    re_path(r'^$', resource_views.Homepage.as_view(), name="home"),
 
     # main apps
     path("people/", include("cdhweb.people.urls", namespace='people')),
