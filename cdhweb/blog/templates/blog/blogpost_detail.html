@@ -24,7 +24,7 @@
 <article typeof="schema:BlogPosting" class="blogpost">
     <header>
         <h1 property="schema:headline">{{ page.title }}</h1>
-        <meta property="schema:url schema:mainEntityOfPage" content="{% pageurl page %}"/>
+        <meta property="schema:url schema:mainEntityOfPage" content="{{ page.get_full_url }}"/>
         {# FIXME: do we need full url here? #}
         <meta property="schema:datePublished" content="{{ page.first_published_at|date:"c" }}"/>
         <meta property="schema:dateModified" content="{{ page.last_published_at|date:"c" }}"/>
