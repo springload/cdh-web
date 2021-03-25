@@ -17,10 +17,9 @@ class ProjectViewsSitemap(Sitemap):
         ]
 
     def location(self, obj):
-        # generate url based on archives url names
+        # generate url based on url name within projects url namespace
         return reverse('projects:%s' % obj[0])
 
     def lastmod(self, obj):
-        # both pages are modified based on changes to digitized works,
-        # so return the most recent modification time of any of them
+        # return last modified as calculated by the view
         return obj[1]().last_modified()

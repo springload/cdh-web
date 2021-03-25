@@ -7,18 +7,20 @@ from cdhweb.events import views
 
 class EventViewsSitemap(Sitemap):
     '''Sitemap for project views that are neither Wagtail pages nor
-    tied to models (currently all list views).'''
+    tied to models (currently event upcoming and semester list views).'''
 
     def items(self):
-        # return list of tuple with url name, view object
+        # return list of tuple with url, initialized view object
         factory = RequestFactory()
 
         urls = [
             (reverse('event:upcoming'), views.UpcomingEventsView()),
         ]
+        # get list of actual semesters with events
         for season, year in views.EventSemesterDates() \
                                  .get_semester_date_list():
-
+            # generate url for this date,
+            # and initialize a view for that url so we can get last modified
             url = reverse('event:by-semester',
                           kwargs={'semester': season.lower(), 'year': year})
             request = factory.get(url)
@@ -30,9 +32,9 @@ class EventViewsSitemap(Sitemap):
         return urls
 
     def location(self, obj):
+        # return the url as generated in items method
         return obj[0]
 
     def lastmod(self, obj):
-        # both pages are modified based on changes to digitized works,
-        # so return the most recent modification time of any of them
+        # return last modified as calculated by the view
         return obj[1].last_modified()
