@@ -1,4 +1,4 @@
-{% load static pages_tags compress wagtailuserbar wagtailcore_tags %}
+{% load static compress wagtailuserbar wagtailcore_tags %}
 <!DOCTYPE html>
 <html lang='en' xmlns:schema="http://schema.org/" prefix="og: http://ogp.me/ns# profile: http://ogp.me/ns/profile#" {% block headattrs %}{% endblock %}>
 <head>
@@ -68,7 +68,9 @@
 
     {# display child pages as attachments if this page has any children #}
     {# NOTE: child pages are no longer treated as a menu; all published child pages will be shown (with the exception of profile and project pages) #}
+    {% block child-pages %}
     {% include 'snippets/child_pages.html' with child_pages=page.get_children.live %}
+    {% endblock %}
 
     {% if page.attachments %}
         {% include 'snippets/attachments.html' %}
@@ -102,7 +104,7 @@
 
                     <meta property="schema:alternateName" content="Center for Digital Humanities @ Princeton University" />
                     <meta property="schema:alternateName" content="CDH @ Princeton University" />
-                    <meta property="schema:url" content="https://{{ site.hostname }}{% pageurl site.root_page %}"/>
+                    <meta property="schema:url" content="{{ site.root_page.get_full_url }}"/>
 
                     <meta property="schema:logo" content='{% static "img/CDH_logo.svg" %}' />
                 </div>
