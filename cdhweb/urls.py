@@ -11,6 +11,9 @@ from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 from cdhweb.people.sitemaps import PeopleViewsSitemap
+from cdhweb.projects.sitemaps import ProjectViewsSitemap
+from cdhweb.events.sitemaps import EventViewsSitemap
+
 
 admin.autodiscover()
 
@@ -23,8 +26,8 @@ if getattr(settings, 'SHOW_TEST_WARNING', False):
 sitemaps = {
     'pages': Sitemap,  # wagtail content pages
     'people': PeopleViewsSitemap,
-#    'archive': ArchiveViewsSitemap,
-#    'digitizedworks': DigitizedWorkSitemap,
+    'projects': ProjectViewsSitemap,
+    'events': EventViewsSitemap,
 }
 
 

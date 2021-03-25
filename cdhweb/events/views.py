@@ -10,7 +10,7 @@ from cdhweb.events.models import Event
 from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
 
 
-class EventMixinView(object):
+class EventMixinView:
     '''View mixin that sets model to Event and returns a
     published Event queryset.'''
     model = Event
@@ -21,7 +21,7 @@ class EventMixinView(object):
         return Event.objects.live()
 
 
-class EventSemesterDates(object):
+class EventSemesterDates:
     '''Mixin to return list of event semester dates based on
     event dates in the system.'''
 
@@ -46,6 +46,7 @@ class EventSemesterDates(object):
             sem_date = (self.get_semester(date), date.year)
             if sem_date not in date_list:
                 date_list.append(sem_date)
+
         return date_list
 
 

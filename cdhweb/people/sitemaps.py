@@ -6,7 +6,7 @@ from cdhweb.people import views
 
 class PeopleViewsSitemap(Sitemap):
     '''Sitemap for people views that are not Wagtail pages but also
-    not tied to models (currently archive search/browse page only).'''
+    not tied to models (currently all people list views).'''
 
     def items(self):
         # return list of tuple with url name, view object
