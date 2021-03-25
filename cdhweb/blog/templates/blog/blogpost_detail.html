@@ -2,14 +2,12 @@
 {% load wagtailcore_tags humanize %}
 {# simple blog post page; adapted in part from mezzanine blog post template #}
 
-{% block page-subtitle %}{{ post.title }} | {{ block.super }}{% endblock %}
-
 {% block headattrs %} xmlns:article="http://ogp.me/ns/article#"{% endblock %}
 {% block extra-head %}
-    <meta name="article.published_time" content="{{ post.first_published_at.isoformat }}"/>
-    <meta name="article.modified_time" content="{{ post.last_published_at.isoformat }}"/>
-    {% if post.authors.exists %}
-      {% for author in post.authors.all %}
+    <meta name="article.published_time" content="{{ page.first_published_at.isoformat }}"/>
+    <meta name="article.modified_time" content="{{ page.last_published_at.isoformat }}"/>
+    {% if page.authors.exists %}
+      {% for author in page.authors.all %}
         {% if author.person.profile_url %}
         {# facebook requires url; provide local or external if we have it #}
     <meta name="article.author" content="{{ author.person.profile_url }}"/>
@@ -25,16 +23,16 @@
 {% block main %}
 <article typeof="schema:BlogPosting" class="blogpost">
     <header>
-        <h1 property="schema:headline">{{ post.title }}</h1>
-        <meta property="schema:url schema:mainEntityOfPage" content="{% pageurl post %}"/>
+        <h1 property="schema:headline">{{ page.title }}</h1>
+        <meta property="schema:url schema:mainEntityOfPage" content="{{ page.get_full_url }}"/>
         {# FIXME: do we need full url here? #}
-        <meta property="schema:datePublished" content="{{ post.first_published_at|date:"c" }}"/>
-        <meta property="schema:dateModified" content="{{ post.last_published_at|date:"c" }}"/>
+        <meta property="schema:datePublished" content="{{ page.first_published_at|date:"c" }}"/>
+        <meta property="schema:dateModified" content="{{ page.last_published_at|date:"c" }}"/>
 
         <div class="byline">
-        {% if post.authors.exists %}
+        {% if page.authors.exists %}
         <div class="authors">
-        {% for author in post.authors.all %}
+        {% for author in page.authors.all %}
             <span property="schema:author" typeof="schema:Person">
                 <a {% if author.person.profile_url %}property="schema:url" href="{{ author.person.profile_url }}"{% endif %}>
                 <span property="schema:name">{{ author.person }}</span></a>{% if not forloop.last %}, {% endif %}
@@ -42,7 +40,7 @@
         {% endfor %}
         </div><br/>
         {% endif %}
-        <span class="date-published">{{ post.first_published_at|date:"F j, Y" }}</span>
+        <span class="date-published">{{ page.first_published_at|date:"F j, Y" }}</span>
         {# NOTE: google structured data testing tool claims publisher and image are required #}
             <div property="schema:publisher" style="display:none">
               <span typeof="schema:Organization">
@@ -54,7 +52,7 @@
     </header>
 
     <div class="content" property="schema:articleBody">
-        {% include_block post.body %}
+        {% include_block page.body %}
     </div>
 
 

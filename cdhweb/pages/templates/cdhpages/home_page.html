@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load wagtailcore_tags %}
 
-{% block page-title %}{{ page.seo_title }}{% endblock %}
+{# Override entire title so there's no extra context appended #}
+{% block title %}<title>{% firstof page.seo_title page.title %}</title>{% endblock %}
 
 {% block content %} {# add a class to main content for home-page specific styles #}
 <div class="homepage{% if updates %} with-carousel{% endif %}">
@@ -19,9 +20,7 @@
 {# display editable page content; wrapped for formatting reasons #}
 <section>
     <div class="richtext">
-    {% for block in page.body %}
-        {% include_block block %}
-    {% endfor %}
+    {% include_block page.body %}
     </div>
 </section>
 

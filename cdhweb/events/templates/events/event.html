@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
-{% block page-subtitle %}{{ event.title }} | Events | {% endblock %}
-
 {% block extra-head %}
     <meta name="twitter:label1" content="Date"/>
-    <meta name="twitter:data1" content="{{ event.when }}"/>
-    {% if event.location %}
+    <meta name="twitter:data1" content="{{ page.when }}"/>
+    {% if page.location %}
     <meta name="twitter:label2" content="Location"/>
-    <meta name="twitter:data2" content="{{ event.location.display_name }}"/>
+    <meta name="twitter:data2" content="{{ page.location.display_name }}"/>
     {% endif %}
 {% endblock %}
 
@@ -16,13 +14,13 @@
 {% block main %}
 <div typeof="schema:Event" class="event-detail">
 <header>
-    <h1 property="schema:name">{{ event.title }}</h1>
+    <h1 property="schema:name">{{ page.title }}</h1>
 </header>
 
 <div class="details">
-    {% if event.speakers.exists %}
+    {% if page.speakers.exists %}
     <ul>
-    {% for speaker in event.speakers.all %}
+    {% for speaker in page.speakers.all %}
     {# performer == presenter #}
     <li property="schema:performer" typeof="schema:Person">
         <h3><a property="schema:name"
@@ -38,39 +36,39 @@
     </ul>
     {% endif %}
     {# don't repeat event type if it is an exact match (i.e. reading group) #}
-    {% if event.type.name != event.title %}
-    <p>{{ event.type }}</p>
+    {% if page.type.name != page.title %}
+    <p>{{ page.type }}</p>
     {% endif %}
-    <meta property="schema:startDate" content="{{ event.start_time|date:'c' }}"/>
-    <meta property="schema:endDate" content="{{ event.end_time|date:'c' }}"/>
-    <div>{{ event.when }}</div>
+    <meta property="schema:startDate" content="{{ page.start_time|date:'c' }}"/>
+    <meta property="schema:endDate" content="{{ page.end_time|date:'c' }}"/>
+    <div>{{ page.when }}</div>
 
-    {% if event.location %}
-    <div property="schema:location" typeof="{% if event.is_virtual %}schema:VirtualLocation{% else %}schema:Place{% endif %}" class="location">
-        <span property="schema:name">{{ event.location.name }}</span>
-        {% if not event.is_virtual %}
+    {% if page.location %}
+    <div property="schema:location" typeof="{% if page.is_virtual %}schema:VirtualLocation{% else %}schema:Place{% endif %}" class="location">
+        <span property="schema:name">{{ page.location.name }}</span>
+        {% if not page.is_virtual %}
         <div property="schema:address"
-        {% if event.location.name == event.location.address %}style="display:none"{% endif %}>
-        {{ event.location.address}}</div>
-        {% elif event.join_url %}
-        <div property="schema:url" style="display:none">{{ event.join_url }}</div>
+        {% if page.location.name == page.location.address %}style="display:none"{% endif %}>
+        {{ page.location.address}}</div>
+        {% elif page.join_url %}
+        <div property="schema:url" style="display:none">{{ page.join_url }}</div>
         {% endif %}
     </div>
     {% endif %}
 
     <div class="ical">
-        <p><a href="{{ event.get_ical_url }}">Export to iCal</a></p>
+        <p><a href="{{ page.get_ical_url }}">Export to iCal</a></p>
     </div>
 </div>
 
 <div class="description">
-    {% if event.image %}
-        {% image event.image width-735 as event_img %}
-        <img src="{{ event_img.url }}" alt="{{ event.title }}" property="schema:image"/>
+    {% if page.image %}
+        {% image page.image width-735 as event_img %}
+        <img src="{{ event_img.url }}" alt="{{ page.title }}" property="schema:image"/>
     {% endif %}
-    <meta property="schema:url" content="{{ event.full_url }}"/>
+    <meta property="schema:url" content="{{ page.full_url }}"/>
     <div property="schema:description">
-    {% include_block event.body %}
+    {% include_block page.body %}
     </div>
 </div>
 

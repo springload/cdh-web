@@ -66,7 +66,7 @@ class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
 class BlogDetailView(BlogPostMixinView, DetailView, LastModifiedMixin):
     '''Blog post detail view'''
 
-    context_object_name = "post"
+    context_object_name = "page"
 
     def get_context_data(self, *args, **kwargs):
         """Add next/previous post to context."""

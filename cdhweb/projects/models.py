@@ -234,8 +234,6 @@ class Project(BasePage, ClusterableModel):
     # custom manager/queryset logic
     objects = ProjectManager()
 
-    context_object_name = "project"
-
     def __str__(self):
         return self.title
 

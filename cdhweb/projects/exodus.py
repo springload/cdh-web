@@ -6,7 +6,8 @@ from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 from cdhweb.pages.exodus import (convert_slug, exodize_attachments,
                                  exodize_history, get_wagtail_image,
                                  to_streamfield)
-from cdhweb.projects.models import OldProject, Project, ProjectsLandingPage
+from cdhweb.projects.models import (OldProject, Project, ProjectsLandingPage,
+                                    ProjectTag)
 
 
 def project_exodus():
@@ -70,4 +71,7 @@ def project_exodus():
         exodize_attachments(project, project_page)
         exodize_history(project, project_page)
         
-        # NOTE no tags to migrate
+        # exodize tags
+        for tag in project.tags.all():
+            logging.debug("exodizing project tag %s" % tag)
+            ProjectTag.objects.create(content_object=project_page, tag=tag)

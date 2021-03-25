@@ -2,10 +2,13 @@
 import logging
 
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
+from taggit.models import Tag
 
-from cdhweb.blog.models import Author, BlogLinkPage, BlogPost, OldBlogPost
-from cdhweb.pages.exodus import (convert_slug, exodize_attachments, exodize_history,
-                                 get_wagtail_image, to_streamfield)
+from cdhweb.blog.models import (Author, BlogLinkPage, BlogPost, BlogPostTag,
+                                OldBlogPost)
+from cdhweb.pages.exodus import (convert_slug, exodize_attachments,
+                                 exodize_history, get_wagtail_image,
+                                 to_streamfield)
 from cdhweb.people.models import Person
 
 
@@ -58,4 +61,8 @@ def blog_exodus():
         exodize_attachments(post, post_page)
         exodize_history(post, post_page)
 
-        # NOTE no tags to migrate
+        # exodize keywords as tags
+        for kw in post.keywords.all():
+            logging.debug("exodizing blog tag %s" % kw.keyword.title)
+            tag = Tag.objects.get_or_create(name=kw.keyword.title)[0]
+            BlogPostTag.objects.create(content_object=post_page, tag=tag)
