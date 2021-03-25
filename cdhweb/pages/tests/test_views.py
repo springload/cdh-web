@@ -59,7 +59,8 @@ class TestLastModifiedListMixin:
     def test_not_modified(self, mock_dispatch, rf, lmod_list_view, lmod_objects):
         """should serve 304 if no objects have been modified since request"""
         # get last modified date for most recent object
-        most_recent = list(sorted(lmod_objects, key=attrgetter("updated")))[0]
+        most_recent = list(sorted(lmod_objects, key=attrgetter("updated"),
+                                  reverse=True))[0]
         lmod = most_recent.updated + timedelta(seconds=1)
         request = rf.get("", HTTP_IF_MODIFIED_SINCE=lmod.strftime(
             "%a, %d %b %Y %H:%M:%S GMT"))
@@ -72,7 +73,8 @@ class TestLastModifiedListMixin:
     def test_modified(self, mock_dispatch, rf, lmod_list_view, lmod_objects):
         """should serve full object list with 200 if any modified since request"""
         # get last modified date for most recent object
-        most_recent = list(sorted(lmod_objects, key=attrgetter("updated")))[0]
+        most_recent = list(sorted(lmod_objects, key=attrgetter("updated"),
+                                  reverse=True))[0]
         lmod = most_recent.updated - timedelta(days=1)
         # request with prior date; should report modified since then
         request = rf.get("", HTTP_IF_MODIFIED_SINCE=lmod.strftime(
