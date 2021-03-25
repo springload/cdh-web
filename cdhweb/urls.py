@@ -55,7 +55,6 @@ urlpatterns = [
             RedirectView.as_view(url='/updates%(blog_url)s', permanent=True)),
 
     # sitemaps
-    # sitemaps
     path('sitemap.xml', sitemap_views.index, {'sitemaps': sitemaps},
          name='sitemap-index'),
     re_path(r'^sitemap-(?P<section>.+)\.xml$', sitemap_views.sitemap,
@@ -63,13 +62,13 @@ urlpatterns = [
             name='django.contrib.sitemaps.views.sitemap'),
 
     # wagtail paths
-    # NOTE temporarily make wagtail pages available at pages/ so that they can
     # coexist with mezzanine urls
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     # enable if needed to test mezzanine pages
     # path("mezz", include("mezzanine.urls")),
 
+    # let wagtail handle everything else
     path("", include(wagtail_urls)),
 ]
 
