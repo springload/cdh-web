@@ -2,13 +2,13 @@ from django.urls import reverse
 import pytest
 
 from cdhweb.people import views
-from cdhweb.people.sitemaps import PeopleViewsSitemap
+from cdhweb.people.sitemaps import PeopleListSitemap
 
 
-class TestPeopleViewsSitemap:
+class TestPeopleListSitemap:
 
     def test_items(self):
-        items = PeopleViewsSitemap().items()
+        items = PeopleListSitemap().items()
         url_names = [i[0] for i in items]
         url_views = [i[1] for i in items]
 
@@ -20,13 +20,13 @@ class TestPeopleViewsSitemap:
             assert view in url_views
 
     def test_location(self):
-        assert PeopleViewsSitemap().location(('staff',)) \
+        assert PeopleListSitemap().location(('staff',)) \
             == reverse('people:staff')
 
     @pytest.mark.django_db
     def test_lastmod(self, staffer):
         # fixture to ensure we have at least one record with a date
-        assert PeopleViewsSitemap().lastmod(('staff', views.StaffListView)) ==\
+        assert PeopleListSitemap().lastmod(('staff', views.StaffListView)) ==\
             views.StaffListView().last_modified()
 
     @pytest.mark.django_db

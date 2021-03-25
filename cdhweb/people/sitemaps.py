@@ -4,7 +4,7 @@ from django.urls import reverse
 from cdhweb.people import views
 
 
-class PeopleViewsSitemap(Sitemap):
+class PeopleListSitemap(Sitemap):
     '''Sitemap for people views that are not Wagtail pages but also
     not tied to models (currently all people list views).'''
 

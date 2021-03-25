@@ -5,8 +5,8 @@ from django.urls import reverse
 from cdhweb.events import views
 
 
-class EventViewsSitemap(Sitemap):
-    '''Sitemap for project views that are neither Wagtail pages nor
+class EventListSitemap(Sitemap):
+    '''Sitemap for event views that are neither Wagtail pages nor
     tied to models (currently event upcoming and semester list views).'''
 
     def items(self):

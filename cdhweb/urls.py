@@ -10,9 +10,10 @@ from wagtail.contrib.sitemaps import views as sitemap_views, Sitemap
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-from cdhweb.people.sitemaps import PeopleViewsSitemap
-from cdhweb.projects.sitemaps import ProjectViewsSitemap
-from cdhweb.events.sitemaps import EventViewsSitemap
+from cdhweb.blog.sitemaps import BlogListSitemap
+from cdhweb.people.sitemaps import PeopleListSitemap
+from cdhweb.projects.sitemaps import ProjectListSitemap
+from cdhweb.events.sitemaps import EventListSitemap
 
 
 admin.autodiscover()
@@ -25,9 +26,10 @@ if getattr(settings, 'SHOW_TEST_WARNING', False):
 # sitemap configuration for sections of the site
 sitemaps = {
     'pages': Sitemap,  # wagtail content pages
-    'people': PeopleViewsSitemap,
-    'projects': ProjectViewsSitemap,
-    'events': EventViewsSitemap,
+    'people': PeopleListSitemap,
+    'projects': ProjectListSitemap,
+    'events': EventListSitemap,
+    'blog': BlogListSitemap,
 }
 
 

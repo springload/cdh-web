@@ -4,7 +4,7 @@ from django.urls import reverse
 from cdhweb.projects import views
 
 
-class ProjectViewsSitemap(Sitemap):
+class ProjectListSitemap(Sitemap):
     '''Sitemap for project views that are neither Wagtail pages nor
     tied to models (currently all project list views).'''
 
