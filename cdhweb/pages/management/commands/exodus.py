@@ -243,7 +243,7 @@ class Command(BaseCommand):
 
             # project list pages become link pages
             project_pages = MezzaninePage.objects \
-                .filter(Q(slug__startswith="projects")).order_by('_order')
+                .filter(slug__startswith="projects").order_by('_order')
             for page in project_pages:
                 if page.pk not in self.migrated:
                     new_page = create_link_page(page, projects)
