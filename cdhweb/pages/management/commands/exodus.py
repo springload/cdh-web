@@ -193,7 +193,7 @@ class Command(BaseCommand):
         # migrate people pages as link pages
         if people:
             people_pages = MezzaninePage.objects \
-                .filter(slug__startswith="people/").order_by('-slug')
+                .filter(slug__startswith="people/")  #.order_by('-slug')
             for page in people_pages:
                 if page.pk not in self.migrated:
                     create_link_page(page, people)
@@ -243,7 +243,7 @@ class Command(BaseCommand):
 
             # project list pages become link pages
             project_pages = MezzaninePage.objects \
-                .filter(Q(slug__startswith="projects")).order_by('-slug')
+                .filter(Q(slug__startswith="projects")) #.order_by('-slug')
             for page in project_pages:
                 if page.pk not in self.migrated:
                     new_page = create_link_page(page, projects)

@@ -4,8 +4,8 @@ from django.views.generic.base import View
 
 class LastModifiedMixin(View):
     """Mixin that adds last-modified timestamps to response for detail views.
-    
-    Uses Django's get_conditional_response to return a 304 if object has not 
+
+    Uses Django's get_conditional_response to return a 304 if object has not
     been modified since time specified in the HTTP if-modified-since header.
     """
 
@@ -36,7 +36,7 @@ class LastModifiedMixin(View):
 
 class LastModifiedListMixin(LastModifiedMixin):
     """Mixin that adds last-modified timestamps to response for list views.
-    
+
     Uses Django's get_conditional_response to return a 304 if none of the
     objects in the list have been modified since time specified in the HTTP
     if-modified-since header.
@@ -46,5 +46,6 @@ class LastModifiedListMixin(LastModifiedMixin):
         """Get the most recent modification date among all view objects."""
         queryset = self.get_queryset()
         if queryset.exists():
-            return getattr(queryset.order_by(self.lastmodified_attr).first(),
-                           self.lastmodified_attr)
+            return getattr(
+                queryset.order_by(self.lastmodified_attr).reverse().first(),
+                self.lastmodified_attr)
