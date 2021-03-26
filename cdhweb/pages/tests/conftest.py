@@ -92,6 +92,10 @@ class MyModelQuerySet:
     def first(self):
         return self.objects[0]
 
+    def reverse(self):
+        self.objects.reverse()
+        return self
+
 
 class MyLastModifiedDetailView(LastModifiedMixin, DetailView):
     # fake view that uses LastModifiedMixin for testing

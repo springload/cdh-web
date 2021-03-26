@@ -6,9 +6,14 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic.base import RedirectView, TemplateView
 from wagtail.admin import urls as wagtailadmin_urls
-from wagtail.contrib.sitemaps.views import sitemap
+from wagtail.contrib.sitemaps import views as sitemap_views, Sitemap
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
+
+from cdhweb.blog.sitemaps import BlogListSitemap
+from cdhweb.people.sitemaps import PeopleListSitemap
+from cdhweb.projects.sitemaps import ProjectListSitemap
+from cdhweb.events.sitemaps import EventListSitemap
 
 
 admin.autodiscover()
@@ -17,6 +22,16 @@ admin.autodiscover()
 FAVICON = '/static/favicon.ico'
 if getattr(settings, 'SHOW_TEST_WARNING', False):
     FAVICON = '/static/favicon-test.ico'
+
+# sitemap configuration for sections of the site
+sitemaps = {
+    'pages': Sitemap,  # wagtail content pages
+    'people': PeopleListSitemap,
+    'projects': ProjectListSitemap,
+    'events': EventListSitemap,
+    'blog': BlogListSitemap,
+}
+
 
 urlpatterns = [
     # admin site
@@ -42,16 +57,20 @@ urlpatterns = [
             RedirectView.as_view(url='/updates%(blog_url)s', permanent=True)),
 
     # sitemaps
-    path("sitemap.xml", sitemap),
+    path('sitemap.xml', sitemap_views.index, {'sitemaps': sitemaps},
+         name='sitemap-index'),
+    re_path(r'^sitemap-(?P<section>.+)\.xml$', sitemap_views.sitemap,
+            {'sitemaps': sitemaps},
+            name='django.contrib.sitemaps.views.sitemap'),
 
     # wagtail paths
-    # NOTE temporarily make wagtail pages available at pages/ so that they can
     # coexist with mezzanine urls
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     # enable if needed to test mezzanine pages
     # path("mezz", include("mezzanine.urls")),
 
+    # let wagtail handle everything else
     path("", include(wagtail_urls)),
 ]
 
