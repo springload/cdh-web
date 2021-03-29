@@ -14,7 +14,7 @@ class TestBlogYearArchiveView:
         dates = [post.first_published_at for _title,
                  post in blog_posts.items()]
         # months will appear as datetime.date objects with day set to 1
-        months = [date(pubdate.year, pubdate.month, 1) for pubdate in dates]
+        months = set([date(pubdate.year, pubdate.month, 1) for pubdate in dates])
         # should be ordered with most recent first
         assert list(response.context["date_list"]) == \
             sorted(months, reverse=True)
@@ -35,7 +35,7 @@ class TestBlogMonthArchiveView:
         dates = [post.first_published_at for _title,
                  post in blog_posts.items()]
         # months will appear as datetime.date objects with day set to 1
-        months = [date(pubdate.year, pubdate.month, 1) for pubdate in dates]
+        months = set([date(pubdate.year, pubdate.month, 1) for pubdate in dates])
         # should be ordered with most recent first
         assert list(response.context["date_list"]) == \
             sorted(months, reverse=True)
