@@ -216,7 +216,8 @@ class Command(BaseCommand):
             Redirect.add_redirect(
                 '/projects/about/', redirect_to=projects, is_permanent=True)
         except MezzaninePage.DoesNotExist:
-            logging.warning("no projects landing page found; skipping projects")
+            logging.warning(
+                "no projects landing page found; skipping projects")
             pass
 
         if projects:
@@ -293,19 +294,6 @@ class Command(BaseCommand):
                             unmigrated.count())
         for page in unmigrated:
             print('\t%s — slug/url %s)' % (page, page.slug))
-
-        # report on unmigrated attachments
-        attachment_pages = set(chain.from_iterable(
-            [a.pages.all() for a in Attachment.objects.all()]))
-        new_attachment_pages = list(filter(lambda p: hasattr(p, "attachments"),
-                                           Page.objects.all()))
-        n_old_pages = len(attachment_pages)
-        n_new_pages = len(new_attachment_pages)
-        if n_old_pages > n_new_pages:
-            missing_pages = set([p.title for p in attachment_pages]) - \
-                set([p.title for p in new_attachment_pages])
-            logging.warning("%d pages with umigrated attachments: %s" % (
-                            n_old_pages - n_new_pages, ", ".join(missing_pages)))
 
         # delete mezzanine pages here? (but keep for testing migration)
 
