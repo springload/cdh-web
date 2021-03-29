@@ -21,3 +21,9 @@ def test_url_to_icon_path():
     domain = Site.objects.get_current().domain
     assert cdh_tags.url_to_icon_path('/people/staff/') == \
         'https://{}/static/img/cdh-icons/png@2X/ppl@2x.png'.format(domain)
+
+
+def test_startswith():
+    assert cdh_tags.startswith('yes', 'y')
+    assert not cdh_tags.startswith('no', 'y')
+    assert not cdh_tags.startswith(3, 'y')
