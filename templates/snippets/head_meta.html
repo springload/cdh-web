@@ -1,7 +1,9 @@
 {% load static cdh_tags %}
 {% firstof preview_image page.get_url|url_to_icon_path default_preview_image as meta_preview_image %}
 {% firstof page_title page.seo_title page.title as meta_title %}
+{% autoescape off %}
 {% firstof page.get_plaintext_description page_intro.paragraph as meta_description %}
+{% endautoescape %}
 {% autoescape on %}
 {# html metadata #}
 {% if page.tags.exists %}<meta name="keywords" content="{{ page.tags.all|join:', ' }}"/>{% endif %}
