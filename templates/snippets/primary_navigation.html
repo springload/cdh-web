@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n cdh_tags %}
 {# top level menu, with secondary nav for current site section #}
 <div class="nav-main">
     {# top-level pages #}
@@ -17,7 +17,7 @@
                     aria-haspopup="true"
                     aria-expanded="false"
                     {% endif %}
-                    {% if navpage.get_url == request.path %} aria-current="page"{% endif %}>{{ navpage.title }}
+                    {% if request.path|startswith:navpage.get_url %} aria-current="page"{% endif %}>{{ navpage.title }}
                 </a>
             </li>
         {% endif %}

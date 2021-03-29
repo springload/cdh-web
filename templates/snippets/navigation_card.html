@@ -1,4 +1,5 @@
 {# secondary and tertiary naviation for the top-level of the site #}
+{% load cdh_tags %}
 {% if navpages %}
 <div class="nav-card menu-{{ navpage.slug }}">
     <div class="inner">
@@ -10,7 +11,7 @@
                     href="{{ navpage.get_url }}"
                     tabindex="-1"
                     {% if navpage.get_children.live.in_menu %} aria-owns="{{ navpage.slug }}-tertiary"{% endif %}
-                    {% if navpage.get_url == request.path %} aria-current="page"{% endif %}>{{ navpage.title }}</a>
+                    {% if request.path|startswith:navpage.get_url %} aria-current="page"{% endif %}>{{ navpage.title }}</a>
                 {% include "snippets/tertiary_navigation.html" with navpages=navpage.get_children.live.in_menu %}
             </li>
         {% endfor %}
