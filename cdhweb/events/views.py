@@ -69,6 +69,7 @@ class UpcomingEventsView(EventMixinView, ArchiveIndexView, EventSemesterDates,
         event_qs = context['events']
         context.update({
             'events': event_qs.upcoming(),
+            'page_title': 'Upcoming Events',
             # find 6 most recent past events
             'past': event_qs.recent()[:6],
             'date_list': self.get_semester_date_list()
@@ -128,8 +129,8 @@ class EventSemesterArchiveView(EventMixinView, YearArchiveView,
         context = super(EventSemesterArchiveView,
                         self).get_context_data(*args, **kwargs)
         context.update({
-            'title': '%s %s' % (self.kwargs['semester'].title(),
-                                self.kwargs['year'])
+            'page_title': '%s %s Events' % (self.kwargs['semester'].title(),
+                                            self.kwargs['year'])
         })
         return context
 

@@ -22,7 +22,7 @@ class TestBlogYearArchiveView:
     def test_title(self, client, blog_posts):
         """blog post year archive should add year to context as title"""
         response = client.get(reverse("blog:by-year", kwargs={"year": "2019"}))
-        assert response.context["title"] == "2019"
+        assert response.context["page_title"] == "2019 Updates"
 
 
 class TestBlogMonthArchiveView:
@@ -44,7 +44,7 @@ class TestBlogMonthArchiveView:
         """blog post year archive should add year/month to context as title"""
         response = client.get(reverse("blog:by-month",
                               kwargs={"year": "2019", "month": "03"}))
-        assert response.context["title"] == "March 2019"
+        assert response.context["page_title"] == "March 2019 Updates"
 
 
 class TestBlogPostDetailView:

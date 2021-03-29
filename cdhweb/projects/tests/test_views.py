@@ -19,7 +19,7 @@ class TestProjectListView:
         view.dispatch(request)
         view.get_queryset()
         context = view.get_context_data(request=request)
-        assert context["title"] == "My Projects"
+        assert context["page_title"] == "My Projects"
         assert context["past_title"] == "My Past Projects"
 
     def test_archive_nav_urls(self, rf, projects):
