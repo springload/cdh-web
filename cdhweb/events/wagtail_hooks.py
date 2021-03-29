@@ -15,7 +15,7 @@ class EventAdmin(ThumbnailMixin, ModelAdmin):
                    "speaker_list", "attendance", "join_url", "content", "tags", "updated")
     export_filename = "cdhweb-events"
     search_fields = ("title", "speakers__person__first_name",
-                     "speakers__person__last_name", "content", "type", 
+                     "speakers__person__last_name", "body", "type", 
                      "sponsor", "location")
     exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"
