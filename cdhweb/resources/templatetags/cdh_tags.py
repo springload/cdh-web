@@ -36,6 +36,7 @@ def url_to_icon(value):
             return icon
     return ''
 
+
 @register.filter
 def url_to_icon_path(value):
     '''Return absolute path to CDH icon name based on URL.'''
@@ -43,3 +44,10 @@ def url_to_icon_path(value):
     if img:
         return absolutize_url('{}img/cdh-icons/png@2X/{}@2x.png'.format(settings.STATIC_URL, img))
     return ''
+
+
+@register.filter('startswith')
+def startswith(text, starts):
+    if isinstance(text, str):
+        return text.startswith(starts)
+    return False

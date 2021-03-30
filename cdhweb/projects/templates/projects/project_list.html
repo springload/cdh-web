@@ -1,39 +1,41 @@
 {% extends "base.html" %}
 
-{% block page-subtitle %}Projects | {% endblock %}
-
+{% block page-title %}{{ page_title|default:'Projects' }}{% endblock %}
 {% block bodyattrs %}class="with-cards"{% endblock %}
 
 {% block main %}
 <section class="projects">
-<h1>{{ title }}</h1>
 
-{# TODO: first continue person refactor first and then adapt here  #}
-{# drop-down nav adapted from profile list page #}
-{% url 'project:list' as projects_url %}
-{% url 'project:staff' as staff_projects_url %}
-{% url 'project:working-groups' as wg_url %}
+<h1>{{ page_title }}</h1>
+
+{# drop-down nav adapted from person list pages #}
 <div class="archive-nav">
-  <a class="toggle">
-    {% if request.path == projects_url %}Projects
-    {% elif request.path == staff_projects_url %}Staff Projects
-    {% else %}DH Working Groups{% endif %}
+  <a class="toggle">{{ page_title }}
     <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
   <ul class="submenu">
-    <li {% if request.path == projects_url %}class="current"{% endif %}><a href="{{ projects_url }}">Projects</a></li>
-    <li {% if request.path == staff_projects_url %}class="current"{% endif %}><a href="{{ staff_projects_url }}">Staff Projects</a></li>
-    <li {% if request.path == wg_url %}class="current"{% endif %}><a href="{{ wg_url }}">DH Working Groups</a></li>
+    {% for label, page_url in archive_nav_urls %}
+      <li {% if request.path == page_url %}class="current"{% endif %}><a href="{{ page_url }}">{{ label }}</a></li>
+    {% endfor %}
   </ul>
 </div>
 
+{# display page intro snippet paragraph if there is one #}
+{% if page_intro %}
+<section class="textcontent">
+    <div class="richtext">
+    {{ page_intro.paragraph|safe }}
+    </div>
+</section>
+{% endif %}
 
-{% for project in project_list %}
+{# current projects #}
+{% for project in current %}
     {% include 'projects/snippets/project_card.html' with large=1 %}
 {% endfor %}
 
-{% if past_projects %} {# display past if any; currently only on staff project page #}
-<h2>Past Projects</h1>
-{% for project in past_projects %}
+{% if past %} {# display past if any #}
+<h2>{{ past_title }}</h2>
+{% for project in past %}
     {% include 'projects/snippets/project_card.html' with large=1 %}
 {% endfor %}
 {% endif %}

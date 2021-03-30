@@ -1,11 +1,11 @@
-{% load static pages_tags mezzanine_tags fullurl %}
+{% load static compress wagtailuserbar wagtailcore_tags %}
 <!DOCTYPE html>
 <html lang='en' xmlns:schema="http://schema.org/" prefix="og: http://ogp.me/ns# profile: http://ogp.me/ns/profile#" {% block headattrs %}{% endblock %}>
 <head>
     <meta charset='UTF-8'/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     {# Google Analytics recommends this implementation now #}
-    {% if INCLUDE_ANALYTICS %}
+    {% if INCLUDE_ANALYTICS and not request.is_preview %}
     <!-- Global Site Tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-87887700-1"></script>
     <script>
@@ -15,11 +15,13 @@
       gtag('config', 'UA-87887700-1', {'anonymize_ip': true});
     </script>
     {% endif %}
-    <title>{% block page-title %}{% block page-subtitle %}{% if page %}{{ page.meta_title|add:" | "}}{% endif %}{% endblock %}The Center for Digital Humanities at Princeton{% endblock %}</title>
+    {% block title %}
+    <title>{% block page-title %}{% firstof page_title page.seo_title page.title %}{% endblock %} – CDH@Princeton</title>
+    {% endblock %}
     {% if SHOW_TEST_WARNING %} {# test variant favicon to help differentiate test/prod sites #}
-    <link rel="shortcut icon" href="{%  static 'favicon-test.ico' %}">
+    <link rel="shortcut icon" href="{% static 'favicon-test.ico' %}">
     {% else %}
-    <link rel="shortcut icon" href="{%  static 'favicon.ico' %}">
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
     {% endif %}
     {% include 'snippets/head_meta.html' %}
     <meta name="google-site-verification" content="pS2kpksxg6JeC90IvA8BHVsFuK_6b7J_vARVLqqu7ck" />
@@ -50,15 +52,15 @@
                 <a class="menu-toggle" name="menu"><i class="fa fa-bars" aria-hidden="true"></i></a>
             </nav>
             <nav id='mainmenu'>
-                <a href='{% url 'home' %}' class='home-page'>
+                <a href='{% pageurl site.root_page %}' class='home-page'>
                   <img alt="home" src='{% static "img/CDH_logo.svg" %}' />
                 </a>
-                {% page_menu "snippets/primary_navigation.html" %}
+                {% include "snippets/primary_navigation.html" %}
             </nav>
         </div>
     </header>
     {% include 'snippets/test_banner.html' %}
-    
+
     {% block content %}
         {% block content-header %}
         {% endblock %}
@@ -67,12 +69,13 @@
     </div>
 
     {# display child pages as attachments if this page has any children #}
-    {% if page.children.exists %}
-        {% page_menu page 'snippets/child_pages.html' %}
-    {% endif %}
+    {# NOTE: child pages are no longer treated as a menu; all published child pages will be shown (with the exception of profile and project pages) #}
+    {% block child-pages %}
+    {% include 'snippets/child_pages.html' with child_pages=page.get_children.live %}
+    {% endblock %}
 
-    {% if page.attachments.exists %}
-        {% include 'snippets/attachments.html' with attachments=page.attachments.all %}
+    {% if page.attachments %}
+        {% include 'snippets/attachments.html' %}
     {% endif %}
 
         {% block content-footer %}
@@ -84,7 +87,7 @@
         {% include 'snippets/subscribe.html' %}
 
         <section class="footer-menu" id="footermenu">
-            {% page_menu "snippets/footer_menu.html" %}
+            {% include "snippets/footer_menu.html" %}
         </section>
 
         <section class="contact" typeof="schema:Organization">
@@ -103,10 +106,9 @@
 
                     <meta property="schema:alternateName" content="Center for Digital Humanities @ Princeton University" />
                     <meta property="schema:alternateName" content="CDH @ Princeton University" />
-                    <meta property="schema:url" content="{% fullurl 'home' %}"/>
+                    <meta property="schema:url" content="{{ site.root_page.get_full_url }}"/>
 
-                    <meta property="schema:logo" content='{% fullstatic "img/CDH_logo.svg" %}' />
-                    <meta property="schema:logo" content='{% fullstatic "img/CDH_logo.svg" %}' />
+                    <meta property="schema:logo" content='{% static "img/CDH_logo.svg" %}' />
                 </div>
                 {# social links #}
                 <div class="social">
@@ -127,22 +129,21 @@
 
             <div class="pu-info">
                 <div class="pulogo">
-                    <img src="{% fullstatic 'img/PUsig1-bw-bs.svg' %}" alt="Princeton University"/>
+                    <img src="{% static 'img/PUsig1-bw-bs.svg' %}" alt="Princeton University"/>
                 </div>
                 <div class="copyright">
-                    ©2017 Trustees of <span property="schema:parentOrganization" typeof="schema:Organization">
+                    &copy;{% now 'Y' %} Trustees of <span property="schema:parentOrganization" typeof="schema:Organization">
                     <a href="https://www.princeton.edu" property="schema:url"><span property="schema:name">Princeton University</span></a></span>
                 </div>
-                <a class="a11y" href="https://accessibility.princeton.edu/">Accessibility</a>
                 <a class="a11y" href="https://accessibility.princeton.edu/accessibility-assistance">Accessibility Assistance</a>
-                <div class="sw-version">v. {{ SW_VERSION }}</div>
+                <a class="sw-version" href="https://github.com/Princeton-CDH/cdh-web">v. {{ SW_VERSION }}</a>
             </div>
 
         </section>
 
     </footer>
 
-
+    {% wagtailuserbar %}
 </body>
 
 </html>

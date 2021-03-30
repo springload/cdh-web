@@ -5,14 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.projects.views &#8212; CDH website 2.8.0 documentation</title>
+    <title>cdhweb.projects.views &#8212; CDH website 3.0.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -32,83 +31,90 @@
           <div class="body" role="main">
             
   <h1>Source code for cdhweb.projects.views</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span>
-<span class="kn">from</span> <span class="nn">django.views.generic.detail</span> <span class="kn">import</span> <span class="n">DetailView</span>
+<span></span><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.views.generic.list</span> <span class="kn">import</span> <span class="n">ListView</span>
 
 <span class="kn">from</span> <span class="nn">cdhweb.projects.models</span> <span class="kn">import</span> <span class="n">Project</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.views</span> <span class="kn">import</span> <span class="n">LastModifiedMixin</span><span class="p">,</span> <span class="n">LastModifiedListMixin</span>
+<span class="kn">from</span> <span class="nn">cdhweb.pages.views</span> <span class="kn">import</span> <span class="n">LastModifiedListMixin</span>
 
 
-<div class="viewcode-block" id="ProjectMixinView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectMixinView">[docs]</a><span class="k">class</span> <span class="nc">ProjectMixinView</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;View mixin that sets model to Project and returns a</span>
-<span class="sd">    published Project queryset.&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="ProjectListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectListView">[docs]</a><span class="k">class</span> <span class="nc">ProjectListView</span><span class="p">(</span><span class="n">ListView</span><span class="p">,</span> <span class="n">LastModifiedListMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for project list views.&quot;&quot;&quot;</span>
+
     <span class="n">model</span> <span class="o">=</span> <span class="n">Project</span>
-    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Projects&#39;</span>
+    <span class="n">lastmodified_attr</span> <span class="o">=</span> <span class="s2">&quot;last_published_at&quot;</span>
 
-    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># use displayable manager to find published events only</span>
-        <span class="c1"># (or draft profiles for logged in users with permission to view)</span>
-        <span class="k">return</span> <span class="n">Project</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">published</span><span class="p">()</span> <span class="c1"># TODO: published(for_user=self.request.user)</span></div>
-
-
-<div class="viewcode-block" id="ProjectListMixinView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectListMixinView">[docs]</a><span class="k">class</span> <span class="nc">ProjectListMixinView</span><span class="p">(</span><span class="n">ProjectMixinView</span><span class="p">,</span> <span class="n">ListView</span><span class="p">,</span> <span class="n">LastModifiedListMixin</span><span class="p">):</span>
-
-<div class="viewcode-block" id="ProjectListMixinView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectListMixinView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># update context to display current and past projects separately</span>
-        <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-            <span class="s1">&#39;project_list&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">current</span><span class="p">(),</span>
-            <span class="s1">&#39;past_projects&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">not_current</span><span class="p">()</span><span class="o">.</span><span class="n">order_by_newest_grant</span><span class="p">(),</span>
-            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
-        <span class="p">})</span>
-        <span class="k">return</span> <span class="n">context</span></div></div>
-
-
-<div class="viewcode-block" id="WorkingGroupListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.WorkingGroupListView">[docs]</a><span class="k">class</span> <span class="nc">WorkingGroupListView</span><span class="p">(</span><span class="n">ProjectMixinView</span><span class="p">,</span> <span class="n">ListView</span><span class="p">,</span> <span class="n">LastModifiedListMixin</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Working groups, based on working group project flag&#39;&#39;&#39;</span>
-
-    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;DH Working Groups&#39;</span>
-
-<div class="viewcode-block" id="WorkingGroupListView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.WorkingGroupListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Project</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">working_groups</span><span class="p">()</span><span class="o">.</span><span class="n">published</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="WorkingGroupListView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.WorkingGroupListView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># working groups never expire, so we don&#39;t have &quot;past projects&quot;</span>
-        <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-            <span class="s1">&#39;project_list&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="p">,</span>
-            <span class="s1">&#39;past_projects&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
-        <span class="p">})</span>
-        <span class="k">return</span> <span class="n">context</span></div></div>
-
-
-<div class="viewcode-block" id="ProjectListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectListView">[docs]</a><span class="k">class</span> <span class="nc">ProjectListView</span><span class="p">(</span><span class="n">ProjectListMixinView</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Current and past projects, based on grant dates. (Does not include</span>
-<span class="sd">    staff and postdoc projects.)&#39;&#39;&#39;</span>
+    <span class="c1">#: title for this category of projects</span>
+    <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Projects&quot;</span>
+    <span class="c1">#: title for past projects in this category of projects</span>
+    <span class="n">past_title</span> <span class="o">=</span> <span class="s2">&quot;Past Projects&quot;</span>
 
 <div class="viewcode-block" id="ProjectListView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all published projects ordered by newest grant.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">live</span><span class="p">()</span><span class="o">.</span><span class="n">order_by_newest_grant</span><span class="p">()</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ProjectListView.get_current"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectListView.get_current">[docs]</a>    <span class="k">def</span> <span class="nf">get_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get current projects from the queryset. Override to customize which</span>
+<span class="sd">        filter is used.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">current</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ProjectListView.get_past"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectListView.get_past">[docs]</a>    <span class="k">def</span> <span class="nf">get_past</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get past projects from the queryset. Override to customize which</span>
+<span class="sd">        filter is used.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">not_current</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ProjectListView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectListView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add projects, titles, and navigation to context.&quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s2">&quot;current&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current</span><span class="p">(),</span>
+            <span class="s2">&quot;past&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_past</span><span class="p">(),</span>
+            <span class="s2">&quot;page_title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_title</span><span class="p">,</span>
+            <span class="s2">&quot;past_title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">past_title</span><span class="p">,</span>
+            <span class="s2">&quot;archive_nav_urls&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;Sponsored Projects&quot;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;projects:sponsored&quot;</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">&quot;Staff Projects&quot;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;projects:staff&quot;</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">&quot;DH Working Groups&quot;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;projects:working-groups&quot;</span><span class="p">)),</span>
+            <span class="p">)</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
+
+
+<div class="viewcode-block" id="SponsoredProjectListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.SponsoredProjectListView">[docs]</a><span class="k">class</span> <span class="nc">SponsoredProjectListView</span><span class="p">(</span><span class="n">ProjectListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main project list, i.e. not staff/postdoc/working group.&quot;&quot;&quot;</span>
+
+    <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Sponsored Projects&quot;</span>
+
+<div class="viewcode-block" id="SponsoredProjectListView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.SponsoredProjectListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all published sponsored projects.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">not_staff_or_postdoc</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="StaffProjectListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.StaffProjectListView">[docs]</a><span class="k">class</span> <span class="nc">StaffProjectListView</span><span class="p">(</span><span class="n">ProjectListMixinView</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Staff projects, based on special staff R&amp;D grant&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="StaffProjectListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.StaffProjectListView">[docs]</a><span class="k">class</span> <span class="nc">StaffProjectListView</span><span class="p">(</span><span class="n">ProjectListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Staff and postdoc projects, based on grant type.&quot;&quot;&quot;</span>
 
-    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Staff and Postdoctoral Fellow Projects&#39;</span>
+    <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Staff Projects&quot;</span>
 
 <div class="viewcode-block" id="StaffProjectListView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.StaffProjectListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all published staff/postdoc projects.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">staff_or_postdoc</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="ProjectDetailView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectDetailView">[docs]</a><span class="k">class</span> <span class="nc">ProjectDetailView</span><span class="p">(</span><span class="n">ProjectMixinView</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">LastModifiedMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="WorkingGroupListView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.WorkingGroupListView">[docs]</a><span class="k">class</span> <span class="nc">WorkingGroupListView</span><span class="p">(</span><span class="n">ProjectListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;DH Working group list, based on working group project flag.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ProjectDetailView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.ProjectDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ProjectDetailView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># also set object as page for common page display functionality</span>
-        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;page&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span>
+    <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;DH Working Groups&quot;</span>
+
+<div class="viewcode-block" id="WorkingGroupListView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.WorkingGroupListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all published DH working groups.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Project</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">working_groups</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WorkingGroupListView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.views.WorkingGroupListView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Override so that working groups are never shown as past.&quot;&quot;&quot;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span>   <span class="c1"># use cached queryset</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;past&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">return</span> <span class="n">context</span></div></div>
-
 </pre></div>
 
           </div>
@@ -193,7 +199,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

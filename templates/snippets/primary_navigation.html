@@ -1,32 +1,30 @@
-{% load pages_tags i18n %}
+{% load i18n cdh_tags %}
 {# top level menu, with secondary nav for current site section #}
-{# adapted from mezzanine pages/menus/primary.html template #}
 <div class="nav-main">
+    {# top-level pages #}
+    {% with toplevel_pages=site.root_page.get_children.live.in_menu %}
     <ul class='primary-nav' role="menubar" aria-label="main navigation">
-        {# top-level pages #}
-        {# first item will always be home ('/') #}
-        {% for page in page_branch|slice:"1:" %}
-            {% if page.in_menu %}
+        {% for navpage in toplevel_pages %}
+        {% if navpage.landingpage or navpage.linkpage %} {# exclude content pages under home #}
             <li role="none">
                 <a
-                    id="{{ page.html_id }}"
+                    id="{{ navpage.slug }}"
                     role="menuitem"
-                    href="{{ page.get_absolute_url }}"
+                    href="{{ navpage.get_url }}"
                     {% if forloop.first %} tabindex="0"{% else %} tabindex="-1"{% endif %}
-                    {% if page.has_childen_in_menu %}
-                    aria-owns="{{ page.html_id }}-secondary"
+                    {% if navpage.get_childen.live.in_menu %}
+                    aria-owns="{{ navpage.slug }}-secondary"
                     aria-haspopup="true"
                     aria-expanded="false"
                     {% endif %}
-                    {% if page.is_current_or_ascendant %} aria-current="page"{% endif %}>{{ page.title }}
+                    {% if request.path|startswith:navpage.get_url %} aria-current="page"{% endif %}>{{ navpage.title }}
                 </a>
             </li>
-            {% endif %}
+        {% endif %}
         {% endfor %}
     </ul>
 </div>
-{% for page in page_branch|slice:"1:" %}
-    {% if page.has_children_in_menu %}
-        {% page_menu page "snippets/navigation_card.html" %}
-    {% endif %}
+{% for navpage in toplevel_pages %}
+    {% include "snippets/navigation_card.html" with navpages=navpage.get_children.live.in_menu %}
 {% endfor %}
+{% endwith %}

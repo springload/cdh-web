@@ -1,6 +1,12 @@
 Deploy Notes
 ============
 
+3.0
+---
+
+- After deployment, the main exodus script should be run to move content from
+  mezzanine to wagtail with `python manage.py exodus`.
+
 2.8.1
 -----
 

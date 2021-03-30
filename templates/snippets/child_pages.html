@@ -1,15 +1,19 @@
-{% load pages_tags cdh_tags %}
+{% load cdh_tags %}
 {# child pages rendered as attachment cards #}
+{% if child_pages %}
 <div class="attachments page-children">
-    {% for page in page_branch %}
-        {% if page.in_menu %}
-        {% with page_url=page.get_absolute_url %}
+    {% for childpage in child_pages %}
+        {% if not content_only or childpage.contentpage %} {# restrict to content pages when requested #}
+        {# exlude profile and project pages #}
+        {% if not childpage.profile and not childpage.project %}
+        {% with page_url=childpage.get_url %}
             <div class="attachment card {{ page_url|url_to_icon }}">
                 <a href="{{ page_url }}">
-                    <h2>{{ page.title }}</h2>
+                    <h2>{{ childpage.title }}</h2>
                 </a>
             </div>
         {% endwith %}
-        {% endif %}
+        {% endif %}{% endif %}
     {% endfor %}
 </div>
+{% endif %}

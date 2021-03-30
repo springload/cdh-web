@@ -1,6 +1,40 @@
 CHANGELOG
 =========
 
+3.0
+---
+
+* As a moderator, I want to create and edit events in wagtail so that I can manage them just like other pages.
+* As a moderator, I want to create and edit people in wagtail so that I can manage them just like pages.
+* As an editor, I want to create and edit blog posts in wagtail so that I can take advantage of its editing capabilities.
+* As an editor, I want upload and manage page attachments in wagtail so that I can associate them with pages.
+* As an editor, I want existing attachments migrated to wagtail so that I can manage them in the new system.
+* As a moderator, I want existing content pages migrated from mezzanine to wagtail so that I can manage them in the new system.
+* As a moderator, I want existing uploaded images migrated to wagtail so that I can manage them in the new system.
+* As a moderator, I want existing related links migrated to wagtail so that I can manage them in the new system.
+* As an editor, I want existing blog posts migrated to wagtail so that I can manage them in the new system.
+* As a moderator, I want existing projects migrated to wagtail so that I can manage them in the new system.
+* As a moderator, I want existing events migrated to wagtail so that I can manage them in the new system.
+* As a moderator, I want existing people migrated to wagtail so that I can manage them in the new system.
+* As a moderator, I want People automatically organized into person list pages so I don't have to manually manage these pages.
+* As a moderator, I want Projects automatically organized into list pages so I don't have to manually manage these pages.
+* As a moderator, I want Events automatically organized by upcoming events and by semester, so that I don't have to manually manage these list pages.
+* As a moderator, I want blog posts automatically listed by latest posts, by month, and by year so that I don't have to manually manage these pages.
+* As a search engine, I want a sitemap of all pages on the CDH site so that I can index them for users to search.
+* As an editor, I want to manage the menus displayed across the site in wagtail so that I can easily update them when needed.
+* As an admin, I want to see the edit history for a page, including edits before the wagtail migration, so that I can see the history of edits to a page.
+* chore: add apache rewrite rule to ansible for migrated media
+* chore: Include DB diagrams in documentation
+* chore: remove inactive user accounts
+* chore: clean image EXIF metadata
+* bugfix: superuser permissions required for editing content due to mezzanine site permissions 
+* bugfix: meta information for project pages is incorrect
+* bugfix: Some past student profiles are displaying twice
+* bugfix: slug logic doesn't ensure uniqueness
+* bugfix: 500 error when trying to view admin blog post list if not superuser
+* bugfix: working groups display on main project page
+
+
 2.8.1
 -----
 

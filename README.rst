@@ -20,7 +20,6 @@ CDH Website
     :alt: dbdocs build
 
 Python 3.6 / Django 2.2 / Node 10 / PostgreSQL 10
-
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.
 
@@ -37,9 +36,9 @@ Development instructions
 
 Initial setup and installation:
 
-- Recommended: create and activate a python 3.5 virtualenv::
+- Recommended: create and activate a python 3.6 virtualenv::
 
-    virtualenv cdhweb -p python3.5
+    virtualenv cdhweb -p python3.6
     source cdhweb/bin/activate
 
 - Use pip to install required python dependencies.  To install production
@@ -78,6 +77,8 @@ Remember to add a ``SECRET_KEY`` setting!
   See `MariaDB <https://mariadb.com/kb/en/library/mysql_tzinfo_to_sql/>`_'s
   info on the utility for more information.
 
+- Install OpenCV dependencies (if necessary) for [wagtail image feature detection](https://docs.wagtail.io/en/stable/advanced_topics/images/feature_detection.html)
+
 Unit Testing
 ------------
 
@@ -108,6 +109,11 @@ directory::
 
 When building documentation for a production release, use `make docs` to
 update the published documentation on GitHub Pages.
+
+On every commit, GitHub Actions will generate and then publish a database diagram to `dbdocs @ princetoncdh/cdh-web <https://dbdocs.io/princetoncdh/cdh-web>`_. But to generate locally, install and log into dbdocs. Then run::
+
+    python manage.py dbml > cdhweb.dbml
+    npx dbdocs build cdhweb.dbml --project cdhweb
 
 License
 -------

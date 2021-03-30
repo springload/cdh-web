@@ -1,19 +1,29 @@
 from datetime import date
 
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.text import slugify
-from mezzanine.core.fields import FileField, RichTextField
-from mezzanine.core.models import (CONTENT_STATUS_DRAFT,
-                                   CONTENT_STATUS_PUBLISHED, Displayable)
+from mezzanine.core.fields import FileField
+from mezzanine.core.fields import RichTextField as MezzanineRichTextField
+from mezzanine.core.models import Displayable
 from mezzanine.utils.models import AdminThumbMixin, upload_to
+from modelcluster.fields import ParentalKey
+from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
+from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
+                                         InlinePanel, MultiFieldPanel,
+                                         StreamFieldPanel)
+from wagtail.core.fields import RichTextField
+from wagtail.core.models import Page
+from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.resources.models import (Attachment, DateRange,
-                                     PublishedQuerySetMixin)
+from cdhweb.pages.models import (PARAGRAPH_FEATURES, BasePage,
+                                 LandingPage, LinkPage, RelatedLink)
+from cdhweb.resources.models import Attachment, DateRange
 
 
 class Title(models.Model):
@@ -21,10 +31,7 @@ class Title(models.Model):
     title = models.CharField(max_length=255, unique=True)
     sort_order = models.PositiveIntegerField(default=0, blank=False,
                                              null=False)
-    # NOTE: defining relationship here because we can't add it to User
-    # directly
-    positions = models.ManyToManyField(User, through='Position',
-                                       related_name='titles')
+    positions = models.ManyToManyField("people.Person", through='Position')
 
     class Meta:
         ordering = ['sort_order']
@@ -39,103 +46,7 @@ class Title(models.Model):
     num_people.short_description = '# People'
 
 
-class Person(User):
-    # NOTE: using a proxy model for User so we can customize the
-    # admin interface in one place without having to extend the django
-    # default user model.
-
-    class Meta:
-        proxy = True
-        verbose_name_plural = 'People'
-
-    @property
-    def current_title(self):
-        current_positions = self.positions.filter(end_date__isnull=True)
-        if current_positions.exists():
-            return current_positions.first().title
-
-    def cdh_staff(self):
-        '''is CDH staff'''
-        try:
-            return self.profile.is_staff
-        except ObjectDoesNotExist:
-            return False
-    cdh_staff.boolean = True
-    cdh_staff.short_description = 'CDH Staff'
-
-    def published(self):
-        '''person has a published profile page'''
-        try:
-            return self.profile.published()
-        except ObjectDoesNotExist:
-            return False
-    published.boolean = True
-
-    def get_absolute_url(self):
-        ''''Display url for user profile'''
-        try:
-            return self.profile.get_absolute_url()
-        except ObjectDoesNotExist:
-            pass
-
-    @property
-    def website_url(self):
-        '''personal website url, if set'''
-        website = self.userresource_set \
-            .filter(resource_type__name='Website').first()
-        if website:
-            return website.url
-
-    @property
-    def profile_url(self):
-        '''local profile url, user has a profile, or website url if there is one'''
-        try:
-            if self.profile.is_staff and self.published():
-                return self.get_absolute_url()
-        except ObjectDoesNotExist:
-            pass
-
-        return self.website_url
-
-    @property
-    def latest_grant(self):
-        '''most recent grants where this person has director role'''
-        # find projects where they are director, then get newest grant
-        # that overlaps with their directorship dates
-        mship = self.membership_set \
-            .filter(role__title__in=ProfileQuerySet.director_roles) \
-            .order_by('-start_date').first()
-        # if there is one, find the most recent grant overlapping with their
-        # directorship dates
-        if mship:
-            # find most recent grant that overlaps with membership dates
-            # - grant start before membership end OR
-            #   grant end after membership start
-
-            # a membership might have no end date set, in which
-            # case it can't be used in a filter
-            grant_overlap = models.Q(end_date__gte=mship.start_date)
-            if mship.end_date:
-                grant_overlap |= models.Q(start_date__lte=mship.end_date)
-
-            return mship.project.grant_set \
-                .filter(grant_overlap) \
-                .order_by('-start_date').first()
-
-    def __str__(self):
-        '''Custom person display to make it easier to choose people
-        in admin menus.  Uses profile title if available, otherwise combines
-        first and last names.  Returns username as last resort if no
-        names are set.'''
-        try:
-            return self.profile.title
-        except ObjectDoesNotExist:
-            if self.first_name or self.last_name:
-                return ' '.join([self.first_name, self.last_name]).strip()
-            return self.username
-
-
-class ProfileQuerySet(PublishedQuerySetMixin):
+class PersonQuerySet(models.QuerySet):
 
     #: position titles that indicate a person is a postdoc
     postdoc_titles = ['Postdoctoral Fellow',
@@ -148,7 +59,8 @@ class ProfileQuerySet(PublishedQuerySetMixin):
     student_titles = ['Graduate Fellow', 'Graduate Assistant',
                       'Undergraduate Assistant',
                       'Postgraduate Research Associate']
-    #: memebership roles that indicate someone is an affiliate
+
+    #: membership roles that indicate someone is an affiliate
     project_roles = ['Project Director',
                      'Project Manager', 'Co-PI: Research Lead']
 
@@ -160,18 +72,18 @@ class ProfileQuerySet(PublishedQuerySetMixin):
     with_exec_title = 'Sits with Executive Committee'
     exec_committee_titles = [exec_member_title, with_exec_title]
 
-    def staff(self):
+    def cdh_staff(self):
         '''Return only CDH staff members'''
-        return self.filter(is_staff=True)
+        return self.filter(cdh_staff=True)
 
     def student_affiliates(self):
         '''Return CDH student staff members, grantees, and PGRAs based on
         Project Director or Project Manager role.'''
         return self \
             .filter(models.Q(pu_status__in=self.student_pu_status) |
-                    models.Q(user__positions__title__title__in=self.student_titles)) \
-            .filter(models.Q(is_staff=True) |
-                    models.Q(user__membership__role__title__in=self.project_roles)) \
+                    models.Q(positions__title__title__in=self.student_titles)) \
+            .filter(models.Q(cdh_staff=True) |
+                    models.Q(membership__role__title__in=self.project_roles)) \
             .exclude(pu_status="stf")
 
     def not_students(self):
@@ -183,20 +95,20 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         '''Faculty and staff affiliates based on PU status and Project Director
         project role. Excludes CDH staff.'''
         return self.filter(pu_status__in=('fac', 'stf'),
-                           user__membership__role__title__in=self.director_roles) \
-            .exclude(is_staff=True)
+                           membership__role__title__in=self.director_roles) \
+            .exclude(cdh_staff=True)
 
     def executive_committee(self):
         '''Executive committee members; based on position title.'''
-        return self.filter(user__positions__title__title__in=self.exec_committee_titles)
+        return self.filter(positions__title__title__in=self.exec_committee_titles)
 
     def exec_member(self):
         '''Executive committee members'''
-        return self.filter(user__positions__title__title=self.exec_member_title)
+        return self.filter(positions__title__title=self.exec_member_title)
 
     def sits_with_exec(self):
         '''Non-faculty Executive committee members'''
-        return self.filter(user__positions__title__title=self.with_exec_title)
+        return self.filter(positions__title__title=self.with_exec_title)
 
     def grant_years(self):
         '''Annotate with first start and last end grant year for grants
@@ -206,11 +118,11 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         # page student staff without grants are still included
         return self.annotate(
             first_start=models.Min(models.Case(
-                models.When(user__membership__role__title__in=self.director_roles,
-                            then='user__membership__start_date'))),
+                models.When(membership__role__title__in=self.director_roles,
+                            then='membership__start_date'))),
             last_end=models.Max(models.Case(
-                models.When(user__membership__role__title__in=self.director_roles,
-                            then='user__membership__end_date'))))
+                models.When(membership__role__title__in=self.director_roles,
+                            then='membership__end_date'))))
 
     def project_manager_years(self):
         '''Annotate with first start and last end grant year for grants
@@ -220,26 +132,19 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         # page student staff without grants are still included
         return self.annotate(
             pm_start=models.Min(models.Case(
-                models.When(user__membership__role__title='Project Manager',
-                            then='user__membership__start_date'))),
+                models.When(membership__role__title='Project Manager',
+                            then='membership__start_date'))),
             pm_end=models.Max(models.Case(
-                models.When(user__membership__role__title='Project Manager',
-                            then='user__membership__end_date'))))
-
-    def speakers(self):
-        '''Return external speakers at CDH events.'''
-        # Speakers are non-Princeton profiles (external) who are associated with
-        # at least one published event
-        return self.filter(user__event__isnull=False, pu_status='external',
-                           user__event__status=CONTENT_STATUS_PUBLISHED)
+                models.When(membership__role__title='Project Manager',
+                            then='membership__end_date'))))
 
     def _current_position_query(self):
-        # query to find a user with a current cdh position
-        # user *has* a position and it has no end date or date after today
+        # query to find a person with a current cdh position
+        # person *has* a position and it has no end date or date after today
         return (
-            models.Q(user__positions__isnull=False) &
-            (models.Q(user__positions__end_date__isnull=True) |
-             models.Q(user__positions__end_date__gte=date.today())
+            models.Q(positions__isnull=False) &
+            (models.Q(positions__end_date__isnull=True) |
+             models.Q(positions__end_date__gte=date.today())
              )
         )
 
@@ -247,18 +152,18 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         today = timezone.now()
         return (
             # in one of the allowed roles (project director/project manager)
-            models.Q(user__membership__role__title__in=self.project_roles) &
+            models.Q(membership__role__title__in=self.project_roles) &
             # current based on membership dates
             (
-                models.Q(user__membership__start_date__lte=today) &
-                (models.Q(user__membership__end_date__gte=today) |
-                 models.Q(user__membership__end_date__isnull=True))
+                models.Q(membership__start_date__lte=today) &
+                (models.Q(membership__end_date__gte=today) |
+                 models.Q(membership__end_date__isnull=True))
             )
         )
 
     def current(self):
-        '''Return profiles for users with a current position or current grant
-        based on start and end dates.'''
+        '''Return people with a current position or current grant based on
+        start and end dates.'''
         # annotate with an is_current flag to make template logic simpler
         return self.filter(models.Q(self._current_position_query()) |
                            models.Q(self._current_project_member_query())) \
@@ -278,45 +183,192 @@ class ProfileQuerySet(PublishedQuerySetMixin):
         '''Return profiles for users with a current position, excluding
         executive committee positions.'''
         return self.filter(models.Q(self._current_position_query()) &
-                           ~models.Q(user__positions__title__title__in=self.exec_committee_titles))
-
-    def has_upcoming_events(self):
-        '''Filter profiles to only those with an upcoming published event.'''
-        return self.filter(user__event__end_time__gte=timezone.now(),
-                           user__event__status=CONTENT_STATUS_PUBLISHED).distinct()
-
-    def order_by_event(self):
-        '''Order by earliest published event associated with profile.'''
-        return self.annotate(
-            earliest_event=models.Min(models.Case(
-                models.When(user__event__status=CONTENT_STATUS_PUBLISHED,
-                            then='user__event__start_time')))
-        ).order_by('earliest_event')
+                           ~models.Q(positions__title__title__in=self.exec_committee_titles))
 
     def order_by_position(self):
         '''order by job title sort order and then by start date'''
         # annotate to avoid duplicates in the queryset due to multiple positions
         # sort on highest position title (= lowest number) and earliest start date (may
         # not be from the same position)
-        return self.annotate(min_title=models.Min('user__positions__title__sort_order'),
-                             min_start=models.Min('user__positions__start_date')) \
-            .order_by('min_title', 'min_start', 'user__last_name')
+        return self.annotate(min_title=models.Min('positions__title__sort_order'),
+                             min_start=models.Min('positions__start_date')) \
+            .order_by('min_title', 'min_start', 'last_name')
 
 
-class Profile(Displayable, AdminThumbMixin):
-    user = models.OneToOneField(Person, on_delete=models.CASCADE)
+class Person(ClusterableModel):
+    # in cdhweb 2.x this was a proxy model for User;
+    # in 3.x it is a distinct model with 1-1 optional relationship to User
+    first_name = models.CharField('first name', max_length=150)
+    last_name = models.CharField('last name', max_length=150)
+    email = models.EmailField(null=True, blank=True)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text='Corresponding user account for this person (optional)'
+    )
+    cdh_staff = models.BooleanField(
+        'CDH Staff',
+        default=False,
+        help_text='CDH staff or Postdoctoral Fellow.')
+    job_title = models.CharField(
+        max_length=255, blank=True,
+        help_text='Professional title, e.g. Professor or Assistant Professor')
+    department = models.CharField(
+        max_length=255, blank=True,
+        help_text='Academic Department at Princeton or other institution')
+    institution = models.CharField(
+        max_length=255, blank=True,
+        help_text='Institutional affiliation (for people not associated with Princeton)')
+    phone_number = models.CharField(
+        max_length=50, blank=True, help_text="Office phone number")
+    office_location = models.CharField(
+        max_length=255, blank=True, help_text="Office number and building")
+    posts = models.ManyToManyField(to="blog.BlogPost", through="blog.Author")
+    events = models.ManyToManyField(to="events.Event", through="events.Speaker")
+
+    PU_STATUS_CHOICES = (
+        ('fac', 'Faculty'),
+        ('stf', 'Staff'),
+        ('graduate', 'Graduate Student'),
+        ('undergraduate', 'Undergraduate Student'),
+        ('external', 'Not associated with Princeton')
+    )
+    pu_status = models.CharField('Princeton Status', choices=PU_STATUS_CHOICES,
+                                 max_length=15, blank=True, default='')
+
+    image = models.ForeignKey('wagtailimages.image', null=True,
+                              blank=True, on_delete=models.SET_NULL,
+                              related_name='+')  # no reverse relationship
+
+    #: update timestamp
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+    # wagtail admin setup
+    panels = [
+        ImageChooserPanel("image"),
+        FieldRowPanel((FieldPanel("first_name"),
+                       FieldPanel("last_name")), "Name"),
+        FieldPanel("user"),
+        FieldRowPanel((FieldPanel("pu_status"),
+                       FieldPanel("cdh_staff")), "Status"),
+        MultiFieldPanel((
+            FieldPanel("job_title"),
+            FieldPanel("department"),
+            FieldPanel("institution"),
+        ), heading="Employment"),
+        MultiFieldPanel((
+            FieldPanel("phone_number"),
+            FieldPanel("email"),
+            FieldPanel("office_location"),
+        ), heading="Contact"),
+        InlinePanel("positions", heading="Positions"),
+        InlinePanel("related_links", heading="Related Links")
+    ]
+
+    # custom manager for querying
+    objects = PersonQuerySet.as_manager()
+
+    class Meta:
+        ordering = ("last_name",)
+        verbose_name_plural = "people"
+
+    def __str__(self):
+        """Person display for listing in admin menus. Uses first and last name
+        if set, otherwise falls back to username. If no user, uses pk as a last
+        resort."""
+        if self.first_name or self.last_name:
+            return " ".join([self.first_name, self.last_name]).strip()
+        if self.user:
+            return self.user.username
+        return "Person %d" % self.pk
+
+    def __lt__(self, other):
+        # NOTE we need to order Memberships using person name by default,
+        # but modelcluster doesn't support ordering via related lookups, so
+        # we can't order by person__last_name on Membership. Instead we do this.
+        # see: https://github.com/wagtail/django-modelcluster/issues/45
+        return str(self) < str(other)
+
+    @property
+    def current_title(self):
+        """Return the first of any non-expired titles held by this Person."""
+        current_positions = self.positions.filter(end_date__isnull=True)
+        if current_positions.exists():
+            return current_positions.first().title
+
+    @property
+    def most_recent_title(self):
+        """Return the most recent of any titles held by this Person."""
+        most_recent_position = self.positions.first()
+        if most_recent_position:
+            return most_recent_position.title
+
+    @property
+    def latest_grant(self):
+        '''most recent grants where this person has director role'''
+        # find projects where they are director, then get newest grant
+        # that overlaps with their directorship dates
+        mship = self.membership_set \
+            .filter(role__title__in=PersonQuerySet.director_roles) \
+            .order_by('-start_date').first()
+        # if there is one, find the most recent grant overlapping with their
+        # directorship dates
+        if mship:
+            # find most recent grant that overlaps with membership dates
+            # - grant start before membership end OR
+            #   grant end after membership start
+
+            # a membership might have no end date set, in which
+            # case it can't be used in a filter
+            grant_overlap = models.Q(end_date__gte=mship.start_date)
+            if mship.end_date:
+                grant_overlap |= models.Q(start_date__lte=mship.end_date)
+
+            return mship.project.grants \
+                .filter(grant_overlap) \
+                .order_by('-start_date').first()
+
+    @property
+    def profile_url(self):
+        """Provide the link to published profile on this site if there is one;
+        otherwise look for an associated website url"""
+        try:
+            profile = self.profile
+            if profile.live:
+                return profile.get_url()
+        except Profile.DoesNotExist:
+            website = self.related_links.filter(type__name="Website").first()
+            if website:
+                return website.url
+
+    @receiver(pre_delete, sender="people.Person")
+    def cleanup_profile(sender, **kwargs):
+        """Handler to delete the corresponding Profile on Person deletion."""
+        # see NOTE on Profile save() method
+        try:
+            Profile.objects.get(person=kwargs["instance"]).delete()
+        except Profile.DoesNotExist:
+            pass
+
+
+class OldProfile(Displayable, AdminThumbMixin):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # -> cdh_staff on person
     is_staff = models.BooleanField(
         default=False,
         help_text='CDH staff or Postdoctoral Fellow. If checked, person ' +
         'will be listed on the CDH staff page and will have a profile page ' +
         'on the site.')
-    education = RichTextField()
-    bio = RichTextField()
+    education = MezzanineRichTextField()
+    bio = MezzanineRichTextField()
     # NOTE: could use regex here, but how standard are staff phone
     # numbers? or django-phonenumber-field, but that's probably overkill
     phone_number = models.CharField(max_length=50, blank=True)
     office_location = models.CharField(max_length=255, blank=True)
 
+    # moved to person
     job_title = models.CharField(
         max_length=255, blank=True,
         help_text='Professional title, e.g. Professor or Assistant Professor')
@@ -349,10 +401,10 @@ class Profile(Displayable, AdminThumbMixin):
 
     attachments = models.ManyToManyField(Attachment, blank=True)
 
+    # TODO: check for
     tags = TaggableManager(blank=True)
 
-    # custom manager for additional queryset filters
-    objects = ProfileQuerySet.as_manager()
+    # NOTE removed ProfileQuerySet manager here as it became PersonQuerySet
 
     class Meta:
         ordering = ["-user__last_name"]
@@ -371,70 +423,126 @@ class Profile(Displayable, AdminThumbMixin):
         return self.user.current_title
 
 
+class Profile(BasePage):
+    """Profile page for a Person, managed via wagtail."""
+    person = models.OneToOneField(
+        Person, help_text="Corresponding person for this profile",
+        null=True, on_delete=models.SET_NULL)
+    image = models.ForeignKey('wagtailimages.image', null=True,
+                              blank=True, on_delete=models.SET_NULL,
+                              related_name='+')  # no reverse relationship
+    education = RichTextField(features=PARAGRAPH_FEATURES, blank=True)
+
+    # admin edit configuration
+    content_panels = Page.content_panels + [
+        FieldRowPanel(
+            (FieldPanel("person"), ImageChooserPanel("image")), "Person"),
+        FieldPanel("education"),
+        StreamFieldPanel("body"),
+        StreamFieldPanel("attachments")
+    ]
+
+    parent_page_types = ["people.PeopleLandingPage"]
+    subpage_types = []
+
+    def get_context(self, request):
+        """Add recent BlogPosts by this Person to their Profile."""
+        context = super().get_context(request)
+        # get 3 most recent published posts with this person as author;
+        # add to context and set open graph metadata
+        context.update({
+            "opengraph_type": "profile",
+            "recent_posts": self.person.posts.live().recent()[:3]
+        })
+        return context
+
+    def clean(self):
+        """Validate that a Person was specified for this profile."""
+        # NOTE we can't cascade deletes to wagtail pages without corrupting the
+        # page tree. Instead, we use SET_NULL, and then add a delete handler
+        # to Person to delete the corresponding profile manually. We still need
+        # to make sure that it's impossible to create a Profile without a
+        # corresponding Person. More info:
+        # https://github.com/wagtail/wagtail/issues/1602
+        if not self.person:
+            raise ValidationError("Profile page must be for existing person.")
+
+
+class PeopleLandingPage(LandingPage):
+    """LandingPage subtype for People that holds Profiles."""
+    # NOTE this page can't be created in the page editor; it is only ever made
+    # via a script or the console, since there's only one.
+    parent_page_types = []
+    # NOTE the only allowed child page type is a Profile; this is so that
+    # Profiles made in the admin automatically are created here.
+    subpage_types = [Profile, LinkPage]
+    # use the regular landing page template
+    template = LandingPage.template
+
+
 class Position(DateRange):
     '''Through model for many-to-many relation between people
     and titles.  Adds start and end dates to the join table.'''
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='positions')
+    person = ParentalKey(Person, on_delete=models.CASCADE,
+                         related_name="positions")
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['-start_date']
 
     def __str__(self):
-        return '%s %s (%s)' % (self.user, self.title, self.start_date.year)
+        return '%s %s (%s)' % (self.person, self.title, self.start_date.year)
 
 
-def init_profile_from_ldap(user, ldapinfo):
-    '''Extra user/profile init logic for auto-populating people
-    profile fields with data available in LDAP.'''
+def init_person_from_ldap(user, ldapinfo):
+    '''Extra User init logic for creating and auto-populating a corresponding
+    Person with data from LDAP.'''
 
+    # update User to use ldap email
     user.email = user.email.lower()
     user.save()
 
-    try:
-        profile = user.profile
-    except ObjectDoesNotExist:
-        profile = Profile.objects.create(user=user)
-        # set profiles to draft by default when creating a new profile *only
-        # so we don't get a new page for every account we initialize
-        profile.status = CONTENT_STATUS_DRAFT
+    # populate Person fields with data we can pull from ldap, if they are empty
+    person, _created = Person.objects.get_or_create(user=user)
 
-    # populate profile with data we can pull from ldap
-    # but do not set any fields with content, which may contain edits
+    # if no email set for Person, use ldap email
+    if not person.email:
+        person.email = user.email
 
-    # - set user's display name as page title
-    if not profile.title:
-        profile.title = str(ldapinfo.displayName)
-    # - generate a slug based on display name
-    if not profile.slug:
-        profile.slug = slugify(ldapinfo.displayName)
-    if ldapinfo.telephoneNumber and not profile.phone_number:
-        profile.phone_number = str(ldapinfo.telephoneNumber)
-    # 'street' in ldap is office location
-    if ldapinfo.street and not profile.office_location:
-        profile.office_location = str(ldapinfo.street)
-    # organizational unit = department
-    if ldapinfo.ou and not profile.department:
-        profile.department = str(ldapinfo.ou)
-    # Store job title as string.
-    # NOTE: we may want to split title and only use the first portion.
-    # if ldapinfo.title and not profile.job_title:
-    profile.job_title = str(ldapinfo.title).split('.')[0]
+    # set first/last name basic on basic whitespace split; can adjust later
+    first_name, *_others, last_name = str(ldapinfo.displayName).split()
+    person.first_name = person.first_name or first_name
+    person.last_name = person.last_name or last_name
+
+    # set phone number
+    if ldapinfo.telephoneNumber and not person.phone_number:
+        person.phone_number = str(ldapinfo.telephoneNumber)
+
+    # set office location ("street" in ldap)
+    if ldapinfo.street and not person.office_location:
+        person.office_location = str(ldapinfo.street)
+
+    # set department (organizational unit or "ou" in ldap)
+    if ldapinfo.ou and not person.department:
+        person.department = str(ldapinfo.ou)
+
+    # set job title (split and use only first portion from ldap)
+    # NOTE titles for cdh staff are managed via Title/Position instead; we
+    # don't want to create Titles for every possible job at Princeton. This is
+    # a change from v2.x behavior.
+    if ldapinfo.title and not person.job_title:
+        person.job_title = str(ldapinfo.title).split(",")[0]
 
     # always update PU status to current
-    profile.pu_status = str(ldapinfo.pustatus)
+    person.pu_status = str(ldapinfo.pustatus)
+    person.save()
 
-    profile.save()
 
-    # NOTE: job title is available in LDAP; attaching to a person
-    # currently requires at least a start date (which is not available
-    # in LDAP), but we can at least ensure the title is defined
-    # so it can easily be associated with the person
+class PersonRelatedLink(RelatedLink):
+    '''Through-model for associating people with resource types and
+    corresponding URLs for the specified resource type.'''
+    person = ParentalKey(Person, on_delete=models.CASCADE,
+                         related_name="related_links")
 
-    # only do if the person has a title set
-    if ldapinfo.title:
-        # job title in ldap is currently stored as
-        # job title, organizational unit
-        job_title = str(ldapinfo.title).split(',')[0]
-        Title.objects.get_or_create(title=job_title)
+    def __str__(self):
+        return "%s – %s (%s)" % (self.person, self.type, self.display_url)

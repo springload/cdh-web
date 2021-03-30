@@ -24,10 +24,10 @@ ADMIN_MENU_ORDER = (
                 (_("Media Library"), "media-library"),
                 "resources.Attachment")),
     ("Events", ('events.Event', 'events.Location', 'events.EventType')),
-    ('Profiles', ('people.Person', 'people.Position', 'people.Title')),
+    ('Profiles', ('people.Position', 'people.Title')),
     ('Projects', ('projects.Project', 'projects.Grant', 'projects.Membership',
                  'projects.Role', 'projects.GrantType')),
-    ('Resources', ('resources.ResourceType', 'taggit.Tag')),
+    ('Resources', ('cdhpages.RelatedLinkType', 'taggit.Tag')),
     ("Site", ("sites.Site", "redirects.Redirect", "conf.Setting")),
     ("Users", ("auth.User", "auth.Group",)),
 )
@@ -107,6 +107,29 @@ RICHTEXT_ALLOWED_TAGS = ('a', 'abbr', 'acronym', 'address', 'area', 'article',
                         'strong', 'sub', 'sup', 'table', 'tbody', 'td',
                         'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', '',
                         'ul', 'var', 'wbr', 'iframe')
+
+####################
+# WAGTAIL SETTINGS #
+####################
+
+# Human-readable name of your Wagtail site shown on login to the Wagtail admin.
+# https://docs.wagtail.io/en/latest/reference/settings.html#site-name
+WAGTAIL_SITE_NAME = 'CDH Website'
+
+# Tags are case-sensitive by default. In many cases the reverse is preferable.
+# https://docs.wagtail.io/en/latest/reference/settings.html#case-insensitive-tags
+TAGGIT_CASE_INSENSITIVE = True
+
+# Shows where a particular image, document or snippet is being used on your site.
+# Generates a query which may run slowly on sites with large numbers of pages.
+# https://docs.wagtail.io/en/latest/reference/settings.html#usage-for-images-documents-and-snippets
+WAGTAIL_USAGE_COUNT_ENABLED = True
+
+# enable feature detection in images
+WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = True
+
+# custom document model
+WAGTAILDOCS_DOCUMENT_MODEL = "cdhpages.LocalAttachment"
 
 
 ########################
@@ -274,21 +297,15 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.request",
                 "django.template.context_processors.tz",
-                "mezzanine.conf.context_processors.settings",
-                "mezzanine.pages.context_processors.page",
+                # 'wagtail.contrib.settings.context_processors.settings',
+                # 'wagtailmenus.context_processors.wagtailmenus',
                 'cdhweb.context_extras',
-                'cdhweb.context_processors.template_settings'
-            ],
-            "builtins": [
-                "mezzanine.template.loader_tags",
+                'cdhweb.context_processors.template_settings',
+                'cdhweb.pages.context_processors.page_intro',
             ],
         },
     },
 ]
-
-if DJANGO_VERSION < (1, 9):
-    del TEMPLATES[0]["OPTIONS"]["builtins"]
-
 
 ################
 # APPLICATIONS #
@@ -317,7 +334,22 @@ INSTALLED_APPS = [
     # "mezzanine.twitter",
     # "mezzanine.accounts",
     # "mezzanine.mobile",
-    "taggit",
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.contrib.search_promotions', # required to avoid https://github.com/wagtail/wagtail/issues/1824
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail.contrib.modeladmin',
+    'wagtail.core',
+    'wagtailmenus',
+    'modelcluster',
+    'taggit',
     'adminsortable2',
     "compressor",
     "fullurl",
@@ -332,6 +364,7 @@ INSTALLED_APPS = [
     # mezzanine.blog; there are good and bad aspects to this; we certainly
     # don't want users to create the wrong kind of blog posts.
     "cdhweb.blog",
+    'cdhweb.pages',
 ]
 
 # List of middleware classes to use. Order is important; in the request phase,
@@ -350,12 +383,13 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    "mezzanine.core.request.CurrentRequestMiddleware",
-    "mezzanine.core.middleware.RedirectFallbackMiddleware",
-    "mezzanine.core.middleware.AdminLoginInterfaceSelectorMiddleware",
+    # "mezzanine.core.request.CurrentRequestMiddleware",
+    # "mezzanine.core.middleware.RedirectFallbackMiddleware",
+    # "mezzanine.core.middleware.AdminLoginInterfaceSelectorMiddleware",
     # "mezzanine.core.middleware.SitePermissionMiddleware",
-    "mezzanine.pages.middleware.PageMiddleware",
-    "mezzanine.core.middleware.FetchFromCacheMiddleware",
+    # "mezzanine.pages.middleware.PageMiddleware",
+    # "mezzanine.core.middleware.FetchFromCacheMiddleware",
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 )
 
 # Store these package names here as they may change in the future since
@@ -384,7 +418,7 @@ PUCAS_LDAP = {
     },
     # local method to populate profile fields based on available
     # ldap information
-    'EXTRA_USER_INIT': 'cdhweb.people.models.init_profile_from_ldap'
+    'EXTRA_USER_INIT': 'cdhweb.people.models.init_person_from_ldap'
 }
 
 
@@ -394,9 +428,9 @@ PUCAS_LDAP = {
 
 # These will be added to ``INSTALLED_APPS``, only if available.
 OPTIONAL_APPS = (
-    "debug_toolbar",
     "django_extensions",
     "compressor",
+    "django_dbml",
     PACKAGE_NAME_FILEBROWSER,
     PACKAGE_NAME_GRAPPELLI,
 )
@@ -422,15 +456,6 @@ if os.path.exists(f):
     module.__file__ = f
     sys.modules[module_name] = module
     exec(open(f, "rb").read())
-
-# if in debug mode and django-debug-toolbar is available, add to installed apps
-if DEBUG:
-    try:
-        import debug_toolbar
-        INSTALLED_APPS.append('debug_toolbar')
-    except ImportError:
-        pass
-
 
 ####################
 # DYNAMIC SETTINGS #

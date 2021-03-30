@@ -7,3 +7,4 @@ pytest-django
 pytest-cov
 wheel
 mysqlclient # tested against in CI for now
+django-dbml>=0.4.0

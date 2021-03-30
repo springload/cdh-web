@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block page-title %}{{ page_title }}{% endblock %}
+{% block bodyattrs %}class="with-cards"{% endblock %}
+
+{% block main %}
+<section class="people">
+
+<h1>{{ current_title }}</h1>
+
+
+{# drop-down nav adapted from events page #}
+<div class="archive-nav">
+  <a class="toggle">{{ page_title }}
+    <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
+  <ul class="submenu">
+    {% for label, profile_url in archive_nav_urls %}
+      <li {% if request.path == profile_url %}class="current"{% endif %}><a href="{{ profile_url }}">{{ label }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+
+{# display page intro snippet paragraph if there is one #}
+{% if page_intro %}
+<section class="textcontent">
+    <div class="richtext">
+    {{ page_intro.paragraph|safe }}
+    </div>
+</section>
+{% endif %}
+
+{# current people #}
+{% for person in current %}
+    {% include 'people/snippets/person_card.html' %}
+{% empty %}
+    {% if show_events %}
+    <p class="message">Next semester's speaking events are being scheduled.
+        Check back later or <a href="{% url 'event:upcoming' %}">view other
+            upcoming events.</a>
+    </p>
+    {% endif %}
+{% endfor %}
+
+{# executive committe page only has an additinoal current section #}
+{% if sits_with %}
+  <h2>Sits with Executive Committee</h2>
+  {% for person in sits_with %}
+    {% include 'people/snippets/person_card.html' %}
+  {% endfor %}
+{% endif %}
+
+
+{# alumni / past members or affiliates #}
+{% if past %}
+<h2>{{ past_title|default:"Alumni" }}</h2>
+  {% for person in past %}
+    {% include 'people/snippets/person_card.html' %}
+  {% endfor %}
+{% endif %}
+
+</section>
+{% endblock %}
+

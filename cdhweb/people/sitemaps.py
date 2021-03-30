@@ -1,11 +1,26 @@
-from cdhweb.people.models import Profile
-from cdhweb.resources.sitemaps import PublishedItemSitemap
+from django.contrib.sitemaps import Sitemap
+from django.urls import reverse
+
+from cdhweb.people import views
 
 
-class ProfileSitemap(PublishedItemSitemap):
-    model = Profile
+class PeopleListSitemap(Sitemap):
+    '''Sitemap for people views that are not Wagtail pages but also
+    not tied to models (currently all people list views).'''
 
     def items(self):
-        # only published profiles with is_staff actually have detail pages
-        # and should appear in the sitemap
-        return super().items().filter(is_staff=True)
+        # return list of tuple with url name, view object
+        return [
+            ('staff', views.StaffListView),
+            ('students', views.StudentListView),
+            ('affiliates', views.AffiliateListView),
+            ('exec-committee', views.ExecListView)
+        ]
+
+    def location(self, obj):
+        # generate url based on url name within people url namespace
+        return reverse('people:%s' % obj[0])
+
+    def lastmod(self, obj):
+        # return last modified as calculated by the view
+        return obj[1]().last_modified()

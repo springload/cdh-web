@@ -1,77 +1,84 @@
-from django.db.models import Count
-from django.views.generic.detail import DetailView
+from django.urls import reverse
 from django.views.generic.list import ListView
 
 from cdhweb.projects.models import Project
-from cdhweb.resources.views import LastModifiedMixin, LastModifiedListMixin
+from cdhweb.pages.views import LastModifiedListMixin
 
 
-class ProjectMixinView(object):
-    '''View mixin that sets model to Project and returns a
-    published Project queryset.'''
+class ProjectListView(ListView, LastModifiedListMixin):
+    """Base class for project list views."""
+
     model = Project
-    title = 'Projects'
+    lastmodified_attr = "last_published_at"
+
+    #: title for this category of projects
+    page_title = "Projects"
+    #: title for past projects in this category of projects
+    past_title = "Past Projects"
 
     def get_queryset(self):
-        # use displayable manager to find published events only
-        # (or draft profiles for logged in users with permission to view)
-        return Project.objects.published() # TODO: published(for_user=self.request.user)
+        """Get all published projects ordered by newest grant."""
+        return super().get_queryset().live().order_by_newest_grant().distinct()
 
+    def get_current(self):
+        """Get current projects from the queryset. Override to customize which
+        filter is used."""
+        return self.object_list.current()
 
-class ProjectListMixinView(ProjectMixinView, ListView, LastModifiedListMixin):
+    def get_past(self):
+        """Get past projects from the queryset. Override to customize which
+        filter is used."""
+        return self.object_list.not_current()
 
     def get_context_data(self, *args, **kwargs):
+        """Add projects, titles, and navigation to context."""
         context = super().get_context_data(*args, **kwargs)
-        # update context to display current and past projects separately
         context.update({
-            'project_list': self.object_list.current(),
-            'past_projects': self.object_list.not_current().order_by_newest_grant(),
-            'title': self.title
+            "current": self.get_current(),
+            "past": self.get_past(),
+            "page_title": self.page_title,
+            "past_title": self.past_title,
+            "archive_nav_urls": (
+                ("Sponsored Projects", reverse("projects:sponsored")),
+                ("Staff Projects", reverse("projects:staff")),
+                ("DH Working Groups", reverse("projects:working-groups")),
+            )
         })
         return context
 
 
-class WorkingGroupListView(ProjectMixinView, ListView, LastModifiedListMixin):
-    '''Working groups, based on working group project flag'''
+class SponsoredProjectListView(ProjectListView):
+    """Main project list, i.e. not staff/postdoc/working group."""
 
-    title = 'DH Working Groups'
-
-    def get_queryset(self):
-        return Project.objects.working_groups().published()
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        # working groups never expire, so we don't have "past projects"
-        context.update({
-            'project_list': self.object_list,
-            'past_projects': None,
-            'title': self.title
-        })
-        return context
-
-
-class ProjectListView(ProjectListMixinView):
-    '''Current and past projects, based on grant dates. (Does not include
-    staff and postdoc projects.)'''
+    page_title = "Sponsored Projects"
 
     def get_queryset(self):
+        """Get all published sponsored projects."""
         return super().get_queryset().not_staff_or_postdoc()
 
 
-class StaffProjectListView(ProjectListMixinView):
-    '''Staff projects, based on special staff R&D grant'''
+class StaffProjectListView(ProjectListView):
+    """Staff and postdoc projects, based on grant type."""
 
-    title = 'Staff and Postdoctoral Fellow Projects'
+    page_title = "Staff Projects"
 
     def get_queryset(self):
+        """Get all published staff/postdoc projects."""
         return super().get_queryset().staff_or_postdoc()
 
 
-class ProjectDetailView(ProjectMixinView, DetailView, LastModifiedMixin):
+class WorkingGroupListView(ProjectListView):
+    """DH Working group list, based on working group project flag."""
+
+    page_title = "DH Working Groups"
+
+    def get_queryset(self):
+        """Get all published DH working groups."""
+        return Project.objects.working_groups()
 
     def get_context_data(self, *args, **kwargs):
-        context = super(ProjectDetailView, self).get_context_data(*args, **kwargs)
-        # also set object as page for common page display functionality
-        context['page'] = self.object
+        """Override so that working groups are never shown as past."""
+        context = super().get_context_data(*args, **kwargs)
+        context["current"] = self.object_list   # use cached queryset
+        context["past"] = []
         return context
-

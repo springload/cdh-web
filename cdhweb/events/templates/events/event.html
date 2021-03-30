@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block extra-head %}
+    <meta name="twitter:label1" content="Date"/>
+    <meta name="twitter:data1" content="{{ page.when }}"/>
+    {% if page.location %}
+    <meta name="twitter:label2" content="Location"/>
+    <meta name="twitter:data2" content="{{ page.location.display_name }}"/>
+    {% endif %}
+{% endblock %}
+
+
+{% block main %}
+<div typeof="schema:Event" class="event-detail">
+<header>
+    <h1 property="schema:name">{{ page.title }}</h1>
+</header>
+
+<div class="details">
+    {% if page.speakers.exists %}
+    <ul>
+    {% for speaker in page.speakers.all %}
+    {# performer == presenter #}
+    <li property="schema:performer" typeof="schema:Person">
+        <h3><a property="schema:name"
+            {% if speaker.person.profile_url %}href="{{ speaker.person.profile_url }}"{% endif %}>
+            {{ speaker.person }}</a></h3>
+        {% if speaker.person.institution %}
+        <p class="affiliation">
+            {{ speaker.person.institution }}
+        </p>
+        {% endif %}
+    </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {# don't repeat event type if it is an exact match (i.e. reading group) #}
+    {% if page.type.name != page.title %}
+    <p>{{ page.type }}</p>
+    {% endif %}
+    <meta property="schema:startDate" content="{{ page.start_time|date:'c' }}"/>
+    <meta property="schema:endDate" content="{{ page.end_time|date:'c' }}"/>
+    <div>{{ page.when }}</div>
+
+    {% if page.location %}
+    <div property="schema:location" typeof="{% if page.is_virtual %}schema:VirtualLocation{% else %}schema:Place{% endif %}" class="location">
+        <span property="schema:name">{{ page.location.name }}</span>
+        {% if not page.is_virtual %}
+        <div property="schema:address"
+        {% if page.location.name == page.location.address %}style="display:none"{% endif %}>
+        {{ page.location.address}}</div>
+        {% elif page.join_url %}
+        <div property="schema:url" style="display:none">{{ page.join_url }}</div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="ical">
+        <p><a href="{{ page.get_ical_url }}">Export to iCal</a></p>
+    </div>
+</div>
+
+<div class="description">
+    {% if page.image %}
+        {% image page.image width-735 as event_img %}
+        <img src="{{ event_img.url }}" alt="{{ page.title }}" property="schema:image"/>
+    {% endif %}
+    <meta property="schema:url" content="{{ page.full_url }}"/>
+    <div property="schema:description">
+    {% include_block page.body %}
+    </div>
+</div>
+
+</div>
+{% endblock %}
+
+
+
+
