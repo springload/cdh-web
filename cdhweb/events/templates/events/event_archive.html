@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block page-title %}{{ title|default:'Upcoming' }} Events{% endblock %}
+{% block page-title %}{{ page_title }}{% endblock %}
 {% block bodyattrs %}class="with-cards"{% endblock %}
 
 {% block main %}
 <section class="events">
 
-<h1>{{ title|default:'Upcoming' }} Events</h1>
+<h1>{{ page_title }}</h1>
 
 {# drop-down nav adapted from person list pages #}
 <div class="archive-nav">
-    <a class="toggle">{{ title|default:'Upcoming' }}
+    <a class="toggle">{{ page_title }}
         <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
     <ul class="submenu">
     {# include upcoming events page link #}

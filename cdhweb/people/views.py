@@ -57,7 +57,7 @@ class PersonListView(ListView, LastModifiedListMixin):
         context.update({
             'current': self.add_display_label(current),
             'past': self.add_display_label(past),
-            'title': self.page_title,
+            'page_title': self.page_title,
             'past_title': self.past_title,
             'current_title': self.current_title or self.page_title,  # use main title as default
             'archive_nav_urls': [

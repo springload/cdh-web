@@ -1,21 +1,25 @@
 {% load static cdh_tags %}
-{# html metadata #}
-{% autoescape on %}
-{% if page.tags.exists %}<meta name="keywords" content="{{ page.tags.all|join:', ' }}"/>{% endif %}
-{% if page.search_description %}<meta name="description" content="{{ page.search_description }}"/>{% endif %}
-{# determine preview image: specified by page, cdh icon based on url, or default image #}
 {% firstof preview_image page.get_url|url_to_icon_path default_preview_image as meta_preview_image %}
+{% firstof page_title page.seo_title page.title as meta_title %}
+{% autoescape off %}
+{% firstof page.get_plaintext_description page_intro.paragraph as meta_description %}
+{% endautoescape %}
+{% autoescape on %}
+{# html metadata #}
+{% if page.tags.exists %}<meta name="keywords" content="{{ page.tags.all|join:', ' }}"/>{% endif %}
+{% if meta_description %}<meta name="description" content="{{ meta_description|striptags }}"/>{% endif %}
+{# determine preview image: specified by page, cdh icon based on url, or default image #}
 {# open graph metadata #}
-<meta property="og:title" content="{% firstof page.seo_title page.title page_title %}" />
+<meta property="og:title" content="{{ meta_title }}" />
 <meta property="og:type" content="{{ opengraph_type|default:'website' }}" />
 <meta property="og:url" content="{{ request.build_absolute_uri }}" />
 <meta property="og:image" content="{{ meta_preview_image }}" />
-{% if page.search_description %}<meta property="og:description" content="{{ page.search_description }}"/>{% endif %}
-<meta property="og:site_name" content="Center for Digital Humanities @ Princeton University"/>
+{% if meta_description %}<meta property="og:description" content="{{ meta_description|striptags }}"/>{% endif %}
+<meta property="og:site_name" content="{{ site.root_page.seo_title }}"/>
 {# twitter card #}
 <meta name="twitter:card" content="{{ twitter_card_type|default:'summary' }}" />
 <meta name="twitter:site" content="@PrincetonDH" />
-<meta name="twitter:title" content="{% firstof page.seo_title page.title page_title %}"/>
-{% if page.search_description %}<meta name="twitter:description" content="{{ page.search_description }}"/>{% endif %}
+<meta name="twitter:title" content="{{ meta_title }}"/>
+{% if meta_description %}<meta name="twitter:description" content="{{ meta_description|striptags }}"/>{% endif %}
 <meta name="twitter:image" content="{% firstof twitter_image meta_preview_image %}" />
 {% endautoescape %}

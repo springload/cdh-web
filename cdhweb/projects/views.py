@@ -36,7 +36,7 @@ class ProjectListView(ListView, LastModifiedListMixin):
         context.update({
             "current": self.get_current(),
             "past": self.get_past(),
-            "title": self.page_title,
+            "page_title": self.page_title,
             "past_title": self.past_title,
             "archive_nav_urls": (
                 ("Sponsored Projects", reverse("projects:sponsored")),

@@ -33,6 +33,13 @@ class BlogIndexView(BlogPostArchiveMixin, ArchiveIndexView):
     '''Main blog post list view'''
     date_list_period = 'month'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context.update({
+            'page_title': "Latest Updates"
+        })
+        return context
+
 
 class BlogYearArchiveView(BlogPostArchiveMixin, YearArchiveView):
     '''Blog post archive by year'''
@@ -42,7 +49,7 @@ class BlogYearArchiveView(BlogPostArchiveMixin, YearArchiveView):
                         self).get_context_data(*args, **kwargs)
         context.update({
             'date_list': BlogPost.objects.dates(self.date_field, 'month', order='DESC'),
-            'title': self.kwargs['year']
+            'page_title': '%s Updates' % self.kwargs['year']
         })
         return context
 
@@ -58,7 +65,7 @@ class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
         date = datetime.strptime('%(year)s %(month)s' % self.kwargs, '%Y %m')
         context.update({
             'date_list': BlogPost.objects.dates(self.date_field, 'month', order='DESC'),
-            'title': date.strftime('%B %Y')
+            'page_title': '%s Updates' % date.strftime('%B %Y')
         })
         return context
 
