@@ -5,14 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.resources.models &#8212; CDH website 2.8.0 documentation</title>
+    <title>cdhweb.resources.models &#8212; CDH website 3.0.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -44,24 +43,7 @@
 <span class="kn">from</span> <span class="nn">mezzanine.pages.models</span> <span class="kn">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="kn">import</span> <span class="n">upload_to</span>
 
-
-<div class="viewcode-block" id="ResourceType"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.resources.models.ResourceType">[docs]</a><span class="k">class</span> <span class="nc">ResourceType</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Resource type for associating particular kinds of URLs</span>
-<span class="sd">    with people and projects (e.g., project url, GitHub, Twitter, etc)&#39;&#39;&#39;</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
-    <span class="n">sort_order</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="c1"># NOTE: defining the relationship here since we can&#39;t add to it to</span>
-    <span class="c1"># django&#39;s auth.User directly</span>
-    <span class="n">users</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">through</span><span class="o">=</span><span class="s1">&#39;UserResource&#39;</span><span class="p">,</span>
-        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;resources&#39;</span><span class="p">)</span>
-
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_order&#39;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
-
+<span class="kn">from</span> <span class="nn">cdhweb.pages.models</span> <span class="kn">import</span> <span class="n">RelatedLinkType</span>
 
 <span class="k">class</span> <span class="nc">ExcerptMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -73,20 +55,11 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
 
 
-
-<div class="viewcode-block" id="UserResource"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.resources.models.UserResource">[docs]</a><span class="k">class</span> <span class="nc">UserResource</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Through-model for associating users with resource types and</span>
-<span class="sd">    corresponding URLs for the specified resource type.&#39;&#39;&#39;</span>
-    <span class="n">resource_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ResourceType</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">()</span></div>
-
-
 <div class="viewcode-block" id="Attachment"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.resources.models.Attachment">[docs]</a><span class="k">class</span> <span class="nc">Attachment</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
     <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">file</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="s1">&#39;Document&#39;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;resources.documents&quot;</span><span class="p">,</span> <span class="s2">&quot;documents&quot;</span><span class="p">))</span>
+                     <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;resources.documents&quot;</span><span class="p">,</span> <span class="s2">&quot;documents&quot;</span><span class="p">))</span>
     <span class="n">url</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># TODO: needs validation to ensure one and only one of</span>
     <span class="c1"># file and url is set</span>
@@ -102,7 +75,8 @@
     <span class="p">)</span>
     <span class="n">attachment_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">type_choices</span><span class="p">)</span>
 
-    <span class="n">pages</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Page</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;attachments&#39;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+        <span class="n">Page</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;old_attachments&#39;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">]</span>
@@ -116,8 +90,9 @@
 <div class="viewcode-block" id="LandingPage"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.resources.models.LandingPage">[docs]</a><span class="k">class</span> <span class="nc">LandingPage</span><span class="p">(</span><span class="n">Page</span><span class="p">,</span> <span class="n">RichText</span><span class="p">):</span>
     <span class="n">tagline</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span>
-        <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;resources.landing_pages.image&quot;</span><span class="p">,</span> <span class="s2">&quot;resources&quot;</span><span class="p">),</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+                      <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span>
+                          <span class="s2">&quot;resources.landing_pages.image&quot;</span><span class="p">,</span> <span class="s2">&quot;resources&quot;</span><span class="p">),</span>
+                      <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PublishedQuerySetMixin"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.resources.models.PublishedQuerySetMixin">[docs]</a><span class="k">class</span> <span class="nc">PublishedQuerySetMixin</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">QuerySet</span><span class="p">):</span>
@@ -134,8 +109,10 @@
         <span class="k">if</span> <span class="n">for_user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">for_user</span><span class="o">.</span><span class="n">is_staff</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">publish_date__lte</span><span class="o">=</span><span class="n">now</span><span class="p">())</span> <span class="o">|</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">publish_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">expiry_date__gte</span><span class="o">=</span><span class="n">now</span><span class="p">())</span> <span class="o">|</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">expiry_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">publish_date__lte</span><span class="o">=</span><span class="n">now</span><span class="p">())</span> <span class="o">|</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span>
+                <span class="n">publish_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">expiry_date__gte</span><span class="o">=</span><span class="n">now</span><span class="p">())</span> <span class="o">|</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span>
+                <span class="n">expiry_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
             <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">CONTENT_STATUS_PUBLISHED</span><span class="p">))</span></div></div>
 
 
@@ -268,7 +245,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

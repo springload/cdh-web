@@ -5,14 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.events.models &#8212; CDH website 2.8.0 documentation</title>
+    <title>cdhweb.events.models &#8212; CDH website 3.0.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -37,6 +36,7 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
 <span class="kn">import</span> <span class="nn">icalendar</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
@@ -45,11 +45,19 @@
 <span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="kn">import</span> <span class="n">FileField</span>
 <span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="kn">import</span> <span class="n">Displayable</span><span class="p">,</span> <span class="n">RichText</span>
 <span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="kn">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
+<span class="kn">from</span> <span class="nn">modelcluster.contrib.taggit</span> <span class="kn">import</span> <span class="n">ClusterTaggableManager</span>
+<span class="kn">from</span> <span class="nn">modelcluster.fields</span> <span class="kn">import</span> <span class="n">ParentalKey</span>
+<span class="kn">from</span> <span class="nn">modelcluster.models</span> <span class="kn">import</span> <span class="n">ClusterableModel</span>
 <span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="kn">import</span> <span class="n">TaggableManager</span>
+<span class="kn">from</span> <span class="nn">taggit.models</span> <span class="kn">import</span> <span class="n">TaggedItemBase</span>
+<span class="kn">from</span> <span class="nn">wagtail.admin.edit_handlers</span> <span class="kn">import</span> <span class="p">(</span><span class="n">FieldPanel</span><span class="p">,</span> <span class="n">FieldRowPanel</span><span class="p">,</span>
+                                         <span class="n">InlinePanel</span><span class="p">,</span> <span class="n">MultiFieldPanel</span><span class="p">,</span>
+                                         <span class="n">StreamFieldPanel</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">wagtail.core.models</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">PageManager</span><span class="p">,</span> <span class="n">PageQuerySet</span>
+<span class="kn">from</span> <span class="nn">wagtail.images.edit_handlers</span> <span class="kn">import</span> <span class="n">ImageChooserPanel</span>
 
-<span class="kn">from</span> <span class="nn">cdhweb.people.models</span> <span class="kn">import</span> <span class="n">Person</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Attachment</span><span class="p">,</span> <span class="n">ExcerptMixin</span><span class="p">,</span>
-                                     <span class="n">PublishedQuerySetMixin</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">cdhweb.pages.models</span> <span class="kn">import</span> <span class="n">LinkPage</span><span class="p">,</span> <span class="n">BasePage</span>
+<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="kn">import</span> <span class="n">Attachment</span><span class="p">,</span> <span class="n">ExcerptMixin</span>
 <span class="kn">from</span> <span class="nn">cdhweb.resources.utils</span> <span class="kn">import</span> <span class="n">absolutize_url</span>
 
 
@@ -62,6 +70,9 @@
     <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">objects</span> <span class="o">=</span> <span class="n">EventTypeManager</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
@@ -82,6 +93,9 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">short_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,)</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;A name for template display&#39;&#39;&#39;</span>
@@ -95,7 +109,7 @@
             <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Address is required for non-virtual events&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="EventQuerySet"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.EventQuerySet">[docs]</a><span class="k">class</span> <span class="nc">EventQuerySet</span><span class="p">(</span><span class="n">PublishedQuerySetMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="EventQuerySet"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.EventQuerySet">[docs]</a><span class="k">class</span> <span class="nc">EventQuerySet</span><span class="p">(</span><span class="n">PageQuerySet</span><span class="p">):</span>
 
 <div class="viewcode-block" id="EventQuerySet.upcoming"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.EventQuerySet.upcoming">[docs]</a>    <span class="k">def</span> <span class="nf">upcoming</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find upcoming events. Includes events that end on the current</span>
@@ -116,7 +130,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">end_time__lt</span><span class="o">=</span><span class="n">today</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-start_time&#39;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="n">Displayable</span><span class="p">,</span> <span class="n">RichText</span><span class="p">,</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">ExcerptMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="OldEvent"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.OldEvent">[docs]</a><span class="k">class</span> <span class="nc">OldEvent</span><span class="p">(</span><span class="n">Displayable</span><span class="p">,</span> <span class="n">RichText</span><span class="p">,</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">ExcerptMixin</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;An event, such as a workshop, lecture, or conference.&#39;&#39;&#39;</span>
 
     <span class="c1"># description = rich text field</span>
@@ -129,7 +143,7 @@
     <span class="n">location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Location</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                  <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">)</span>
     <span class="n">event_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">EventType</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
-    <span class="n">speakers</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span>
+    <span class="n">speakers</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span>
                                       <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Guest lecturer(s) or Workshop leader(s)&#39;</span><span class="p">,</span>
                                       <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -166,7 +180,7 @@
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;start_time&quot;</span><span class="p">,)</span>
 
-<div class="viewcode-block" id="Event.is_virtual"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.is_virtual">[docs]</a>    <span class="k">def</span> <span class="nf">is_virtual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OldEvent.is_virtual"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.OldEvent.is_virtual">[docs]</a>    <span class="k">def</span> <span class="nf">is_virtual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;If an event takes place in a virtual location, it is virtual&#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">is_virtual</span>
@@ -174,7 +188,7 @@
     <span class="n">is_virtual</span><span class="o">.</span><span class="n">boolean</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">is_virtual</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s2">&quot;Virtual&quot;</span>
 
-<div class="viewcode-block" id="Event.get_absolute_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OldEvent.get_absolute_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.OldEvent.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;event detail url on this site&#39;&#39;&#39;</span>
         <span class="c1"># we don&#39;t have to worry about the various url config options</span>
         <span class="c1"># that mezzanine has to support; just handle the url style we</span>
@@ -185,11 +199,11 @@
             <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%02d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
             <span class="s1">&#39;slug&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="Event.full_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.full_url">[docs]</a>    <span class="k">def</span> <span class="nf">full_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OldEvent.full_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.OldEvent.full_url">[docs]</a>    <span class="k">def</span> <span class="nf">full_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Absolute url, including site address&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="n">absolutize_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="Event.get_ical_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.get_ical_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_ical_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OldEvent.get_ical_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.OldEvent.get_ical_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_ical_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;URL to download this event as ical&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;event:ical&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
             <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
@@ -197,7 +211,7 @@
             <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%02d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
             <span class="s1">&#39;slug&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="Event.when"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.when">[docs]</a>    <span class="k">def</span> <span class="nf">when</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OldEvent.when"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.OldEvent.when">[docs]</a>    <span class="k">def</span> <span class="nf">when</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Event start/end date and time, formatted for display.</span>
 <span class="sd">        Removes leading zeros from hours and converts am/pm to lower case.&#39;&#39;&#39;</span>
 
@@ -226,11 +240,11 @@
 
         <span class="k">return</span> <span class="s1">&#39; – &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Event.duration"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.duration">[docs]</a>    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OldEvent.duration"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.OldEvent.duration">[docs]</a>    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;duration between start and end time as :class:`datetime.timedelta`&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span></div>
 
-<div class="viewcode-block" id="Event.ical_event"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.ical_event">[docs]</a>    <span class="k">def</span> <span class="nf">ical_event</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OldEvent.ical_event"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.OldEvent.ical_event">[docs]</a>    <span class="k">def</span> <span class="nf">ical_event</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Return the current event as a :class:`icalendar.Event` for</span>
 <span class="sd">        inclusion in a :class:`icalendar.Calendar`&#39;&#39;&#39;</span>
         <span class="n">event</span> <span class="o">=</span> <span class="n">icalendar</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -248,6 +262,197 @@
         <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span>
                   <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">strip_tags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">absurl</span><span class="p">]))</span>
         <span class="k">return</span> <span class="n">event</span></div></div>
+
+
+<span class="c1"># custom manager for wagtail pages, see:</span>
+<span class="c1"># https://docs.wagtail.io/en/stable/topics/pages.html#custom-page-managers</span>
+<span class="n">EventManager</span> <span class="o">=</span> <span class="n">PageManager</span><span class="o">.</span><span class="n">from_queryset</span><span class="p">(</span><span class="n">EventQuerySet</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="EventTag"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.EventTag">[docs]</a><span class="k">class</span> <span class="nc">EventTag</span><span class="p">(</span><span class="n">TaggedItemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tags for Event pages.&quot;&quot;&quot;</span>
+    <span class="n">content_object</span> <span class="o">=</span> <span class="n">ParentalKey</span><span class="p">(</span>
+        <span class="s2">&quot;events.Event&quot;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;tagged_items&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Speaker"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Speaker">[docs]</a><span class="k">class</span> <span class="nc">Speaker</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Relationship between Person and Event.&quot;&quot;&quot;</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="n">ParentalKey</span><span class="p">(</span><span class="s2">&quot;events.Event&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;speakers&quot;</span><span class="p">)</span>
+    <span class="n">person</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;people.Person&quot;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">panels</span> <span class="o">=</span> <span class="p">[</span><span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;person&quot;</span><span class="p">)]</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;person__last_name&quot;</span><span class="p">,</span> <span class="s2">&quot;person__first_name&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="n">BasePage</span><span class="p">,</span> <span class="n">ClusterableModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Page type for an event, such as a workshop, lecture, or conference.&quot;&quot;&quot;</span>
+
+    <span class="n">sponsor</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">()</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">()</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Location</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                 <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">)</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">EventType</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">)</span>
+    <span class="n">attendance</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                             <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Total number of people who attended the event. (Internal only, for reporting purposes.)&quot;</span><span class="p">)</span>
+    <span class="n">join_url</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Join URL&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                               <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Join URL for virtual events, e.g. Zoom meetings.&quot;</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;wagtailimages.image&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+                              <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Image for display on event detail page (optional)&quot;</span><span class="p">)</span>
+    <span class="n">thumbnail</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;wagtailimages.image&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+                                  <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Image for display on event card (optional)&quot;</span><span class="p">)</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">ClusterTaggableManager</span><span class="p">(</span><span class="n">through</span><span class="o">=</span><span class="n">EventTag</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># TODO attachments (#245)</span>
+
+    <span class="c1"># can only be created underneath special link page</span>
+    <span class="n">parent_page_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;events.EventsLinkPage&quot;</span><span class="p">]</span>
+    <span class="c1"># no allowed subpages</span>
+    <span class="n">subpage_types</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># admin edit configuration</span>
+    <span class="n">content_panels</span> <span class="o">=</span> <span class="n">Page</span><span class="o">.</span><span class="n">content_panels</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">),</span>
+        <span class="n">FieldRowPanel</span><span class="p">((</span><span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;start_time&quot;</span><span class="p">),</span>
+                       <span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;end_time&quot;</span><span class="p">)),</span> <span class="s2">&quot;Details&quot;</span><span class="p">),</span>
+        <span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">),</span>
+        <span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;join_url&quot;</span><span class="p">),</span>
+        <span class="n">FieldRowPanel</span><span class="p">((</span><span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;sponsor&quot;</span><span class="p">),</span>
+                       <span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;attendance&quot;</span><span class="p">)),</span> <span class="s2">&quot;Tracking&quot;</span><span class="p">),</span>
+        <span class="n">FieldRowPanel</span><span class="p">((</span><span class="n">ImageChooserPanel</span><span class="p">(</span><span class="s2">&quot;thumbnail&quot;</span><span class="p">),</span>
+                       <span class="n">ImageChooserPanel</span><span class="p">(</span><span class="s2">&quot;image&quot;</span><span class="p">)),</span> <span class="s2">&quot;Images&quot;</span><span class="p">),</span>
+        <span class="n">MultiFieldPanel</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">InlinePanel</span><span class="p">(</span><span class="s2">&quot;speakers&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Speaker&quot;</span><span class="p">),),</span> <span class="n">heading</span><span class="o">=</span><span class="s2">&quot;Speakers&quot;</span><span class="p">),</span>
+        <span class="n">StreamFieldPanel</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">),</span>
+        <span class="n">StreamFieldPanel</span><span class="p">(</span><span class="s2">&quot;attachments&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">promote_panels</span> <span class="o">=</span> <span class="n">Page</span><span class="o">.</span><span class="n">promote_panels</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="c1"># custom manager/queryset logic</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">EventManager</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;-start_time&quot;</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot; - &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%b </span><span class="si">%d</span><span class="s2">, %Y&quot;</span><span class="p">)])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">speaker_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Comma-separated list of speaker names.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">speaker</span><span class="o">.</span><span class="n">person</span><span class="p">)</span> <span class="k">for</span> <span class="n">speaker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">speakers</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+
+<div class="viewcode-block" id="Event.clean"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate that a type was specified for this event.&quot;&quot;&quot;</span>
+        <span class="c1"># NOTE we can&#39;t cascade deletes to wagtail pages without corrupting the</span>
+        <span class="c1"># page tree. Instead, we use SET_NULL and a clean() handler so that we</span>
+        <span class="c1"># can make sure that it&#39;s impossible to create an Event without a type.</span>
+        <span class="c1"># More info: https://github.com/wagtail/wagtail/issues/1602</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Event must specify a type.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Event.get_url_parts"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.get_url_parts">[docs]</a>    <span class="k">def</span> <span class="nf">get_url_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Custom event page URLs of the form /events/2014/03/my-event.&quot;&quot;&quot;</span>
+        <span class="n">url_parts</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_url_parts</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># NOTE evidently this can sometimes be None; unclear why – perhaps it</span>
+        <span class="c1"># gets called in a context where the request is unavailable? Only</span>
+        <span class="c1"># happens in QA, not locally.</span>
+        <span class="k">if</span> <span class="n">url_parts</span><span class="p">:</span>
+            <span class="n">site_id</span><span class="p">,</span> <span class="n">root_url</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">url_parts</span>
+            <span class="n">page_path</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;events:detail&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                <span class="c1"># force two-digit month</span>
+                <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span>
+            <span class="p">})</span>
+            <span class="k">return</span> <span class="n">site_id</span><span class="p">,</span> <span class="n">root_url</span><span class="p">,</span> <span class="n">page_path</span></div>
+
+<div class="viewcode-block" id="Event.get_ical_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.get_ical_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_ical_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;URL to download this event as a .ics (iCal) file.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;events:ical&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+            <span class="c1"># force two-digit month</span>
+            <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%02d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+            <span class="s1">&#39;slug&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="Event.is_virtual"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.is_virtual">[docs]</a>    <span class="k">def</span> <span class="nf">is_virtual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;If an event takes place in a virtual location, it is virtual&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">is_virtual</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+    <span class="n">is_virtual</span><span class="o">.</span><span class="n">boolean</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">is_virtual</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s2">&quot;Virtual&quot;</span>
+
+<div class="viewcode-block" id="Event.when"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.when">[docs]</a>    <span class="k">def</span> <span class="nf">when</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Event start/end date and time, formatted for display.</span>
+
+<span class="sd">        Removes leading zeros from hours and converts am/pm to lower case.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># NOTE: - in %-I is to remove leading zero</span>
+        <span class="c1"># (possibly platform specific?)</span>
+
+        <span class="n">local_tz</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">get_default_timezone</span><span class="p">()</span>
+        <span class="c1"># convert dates to local timezone for display</span>
+        <span class="n">local_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">local_tz</span><span class="p">)</span>
+        <span class="n">local_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">local_tz</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">local_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%b </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
+                          <span class="n">local_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%-I:%M&quot;</span><span class="p">)])</span>
+        <span class="n">start_ampm</span> <span class="o">=</span> <span class="n">local_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%p&quot;</span><span class="p">)</span>
+        <span class="c1"># include start am/pm if *different* from end</span>
+        <span class="k">if</span> <span class="n">start_ampm</span> <span class="o">!=</span> <span class="n">local_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%p&quot;</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">start_ampm</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="c1"># include end month and day if *different* from start</span>
+        <span class="n">end_pieces</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">local_start</span><span class="o">.</span><span class="n">month</span> <span class="o">!=</span> <span class="n">local_end</span><span class="o">.</span><span class="n">month</span><span class="p">:</span>
+            <span class="n">end_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">local_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%b </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">local_start</span><span class="o">.</span><span class="n">day</span> <span class="o">!=</span> <span class="n">local_end</span><span class="o">.</span><span class="n">day</span><span class="p">:</span>
+            <span class="n">end_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">local_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="n">end_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">local_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%-I:%M %p&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">end_pieces</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot; – &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Event.duration"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.duration">[docs]</a>    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;duration between start and end time as :class:`datetime.timedelta`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span></div>
+
+<div class="viewcode-block" id="Event.ical_event"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.Event.ical_event">[docs]</a>    <span class="k">def</span> <span class="nf">ical_event</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the current event as a :class:`icalendar.Event` for</span>
+<span class="sd">        inclusion in a :class:`icalendar.Calendar`&quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">icalendar</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="c1"># use absolute url for event id and in event content</span>
+        <span class="n">absurl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_full_url</span><span class="p">()</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="n">absurl</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;dtstart&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;dtend&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_virtual</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_url</span><span class="p">:</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_url</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">display_name</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">strip_tags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">absurl</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">event</span></div></div>
+
+
+<div class="viewcode-block" id="EventsLinkPage"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.models.EventsLinkPage">[docs]</a><span class="k">class</span> <span class="nc">EventsLinkPage</span><span class="p">(</span><span class="n">LinkPage</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Container page that defines where Project pages can be created.&quot;&quot;&quot;</span>
+    <span class="c1"># NOTE this page can&#39;t be created in the page editor; it is only ever made</span>
+    <span class="c1"># via a script or the console, since there&#39;s only one.</span>
+    <span class="n">parent_page_types</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># NOTE the only allowed child page type is an Event; this is so that</span>
+    <span class="c1"># Events made in the admin automatically are created here.</span>
+    <span class="n">subpage_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">Event</span><span class="p">]</span></div>
 </pre></div>
 
           </div>
@@ -332,7 +537,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
