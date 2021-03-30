@@ -247,7 +247,7 @@ def create_link_page(page, parent):
     if page.richtextpage.content and \
             not is_blank(page.richtextpage.content):
         PageIntro.objects.create(page=new_page,
-                                 paragraph=page.richtextpage.content)
+                    paragraph=page.richtextpage.content.replace("&nbsp;", ""))
 
     return new_page
 
