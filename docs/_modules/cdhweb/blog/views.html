@@ -5,14 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.blog.views &#8212; CDH website 2.8.0 documentation</title>
+    <title>cdhweb.blog.views &#8212; CDH website 3.0.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -41,25 +40,23 @@
     <span class="n">MonthArchiveView</span>
 
 <span class="kn">from</span> <span class="nn">cdhweb.blog.models</span> <span class="kn">import</span> <span class="n">BlogPost</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.utils</span> <span class="kn">import</span> <span class="n">absolutize_url</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.views</span> <span class="kn">import</span> <span class="n">LastModifiedMixin</span><span class="p">,</span> <span class="n">LastModifiedListMixin</span>
+<span class="kn">from</span> <span class="nn">cdhweb.pages.views</span> <span class="kn">import</span> <span class="n">LastModifiedMixin</span><span class="p">,</span> <span class="n">LastModifiedListMixin</span>
 
 
 <div class="viewcode-block" id="BlogPostMixinView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogPostMixinView">[docs]</a><span class="k">class</span> <span class="nc">BlogPostMixinView</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;View mixin that sets model to Blogpost and returns a</span>
-<span class="sd">    published BlogPost queryset.&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;Mixin that sets model to BlogPost and orders/filters queryset.&quot;&quot;&quot;</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">BlogPost</span>
+    <span class="n">lastmodified_attr</span> <span class="o">=</span> <span class="s2">&quot;last_published_at&quot;</span>
 
-    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># use displayable manager to find published events only</span>
-        <span class="c1"># (or draft profiles for logged in users with permission to view)</span>
-        <span class="k">return</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">published</span><span class="p">()</span> <span class="c1"># TODO: published(for_user=self.request.user)</span></div>
+<div class="viewcode-block" id="BlogPostMixinView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogPostMixinView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return published posts with most recent first.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">live</span><span class="p">()</span><span class="o">.</span><span class="n">recent</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="BlogPostArchiveMixin"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogPostArchiveMixin">[docs]</a><span class="k">class</span> <span class="nc">BlogPostArchiveMixin</span><span class="p">(</span><span class="n">BlogPostMixinView</span><span class="p">,</span> <span class="n">LastModifiedListMixin</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Mixin with common settings for blogpost archive views&#39;&#39;&#39;</span>
-    <span class="n">date_field</span> <span class="o">=</span> <span class="s1">&#39;publish_date&#39;</span>
-    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s1">&#39;blogposts&#39;</span>
+    <span class="n">date_field</span> <span class="o">=</span> <span class="s1">&#39;first_published_at&#39;</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s1">&#39;posts&#39;</span>
     <span class="n">make_object_list</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">12</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;blog/blogpost_archive.html&#39;</span></div>
@@ -67,17 +64,25 @@
 
 <div class="viewcode-block" id="BlogIndexView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogIndexView">[docs]</a><span class="k">class</span> <span class="nc">BlogIndexView</span><span class="p">(</span><span class="n">BlogPostArchiveMixin</span><span class="p">,</span> <span class="n">ArchiveIndexView</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Main blog post list view&#39;&#39;&#39;</span>
-    <span class="n">date_list_period</span> <span class="o">=</span> <span class="s1">&#39;month&#39;</span></div>
+    <span class="n">date_list_period</span> <span class="o">=</span> <span class="s1">&#39;month&#39;</span>
+
+<div class="viewcode-block" id="BlogIndexView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogIndexView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s1">&#39;page_title&#39;</span><span class="p">:</span> <span class="s2">&quot;Latest Updates&quot;</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
 
 
 <div class="viewcode-block" id="BlogYearArchiveView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogYearArchiveView">[docs]</a><span class="k">class</span> <span class="nc">BlogYearArchiveView</span><span class="p">(</span><span class="n">BlogPostArchiveMixin</span><span class="p">,</span> <span class="n">YearArchiveView</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Blog post archive by year&#39;&#39;&#39;</span>
 
 <div class="viewcode-block" id="BlogYearArchiveView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogYearArchiveView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">BlogYearArchiveView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">BlogYearArchiveView</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-            <span class="s1">&#39;date_list&#39;</span><span class="p">:</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">dates</span><span class="p">(</span><span class="s1">&#39;publish_date&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;DESC&#39;</span><span class="p">),</span>
-            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
+            <span class="s1">&#39;date_list&#39;</span><span class="p">:</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">dates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_field</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;DESC&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;page_title&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Updates&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
         <span class="p">})</span>
         <span class="k">return</span> <span class="n">context</span></div></div>
 
@@ -87,12 +92,13 @@
     <span class="n">month_format</span> <span class="o">=</span> <span class="s1">&#39;%m&#39;</span>
 
 <div class="viewcode-block" id="BlogMonthArchiveView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogMonthArchiveView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">BlogMonthArchiveView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">BlogMonthArchiveView</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># current requested month/year for display</span>
         <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(year)s</span><span class="s1"> </span><span class="si">%(month)s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;%Y %m&#39;</span><span class="p">)</span>
         <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-            <span class="s1">&#39;date_list&#39;</span><span class="p">:</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">dates</span><span class="p">(</span><span class="s1">&#39;publish_date&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;DESC&#39;</span><span class="p">),</span>
-            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%B %Y&#39;</span><span class="p">)</span>
+            <span class="s1">&#39;date_list&#39;</span><span class="p">:</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">dates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_field</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;DESC&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;page_title&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Updates&#39;</span> <span class="o">%</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%B %Y&#39;</span><span class="p">)</span>
         <span class="p">})</span>
         <span class="k">return</span> <span class="n">context</span></div></div>
 
@@ -100,14 +106,30 @@
 <div class="viewcode-block" id="BlogDetailView"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogDetailView">[docs]</a><span class="k">class</span> <span class="nc">BlogDetailView</span><span class="p">(</span><span class="n">BlogPostMixinView</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">LastModifiedMixin</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Blog post detail view&#39;&#39;&#39;</span>
 
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s2">&quot;page&quot;</span>
+
 <div class="viewcode-block" id="BlogDetailView.get_context_data"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.BlogDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add next/previous post to context.&quot;&quot;&quot;</span>
         <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">BlogDetailView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># also set object as page for common page display functionality</span>
+
+        <span class="c1"># NOTE mezzanine Displayable previously handled this; we need to do it</span>
+        <span class="c1"># manually for Wagtail. See:</span>
+        <span class="c1"># http://mezzanine.jupo.org/docs/_modules/mezzanine/core/models.html#Displayable.get_next_by_publish_date</span>
+        <span class="nb">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">live</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">first_published_at__gt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">first_published_at</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;first_published_at&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">next</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="nb">next</span> <span class="o">=</span> <span class="nb">next</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">next</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">prev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">live</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">first_published_at__lt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">first_published_at</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-first_published_at&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prev</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">prev</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-            <span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">,</span>
-            <span class="s1">&#39;opengraph_type&#39;</span><span class="p">:</span> <span class="s1">&#39;article&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;next&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">get_next_by_publish_date</span><span class="p">(),</span>
-            <span class="s1">&#39;previous&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">get_previous_by_publish_date</span><span class="p">(),</span>
+            <span class="s1">&#39;opengraph_type&#39;</span><span class="p">:</span> <span class="s1">&#39;article&#39;</span><span class="p">,</span> <span class="s1">&#39;next&#39;</span><span class="p">:</span> <span class="nb">next</span><span class="p">,</span> <span class="s1">&#39;previous&#39;</span><span class="p">:</span> <span class="n">prev</span>
         <span class="p">})</span>
         <span class="k">return</span> <span class="n">context</span></div></div>
 
@@ -120,7 +142,7 @@
 
 <div class="viewcode-block" id="RssBlogPostFeed.items"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;ten most recent blog posts, ordered by publish date&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">published</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-publish_date&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">live</span><span class="p">()</span><span class="o">.</span><span class="n">recent</span><span class="p">()[:</span><span class="mi">10</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_title"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_title">[docs]</a>    <span class="k">def</span> <span class="nf">item_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;blog post title&#39;&#39;&#39;</span>
@@ -128,35 +150,38 @@
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_description"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_description">[docs]</a>    <span class="k">def</span> <span class="nf">item_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;blog post description, for feed content&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">content</span></div>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">get_description</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_link"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_link">[docs]</a>    <span class="k">def</span> <span class="nf">item_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;absolute link to blog post&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">absolutize_url</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span></div>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">get_full_url</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_author_name"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_author_name">[docs]</a>    <span class="k">def</span> <span class="nf">item_author_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;author of the blog post; comma-separated list for multiple&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span> <span class="k">for</span> <span class="n">auth</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">all</span><span class="p">()])</span></div>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">author_list</span></div>
+
+<div class="viewcode-block" id="RssBlogPostFeed.item_author_email"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_author_email">[docs]</a>    <span class="k">def</span> <span class="nf">item_author_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;author email, if there is only one author&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">authors</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">authors</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">person</span><span class="o">.</span><span class="n">email</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_author_link"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_author_link">[docs]</a>    <span class="k">def</span> <span class="nf">item_author_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;link to author profile page, if there is only one author and</span>
 <span class="sd">        the author has a published profile&#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">author</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">author</span><span class="o">.</span><span class="n">published</span><span class="p">():</span>
-                <span class="k">return</span> <span class="n">absolutize_url</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span></div>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">authors</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">authors</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">person</span><span class="o">.</span><span class="n">profile_url</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_pubdate"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_pubdate">[docs]</a>    <span class="k">def</span> <span class="nf">item_pubdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;publication date&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">publish_date</span></div>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">first_published_at</span></div>
 
-<div class="viewcode-block" id="RssBlogPostFeed.item_updatedate"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_updatedate">[docs]</a>    <span class="k">def</span> <span class="nf">item_updatedate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="RssBlogPostFeed.item_updateddate"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_updateddate">[docs]</a>    <span class="k">def</span> <span class="nf">item_updateddate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;last modified date&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">updated</span></div>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">last_published_at</span></div>
 
 <div class="viewcode-block" id="RssBlogPostFeed.item_categories"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.RssBlogPostFeed.item_categories">[docs]</a>    <span class="k">def</span> <span class="nf">item_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;keyword category terms&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">kw</span><span class="p">)</span> <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span></div></div>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span></div></div>
 
 
 <div class="viewcode-block" id="AtomBlogPostFeed"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.views.AtomBlogPostFeed">[docs]</a><span class="k">class</span> <span class="nc">AtomBlogPostFeed</span><span class="p">(</span><span class="n">RssBlogPostFeed</span><span class="p">):</span>
@@ -248,7 +273,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
