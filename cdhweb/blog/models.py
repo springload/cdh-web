@@ -167,6 +167,9 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
     # custom manager/queryset logic
     objects = BlogPostManager()
 
+    # configure template path for wagtail preview
+    template = 'blog/blogpost_detail.html'
+
     @property
     def short_title(self):
         """Shorter title with ellipsis."""
