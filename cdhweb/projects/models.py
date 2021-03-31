@@ -1,13 +1,8 @@
 from django.db import models
-from django.urls import reverse
 from django.utils import timezone
-from mezzanine.core.fields import FileField, RichTextField
-from mezzanine.core.models import Displayable
-from mezzanine.utils.models import AdminThumbMixin, upload_to
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
                                          InlinePanel, StreamFieldPanel)
@@ -15,9 +10,9 @@ from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 from cdhweb.pages.models import (BasePage, LandingPage, LinkPage,
-                                 RelatedLink, RelatedLinkType)
+                                 RelatedLink)
 from cdhweb.people.models import Person
-from cdhweb.resources.models import Attachment, DateRange, ExcerptMixin
+from cdhweb.resources.models import DateRange
 
 
 class ProjectQuerySet(PageQuerySet):
@@ -74,106 +69,6 @@ class ProjectQuerySet(PageQuerySet):
 # custom manager for wagtail pages, see:
 # https://docs.wagtail.io/en/stable/topics/pages.html#custom-page-managers
 ProjectManager = PageManager.from_queryset(ProjectQuerySet)
-
-
-class OldProject(Displayable, AdminThumbMixin, ExcerptMixin):
-    '''A CDH sponsored project'''
-
-    short_description = models.CharField(max_length=255, blank=True,
-                                         help_text='Brief tagline for display on project card in browse view')
-    long_description = RichTextField()
-    highlight = models.BooleanField(default=False,
-                                    help_text='Include in randomized project display on the home page.')
-    cdh_built = models.BooleanField('CDH Built', default=False,
-                                    help_text='Project built by CDH Development & Design team.')
-    working_group = models.BooleanField(
-        'Working Group', default=False, help_text='Project is a long-term collaborative group associated with the CDH.')
-    members = models.ManyToManyField(Person, through='Membership')
-    resources = models.ManyToManyField(
-        RelatedLinkType, through='ProjectRelatedLink')
-
-    tags = TaggableManager(blank=True)
-
-    # TODO: include help text to indicate images are optional, where they
-    # are used (size?); add language about putting large images in the
-    # body of the project description, when we have styles for that.
-    image = FileField(verbose_name="Image",
-                      upload_to=upload_to("projects.image", "projects"),
-                      format="Image", max_length=255, null=True, blank=True)
-
-    thumb = FileField(verbose_name="Thumbnail",
-                      upload_to=upload_to(
-                          "projects.image", "projects/thumbnails"),
-                      format="Image", max_length=255, null=True, blank=True)
-
-    attachments = models.ManyToManyField(Attachment, blank=True)
-
-    # custom manager and queryset
-    objects = ProjectQuerySet.as_manager()
-
-    admin_thumb_field = "thumb"
-
-    # TODO: Insert panels after creating project wagtail page
-    # content_panels = Page.content_panels + [
-    #     #....
-    #     InlinePanel("related_links", heading="Related Links"),
-    # ]
-
-    class Meta:
-        # sort by project title for now
-        ordering = ['title']
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('project:detail', kwargs={'slug': self.slug})
-
-    @property
-    def website_url(self):
-        '''website url, if set'''
-        website = self.related_links \
-            .filter(type__name='Website').first()
-        if website:
-            return website.url
-
-    def latest_grant(self):
-        '''Most recent :class:`Grant`'''
-        if self.grant_set.count():
-            return self.grant_set.order_by('-start_date').first()
-
-    def current_memberships(self):
-        ''':class:`MembershipQueryset` of current members sorted by role'''
-        # uses memberships rather than members so that we can retain role
-        # information attached to the membership
-        today = timezone.now().date()
-        # if the last grant for this project is over, display the team
-        # for that grant period
-        latest_grant = self.latest_grant()
-        if latest_grant and latest_grant.end_date and \
-           latest_grant.end_date < today:
-            return self.membership_set \
-                .filter(start_date__lte=latest_grant.end_date) \
-                .filter(
-                    models.Q(end_date__gte=latest_grant.start_date) |
-                    models.Q(end_date__isnull=True)
-                )
-
-        # otherwise, return current members based on date
-        return self.membership_set.filter(start_date__lte=today) \
-            .filter(
-                models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
-        )
-
-    def alums(self):
-        ''':class:`PersonQueryset` of past members sorted by last name'''
-        # uses people rather than memberships so that we can use distinct()
-        # to ensure people aren't counted multiple times for each grant
-        # and because we don't care about role (always 'alum')
-        return self.members \
-            .distinct() \
-            .exclude(membership__in=self.current_memberships()) \
-            .order_by('last_name')
 
 
 class ProjectTag(TaggedItemBase):
@@ -311,9 +206,7 @@ class GrantType(models.Model):
 class Grant(DateRange):
     '''A specific grant associated with a project'''
     project = ParentalKey(
-        Project, null=True, on_delete=models.SET_NULL, related_name="grants")
-    old_project = models.ForeignKey(
-        OldProject, null=True, editable=False, on_delete=models.SET_NULL)
+        Project, on_delete=models.CASCADE, related_name="grants")
     grant_type = models.ForeignKey(GrantType, on_delete=models.CASCADE)
 
     class Meta:
@@ -346,10 +239,8 @@ class Role(models.Model):
 
 class Membership(DateRange):
     '''Project membership - joins project, user, and role.'''
-    project = ParentalKey(Project, on_delete=models.SET_NULL, null=True,
+    project = ParentalKey(Project, on_delete=models.CASCADE,
                           related_name="memberships")
-    old_project = models.ForeignKey(
-        OldProject, null=True, editable=False, on_delete=models.SET_NULL)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
@@ -372,10 +263,8 @@ class Membership(DateRange):
 
 class ProjectRelatedLink(RelatedLink):
     '''Through-model for associating projects with relatedlinks'''
-    project = ParentalKey(Project, on_delete=models.SET_NULL, null=True,
+    project = ParentalKey(Project, on_delete=models.CASCADE,
                           related_name="related_links")
-    old_project = models.ForeignKey(
-        OldProject, null=True, editable=False, on_delete=models.SET_NULL)
 
     def __str__(self):
         return "%s – %s (%s)" % (self.project, self.type, self.display_url)
@@ -391,4 +280,3 @@ class ProjectsLandingPage(LandingPage):
     subpage_types = [Project, LinkPage]
     # use the regular landing page template
     template = LandingPage.template
-

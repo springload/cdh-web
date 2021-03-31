@@ -7,10 +7,6 @@ from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
-from mezzanine.core.fields import FileField
-from mezzanine.core.fields import RichTextField as MezzanineRichTextField
-from mezzanine.core.models import Displayable
-from mezzanine.utils.models import AdminThumbMixin, upload_to
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
@@ -23,7 +19,7 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 
 from cdhweb.pages.models import (PARAGRAPH_FEATURES, BasePage,
                                  LandingPage, LinkPage, RelatedLink)
-from cdhweb.resources.models import Attachment, DateRange
+from cdhweb.resources.models import DateRange
 
 
 class Title(models.Model):
@@ -351,76 +347,6 @@ class Person(ClusterableModel):
             Profile.objects.get(person=kwargs["instance"]).delete()
         except Profile.DoesNotExist:
             pass
-
-
-class OldProfile(Displayable, AdminThumbMixin):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # -> cdh_staff on person
-    is_staff = models.BooleanField(
-        default=False,
-        help_text='CDH staff or Postdoctoral Fellow. If checked, person ' +
-        'will be listed on the CDH staff page and will have a profile page ' +
-        'on the site.')
-    education = MezzanineRichTextField()
-    bio = MezzanineRichTextField()
-    # NOTE: could use regex here, but how standard are staff phone
-    # numbers? or django-phonenumber-field, but that's probably overkill
-    phone_number = models.CharField(max_length=50, blank=True)
-    office_location = models.CharField(max_length=255, blank=True)
-
-    # moved to person
-    job_title = models.CharField(
-        max_length=255, blank=True,
-        help_text='Professional title, e.g. Professor or Assistant Professor')
-    department = models.CharField(
-        max_length=255, blank=True,
-        help_text='Academic Department at Princeton or other institution (optional)')
-    institution = models.CharField(
-        max_length=255, blank=True,
-        help_text='Institutional affiliation (for people not associated with Princeton)')
-
-    PU_STATUS_CHOICES = (
-        ('fac', 'Faculty'),
-        ('stf', 'Staff'),
-        ('graduate', 'Graduate Student'),
-        ('undergraduate', 'Undergraduate Student'),
-        ('external', 'Not associated with Princeton')
-    )
-    pu_status = models.CharField('Princeton Status', choices=PU_STATUS_CHOICES,
-                                 max_length=15, blank=True, default='')
-
-    image = FileField(verbose_name="Image",
-                      upload_to=upload_to("people.image", "people"),
-                      format="Image", max_length=255, null=True, blank=True)
-
-    thumb = FileField(verbose_name="Thumbnail",
-                      upload_to=upload_to("people.image", "people/thumbnails"),
-                      format="Image", max_length=255, null=True, blank=True)
-
-    admin_thumb_field = "thumb"
-
-    attachments = models.ManyToManyField(Attachment, blank=True)
-
-    # TODO: check for
-    tags = TaggableManager(blank=True)
-
-    # NOTE removed ProfileQuerySet manager here as it became PersonQuerySet
-
-    class Meta:
-        ordering = ["-user__last_name"]
-
-    def __str__(self):
-        # use title if set
-        return self.title or \
-            ' '.join([self.user.first_name, self.user.last_name])
-
-    def get_absolute_url(self):
-        return reverse('people:profile', kwargs={'slug': self.slug})
-
-    @property
-    def current_title(self):
-        # FIXME: dowe actually need this here?
-        return self.user.current_title
 
 
 class Profile(BasePage):
