@@ -3,7 +3,7 @@ from collections import OrderedDict
 from django import template
 from django.conf import settings
 
-from cdhweb.resources.utils import absolutize_url
+from cdhweb.pages.utils import absolutize_url
 
 register = template.Library()
 

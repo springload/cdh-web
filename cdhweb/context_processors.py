@@ -1,7 +1,7 @@
 from django.conf import settings
 from wagtail.core.models import Site
 
-from cdhweb.resources.utils import absolutize_url
+from cdhweb.pages.utils import absolutize_url
 
 
 def template_settings(request):

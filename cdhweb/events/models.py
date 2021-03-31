@@ -21,7 +21,6 @@ from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 from cdhweb.pages.models import LinkPage, BasePage
-from cdhweb.resources.utils import absolutize_url
 
 
 class EventTypeManager(models.Manager):
