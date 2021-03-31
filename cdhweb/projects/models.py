@@ -9,10 +9,9 @@ from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import (BasePage, LandingPage, LinkPage,
+from cdhweb.pages.models import (BasePage, DateRange, LandingPage, LinkPage,
                                  RelatedLink)
 from cdhweb.people.models import Person
-from cdhweb.resources.models import DateRange
 
 
 class ProjectQuerySet(PageQuerySet):

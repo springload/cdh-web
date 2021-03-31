@@ -17,9 +17,8 @@ from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import (PARAGRAPH_FEATURES, BasePage,
+from cdhweb.pages.models import (PARAGRAPH_FEATURES, BasePage, DateRange,
                                  LandingPage, LinkPage, RelatedLink)
-from cdhweb.resources.models import DateRange
 
 
 class Title(models.Model):
