@@ -1,13 +1,14 @@
+from datetime import date
 from urllib.parse import urlparse, urlunparse
-import json
 
 import bleach
 from django.apps import apps
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
 from taggit.managers import TaggableManager
-from wagtail.admin.edit_handlers import (FieldPanel, 
+from wagtail.admin.edit_handlers import (FieldPanel,
                                          MultiFieldPanel, ObjectList,
                                          StreamFieldPanel, TabbedInterface)
 from wagtail.core.blocks import (RichTextBlock, StreamBlock, StructBlock,
@@ -207,7 +208,7 @@ class LandingPage(BasePage):
     header_image = models.ForeignKey('wagtailimages.image', null=True,
                                      blank=True, on_delete=models.SET_NULL, related_name='+')  # no reverse relationship
 
-    
+
     content_panels = Page.content_panels + [
         FieldPanel('tagline'),
         ImageChooserPanel('header_image'),
@@ -327,8 +328,10 @@ class LocalAttachment(AbstractDocument):
         parts.append(" (%s)" % self.file_extension)
         return "".join(parts)
 
+
 @register_snippet
-class ExternalAttachment(DisplayUrlMixin, CollectionMember, index.Indexed, models.Model):
+class ExternalAttachment(DisplayUrlMixin, CollectionMember, index.Indexed,
+                         models.Model):
     """An externally hosted link or file that can be associated with a Page."""
     # replicate the same fields as Document but with URL instead of file; see:
     # https://github.com/wagtail/wagtail/blob/master/wagtail/documents/models.py#L27-L37
@@ -362,3 +365,50 @@ class ExternalAttachment(DisplayUrlMixin, CollectionMember, index.Indexed, model
             parts.append(", %s" % self.author)
         parts.append(" (%s)" % self.display_url)
         return "".join(parts)
+
+
+class DateRange(models.Model):
+    '''Abstract model with start and end dates. Includes
+    validation that requires end date falls after start date (if set),
+    and custom properties to check if dates are current/active and to
+    display years.'''
+
+    #: start date
+    start_date = models.DateField()
+    #: end date (optional)
+    end_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    @property
+    def is_current(self):
+        '''is current: start date before today and end date
+        in the future or not set'''
+        today = date.today()
+        return self.start_date <= today and \
+            (not self.end_date or self.end_date >= today)
+
+    @property
+    def years(self):
+        '''year or year range for display'''
+        val = str(self.start_date.year)
+
+        if self.end_date:
+            # start and end the same year - return single year only
+            if self.start_date.year == self.end_date.year:
+                return val
+
+            return '%s–%s' % (val, self.end_date.year)
+
+        return '%s–' % val
+
+    def clean_fields(self, exclude=None):
+        if exclude is None:
+            exclude = []
+        if 'start_date' in exclude or 'end_date' in exclude:
+            return
+        # require end date to be greater than start date
+        if self.start_date and self.end_date and \
+                not self.end_date >= self.start_date:
+            raise ValidationError('End date must be after start date')
