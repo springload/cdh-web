@@ -17,12 +17,13 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 
 from cdhweb.pages.models import (BasePage, LinkPage,
                                  PagePreviewDescriptionMixin)
+from cdhweb.people.models import Person
 
 
 class Author(Orderable):
     """Ordered relationship between Person and BlogPost."""
     post = ParentalKey("blog.BlogPost", related_name="authors")
-    person = models.ForeignKey("people.Person", on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     panels = [FieldPanel("person")]
 
     def __str__(self) -> str:
@@ -62,7 +63,8 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
     tags = ClusterTaggableManager(through=BlogPostTag, blank=True)
     featured = models.BooleanField(
         default=False, help_text="Show the post in the carousel on the homepage.")
-    # TODO attachments (#245)
+    people = models.ManyToManyField(Person, through="blog.Author",
+                                    related_name='posts')
 
     # can only be created underneath special link page
     parent_page_types = ["blog.BlogLinkPage"]
@@ -104,7 +106,8 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
         return ", ".join(str(author.person) for author in self.authors.all())
 
     def __str__(self):
-        return "\"%s\" (%s)" % (self.short_title, format(self.first_published_at, "F j, Y"))
+        return "\"%s\" (%s)" % (self.short_title,
+                                format(self.first_published_at, "F j, Y"))
 
     def get_url_parts(self, *args, **kwargs):
         """Custom blog post URLs of the form /updates/2014/03/01/my-post."""
