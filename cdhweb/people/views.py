@@ -242,5 +242,5 @@ def speakerlist_gone(request):
     return render(request, '404.html', context={
         'error_code': 410,
         'message': "That page isn't here anymore.",
-        'page_title': 'Erorr — no longer available'
+        'page_title': 'Error — no longer available'
     }, status=410)
