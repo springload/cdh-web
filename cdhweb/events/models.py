@@ -3,7 +3,6 @@
 from datetime import datetime
 
 import icalendar
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
@@ -21,6 +20,7 @@ from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 from cdhweb.pages.models import LinkPage, BasePage
+from cdhweb.people.models import Person
 
 
 class EventTypeManager(models.Manager):
@@ -106,7 +106,7 @@ class EventTag(TaggedItemBase):
 class Speaker(models.Model):
     """Relationship between Person and Event."""
     event = ParentalKey("events.Event", related_name="speakers")
-    person = models.ForeignKey("people.Person", on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     panels = [FieldPanel("person")]
 
     class Meta:
@@ -135,6 +135,8 @@ class Event(BasePage, ClusterableModel):
     thumbnail = models.ForeignKey("wagtailimages.image", null=True, blank=True,
                                   on_delete=models.SET_NULL, related_name="+",
                                   help_text="Image for display on event card (optional)")
+    people = models.ManyToManyField(Person, through=Speaker,
+                                    related_name='events')
     tags = ClusterTaggableManager(through=EventTag, blank=True)
     # TODO attachments (#245)
 

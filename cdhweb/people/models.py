@@ -220,8 +220,6 @@ class Person(ClusterableModel):
         max_length=50, blank=True, help_text="Office phone number")
     office_location = models.CharField(
         max_length=255, blank=True, help_text="Office number and building")
-    posts = models.ManyToManyField(to="blog.BlogPost", through="blog.Author")
-    events = models.ManyToManyField(to="events.Event", through="events.Speaker")
 
     PU_STATUS_CHOICES = (
         ('fac', 'Faculty'),
@@ -338,14 +336,15 @@ class Person(ClusterableModel):
             if website:
                 return website.url
 
-    @receiver(pre_delete, sender="people.Person")
-    def cleanup_profile(sender, **kwargs):
-        """Handler to delete the corresponding Profile on Person deletion."""
-        # see NOTE on Profile save() method
-        try:
-            Profile.objects.get(person=kwargs["instance"]).delete()
-        except Profile.DoesNotExist:
-            pass
+
+@receiver(pre_delete, sender=Person)
+def cleanup_profile(sender, **kwargs):
+    """Handler to delete the corresponding Profile on Person deletion."""
+    # see NOTE on Profile save() method
+    try:
+        Profile.objects.get(person=kwargs["instance"]).delete()
+    except Profile.DoesNotExist:
+        pass
 
 
 class Profile(BasePage):
