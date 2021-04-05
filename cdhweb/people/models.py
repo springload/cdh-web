@@ -277,12 +277,17 @@ class Person(ClusterableModel):
             return self.user.username
         return "Person %d" % self.pk
 
+    @property
+    def lastname_first(self):
+        """display person as lastname, first for sorting"""
+        return ", ".join([n for n in [self.last_name, self.first_name] if n])
+
     def __lt__(self, other):
         # NOTE we need to order Memberships using person name by default,
         # but modelcluster doesn't support ordering via related lookups, so
         # we can't order by person__last_name on Membership. Instead we do this.
         # see: https://github.com/wagtail/django-modelcluster/issues/45
-        return str(self) < str(other)
+        return self.lastname_first < other.lastname_first
 
     @property
     def current_title(self):

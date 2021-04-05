@@ -89,6 +89,27 @@ class TestPerson(TestCase):
         self.person.first_name = "tom"
         assert str(self.person) == "tom jones"
 
+    def test_lastname_first(self):
+        # first name only
+        self.person.first_name = "Tom"
+        assert self.person.lastname_first == "Tom"
+
+        # last name only
+        self.person.first_name = ""
+        self.person.last_name = "Jones"
+        assert self.person.lastname_first == "Jones"
+
+        # both names
+        self.person.first_name = "Tom"
+        assert self.person.lastname_first == "Jones, Tom"
+
+    def test_lt(self):
+        # less than comparison based on lastname, firstname
+        able_j = Person(last_name='Able', first_name='Jim')
+        able_b = Person(last_name='Able', first_name='Bean')
+        assert able_b < able_j
+        assert not able_j < able_b
+
 
 def test_profile_url(student, staffer, staffer_profile, faculty_pi):
     # student fixture has neither profile nor website link
