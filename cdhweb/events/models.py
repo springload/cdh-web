@@ -110,7 +110,8 @@ class Speaker(models.Model):
     panels = [FieldPanel("person")]
 
     class Meta:
-        ordering = ("person__last_name", "person__first_name")
+        # can't sort on related fields due to modelcluster limitations
+        ordering = ("person",)
 
     def __str__(self) -> str:
         return "%s at %s" % (self.person, self.event)
