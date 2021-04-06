@@ -77,7 +77,7 @@ class Command(BaseCommand):
                                 new_revision.publish()
 
                     if 'style="' in cleaned_html:
-                        inline_styles.append(page.get_full_url())
+                        inline_styles.append(realpage.get_full_url())
 
         if inline_styles:
             print('\nPages with inline styles:\n')
