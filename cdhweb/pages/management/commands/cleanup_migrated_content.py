@@ -8,6 +8,8 @@ class Command(BaseCommand):
 
     # list of regex patterns to replace with a single space
     re_to_space = [
+        # non-breaking space
+        re.compile(r'&nbsp;'),
         # two or more whitespaces
         re.compile(r'\s\s+'),
     ]
@@ -48,6 +50,7 @@ class Command(BaseCommand):
         v_normal = 1
         verbosity = options['verbosity']
         noact = options['noact']
+        inline_styles = []
         for page in Page.objects.all():
             realpage = page.get_specific()
             # skip pages with no body content
@@ -72,6 +75,13 @@ class Command(BaseCommand):
                         # publish new revision if the page is live
                         if realpage.live:
                                 new_revision.publish()
+
+                    if 'style="' in cleaned_html:
+                        inline_styles.append(page.get_full_url())
+
+        if inline_styles:
+            print('\nPages with inline styles:\n')
+            print('\n'.join(inline_styles))
 
     def clean_html(self, html):
         # remove these regexes
