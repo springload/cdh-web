@@ -91,7 +91,8 @@ class BodyContentBlock(StreamBlock):
     #: approach; virtually all html tags are allowed. should NOT be used when
     #: creating new pages.
     migrated = RichTextBlock(
-        features=settings.RICHTEXT_ALLOWED_TAGS, icon="warning")
+        features=settings.RICHTEXT_ALLOWED_TAGS + PARAGRAPH_FEATURES +
+        ['image', 'embed'], icon="warning")
 
 
 class AttachmentBlock(StreamBlock):
