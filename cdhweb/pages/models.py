@@ -88,11 +88,11 @@ class BodyContentBlock(StreamBlock):
     svg_image = SVGImageBlock()
     embed = EmbedBlock()
     #: used to hold content migrated from mezzanine via a "kitchen-sink"
-    #: approach; virtually all html tags are allowed. should NOT be used when
-    #: creating new pages.
+    #: approach; enable all supported wagtail features.
+    #: Should NOT be used when creating new pages.
     migrated = RichTextBlock(
-        features=settings.RICHTEXT_ALLOWED_TAGS + PARAGRAPH_FEATURES +
-        ['image', 'embed'], icon="warning")
+        features=PARAGRAPH_FEATURES + ['image', 'embed'],
+        icon="warning")
 
 
 class AttachmentBlock(StreamBlock):
