@@ -169,9 +169,6 @@ class Event(BasePage, ClusterableModel):
     # custom manager/queryset logic
     objects = EventManager()
 
-    class Meta:
-        ordering = ("-start_time",)
-
     def __str__(self):
         return " - ".join([self.title, self.start_time.strftime("%b %d, %Y")])
 

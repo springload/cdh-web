@@ -242,7 +242,7 @@ class HomePage(BasePage):
         Event = apps.get_model("events", "event")
 
         # add up to 6 featured updates, otherwise use 3 most recent updates
-        updates = BlogPost.objects.live().featured()[:6]
+        updates = BlogPost.objects.live().featured().recent()[:6]
         if not updates.exists():
             updates = BlogPost.objects.live().recent()[:3]
         context['updates'] = updates
