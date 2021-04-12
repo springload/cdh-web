@@ -20,6 +20,7 @@ class EventAdmin(ThumbnailMixin, ModelAdmin):
     exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"
     thumb_col_header_text = "thumbnail"
+    ordering = ("-start_time",)
     list_per_page = 25
 
 
