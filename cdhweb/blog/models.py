@@ -112,10 +112,10 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
     def get_url_parts(self, *args, **kwargs):
         """Custom blog post URLs of the form /updates/2014/03/01/my-post."""
         url_parts = super().get_url_parts(*args, **kwargs)
-        # NOTE evidently this can sometimes be None; unclear why – perhaps it
-        # gets called in a context where the request is unavailable? Only
-        # happens in QA, not locally.
-        if url_parts:
+        # NOTE evidently these can sometimes be None; unclear why – perhaps it
+        # gets called in a context where the request is unavailable. Seems to
+        # happen immediately on page creation; the creation still succeeds.
+        if url_parts and self.first_published_at:
             site_id, root_url, _ = url_parts
             page_path = reverse("blog:detail", kwargs={
                 "year": self.first_published_at.year,
