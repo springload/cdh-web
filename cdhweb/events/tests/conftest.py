@@ -3,9 +3,13 @@ from datetime import timezone as tz
 
 import pytest
 from django.utils import timezone
+
+
+from cdhweb.events.models import Event, EventType, EventsLinkPage, Location, \
+    Speaker
 from cdhweb.people.models import Person
-from cdhweb.events.models import Event, EventType, EventsLinkPage, Location, Speaker
-from cdhweb.pages.exodus import to_streamfield_safe
+from cdhweb.pages.tests.conftest import to_streamfield_safe
+
 
 @pytest.fixture
 def events_link_page(db, homepage):

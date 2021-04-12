@@ -1,7 +1,7 @@
 from django.contrib.sites.models import Site
 import pytest
 
-from cdhweb.resources.utils import absolutize_url
+from cdhweb.pages.utils import absolutize_url
 
 
 @pytest.mark.django_db

@@ -1,7 +1,8 @@
 from django.contrib.sites.models import Site
 import pytest
 
-from cdhweb.resources.templatetags import cdh_tags
+from cdhweb.pages.templatetags import cdh_tags
+
 
 def test_url_to_icon():
     assert cdh_tags.url_to_icon('/people/staff/') == 'ppl'

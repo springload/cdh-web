@@ -68,7 +68,7 @@ p {
 
 /* link style for links in content paragraphs, rich text content links,
   and blogpost description links */
-#maincontent p a,
+#maincontent p a, #maincontent blockquote a,
 .description li a,
 .richtextpage #maincontent li a,
 .landing-page #maincontent li a,

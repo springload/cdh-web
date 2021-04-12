@@ -4,8 +4,8 @@ from django.urls import reverse
 from pytest_django.asserts import (assertContains, assertNotContains,
                                    assertTemplateUsed)
 
-from cdhweb.pages.exodus import to_streamfield_safe
 from cdhweb.pages.models import LinkPage, PageIntro, RelatedLinkType
+from cdhweb.pages.tests.conftest import to_streamfield_safe
 from cdhweb.projects.models import ProjectRelatedLink
 
 

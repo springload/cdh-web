@@ -13,6 +13,13 @@ from cdhweb.pages.models import ContentPage, ExternalAttachment, HomePage, Landi
 from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
 
 
+def to_streamfield_safe(content):
+    """Utility method used for exodus preserved for creating test fixtures.
+    Creates a streamfield, but does no HTML validation and creates a block
+    of type 'paragraph' instead of migrated."""
+    return json.dumps([{"type": "paragraph", "value": content}])
+
+
 @pytest.fixture
 def site(db):
     """Ensure a single Wagtail site exists for testing."""

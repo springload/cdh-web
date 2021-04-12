@@ -34,6 +34,7 @@ class ProfileAdmin(ThumbnailMixin, ModelAdmin):
     list_filter = ("person__pu_status", "person__cdh_staff")
     list_per_page = 25
     search_fields = ("title", "body")
+    ordering = ("title",)
     thumb_image_field_name = "image"
     exclude_from_explorer = True
 

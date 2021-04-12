@@ -1,6 +1,6 @@
 {% extends 'error_base.html' %}
 {# defaults to 404, but pass error code and message for alternate use #}
-{% load static %}
+{% block page-title %}{{ page_title|default:'Not Found' }}{% endblock %}
 
 {% block error-code %}{{ error_code|default:'404' }}{% endblock %}
 {% block message %}{{ message|default:"We can’t seem to find the page you’re looking for." }}{% endblock %}

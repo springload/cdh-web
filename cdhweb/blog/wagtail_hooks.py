@@ -18,6 +18,7 @@ class BlogPostAdmin(ThumbnailMixin, ModelAdmin):
     exclude_from_explorer = True
     thumb_image_field_name = "featured_image"
     thumb_col_header_text = "image"
+    ordering = ("-first_published_at",)
     list_per_page = 25
     menu_order = 210
 
