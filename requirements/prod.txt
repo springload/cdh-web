@@ -17,3 +17,4 @@ django-fullurl
 django-apptemplates
 wagtailmenus
 opencv-python
+bleach
