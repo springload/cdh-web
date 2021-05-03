@@ -35,8 +35,7 @@ sitemaps = {
 
 urlpatterns = [
     # admin site
-    path("admin/", include(admin.site.urls)),
-
+    path('admin/', admin.site.urls),
     # special paths
     re_path(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt',
                                                    content_type='text/plain')),
@@ -64,12 +63,8 @@ urlpatterns = [
             name='django.contrib.sitemaps.views.sitemap'),
 
     # wagtail paths
-    # coexist with mezzanine urls
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-    # enable if needed to test mezzanine pages
-    # path("mezz", include("mezzanine.urls")),
-
     # let wagtail handle everything else
     path("", include(wagtail_urls)),
 ]

@@ -9,7 +9,6 @@ from wagtail.images.models import Image
 # problems
 
 admin.site.unregister(Image)
-admin.site.unregister(Document)
 
 
 class LocalUserAdmin(UserAdmin):
