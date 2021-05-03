@@ -69,8 +69,16 @@ urlpatterns = [
     path("", include(wagtail_urls)),
 ]
 
-# serve static files in development - automatically activates in DEBUG; see
-# https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-files-uploaded-by-a-user-during-development
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
 
+    # serve static files in development - automatically activates in DEBUG; see
+    # https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-files-uploaded-by-a-user-during-development
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
 
+    try:
+        import debug_toolbar
+        # must come before wagtail catch-all route or else debug urls 404
+        urlpatterns.insert(0, path('__debug__/', include(debug_toolbar.urls)))
+    except ImportError:
+        pass

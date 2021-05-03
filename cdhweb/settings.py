@@ -271,7 +271,7 @@ INSTALLED_APPS = [
 # List of middleware classes to use. Order is important; in the request phase,
 # these middleware classes will be applied in the order given, and in the
 # response phase the middleware will be applied in reverse order.
-MIDDLEWARE = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.BrokenLinkEmailsMiddleware',
     # Uncomment if using internationalisation or localisation
@@ -282,7 +282,7 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
-)
+]
 
 # pucas configuration that is not expected to change across deploys
 # and does not reference local server configurations or fields
@@ -313,20 +313,23 @@ try:
     # https://django-debug-toolbar.readthedocs.io/en/latest/
     import debug_toolbar
     INSTALLED_APPS.append("debug_toolbar")
-    MIDDLEWARE += (
-        "debug_toolbar.middleware.DebugToolbarMiddleware",
-    )
+    MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
+except ImportError:
+    pass
 
+try:
     # django-extensions
     # https://django-extensions.readthedocs.io/en/latest/
     import django_extensions
     INSTALLED_APPS.append("django_extensions")
+except ImportError:
+    pass
 
+try:
     # django-dbml
     # https://github.com/makecodes/django-dbml
     import django_dbml
     INSTALLED_APPS.append("django_dbml")
-
 except ImportError:
     pass
 
