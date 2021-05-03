@@ -1,6 +1,21 @@
 Deploy Notes
 ============
 
+3.0.2
+-----
+
+- This release reset migrations without mezzanine dependencies. Updating
+  requires the following steps:
+
+  1. Clear out django migration history for old migrations::
+
+      python manage.py dbshell
+      delete from django_migrations;
+
+  2. Fake the new migrations::
+
+      python manage.py migrate --fake
+
 
 3.0.1
 -----
