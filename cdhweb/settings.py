@@ -307,12 +307,28 @@ PUCAS_LDAP = {
 # OPTIONAL APPLICATIONS #
 #########################
 
-# These will be added to ``INSTALLED_APPS``, only if available.
-OPTIONAL_APPS = (
-    "django_extensions",
-    "compressor",
-    "django_dbml",
-)
+
+try:
+    # django-debug-toolbar
+    # https://django-debug-toolbar.readthedocs.io/en/latest/
+    import debug_toolbar
+    INSTALLED_APPS.append("debug_toolbar")
+    MIDDLEWARE += (
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    )
+
+    # django-extensions
+    # https://django-extensions.readthedocs.io/en/latest/
+    import django_extensions
+    INSTALLED_APPS.append("django_extensions")
+
+    # django-dbml
+    # https://github.com/makecodes/django-dbml
+    import django_dbml
+    INSTALLED_APPS.append("django_dbml")
+
+except ImportError:
+    pass
 
 ##################
 # LOCAL SETTINGS #
