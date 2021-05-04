@@ -2,94 +2,8 @@
 from __future__ import absolute_import, unicode_literals
 import os
 
-from django import VERSION as DJANGO_VERSION
 from django.utils.translation import ugettext_lazy as _
 
-
-######################
-# MEZZANINE SETTINGS #
-######################
-
-# The following settings are already defined with default values in
-# the ``defaults.py`` module within each of Mezzanine's apps, but are
-# common enough to be put here, commented out, for conveniently
-# overriding. Please consult the settings documentation for a full list
-# of settings Mezzanine implements:
-# http://mezzanine.jupo.org/docs/configuration.html#default-settings
-
-# Controls the ordering and grouping of the admin menu.
-#
-ADMIN_MENU_ORDER = (
-    ("Content", ("pages.Page", "blog.BlogPost",
-                (_("Media Library"), "media-library"),
-                "resources.Attachment")),
-    ("Events", ('events.Event', 'events.Location', 'events.EventType')),
-    ('Profiles', ('people.Position', 'people.Title')),
-    ('Projects', ('projects.Project', 'projects.Grant', 'projects.Membership',
-                 'projects.Role', 'projects.GrantType')),
-    ('Resources', ('cdhpages.RelatedLinkType', 'taggit.Tag')),
-    ("Site", ("sites.Site", "redirects.Redirect", "conf.Setting")),
-    ("Users", ("auth.User", "auth.Group",)),
-)
-
-# A three item sequence, each containing a sequence of template tags
-# used to render the admin dashboard.
-#
-# DASHBOARD_TAGS = (
-#     ("blog_tags.quick_blog", "mezzanine_tags.app_list"),
-#     ("comment_tags.recent_comments",),
-#     ("mezzanine_tags.recent_actions",),
-# )
-
-# A sequence of templates used by the ``page_menu`` template tag. Each
-# item in the sequence is a three item sequence, containing a unique ID
-# for the template, a label for the template, and the template path.
-# These templates are then available for selection when editing which
-# menus a page should appear in. Note that if a menu template is used
-# that doesn't appear in this setting, all pages will appear in it.
-
-# PAGE_MENU_TEMPLATES = (
-#     (1, _("Top navigation bar"), "pages/menus/dropdown.html"),
-#     (2, _("Left-hand tree"), "pages/menus/tree.html"),
-#     (3, _("Footer"), "pages/menus/footer.html"),
-# )
-
-# A sequence of fields that will be injected into Mezzanine's (or any
-# library's) models. Each item in the sequence is a four item sequence.
-# The first two items are the dotted path to the model and its field
-# name to be added, and the dotted path to the field class to use for
-# the field. The third and fourth items are a sequence of positional
-# args and a dictionary of keyword args, to use when creating the
-# field instance. When specifying the field class, the path
-# ``django.models.db.`` can be omitted for regular Django model fields.
-#
-# EXTRA_MODEL_FIELDS = (
-#     (
-#         # Dotted path to field.
-#         "mezzanine.blog.models.BlogPost.image",
-#         # Dotted path to field class.
-#         "somelib.fields.ImageField",
-#         # Positional args for field class.
-#         (_("Image"),),
-#         # Keyword args for field class.
-#         {"blank": True, "upload_to": "blog"},
-#     ),
-#     # Example of adding a field to *all* of Mezzanine's content types:
-#     (
-#         "mezzanine.pages.models.Page.another_field",
-#         "IntegerField", # 'django.db.models.' is implied if path is omitted.
-#         (_("Another name"),),
-#         {"blank": True, "default": 1},
-#     ),
-# )
-
-# Setting to turn on featured images for blog posts. Defaults to False.
-#
-# BLOG_USE_FEATURED_IMAGE = True
-
-# If True, the django-modeltranslation will be added to the
-# INSTALLED_APPS setting.
-USE_MODELTRANSLATION = False
 
 # List of allowed tags in the rich text editor (tinyMCE). We need to add the
 # HTML5 <figcaption>, as it's not included by default.
@@ -176,7 +90,7 @@ SITE_ID = 1
 USE_I18N = False
 
 AUTHENTICATION_BACKENDS = (
-    "mezzanine.core.auth_backends.MezzanineBackend",
+    'django.contrib.auth.backends.ModelBackend',
     'django_cas_ng.backends.CASBackend',
 )
 
@@ -324,17 +238,6 @@ INSTALLED_APPS = [
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
-    "mezzanine.boot",
-    "mezzanine.conf",
-    "mezzanine.core",
-    "mezzanine.generic",
-    "mezzanine.pages",
-    # "mezzanine.blog",
-    # "mezzanine.forms",
-    # "mezzanine.galleries",
-    # "mezzanine.twitter",
-    # "mezzanine.accounts",
-    # "mezzanine.mobile",
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.contrib.search_promotions', # required to avoid https://github.com/wagtail/wagtail/issues/1824
@@ -361,9 +264,6 @@ INSTALLED_APPS = [
     "cdhweb.people",
     "cdhweb.resources",
     "cdhweb.events",
-    # NOTE: if we name this blog, we can't import or rely on anything from
-    # mezzanine.blog; there are good and bad aspects to this; we certainly
-    # don't want users to create the wrong kind of blog posts.
     "cdhweb.blog",
     'cdhweb.pages',
 ]
@@ -371,9 +271,7 @@ INSTALLED_APPS = [
 # List of middleware classes to use. Order is important; in the request phase,
 # these middleware classes will be applied in the order given, and in the
 # response phase the middleware will be applied in reverse order.
-MIDDLEWARE = (
-    "mezzanine.core.middleware.UpdateCacheMiddleware",
-
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.BrokenLinkEmailsMiddleware',
     # Uncomment if using internationalisation or localisation
@@ -383,33 +281,15 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    # "mezzanine.core.request.CurrentRequestMiddleware",
-    # "mezzanine.core.middleware.RedirectFallbackMiddleware",
-    # "mezzanine.core.middleware.AdminLoginInterfaceSelectorMiddleware",
-    # "mezzanine.core.middleware.SitePermissionMiddleware",
-    # "mezzanine.pages.middleware.PageMiddleware",
-    # "mezzanine.core.middleware.FetchFromCacheMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
-)
-
-# Store these package names here as they may change in the future since
-# at the moment we are using custom forks of them.
-PACKAGE_NAME_FILEBROWSER = "filebrowser_safe"
-PACKAGE_NAME_GRAPPELLI = "grappelli_safe"
-
-# configure local nav templates so that page.in_menu works properly
-PAGE_MENU_TEMPLATES = (
-    (1, "Top navigation bar", "snippets/primary_navigation.html"),
-    (2, "Show on parent page as attachment card", "snippets/child_pages.html"),
-    (3, "Footer", "snippets/footer_menu.html"),
-)
+]
 
 # pucas configuration that is not expected to change across deploys
 # and does not reference local server configurations or fields
 PUCAS_LDAP = {
     # attributes expected by init_profile_from_ldap method
-    'ATTRIBUTES': ['uid', 'universityid', 'pustatus', 'ou', 'givenName',
+    'ATTRIBUTES': [
+        'uid', 'universityid', 'pustatus', 'ou', 'givenName',
         'sn', 'mail', 'telephoneNumber', 'street', 'title', 'displayName'],
 
     'ATTRIBUTE_MAP': {
@@ -427,14 +307,31 @@ PUCAS_LDAP = {
 # OPTIONAL APPLICATIONS #
 #########################
 
-# These will be added to ``INSTALLED_APPS``, only if available.
-OPTIONAL_APPS = (
-    "django_extensions",
-    "compressor",
-    "django_dbml",
-    PACKAGE_NAME_FILEBROWSER,
-    PACKAGE_NAME_GRAPPELLI,
-)
+
+try:
+    # django-debug-toolbar
+    # https://django-debug-toolbar.readthedocs.io/en/latest/
+    import debug_toolbar
+    INSTALLED_APPS.append("debug_toolbar")
+    MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
+except ImportError:
+    pass
+
+try:
+    # django-extensions
+    # https://django-extensions.readthedocs.io/en/latest/
+    import django_extensions
+    INSTALLED_APPS.append("django_extensions")
+except ImportError:
+    pass
+
+try:
+    # django-dbml
+    # https://github.com/makecodes/django-dbml
+    import django_dbml
+    INSTALLED_APPS.append("django_dbml")
+except ImportError:
+    pass
 
 ##################
 # LOCAL SETTINGS #
@@ -457,20 +354,3 @@ if os.path.exists(f):
     module.__file__ = f
     sys.modules[module_name] = module
     exec(open(f, "rb").read())
-
-####################
-# DYNAMIC SETTINGS #
-####################
-
-# set_dynamic_settings() will rewrite globals based on what has been
-# defined so far, in order to provide some better defaults where
-# applicable. We also allow this settings module to be imported
-# without Mezzanine installed, as the case may be when using the
-# fabfile, where setting the dynamic settings below isn't strictly
-# required.
-try:
-    from mezzanine.utils.conf import set_dynamic_settings
-except ImportError:
-    pass
-else:
-    set_dynamic_settings(globals())

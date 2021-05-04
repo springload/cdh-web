@@ -35,8 +35,7 @@ sitemaps = {
 
 urlpatterns = [
     # admin site
-    path("admin/", include(admin.site.urls)),
-
+    path('admin/', admin.site.urls),
     # special paths
     re_path(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt',
                                                    content_type='text/plain')),
@@ -64,18 +63,22 @@ urlpatterns = [
             name='django.contrib.sitemaps.views.sitemap'),
 
     # wagtail paths
-    # coexist with mezzanine urls
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-    # enable if needed to test mezzanine pages
-    # path("mezz", include("mezzanine.urls")),
-
     # let wagtail handle everything else
     path("", include(wagtail_urls)),
 ]
 
-# serve static files in development - automatically activates in DEBUG; see
-# https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-files-uploaded-by-a-user-during-development
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
 
+    # serve static files in development - automatically activates in DEBUG; see
+    # https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-files-uploaded-by-a-user-during-development
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
 
+    try:
+        import debug_toolbar
+        # must come before wagtail catch-all route or else debug urls 404
+        urlpatterns.insert(0, path('__debug__/', include(debug_toolbar.urls)))
+    except ImportError:
+        pass
