@@ -7,7 +7,7 @@ import os
 # .github/workflow .yml files.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.%s' % os.getenv('DJANGO_DB_BACKEND'),
+        'ENGINE': 'django.db.backends.postgresql',
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'USER': os.getenv('DB_USER'),
         'NAME': os.getenv('DB_NAME'),
