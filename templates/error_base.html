@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block page-title %}Error{% endblock %}
 
@@ -6,10 +7,7 @@
 <article class="error-page">
     <h1>{% block error-code %}{% endblock %}</h1>
     <p>{% block message %}{% endblock %}</p>
-
-    <img src='{{ STATIC_URL }}img/rubberchicken.png'
-        alt="Claus the Chicken">
-
+    <img src="{% static 'img/rubberchicken.png' %}" alt="Claus the Chicken">
 </article>
 
 {% endblock %}
