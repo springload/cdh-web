@@ -16,6 +16,15 @@ Deploy Notes
 
       python manage.py migrate --fake
 
+- Automated deployments will fail if the above steps are not followed when
+  migrating. To avoid this problem, use ansible's step mode::
+
+      ansible-playbook cdh-web_qa.yml --step
+
+  When you reach the migration step, do not execute migrations (N) and instead
+  manually follow the steps above on the target machine via ssh. You can then
+  choose the "continue" (c) option to finish the rest of the playbook normally.
+
 
 3.0.1
 -----
