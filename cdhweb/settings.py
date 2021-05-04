@@ -1,9 +1,4 @@
-
-from __future__ import absolute_import, unicode_literals
 import os
-
-from django.utils.translation import ugettext_lazy as _
-
 
 # List of allowed tags in the rich text editor (tinyMCE). We need to add the
 # HTML5 <figcaption>, as it's not included by default.
@@ -72,7 +67,7 @@ LANGUAGE_CODE = "en"
 
 # Supported languages
 LANGUAGES = (
-    ('en', _('English')),
+    ('en', 'English'),
 )
 
 # A boolean that turns on/off debug mode. When set to ``True``, stack traces
@@ -240,7 +235,8 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
-    'wagtail.contrib.search_promotions', # required to avoid https://github.com/wagtail/wagtail/issues/1824
+    # required to avoid https://github.com/wagtail/wagtail/issues/1824
+    'wagtail.contrib.search_promotions',
     'wagtail.embeds',
     'wagtail.sites',
     'wagtail.users',
