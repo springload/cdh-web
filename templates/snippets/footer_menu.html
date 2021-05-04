@@ -1,7 +1,8 @@
-{% load i18n %}
+{% load i18n cache %}
 {# display full top-level and secondary navigation in the footer #}
 {# adapted from mezzanine pages/menus/primary.html template #}
 
+{% cache 3600 footer %}
 {% with toplevel_pages=site.root_page.get_children.live.in_menu %}
 <ul>
     {# special case: home & top-level content pages #}
@@ -40,3 +41,4 @@
     {% endif %}
 {% endfor %}
 {% endwith %}
+{% endcache %}

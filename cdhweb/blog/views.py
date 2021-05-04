@@ -33,6 +33,10 @@ class BlogIndexView(BlogPostArchiveMixin, ArchiveIndexView):
     '''Main blog post list view'''
     date_list_period = 'month'
 
+    def get_queryset(self):
+        return super().get_queryset() \
+            .prefetch_related('page_ptr')
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context.update({
