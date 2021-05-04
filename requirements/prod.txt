@@ -1,9 +1,8 @@
 ## production requirements
 
-Django>=2.2,<3.0
+Django==3.1
 pillow>=5.2.0
-chardet<4 # required for wagtail 2.10
-wagtail>=2.12
+wagtail
 django-compressor
 django-compressor-autoprefixer
 psycopg2
