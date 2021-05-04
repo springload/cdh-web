@@ -105,6 +105,10 @@ class EventSemesterArchiveView(EventMixinView, YearArchiveView,
         'fall': {'start': (9, 1), 'end': (12, 31)},
     }
 
+    def get_queryset(self):
+        return super().get_queryset() \
+            .prefetch_related('page_ptr')
+
     def get_dated_items(self):
         date_list, items, context = \
             super(EventSemesterArchiveView, self).get_dated_items()
