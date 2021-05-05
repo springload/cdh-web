@@ -3,7 +3,7 @@ name: dbdocs
 on:
   push:
     branches:
-      - develop
+      - main
 
 env:
   NODE_VERSION: 10
