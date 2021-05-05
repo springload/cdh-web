@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.blog.models &#8212; CDH website 3.0.1 documentation</title>
+    <title>cdhweb.blog.models &#8212; CDH website 3.0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -37,9 +37,6 @@
 <span class="kn">from</span> <span class="nn">django.utils.dateformat</span> <span class="kn">import</span> <span class="nb">format</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">Truncator</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="kn">import</span> <span class="n">FileField</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="kn">import</span> <span class="n">Displayable</span><span class="p">,</span> <span class="n">RichText</span>
-<span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="kn">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
 <span class="kn">from</span> <span class="nn">modelcluster.contrib.taggit</span> <span class="kn">import</span> <span class="n">ClusterTaggableManager</span>
 <span class="kn">from</span> <span class="nn">modelcluster.fields</span> <span class="kn">import</span> <span class="n">ParentalKey</span>
 <span class="kn">from</span> <span class="nn">modelcluster.models</span> <span class="kn">import</span> <span class="n">ClusterableModel</span>
@@ -53,39 +50,13 @@
 
 <span class="kn">from</span> <span class="nn">cdhweb.pages.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BasePage</span><span class="p">,</span> <span class="n">LinkPage</span><span class="p">,</span>
                                  <span class="n">PagePreviewDescriptionMixin</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="kn">import</span> <span class="n">Attachment</span>
-
-
-<div class="viewcode-block" id="MultiOwnable"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.models.MultiOwnable">[docs]</a><span class="k">class</span> <span class="nc">MultiOwnable</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Abstract model based on Mezzanine&#39;s :class:`mezzanine.core.models.Ownable`</span>
-<span class="sd">    to provides ownership of an object for a user, except allows for</span>
-<span class="sd">    multiple owners.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">users</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Authors&quot;</span><span class="p">),</span>
-                                   <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(class)s</span><span class="s2">s&quot;</span><span class="p">)</span>
-
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span>
-
-<div class="viewcode-block" id="MultiOwnable.is_editable"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.models.MultiOwnable.is_editable">[docs]</a>    <span class="k">def</span> <span class="nf">is_editable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Restrict in-line editing to the objects&#39;s owner and superusers.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span> <span class="ow">or</span> \
-            <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="MultiOwnable.author_list"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.models.MultiOwnable.author_list">[docs]</a>    <span class="k">def</span> <span class="nf">author_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;comma-separated list of authors&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></div>
-    <span class="n">author_list</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Authors&#39;</span></div>
+<span class="kn">from</span> <span class="nn">cdhweb.people.models</span> <span class="kn">import</span> <span class="n">Person</span>
 
 
 <div class="viewcode-block" id="Author"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.models.Author">[docs]</a><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">Orderable</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Ordered relationship between Person and BlogPost.&quot;&quot;&quot;</span>
     <span class="n">post</span> <span class="o">=</span> <span class="n">ParentalKey</span><span class="p">(</span><span class="s2">&quot;blog.BlogPost&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;authors&quot;</span><span class="p">)</span>
-    <span class="n">person</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;people.Person&quot;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">person</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
     <span class="n">panels</span> <span class="o">=</span> <span class="p">[</span><span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;person&quot;</span><span class="p">)]</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -104,58 +75,6 @@
 <div class="viewcode-block" id="BlogPostQuerySet.featured"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.models.BlogPostQuerySet.featured">[docs]</a>    <span class="k">def</span> <span class="nf">featured</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;return blog posts that are marked as featured&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">featured</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="OldBlogPost"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.models.OldBlogPost">[docs]</a><span class="k">class</span> <span class="nc">OldBlogPost</span><span class="p">(</span><span class="n">Displayable</span><span class="p">,</span> <span class="n">MultiOwnable</span><span class="p">,</span> <span class="n">RichText</span><span class="p">,</span> <span class="n">AdminThumbMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A blog post with multiple authors. Based on</span>
-<span class="sd">    :class:`mezzanine.blog.models.BlogPost`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># mezzanine blogpost has comments, categoriees, and ratings; do we</span>
-    <span class="c1"># care about any of those?</span>
-    <span class="n">featured_image</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Featured Image&quot;</span><span class="p">),</span>
-                               <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span>
-                                   <span class="s2">&quot;blog.BlogPost.featured_image&quot;</span><span class="p">,</span> <span class="s2">&quot;blog&quot;</span><span class="p">),</span>
-                               <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Appears on the homepage carousel when post is featured.&quot;</span><span class="p">,</span>
-                               <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">related_posts</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="s2">&quot;self&quot;</span><span class="p">,</span>
-                                           <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Related posts&quot;</span><span class="p">),</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">tags</span> <span class="o">=</span> <span class="n">TaggableManager</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">attachments</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Attachment</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">is_featured</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Featured&quot;</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                      <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Feature the post in the carousel on the homepage.&quot;</span><span class="p">)</span>
-
-    <span class="n">admin_thumb_field</span> <span class="o">=</span> <span class="s2">&quot;featured_image&quot;</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">short_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;shorter title with ellipsis&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">Truncator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="o">.</span><span class="n">chars</span><span class="p">(</span><span class="mi">65</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">short_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;shorter description with ellipsis&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">Truncator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span><span class="o">.</span><span class="n">chars</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
-
-    <span class="c1"># custom manager for additioal queryset filters</span>
-    <span class="n">objects</span> <span class="o">=</span> <span class="n">BlogPostQuerySet</span><span class="o">.</span><span class="n">as_manager</span><span class="p">()</span>
-
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Blog post&quot;</span><span class="p">)</span>
-        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Blog posts&quot;</span><span class="p">)</span>
-        <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;-publish_date&quot;</span><span class="p">,)</span>
-
-<div class="viewcode-block" id="OldBlogPost.get_absolute_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.models.OldBlogPost.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># we don&#39;t have to worry about the various url config options</span>
-        <span class="c1"># that mezzanine has to support; just handle the url style we</span>
-        <span class="c1"># want to use locally</span>
-        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;blog:detail&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">publish_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
-            <span class="c1"># force two-digit month</span>
-            <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%02d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">publish_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
-            <span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%02d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">publish_date</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
-            <span class="s1">&#39;slug&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">})</span></div></div>
 
 
 <span class="c1"># custom manager for wagtail pages, see:</span>
@@ -177,7 +96,8 @@
     <span class="n">tags</span> <span class="o">=</span> <span class="n">ClusterTaggableManager</span><span class="p">(</span><span class="n">through</span><span class="o">=</span><span class="n">BlogPostTag</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">featured</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Show the post in the carousel on the homepage.&quot;</span><span class="p">)</span>
-    <span class="c1"># TODO attachments (#245)</span>
+    <span class="n">people</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">through</span><span class="o">=</span><span class="s2">&quot;blog.Author&quot;</span><span class="p">,</span>
+                                    <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;posts&#39;</span><span class="p">)</span>
 
     <span class="c1"># can only be created underneath special link page</span>
     <span class="n">parent_page_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;blog.BlogLinkPage&quot;</span><span class="p">]</span>
@@ -200,6 +120,9 @@
     <span class="c1"># custom manager/queryset logic</span>
     <span class="n">objects</span> <span class="o">=</span> <span class="n">BlogPostManager</span><span class="p">()</span>
 
+    <span class="c1"># configure template path for wagtail preview</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;blog/blogpost_detail.html&#39;</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">short_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Shorter title with ellipsis.&quot;&quot;&quot;</span>
@@ -216,15 +139,16 @@
         <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">person</span><span class="p">)</span> <span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">authors</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">short_title</span><span class="p">,</span> <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first_published_at</span><span class="p">,</span> <span class="s2">&quot;F j, Y&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">short_title</span><span class="p">,</span>
+                                <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first_published_at</span><span class="p">,</span> <span class="s2">&quot;F j, Y&quot;</span><span class="p">))</span>
 
 <div class="viewcode-block" id="BlogPost.get_url_parts"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.blog.models.BlogPost.get_url_parts">[docs]</a>    <span class="k">def</span> <span class="nf">get_url_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Custom blog post URLs of the form /updates/2014/03/01/my-post.&quot;&quot;&quot;</span>
         <span class="n">url_parts</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_url_parts</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># NOTE evidently this can sometimes be None; unclear why – perhaps it</span>
-        <span class="c1"># gets called in a context where the request is unavailable? Only</span>
-        <span class="c1"># happens in QA, not locally.</span>
-        <span class="k">if</span> <span class="n">url_parts</span><span class="p">:</span>
+        <span class="c1"># NOTE evidently these can sometimes be None; unclear why – perhaps it</span>
+        <span class="c1"># gets called in a context where the request is unavailable. Seems to</span>
+        <span class="c1"># happen immediately on page creation; the creation still succeeds.</span>
+        <span class="k">if</span> <span class="n">url_parts</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_published_at</span><span class="p">:</span>
             <span class="n">site_id</span><span class="p">,</span> <span class="n">root_url</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">url_parts</span>
             <span class="n">page_path</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;blog:detail&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_published_at</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
@@ -337,7 +261,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

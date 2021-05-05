@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.people.views &#8212; CDH website 3.0.1 documentation</title>
+    <title>cdhweb.people.views &#8212; CDH website 3.0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -272,9 +272,10 @@
 <span class="k">def</span> <span class="nf">speakerlist_gone</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="c1"># return 410 gone for speakers list view;</span>
     <span class="c1"># (removed in 3.0, no longer needed after the Year of Data)</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;errors/404.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;404.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{</span>
         <span class="s1">&#39;error_code&#39;</span><span class="p">:</span> <span class="mi">410</span><span class="p">,</span>
-        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s2">&quot;That page isn&#39;t here anymore.&quot;</span>
+        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s2">&quot;That page isn&#39;t here anymore.&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;page_title&#39;</span><span class="p">:</span> <span class="s1">&#39;Error — no longer available&#39;</span>
     <span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="mi">410</span><span class="p">)</span>
 </pre></div>
 
@@ -360,7 +361,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

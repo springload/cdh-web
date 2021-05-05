@@ -201,7 +201,7 @@ class ContentPage(BasePage, PagePreviewDescriptionMixin):
 
 
 class LandingPage(BasePage):
-    '''Page type that aggregates and displays multiple :class:`ContentPage`s.'''
+    '''Page type that aggregates and displays multiple ContentPages.'''
 
     #: short sentence overlaid on the header image
     tagline = models.CharField(max_length=255)

@@ -4,14 +4,19 @@ Code Documentation
 .. toctree::
    :maxdepth: 2
 
-Resources
+Pages
 ---------
-.. automodule:: cdhweb.resources
+.. automodule:: cdhweb.pages
     :members:
 
 Models
 ^^^^^^
-.. automodule:: cdhweb.resources.models
+.. automodule:: cdhweb.pages.models
+    :members:
+
+Views
+^^^^^
+.. automodule:: cdhweb.pages.views
     :members:
 
 People

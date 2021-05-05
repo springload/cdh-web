@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Deploy Notes &#8212; CDH website 3.0.1 documentation</title>
+    <title>Deploy Notes &#8212; CDH website 3.0.2 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -34,21 +34,61 @@
   <div class="section" id="deploy-notes">
 <h1>Deploy Notes<a class="headerlink" href="#deploy-notes" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>3.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>3.0.2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>This release reset migrations without mezzanine dependencies. Updating
+requires the following steps:</p>
+<ol class="arabic">
+<li><p>Clear out django migration history for old migrations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">dbshell</span>
+<span class="n">delete</span> <span class="kn">from</span> <span class="nn">django_migrations</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Fake the new migrations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">migrate</span> <span class="o">--</span><span class="n">fake</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</li>
+<li><p>Automated deployments will fail if the above steps are not followed when
+migrating. To avoid this problem, use ansible’s step mode:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ansible</span><span class="o">-</span><span class="n">playbook</span> <span class="n">cdh</span><span class="o">-</span><span class="n">web_qa</span><span class="o">.</span><span class="n">yml</span> <span class="o">--</span><span class="n">step</span>
+</pre></div>
+</div>
+<p>When you reach the migration step, do not execute migrations (N) and instead
+manually follow the steps above on the target machine via ssh. You can then
+choose the “continue” (c) option to finish the rest of the playbook normally.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>3.0.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>After deploy, run a script to clean up markup in migrated content from the</p></li>
+</ul>
+<p>exodus script in the last release:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">cleanup_migrated_content</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>3.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>After deployment, the main exodus script should be run to move content from
 mezzanine to wagtail with <cite>python manage.py exodus</cite>.</p></li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>2.8.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>2.8.1<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Data will need to be migrated out of the existing database and into a Postgres
 database. The <cite>pgloader</cite> tool can be used for this purpose.</p></li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h2>2.8<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>2.8<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>The “Postdocs” list page has been removed, so its corresponding page should be
 deleted in Mezzanine.</p></li>
@@ -63,8 +103,8 @@ this removed, and the grant type can be deleted.</p></li>
 have this changed to “Staff Projects”, and the grant type can be deleted.</p></li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h2>2.7<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h2>2.7<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>The “Faculty Affiliates” page has changed to show both Faculty and Staff, and
 thus its title and content should be updated accordingly in Mezzanine.</p></li>
@@ -72,8 +112,8 @@ thus its title and content should be updated accordingly in Mezzanine.</p></li>
 that v10 is installed and available on the target machine.</p></li>
 </ul>
 </div>
-<div class="section" id="id5">
-<h2>2.6<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h2>2.6<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Adds a cosponsorship request form embed template similar to the consult form.
 A <cite>RichTextPage</cite> needs to be created with its url set to <cite>/events/cosponsor</cite>
@@ -83,8 +123,8 @@ text at the top of the page. To disable the text at the top, enter two non-
 breaking spaces in the text field. Make sure the url remains <cite>/events</cite>.</p></li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h2>2.2<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h2>2.2<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Adds an alumni page, parallel to current staff.  Existing profile pages
 for past staff should be republished.</p></li>
@@ -92,16 +132,16 @@ for past staff should be republished.</p></li>
 content with the title repeated will need to be edited.</p></li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h2>2.1<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h2>2.1<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Resource names have been changed to store proper case in the database.
 Existing installations should update the three pre-populated items manually.</p></li>
 <li><p>Update local settings to turn on Google Analytics.</p></li>
 </ul>
 </div>
-<div class="section" id="id8">
-<h2>2.0<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h2>2.0<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Update default site in Django admin to match deployed site url</p></li>
 <li><p>Initialize admin and other users with createcasuser before running
@@ -168,14 +208,16 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></p
 <li class="toctree-l1"><a class="reference internal" href="codedocs.html">Code Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Deploy Notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">2.8.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">2.8</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">2.7</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">2.6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id6">2.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id7">2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id8">2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">3.0.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">3.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">2.8.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">2.8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">2.7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">2.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">2.0</a></li>
 </ul>
 </li>
 </ul>
@@ -184,14 +226,16 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></p
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Deploy Notes</a><ul>
-<li><a class="reference internal" href="#id1">3.0</a></li>
-<li><a class="reference internal" href="#id2">2.8.1</a></li>
-<li><a class="reference internal" href="#id3">2.8</a></li>
-<li><a class="reference internal" href="#id4">2.7</a></li>
-<li><a class="reference internal" href="#id5">2.6</a></li>
-<li><a class="reference internal" href="#id6">2.2</a></li>
-<li><a class="reference internal" href="#id7">2.1</a></li>
-<li><a class="reference internal" href="#id8">2.0</a></li>
+<li><a class="reference internal" href="#id1">3.0.2</a></li>
+<li><a class="reference internal" href="#id2">3.0.1</a></li>
+<li><a class="reference internal" href="#id3">3.0</a></li>
+<li><a class="reference internal" href="#id4">2.8.1</a></li>
+<li><a class="reference internal" href="#id5">2.8</a></li>
+<li><a class="reference internal" href="#id6">2.7</a></li>
+<li><a class="reference internal" href="#id7">2.6</a></li>
+<li><a class="reference internal" href="#id8">2.2</a></li>
+<li><a class="reference internal" href="#id9">2.1</a></li>
+<li><a class="reference internal" href="#id10">2.0</a></li>
 </ul>
 </li>
 </ul>
@@ -220,7 +264,7 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></p
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

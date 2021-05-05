@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cdhweb.pages.views &#8212; CDH website 3.0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for cdhweb.pages.views</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.utils.cache</span> <span class="kn">import</span> <span class="n">get_conditional_response</span>
+<span class="kn">from</span> <span class="nn">django.views.generic.base</span> <span class="kn">import</span> <span class="n">View</span>
+
+
+<div class="viewcode-block" id="LastModifiedMixin"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.views.LastModifiedMixin">[docs]</a><span class="k">class</span> <span class="nc">LastModifiedMixin</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mixin that adds last-modified timestamps to response for detail views.</span>
+
+<span class="sd">    Uses Django&#39;s get_conditional_response to return a 304 if object has not</span>
+<span class="sd">    been modified since time specified in the HTTP if-modified-since header.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># override to customize which attribute to use as modification date</span>
+    <span class="n">lastmodified_attr</span> <span class="o">=</span> <span class="s2">&quot;updated&quot;</span>
+
+<div class="viewcode-block" id="LastModifiedMixin.last_modified"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.views.LastModifiedMixin.last_modified">[docs]</a>    <span class="k">def</span> <span class="nf">last_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the last modified date of the view object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastmodified_attr</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">dispatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">LastModifiedMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">dispatch</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># NOTE: remove microseconds so that comparison will pass,</span>
+        <span class="c1"># since microseconds are not included in the last-modified header</span>
+        <span class="n">last_modified</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_modified</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">last_modified</span><span class="p">:</span>
+            <span class="n">last_modified</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_modified</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">response</span><span class="p">[</span><span class="s2">&quot;Last-Modified&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_modified</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%a</span><span class="s2">, </span><span class="si">%d</span><span class="s2"> %b %Y %H:%M:%S GMT&quot;</span><span class="p">)</span>
+            <span class="n">last_modified</span> <span class="o">=</span> <span class="n">last_modified</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">get_conditional_response</span><span class="p">(</span><span class="n">request</span><span class="p">,</span>
+                                        <span class="n">last_modified</span><span class="o">=</span><span class="n">last_modified</span><span class="p">,</span>
+                                        <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LastModifiedListMixin"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.views.LastModifiedListMixin">[docs]</a><span class="k">class</span> <span class="nc">LastModifiedListMixin</span><span class="p">(</span><span class="n">LastModifiedMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mixin that adds last-modified timestamps to response for list views.</span>
+
+<span class="sd">    Uses Django&#39;s get_conditional_response to return a 304 if none of the</span>
+<span class="sd">    objects in the list have been modified since time specified in the HTTP</span>
+<span class="sd">    if-modified-since header.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LastModifiedListMixin.last_modified"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.views.LastModifiedListMixin.last_modified">[docs]</a>    <span class="k">def</span> <span class="nf">last_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the most recent modification date among all view objects.&quot;&quot;&quot;</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">queryset</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="n">queryset</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lastmodified_attr</span><span class="p">)</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lastmodified_attr</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">CDH website</a></h1>
+
+
+
+<p class="blurb">Django/Mezzanine website that powers cdh.princeton.edu</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=Princeton-CDH&repo=cdh-web&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/Princeton-CDH/cdh-web">
+    <img
+        alt="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
+        src="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://codecov.io/github/Princeton-CDH/cdh-web">
+    <img
+    alt="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
+    src="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../codedocs.html">Code Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../deploynotes.html">Deploy Notes</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="powered_by">
+<p>Powered by:</p>
+<a href="http://cdh.princeton.edu/">
+<img src="https://cdh.princeton.edu/static/img/CDH_logo.svg"
+    alt="Center for Digital Humanities @ Princeton" />
+</a>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, CDH @ Princeton & Trustees of Princeton University.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

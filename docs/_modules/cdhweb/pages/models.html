@@ -1,0 +1,542 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cdhweb.pages.models &#8212; CDH website 3.0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for cdhweb.pages.models</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span><span class="p">,</span> <span class="n">urlunparse</span>
+
+<span class="kn">import</span> <span class="nn">bleach</span>
+<span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.template.defaultfilters</span> <span class="kn">import</span> <span class="n">striptags</span><span class="p">,</span> <span class="n">truncatechars_html</span>
+<span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="kn">import</span> <span class="n">TaggableManager</span>
+<span class="kn">from</span> <span class="nn">wagtail.admin.edit_handlers</span> <span class="kn">import</span> <span class="p">(</span><span class="n">FieldPanel</span><span class="p">,</span>
+                                         <span class="n">MultiFieldPanel</span><span class="p">,</span> <span class="n">ObjectList</span><span class="p">,</span>
+                                         <span class="n">StreamFieldPanel</span><span class="p">,</span> <span class="n">TabbedInterface</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">wagtail.core.blocks</span> <span class="kn">import</span> <span class="p">(</span><span class="n">RichTextBlock</span><span class="p">,</span> <span class="n">StreamBlock</span><span class="p">,</span> <span class="n">StructBlock</span><span class="p">,</span>
+                                 <span class="n">TextBlock</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">wagtail.snippets.blocks</span> <span class="kn">import</span> <span class="n">SnippetChooserBlock</span>
+<span class="kn">from</span> <span class="nn">wagtail.core.fields</span> <span class="kn">import</span> <span class="n">RichTextField</span><span class="p">,</span> <span class="n">StreamField</span>
+<span class="kn">from</span> <span class="nn">wagtail.core.models</span> <span class="kn">import</span> <span class="n">CollectionMember</span><span class="p">,</span> <span class="n">Page</span>
+<span class="kn">from</span> <span class="nn">wagtail.documents.blocks</span> <span class="kn">import</span> <span class="n">DocumentChooserBlock</span>
+<span class="kn">from</span> <span class="nn">wagtail.documents.models</span> <span class="kn">import</span> <span class="n">AbstractDocument</span><span class="p">,</span> <span class="n">DocumentQuerySet</span>
+<span class="kn">from</span> <span class="nn">wagtail.embeds.blocks</span> <span class="kn">import</span> <span class="n">EmbedBlock</span>
+<span class="kn">from</span> <span class="nn">wagtail.images.blocks</span> <span class="kn">import</span> <span class="n">ImageChooserBlock</span>
+<span class="kn">from</span> <span class="nn">wagtail.images.edit_handlers</span> <span class="kn">import</span> <span class="n">ImageChooserPanel</span>
+<span class="kn">from</span> <span class="nn">wagtail.search</span> <span class="kn">import</span> <span class="n">index</span>
+<span class="kn">from</span> <span class="nn">wagtail.snippets.models</span> <span class="kn">import</span> <span class="n">register_snippet</span>
+<span class="kn">from</span> <span class="nn">wagtailmenus.models</span> <span class="kn">import</span> <span class="n">AbstractLinkPage</span>
+<span class="kn">from</span> <span class="nn">wagtailmenus.panels</span> <span class="kn">import</span> <span class="n">linkpage_tab</span>
+
+<span class="c1">#: common features for paragraph text</span>
+<span class="n">PARAGRAPH_FEATURES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;h3&#39;</span><span class="p">,</span> <span class="s1">&#39;h4&#39;</span><span class="p">,</span> <span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="s1">&#39;italic&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">,</span> <span class="s1">&#39;ol&#39;</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hr&#39;</span><span class="p">,</span> <span class="s1">&#39;blockquote&#39;</span><span class="p">,</span> <span class="s1">&#39;document&#39;</span><span class="p">,</span> <span class="s1">&#39;superscript&#39;</span><span class="p">,</span> <span class="s1">&#39;subscript&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;strikethrough&#39;</span><span class="p">,</span> <span class="s1">&#39;code&#39;</span>
+<span class="p">]</span>
+
+<span class="c1">#: help text for image alternative text</span>
+<span class="n">ALT_TEXT_HELP</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Alternative text for visually impaired users to</span>
+<span class="s2">briefly communicate the intended message of the image in this context.&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="CaptionedImageBlock"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.CaptionedImageBlock">[docs]</a><span class="k">class</span> <span class="nc">CaptionedImageBlock</span><span class="p">(</span><span class="n">StructBlock</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;:class:`~wagtail.core.blocks.StructBlock` for an image with</span>
+<span class="sd">    alternative text and optional formatted caption, so</span>
+<span class="sd">    that both caption and alternative text can be context-specific.&quot;&quot;&quot;</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">ImageChooserBlock</span><span class="p">()</span>
+    <span class="n">alternative_text</span> <span class="o">=</span> <span class="n">TextBlock</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="n">ALT_TEXT_HELP</span><span class="p">)</span>
+    <span class="n">caption</span> <span class="o">=</span> <span class="n">RichTextBlock</span><span class="p">(</span>
+        <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span> <span class="s2">&quot;italic&quot;</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;superscript&quot;</span><span class="p">],</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="s2">&quot;image&quot;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;cdhpages/snippets/captioned_image.html&quot;</span></div>
+
+
+<div class="viewcode-block" id="SVGImageBlock"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.SVGImageBlock">[docs]</a><span class="k">class</span> <span class="nc">SVGImageBlock</span><span class="p">(</span><span class="n">StructBlock</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;:class:`~wagtail.core.blocks.StructBlock` for an SVG image with</span>
+<span class="sd">    alternative text and optional formatted caption. Separate from</span>
+<span class="sd">    :class:`CaptionedImageBlock` because Wagtail image handling</span>
+<span class="sd">    does not work with SVG.&quot;&quot;&quot;</span>
+    <span class="n">extended_description_help</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;This text will only be read to </span><span class="se">\</span>
+<span class="s2">    non-sighted users and should describe the major insights or </span><span class="se">\</span>
+<span class="s2">    takeaways from the graphic. Multiple paragraphs are allowed.&quot;&quot;&quot;</span>
+
+    <span class="n">image</span> <span class="o">=</span> <span class="n">DocumentChooserBlock</span><span class="p">()</span>
+    <span class="n">alternative_text</span> <span class="o">=</span> <span class="n">TextBlock</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="n">ALT_TEXT_HELP</span><span class="p">)</span>
+    <span class="n">caption</span> <span class="o">=</span> <span class="n">RichTextBlock</span><span class="p">(</span>
+        <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span> <span class="s2">&quot;italic&quot;</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;superscript&quot;</span><span class="p">],</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">extended_description</span> <span class="o">=</span> <span class="n">RichTextBlock</span><span class="p">(</span>
+        <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">],</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="n">extended_description_help</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="s2">&quot;image&quot;</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;SVG&quot;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;cdhpages/snippets/svg_image.html&quot;</span></div>
+
+
+<div class="viewcode-block" id="BodyContentBlock"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.BodyContentBlock">[docs]</a><span class="k">class</span> <span class="nc">BodyContentBlock</span><span class="p">(</span><span class="n">StreamBlock</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Common set of blocks available in StreamFields for body text.&#39;&#39;&#39;</span>
+    <span class="c1"># NOTE add h2 here so that StreamField content can insert top-level headings</span>
+    <span class="c1"># (the page title is always h1). However, we don&#39;t put it in the config for</span>
+    <span class="c1"># PARAGRAPH_FEATURES because in some places you shouldn&#39;t be allowed to make</span>
+    <span class="c1"># an h2 or it would conflict with LinkableSections. In those cases, define</span>
+    <span class="c1"># RichTextField(features=PARAGRAPH_FEATURES) to get everything except h2.</span>
+    <span class="n">paragraph</span> <span class="o">=</span> <span class="n">RichTextBlock</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;h2&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">PARAGRAPH_FEATURES</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">CaptionedImageBlock</span><span class="p">()</span>
+    <span class="n">svg_image</span> <span class="o">=</span> <span class="n">SVGImageBlock</span><span class="p">()</span>
+    <span class="n">embed</span> <span class="o">=</span> <span class="n">EmbedBlock</span><span class="p">()</span>
+    <span class="c1">#: used to hold content migrated from mezzanine via a &quot;kitchen-sink&quot;</span>
+    <span class="c1">#: approach; enable all supported wagtail features.</span>
+    <span class="c1">#: Should NOT be used when creating new pages.</span>
+    <span class="n">migrated</span> <span class="o">=</span> <span class="n">RichTextBlock</span><span class="p">(</span>
+        <span class="n">features</span><span class="o">=</span><span class="n">PARAGRAPH_FEATURES</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="s1">&#39;embed&#39;</span><span class="p">],</span>
+        <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AttachmentBlock"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.AttachmentBlock">[docs]</a><span class="k">class</span> <span class="nc">AttachmentBlock</span><span class="p">(</span><span class="n">StreamBlock</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Page attachments, including local files and external URLs.&quot;&quot;&quot;</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">DocumentChooserBlock</span><span class="p">()</span>
+    <span class="n">link</span> <span class="o">=</span> <span class="n">SnippetChooserBlock</span><span class="p">(</span><span class="s2">&quot;cdhpages.ExternalAttachment&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PagePreviewDescriptionMixin"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.PagePreviewDescriptionMixin">[docs]</a><span class="k">class</span> <span class="nc">PagePreviewDescriptionMixin</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Page mixin with logic for page preview content. Adds an optional</span>
+<span class="sd">    richtext description field, and methods to get description and plain-text</span>
+<span class="sd">    description, for use in previews on the site and plain-text metadata</span>
+<span class="sd">    previews.&#39;&#39;&#39;</span>
+
+    <span class="c1"># adapted from PPA; does not allow &lt;p&gt; tags in description</span>
+    <span class="c1">#: brief description for preview display</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">RichTextField</span><span class="p">(</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="s1">&#39;italic&#39;</span><span class="p">],</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Optional. Brief description for preview display. Will &#39;</span> <span class="o">+</span>
+        <span class="s1">&#39;also be used for search description (without tags), if one is &#39;</span> <span class="o">+</span>
+        <span class="s1">&#39;not entered.&#39;</span><span class="p">)</span>
+    <span class="c1">#: maximum length for description to be displayed</span>
+    <span class="n">max_length</span> <span class="o">=</span> <span class="mi">225</span>
+    <span class="c1"># (tags are omitted by subsetting default ALLOWED_TAGS)</span>
+    <span class="c1">#: allowed tags for bleach html stripping in description</span>
+    <span class="n">allowed_tags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">((</span><span class="nb">set</span><span class="p">(</span><span class="n">bleach</span><span class="o">.</span><span class="n">sanitizer</span><span class="o">.</span><span class="n">ALLOWED_TAGS</span><span class="p">)</span> <span class="o">-</span>
+                         <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;blockquote&#39;</span><span class="p">])))</span>  <span class="c1"># additional tags to remove</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="PagePreviewDescriptionMixin.get_description"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.PagePreviewDescriptionMixin.get_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get formatted description for preview. Uses description field</span>
+<span class="sd">        if there is content, otherwise uses beginning of the body content.&#39;&#39;&#39;</span>
+
+        <span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="c1"># use description field if set</span>
+        <span class="c1"># use striptags to check for empty paragraph</span>
+        <span class="k">if</span> <span class="n">striptags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">):</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
+
+        <span class="c1"># if not, use beginning of body content</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Iterate over blocks and use content from first paragraph content</span>
+            <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">block_type</span> <span class="o">==</span> <span class="s1">&#39;paragraph&#39;</span><span class="p">:</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="n">block</span>
+                    <span class="c1"># stop after the first instead of using last</span>
+                    <span class="k">break</span>
+
+        <span class="n">description</span> <span class="o">=</span> <span class="n">bleach</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">description</span><span class="p">),</span>
+            <span class="n">tags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">allowed_tags</span><span class="p">,</span>
+            <span class="n">strip</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="c1"># truncate either way</span>
+        <span class="k">return</span> <span class="n">truncatechars_html</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PagePreviewDescriptionMixin.get_plaintext_description"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.PagePreviewDescriptionMixin.get_plaintext_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_plaintext_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get plain-text description for use in metadata. Uses</span>
+<span class="sd">        search_description field if set; otherwise uses the result of</span>
+<span class="sd">        :meth:`get_description` with tags stripped.&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_description</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_description</span>
+        <span class="k">return</span> <span class="n">striptags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_description</span><span class="p">())</span></div></div>
+
+<div class="viewcode-block" id="LinkPage"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.LinkPage">[docs]</a><span class="k">class</span> <span class="nc">LinkPage</span><span class="p">(</span><span class="n">AbstractLinkPage</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Link page for controlling appearance in menus of non-Page content.&quot;&quot;&quot;</span>
+    <span class="c1"># NOTE these pages can have slugs, but the slug isn&#39;t editable in the admin</span>
+    <span class="c1"># by default. We override the editing interface to introduce a &quot;promote&quot;</span>
+    <span class="c1"># panel as with other Page models containing the form field for the slug.</span>
+    <span class="c1"># see: https://github.com/rkhleics/wagtailmenus/blob/master/wagtailmenus/panels.py#L79-L93</span>
+    <span class="n">edit_handler</span> <span class="o">=</span> <span class="n">TabbedInterface</span><span class="p">([</span>
+        <span class="n">linkpage_tab</span><span class="p">,</span>
+        <span class="n">ObjectList</span><span class="p">((</span><span class="n">MultiFieldPanel</span><span class="p">((</span><span class="n">FieldPanel</span><span class="p">(</span><span class="s2">&quot;slug&quot;</span><span class="p">),)),),</span>
+                   <span class="n">heading</span><span class="o">=</span><span class="s2">&quot;Promote&quot;</span><span class="p">)</span>
+    <span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="BasePage"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.BasePage">[docs]</a><span class="k">class</span> <span class="nc">BasePage</span><span class="p">(</span><span class="n">Page</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract Page class from which all Wagtail page types are derived.&quot;&quot;&quot;</span>
+    <span class="c1">#: main page text</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">StreamField</span><span class="p">(</span><span class="n">BodyContentBlock</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1">#: relationship to uploaded documents and external links</span>
+    <span class="n">attachments</span> <span class="o">=</span> <span class="n">StreamField</span><span class="p">(</span><span class="n">AttachmentBlock</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># index body content to make it searchable</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="n">Page</span><span class="o">.</span><span class="n">search_fields</span> <span class="o">+</span> <span class="p">[</span><span class="n">index</span><span class="o">.</span><span class="n">SearchField</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">)]</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="ContentPage"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.ContentPage">[docs]</a><span class="k">class</span> <span class="nc">ContentPage</span><span class="p">(</span><span class="n">BasePage</span><span class="p">,</span> <span class="n">PagePreviewDescriptionMixin</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Basic content page model.&#39;&#39;&#39;</span>
+
+    <span class="n">content_panels</span> <span class="o">=</span> <span class="n">Page</span><span class="o">.</span><span class="n">content_panels</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="n">FieldPanel</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">),</span>
+        <span class="n">StreamFieldPanel</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">),</span>
+        <span class="n">StreamFieldPanel</span><span class="p">(</span><span class="s2">&quot;attachments&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">parent_page_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HomePage&#39;</span><span class="p">,</span> <span class="s1">&#39;LandingPage&#39;</span><span class="p">,</span> <span class="s1">&#39;ContentPage&#39;</span><span class="p">]</span>
+    <span class="n">subpage_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ContentPage&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="LandingPage"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.LandingPage">[docs]</a><span class="k">class</span> <span class="nc">LandingPage</span><span class="p">(</span><span class="n">BasePage</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Page type that aggregates and displays multiple ContentPages.&#39;&#39;&#39;</span>
+
+    <span class="c1">#: short sentence overlaid on the header image</span>
+    <span class="n">tagline</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="c1">#: image that will be used for the header</span>
+    <span class="n">header_image</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;wagtailimages.image&#39;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                     <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">)</span>  <span class="c1"># no reverse relationship</span>
+
+
+    <span class="n">content_panels</span> <span class="o">=</span> <span class="n">Page</span><span class="o">.</span><span class="n">content_panels</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="n">FieldPanel</span><span class="p">(</span><span class="s1">&#39;tagline&#39;</span><span class="p">),</span>
+        <span class="n">ImageChooserPanel</span><span class="p">(</span><span class="s1">&#39;header_image&#39;</span><span class="p">),</span>
+        <span class="n">StreamFieldPanel</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">parent_page_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HomePage&#39;</span><span class="p">]</span>
+    <span class="n">subpage_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ContentPage&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="HomePage"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.HomePage">[docs]</a><span class="k">class</span> <span class="nc">HomePage</span><span class="p">(</span><span class="n">BasePage</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;A home page that aggregates and displays featured content.&#39;&#39;&#39;</span>
+
+    <span class="n">content_panels</span> <span class="o">=</span> <span class="n">Page</span><span class="o">.</span><span class="n">content_panels</span> <span class="o">+</span> <span class="p">[</span><span class="n">StreamFieldPanel</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">)]</span>
+
+    <span class="n">parent_page_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">Page</span><span class="p">]</span>  <span class="c1"># only root</span>
+    <span class="n">subpage_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;LandingPage&#39;</span><span class="p">,</span> <span class="s1">&#39;ContentPage&#39;</span><span class="p">]</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s1">&#39;Homepage&#39;</span>
+
+<div class="viewcode-block" id="HomePage.get_context"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.HomePage.get_context">[docs]</a>    <span class="k">def</span> <span class="nf">get_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Add featured updates, projects, and events to the page context.&#39;&#39;&#39;</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="c1"># FIXME because these apps import LandingPage, there is a circular</span>
+        <span class="c1"># import issue, so we can&#39;t import these models at the top of this file</span>
+        <span class="n">BlogPost</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;blog&quot;</span><span class="p">,</span> <span class="s2">&quot;blogpost&quot;</span><span class="p">)</span>
+        <span class="n">Project</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;projects&quot;</span><span class="p">,</span> <span class="s2">&quot;project&quot;</span><span class="p">)</span>
+        <span class="n">Event</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">)</span>
+
+        <span class="c1"># add up to 6 featured updates, otherwise use 3 most recent updates</span>
+        <span class="n">updates</span> <span class="o">=</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">live</span><span class="p">()</span><span class="o">.</span><span class="n">featured</span><span class="p">()</span><span class="o">.</span><span class="n">recent</span><span class="p">()[:</span><span class="mi">6</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">updates</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">updates</span> <span class="o">=</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">live</span><span class="p">()</span><span class="o">.</span><span class="n">recent</span><span class="p">()[:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;updates&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">updates</span>
+
+        <span class="c1"># add up to 4 randomly selected highlighted, published projects</span>
+        <span class="n">projects</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Project</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">live</span><span class="p">()</span><span class="o">.</span><span class="n">highlighted</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">))</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">projects</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+
+        <span class="c1"># add up to 3 upcoming, published events</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;events&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">live</span><span class="p">()</span><span class="o">.</span><span class="n">upcoming</span><span class="p">()[:</span><span class="mi">3</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">context</span></div></div>
+
+
+<div class="viewcode-block" id="PageIntro"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.PageIntro">[docs]</a><span class="nd">@register_snippet</span>
+<span class="k">class</span> <span class="nc">PageIntro</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Snippet for optional page intro text on for pages generated from</span>
+<span class="sd">    django views not managed by wagtail&#39;&#39;&#39;</span>
+    <span class="n">page</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">OneToOneField</span><span class="p">(</span><span class="n">LinkPage</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="c1">#: intro text</span>
+    <span class="n">paragraph</span> <span class="o">=</span> <span class="n">RichTextField</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="n">PARAGRAPH_FEATURES</span><span class="p">)</span>
+
+    <span class="n">panels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">FieldPanel</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">),</span>
+        <span class="n">FieldPanel</span><span class="p">(</span><span class="s1">&#39;paragraph&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="o">.</span><span class="n">title</span></div>
+
+
+<div class="viewcode-block" id="DisplayUrlMixin"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.DisplayUrlMixin">[docs]</a><span class="k">class</span> <span class="nc">DisplayUrlMixin</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mixin that provides a single required URL field and a display method.&quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">display_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;URL cleaned up for display, with scheme and extra params removed.&quot;&quot;&quot;</span>
+        <span class="c1"># keep only the domain/subdomains and path; stripping slashes from result</span>
+        <span class="n">scheme</span><span class="p">,</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">urlunparse</span><span class="p">((</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;//&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RelatedLinkType"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.RelatedLinkType">[docs]</a><span class="k">class</span> <span class="nc">RelatedLinkType</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Link types for RelatedLinks, with sort order determined by type.&quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">sort_order</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                             <span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_order&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="RelatedLink"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.RelatedLink">[docs]</a><span class="k">class</span> <span class="nc">RelatedLink</span><span class="p">(</span><span class="n">DisplayUrlMixin</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract typed relationship between a URL and a model. Used for personal</span>
+<span class="sd">    URLs like Twitter, project links like Github, etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">RelatedLinkType</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">panels</span> <span class="o">=</span> <span class="p">(</span><span class="n">FieldPanel</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">),</span> <span class="n">FieldPanel</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">),)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="LocalAttachment"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.LocalAttachment">[docs]</a><span class="k">class</span> <span class="nc">LocalAttachment</span><span class="p">(</span><span class="n">AbstractDocument</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A locally hosted file that can be associated with a Page.&quot;&quot;&quot;</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Citation or list of authors&quot;</span><span class="p">)</span>
+
+    <span class="n">admin_form_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Attachment title, author(s) if present, and file extension (type).&quot;&quot;&quot;</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_extension</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExternalAttachment"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.ExternalAttachment">[docs]</a><span class="nd">@register_snippet</span>
+<span class="k">class</span> <span class="nc">ExternalAttachment</span><span class="p">(</span><span class="n">DisplayUrlMixin</span><span class="p">,</span> <span class="n">CollectionMember</span><span class="p">,</span> <span class="n">index</span><span class="o">.</span><span class="n">Indexed</span><span class="p">,</span>
+                         <span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An externally hosted link or file that can be associated with a Page.&quot;&quot;&quot;</span>
+    <span class="c1"># replicate the same fields as Document but with URL instead of file; see:</span>
+    <span class="c1"># https://github.com/wagtail/wagtail/blob/master/wagtail/documents/models.py#L27-L37</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Citation or list of authors&quot;</span><span class="p">)</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">TaggableManager</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># adapted from AbstractDocument but with URL instead; see:</span>
+    <span class="c1"># https://github.com/wagtail/wagtail/blob/master/wagtail/documents/models.py#L47-L56</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="n">CollectionMember</span><span class="o">.</span><span class="n">search_fields</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="n">index</span><span class="o">.</span><span class="n">SearchField</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="n">partial_match</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">boost</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+        <span class="n">index</span><span class="o">.</span><span class="n">AutocompleteField</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">),</span>
+        <span class="n">index</span><span class="o">.</span><span class="n">FilterField</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">),</span>
+        <span class="n">index</span><span class="o">.</span><span class="n">SearchField</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="n">partial_match</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">index</span><span class="o">.</span><span class="n">RelatedFields</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">SearchField</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">partial_match</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">boost</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">AutocompleteField</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">),</span>
+        <span class="p">]),</span>
+    <span class="p">]</span>
+
+    <span class="c1"># same QS/manager and form fields as Attachment</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">DocumentQuerySet</span><span class="o">.</span><span class="n">as_manager</span><span class="p">()</span>
+    <span class="n">admin_form_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Attachment title, author(s) if present, and URL.&quot;&quot;&quot;</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DateRange"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.DateRange">[docs]</a><span class="k">class</span> <span class="nc">DateRange</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Abstract model with start and end dates. Includes</span>
+<span class="sd">    validation that requires end date falls after start date (if set),</span>
+<span class="sd">    and custom properties to check if dates are current/active and to</span>
+<span class="sd">    display years.&#39;&#39;&#39;</span>
+
+    <span class="c1">#: start date</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">()</span>
+    <span class="c1">#: end date (optional)</span>
+    <span class="n">end_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;is current: start date before today and end date</span>
+<span class="sd">        in the future or not set&#39;&#39;&#39;</span>
+        <span class="n">today</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="o">&lt;=</span> <span class="n">today</span> <span class="ow">and</span> \
+            <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="o">&gt;=</span> <span class="n">today</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">years</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;year or year range for display&#39;&#39;&#39;</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="p">:</span>
+            <span class="c1"># start and end the same year - return single year only</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">year</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">val</span>
+
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">–</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">–&#39;</span> <span class="o">%</span> <span class="n">val</span>
+
+<div class="viewcode-block" id="DateRange.clean_fields"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.pages.models.DateRange.clean_fields">[docs]</a>    <span class="k">def</span> <span class="nf">clean_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">exclude</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s1">&#39;start_date&#39;</span> <span class="ow">in</span> <span class="n">exclude</span> <span class="ow">or</span> <span class="s1">&#39;end_date&#39;</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c1"># require end date to be greater than start date</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">and</span> \
+                <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;End date must be after start date&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">CDH website</a></h1>
+
+
+
+<p class="blurb">Django/Mezzanine website that powers cdh.princeton.edu</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=Princeton-CDH&repo=cdh-web&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/Princeton-CDH/cdh-web">
+    <img
+        alt="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
+        src="https://secure.travis-ci.org/Princeton-CDH/cdh-web.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://codecov.io/github/Princeton-CDH/cdh-web">
+    <img
+    alt="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
+    src="https://codecov.io/github/Princeton-CDH/cdh-web/coverage.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../codedocs.html">Code Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../deploynotes.html">Deploy Notes</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="powered_by">
+<p>Powered by:</p>
+<a href="http://cdh.princeton.edu/">
+<img src="https://cdh.princeton.edu/static/img/CDH_logo.svg"
+    alt="Center for Digital Humanities @ Princeton" />
+</a>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, CDH @ Princeton & Trustees of Princeton University.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
