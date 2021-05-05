@@ -1,13 +1,23 @@
 CHANGELOG
 =========
 
+3.0.2
+-----
+
+* bugfix: make django admin accessible for management of users, redirects, etc.
+* chore: remove mezzanine and all associated code
+* chore: upgrade django and wagtail
+
 3.0.1
 -----
 
-* bugfix: error when previewing blog post
-* bugfix: error when adding multiple speakers to an event
-* bugfix: ensure page models are ordered, including in admin
-* chore: remove temporary models and model fields
+* bugfix: fix template path to avoid error when previewing blog post
+* bugfix: fix error when adding multiple speakers to an event (modelcluster sort)
+* bugfix: ensure page models (blog post, event, project, profile) are ordered, including in admin
+* bugfix: display _recently_ published featured blogposts on the homepage
+* bugfix: fix unique slug error when publishing a new blog post without saving a draft
+* chore: remove temporary models, model fields, and all exodus migration code
+* Adds a one-time custom manage command to clean up migrated html content
 
 3.0
 ---

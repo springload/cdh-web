@@ -7,6 +7,10 @@
 
 DEBUG = True
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
 # Turn this on in test/QA site to show test banner
 # SHOW_TEST_WARNING = True
 

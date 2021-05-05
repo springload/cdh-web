@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.projects.models &#8212; CDH website 3.0.1 documentation</title>
+    <title>cdhweb.projects.models &#8212; CDH website 3.0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -32,25 +32,19 @@
             
   <h1>Source code for cdhweb.projects.models</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="kn">import</span> <span class="n">FileField</span><span class="p">,</span> <span class="n">RichTextField</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="kn">import</span> <span class="n">Displayable</span>
-<span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="kn">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
 <span class="kn">from</span> <span class="nn">modelcluster.contrib.taggit</span> <span class="kn">import</span> <span class="n">ClusterTaggableManager</span>
 <span class="kn">from</span> <span class="nn">modelcluster.fields</span> <span class="kn">import</span> <span class="n">ParentalKey</span>
 <span class="kn">from</span> <span class="nn">modelcluster.models</span> <span class="kn">import</span> <span class="n">ClusterableModel</span>
-<span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="kn">import</span> <span class="n">TaggableManager</span>
 <span class="kn">from</span> <span class="nn">taggit.models</span> <span class="kn">import</span> <span class="n">TaggedItemBase</span>
 <span class="kn">from</span> <span class="nn">wagtail.admin.edit_handlers</span> <span class="kn">import</span> <span class="p">(</span><span class="n">FieldPanel</span><span class="p">,</span> <span class="n">FieldRowPanel</span><span class="p">,</span>
                                          <span class="n">InlinePanel</span><span class="p">,</span> <span class="n">StreamFieldPanel</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">wagtail.core.models</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">PageManager</span><span class="p">,</span> <span class="n">PageQuerySet</span>
 <span class="kn">from</span> <span class="nn">wagtail.images.edit_handlers</span> <span class="kn">import</span> <span class="n">ImageChooserPanel</span>
 
-<span class="kn">from</span> <span class="nn">cdhweb.pages.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BasePage</span><span class="p">,</span> <span class="n">LandingPage</span><span class="p">,</span> <span class="n">LinkPage</span><span class="p">,</span>
-                                 <span class="n">RelatedLink</span><span class="p">,</span> <span class="n">RelatedLinkType</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">cdhweb.pages.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BasePage</span><span class="p">,</span> <span class="n">DateRange</span><span class="p">,</span> <span class="n">LandingPage</span><span class="p">,</span> <span class="n">LinkPage</span><span class="p">,</span>
+                                 <span class="n">RelatedLink</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">cdhweb.people.models</span> <span class="kn">import</span> <span class="n">Person</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="kn">import</span> <span class="n">Attachment</span><span class="p">,</span> <span class="n">DateRange</span><span class="p">,</span> <span class="n">ExcerptMixin</span>
 
 
 <div class="viewcode-block" id="ProjectQuerySet"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectQuerySet">[docs]</a><span class="k">class</span> <span class="nc">ProjectQuerySet</span><span class="p">(</span><span class="n">PageQuerySet</span><span class="p">):</span>
@@ -107,106 +101,6 @@
 <span class="c1"># custom manager for wagtail pages, see:</span>
 <span class="c1"># https://docs.wagtail.io/en/stable/topics/pages.html#custom-page-managers</span>
 <span class="n">ProjectManager</span> <span class="o">=</span> <span class="n">PageManager</span><span class="o">.</span><span class="n">from_queryset</span><span class="p">(</span><span class="n">ProjectQuerySet</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="OldProject"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.OldProject">[docs]</a><span class="k">class</span> <span class="nc">OldProject</span><span class="p">(</span><span class="n">Displayable</span><span class="p">,</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">ExcerptMixin</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;A CDH sponsored project&#39;&#39;&#39;</span>
-
-    <span class="n">short_description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                         <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Brief tagline for display on project card in browse view&#39;</span><span class="p">)</span>
-    <span class="n">long_description</span> <span class="o">=</span> <span class="n">RichTextField</span><span class="p">()</span>
-    <span class="n">highlight</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                    <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Include in randomized project display on the home page.&#39;</span><span class="p">)</span>
-    <span class="n">cdh_built</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="s1">&#39;CDH Built&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                    <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Project built by CDH Development &amp; Design team.&#39;</span><span class="p">)</span>
-    <span class="n">working_group</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
-        <span class="s1">&#39;Working Group&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Project is a long-term collaborative group associated with the CDH.&#39;</span><span class="p">)</span>
-    <span class="n">members</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">through</span><span class="o">=</span><span class="s1">&#39;Membership&#39;</span><span class="p">)</span>
-    <span class="n">resources</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
-        <span class="n">RelatedLinkType</span><span class="p">,</span> <span class="n">through</span><span class="o">=</span><span class="s1">&#39;ProjectRelatedLink&#39;</span><span class="p">)</span>
-
-    <span class="n">tags</span> <span class="o">=</span> <span class="n">TaggableManager</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="c1"># TODO: include help text to indicate images are optional, where they</span>
-    <span class="c1"># are used (size?); add language about putting large images in the</span>
-    <span class="c1"># body of the project description, when we have styles for that.</span>
-    <span class="n">image</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span>
-                      <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;projects.image&quot;</span><span class="p">,</span> <span class="s2">&quot;projects&quot;</span><span class="p">),</span>
-                      <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="n">thumb</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Thumbnail&quot;</span><span class="p">,</span>
-                      <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span>
-                          <span class="s2">&quot;projects.image&quot;</span><span class="p">,</span> <span class="s2">&quot;projects/thumbnails&quot;</span><span class="p">),</span>
-                      <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="n">attachments</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Attachment</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="c1"># custom manager and queryset</span>
-    <span class="n">objects</span> <span class="o">=</span> <span class="n">ProjectQuerySet</span><span class="o">.</span><span class="n">as_manager</span><span class="p">()</span>
-
-    <span class="n">admin_thumb_field</span> <span class="o">=</span> <span class="s2">&quot;thumb&quot;</span>
-
-    <span class="c1"># TODO: Insert panels after creating project wagtail page</span>
-    <span class="c1"># content_panels = Page.content_panels + [</span>
-    <span class="c1">#     #....</span>
-    <span class="c1">#     InlinePanel(&quot;related_links&quot;, heading=&quot;Related Links&quot;),</span>
-    <span class="c1"># ]</span>
-
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="c1"># sort by project title for now</span>
-        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
-
-<div class="viewcode-block" id="OldProject.get_absolute_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.OldProject.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;project:detail&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;slug&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">})</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">website_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;website url, if set&#39;&#39;&#39;</span>
-        <span class="n">website</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_links</span> \
-            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">type__name</span><span class="o">=</span><span class="s1">&#39;Website&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">website</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">website</span><span class="o">.</span><span class="n">url</span>
-
-<div class="viewcode-block" id="OldProject.latest_grant"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.OldProject.latest_grant">[docs]</a>    <span class="k">def</span> <span class="nf">latest_grant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Most recent :class:`Grant`&#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_set</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_set</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-start_date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="OldProject.current_memberships"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.OldProject.current_memberships">[docs]</a>    <span class="k">def</span> <span class="nf">current_memberships</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:class:`MembershipQueryset` of current members sorted by role&#39;&#39;&#39;</span>
-        <span class="c1"># uses memberships rather than members so that we can retain role</span>
-        <span class="c1"># information attached to the membership</span>
-        <span class="n">today</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-        <span class="c1"># if the last grant for this project is over, display the team</span>
-        <span class="c1"># for that grant period</span>
-        <span class="n">latest_grant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_grant</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">latest_grant</span> <span class="ow">and</span> <span class="n">latest_grant</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">and</span> \
-           <span class="n">latest_grant</span><span class="o">.</span><span class="n">end_date</span> <span class="o">&lt;</span> <span class="n">today</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">membership_set</span> \
-                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">start_date__lte</span><span class="o">=</span><span class="n">latest_grant</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span> \
-                <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                    <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">end_date__gte</span><span class="o">=</span><span class="n">latest_grant</span><span class="o">.</span><span class="n">start_date</span><span class="p">)</span> <span class="o">|</span>
-                    <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">end_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="p">)</span>
-
-        <span class="c1"># otherwise, return current members based on date</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">membership_set</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">start_date__lte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> \
-            <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">end_date__gte</span><span class="o">=</span><span class="n">today</span><span class="p">)</span> <span class="o">|</span> <span class="n">models</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">end_date__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="OldProject.alums"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.OldProject.alums">[docs]</a>    <span class="k">def</span> <span class="nf">alums</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:class:`PersonQueryset` of past members sorted by last name&#39;&#39;&#39;</span>
-        <span class="c1"># uses people rather than memberships so that we can use distinct()</span>
-        <span class="c1"># to ensure people aren&#39;t counted multiple times for each grant</span>
-        <span class="c1"># and because we don&#39;t care about role (always &#39;alum&#39;)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span> \
-            <span class="o">.</span><span class="n">distinct</span><span class="p">()</span> \
-            <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">membership__in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_memberships</span><span class="p">())</span> \
-            <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;last_name&#39;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="ProjectTag"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectTag">[docs]</a><span class="k">class</span> <span class="nc">ProjectTag</span><span class="p">(</span><span class="n">TaggedItemBase</span><span class="p">):</span>
@@ -344,9 +238,7 @@
 <div class="viewcode-block" id="Grant"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Grant">[docs]</a><span class="k">class</span> <span class="nc">Grant</span><span class="p">(</span><span class="n">DateRange</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A specific grant associated with a project&#39;&#39;&#39;</span>
     <span class="n">project</span> <span class="o">=</span> <span class="n">ParentalKey</span><span class="p">(</span>
-        <span class="n">Project</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;grants&quot;</span><span class="p">)</span>
-    <span class="n">old_project</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
-        <span class="n">OldProject</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">)</span>
+        <span class="n">Project</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;grants&quot;</span><span class="p">)</span>
     <span class="n">grant_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">GrantType</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
@@ -379,10 +271,8 @@
 
 <div class="viewcode-block" id="Membership"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.Membership">[docs]</a><span class="k">class</span> <span class="nc">Membership</span><span class="p">(</span><span class="n">DateRange</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Project membership - joins project, user, and role.&#39;&#39;&#39;</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">ParentalKey</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">ParentalKey</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
                           <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;memberships&quot;</span><span class="p">)</span>
-    <span class="n">old_project</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
-        <span class="n">OldProject</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">)</span>
     <span class="n">person</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
     <span class="n">role</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Role</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
 
@@ -405,10 +295,8 @@
 
 <div class="viewcode-block" id="ProjectRelatedLink"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.projects.models.ProjectRelatedLink">[docs]</a><span class="k">class</span> <span class="nc">ProjectRelatedLink</span><span class="p">(</span><span class="n">RelatedLink</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Through-model for associating projects with relatedlinks&#39;&#39;&#39;</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">ParentalKey</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">ParentalKey</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
                           <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;related_links&quot;</span><span class="p">)</span>
-    <span class="n">old_project</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
-        <span class="n">OldProject</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> – </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_url</span><span class="p">)</span></div>
@@ -424,7 +312,6 @@
     <span class="n">subpage_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="n">LinkPage</span><span class="p">]</span>
     <span class="c1"># use the regular landing page template</span>
     <span class="n">template</span> <span class="o">=</span> <span class="n">LandingPage</span><span class="o">.</span><span class="n">template</span></div>
-
 </pre></div>
 
           </div>
@@ -509,7 +396,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

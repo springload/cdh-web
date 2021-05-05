@@ -232,7 +232,7 @@ def test_speakers_list_gone(client):
     response = client.get('/people/speakers/')
     assert response.status_code == 410
     assertContains(response, '410', status_code=410)
-    assertContains(response, "That page isn&#39;t here anymore.",
+    assertContains(response, "That page isn&#x27;t here anymore.",
                    status_code=410)
     assertNotContains(response, '404', status_code=410)
     assertNotContains(response, "can't seem to find", status_code=410)

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.people.models &#8212; CDH website 3.0.1 documentation</title>
+    <title>cdhweb.people.models &#8212; CDH website 3.0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -40,10 +40,6 @@
 <span class="kn">from</span> <span class="nn">django.dispatch</span> <span class="kn">import</span> <span class="n">receiver</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="kn">import</span> <span class="n">FileField</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.fields</span> <span class="kn">import</span> <span class="n">RichTextField</span> <span class="k">as</span> <span class="n">MezzanineRichTextField</span>
-<span class="kn">from</span> <span class="nn">mezzanine.core.models</span> <span class="kn">import</span> <span class="n">Displayable</span>
-<span class="kn">from</span> <span class="nn">mezzanine.utils.models</span> <span class="kn">import</span> <span class="n">AdminThumbMixin</span><span class="p">,</span> <span class="n">upload_to</span>
 <span class="kn">from</span> <span class="nn">modelcluster.fields</span> <span class="kn">import</span> <span class="n">ParentalKey</span>
 <span class="kn">from</span> <span class="nn">modelcluster.models</span> <span class="kn">import</span> <span class="n">ClusterableModel</span>
 <span class="kn">from</span> <span class="nn">taggit.managers</span> <span class="kn">import</span> <span class="n">TaggableManager</span>
@@ -54,9 +50,8 @@
 <span class="kn">from</span> <span class="nn">wagtail.core.models</span> <span class="kn">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">wagtail.images.edit_handlers</span> <span class="kn">import</span> <span class="n">ImageChooserPanel</span>
 
-<span class="kn">from</span> <span class="nn">cdhweb.pages.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">PARAGRAPH_FEATURES</span><span class="p">,</span> <span class="n">BasePage</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">cdhweb.pages.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">PARAGRAPH_FEATURES</span><span class="p">,</span> <span class="n">BasePage</span><span class="p">,</span> <span class="n">DateRange</span><span class="p">,</span>
                                  <span class="n">LandingPage</span><span class="p">,</span> <span class="n">LinkPage</span><span class="p">,</span> <span class="n">RelatedLink</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">cdhweb.resources.models</span> <span class="kn">import</span> <span class="n">Attachment</span><span class="p">,</span> <span class="n">DateRange</span>
 
 
 <div class="viewcode-block" id="Title"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.Title">[docs]</a><span class="k">class</span> <span class="nc">Title</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
@@ -258,8 +253,6 @@
         <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Office phone number&quot;</span><span class="p">)</span>
     <span class="n">office_location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Office number and building&quot;</span><span class="p">)</span>
-    <span class="n">posts</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s2">&quot;blog.BlogPost&quot;</span><span class="p">,</span> <span class="n">through</span><span class="o">=</span><span class="s2">&quot;blog.Author&quot;</span><span class="p">)</span>
-    <span class="n">events</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s2">&quot;events.Event&quot;</span><span class="p">,</span> <span class="n">through</span><span class="o">=</span><span class="s2">&quot;events.Speaker&quot;</span><span class="p">)</span>
 
     <span class="n">PU_STATUS_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="s1">&#39;fac&#39;</span><span class="p">,</span> <span class="s1">&#39;Faculty&#39;</span><span class="p">),</span>
@@ -317,12 +310,17 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span>
         <span class="k">return</span> <span class="s2">&quot;Person </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lastname_first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;display person as lastname, first for sorting&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_name</span><span class="p">]</span> <span class="k">if</span> <span class="n">n</span><span class="p">])</span>
+
     <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="c1"># NOTE we need to order Memberships using person name by default,</span>
         <span class="c1"># but modelcluster doesn&#39;t support ordering via related lookups, so</span>
         <span class="c1"># we can&#39;t order by person__last_name on Membership. Instead we do this.</span>
         <span class="c1"># see: https://github.com/wagtail/django-modelcluster/issues/45</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastname_first</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">lastname_first</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -374,86 +372,17 @@
         <span class="k">except</span> <span class="n">Profile</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
             <span class="n">website</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_links</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">type__name</span><span class="o">=</span><span class="s2">&quot;Website&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">website</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">website</span><span class="o">.</span><span class="n">url</span>
-
-<div class="viewcode-block" id="Person.cleanup_profile"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.Person.cleanup_profile">[docs]</a>    <span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_delete</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="s2">&quot;people.Person&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">cleanup_profile</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Handler to delete the corresponding Profile on Person deletion.&quot;&quot;&quot;</span>
-        <span class="c1"># see NOTE on Profile save() method</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">Profile</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">person</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;instance&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-        <span class="k">except</span> <span class="n">Profile</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-            <span class="k">pass</span></div></div>
+                <span class="k">return</span> <span class="n">website</span><span class="o">.</span><span class="n">url</span></div>
 
 
-<div class="viewcode-block" id="OldProfile"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.OldProfile">[docs]</a><span class="k">class</span> <span class="nc">OldProfile</span><span class="p">(</span><span class="n">Displayable</span><span class="p">,</span> <span class="n">AdminThumbMixin</span><span class="p">):</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">OneToOneField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
-    <span class="c1"># -&gt; cdh_staff on person</span>
-    <span class="n">is_staff</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;CDH staff or Postdoctoral Fellow. If checked, person &#39;</span> <span class="o">+</span>
-        <span class="s1">&#39;will be listed on the CDH staff page and will have a profile page &#39;</span> <span class="o">+</span>
-        <span class="s1">&#39;on the site.&#39;</span><span class="p">)</span>
-    <span class="n">education</span> <span class="o">=</span> <span class="n">MezzanineRichTextField</span><span class="p">()</span>
-    <span class="n">bio</span> <span class="o">=</span> <span class="n">MezzanineRichTextField</span><span class="p">()</span>
-    <span class="c1"># NOTE: could use regex here, but how standard are staff phone</span>
-    <span class="c1"># numbers? or django-phonenumber-field, but that&#39;s probably overkill</span>
-    <span class="n">phone_number</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">office_location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="c1"># moved to person</span>
-    <span class="n">job_title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Professional title, e.g. Professor or Assistant Professor&#39;</span><span class="p">)</span>
-    <span class="n">department</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Academic Department at Princeton or other institution (optional)&#39;</span><span class="p">)</span>
-    <span class="n">institution</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Institutional affiliation (for people not associated with Princeton)&#39;</span><span class="p">)</span>
-
-    <span class="n">PU_STATUS_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="s1">&#39;fac&#39;</span><span class="p">,</span> <span class="s1">&#39;Faculty&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;stf&#39;</span><span class="p">,</span> <span class="s1">&#39;Staff&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;graduate&#39;</span><span class="p">,</span> <span class="s1">&#39;Graduate Student&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;undergraduate&#39;</span><span class="p">,</span> <span class="s1">&#39;Undergraduate Student&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;external&#39;</span><span class="p">,</span> <span class="s1">&#39;Not associated with Princeton&#39;</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">pu_status</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="s1">&#39;Princeton Status&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">PU_STATUS_CHOICES</span><span class="p">,</span>
-                                 <span class="n">max_length</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-
-    <span class="n">image</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span>
-                      <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;people.image&quot;</span><span class="p">,</span> <span class="s2">&quot;people&quot;</span><span class="p">),</span>
-                      <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="n">thumb</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Thumbnail&quot;</span><span class="p">,</span>
-                      <span class="n">upload_to</span><span class="o">=</span><span class="n">upload_to</span><span class="p">(</span><span class="s2">&quot;people.image&quot;</span><span class="p">,</span> <span class="s2">&quot;people/thumbnails&quot;</span><span class="p">),</span>
-                      <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="n">admin_thumb_field</span> <span class="o">=</span> <span class="s2">&quot;thumb&quot;</span>
-
-    <span class="n">attachments</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Attachment</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="c1"># TODO: check for</span>
-    <span class="n">tags</span> <span class="o">=</span> <span class="n">TaggableManager</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="c1"># NOTE removed ProfileQuerySet manager here as it became PersonQuerySet</span>
-
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-user__last_name&quot;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># use title if set</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> \
-            <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">last_name</span><span class="p">])</span>
-
-<div class="viewcode-block" id="OldProfile.get_absolute_url"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.OldProfile.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;people:profile&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;slug&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">})</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">current_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># FIXME: dowe actually need this here?</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">current_title</span></div>
+<div class="viewcode-block" id="cleanup_profile"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.cleanup_profile">[docs]</a><span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_delete</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cleanup_profile</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Handler to delete the corresponding Profile on Person deletion.&quot;&quot;&quot;</span>
+    <span class="c1"># see NOTE on Profile save() method</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Profile</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">person</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;instance&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">Profile</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="Profile"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.models.Profile">[docs]</a><span class="k">class</span> <span class="nc">Profile</span><span class="p">(</span><span class="n">BasePage</span><span class="p">):</span>
@@ -663,7 +592,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

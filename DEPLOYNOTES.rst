@@ -1,6 +1,30 @@
 Deploy Notes
 ============
 
+3.0.2
+-----
+
+- This release reset migrations without mezzanine dependencies. Updating
+  requires the following steps:
+
+  1. Clear out django migration history for old migrations::
+
+      python manage.py dbshell
+      delete from django_migrations;
+
+  2. Fake the new migrations::
+
+      python manage.py migrate --fake
+
+- Automated deployments will fail if the above steps are not followed when
+  migrating. To avoid this problem, use ansible's step mode::
+
+      ansible-playbook cdh-web_qa.yml --step
+
+  When you reach the migration step, do not execute migrations (N) and instead
+  manually follow the steps above on the target machine via ssh. You can then
+  choose the "continue" (c) option to finish the rest of the playbook normally.
+
 
 3.0.1
 -----

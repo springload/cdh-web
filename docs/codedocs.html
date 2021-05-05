@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Code Documentation &#8212; CDH website 3.0.1 documentation</title>
+    <title>Code Documentation &#8212; CDH website 3.0.2 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -36,96 +36,374 @@
 <h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<div class="section" id="module-cdhweb.resources">
-<span id="resources"></span><h2>Resources<a class="headerlink" href="#module-cdhweb.resources" title="Permalink to this headline">¶</a></h2>
-<p>Resources app for the CDH website.
-Includes resource links for people, generic file attachments, and
-a custom landing page RichText content page.</p>
-<div class="section" id="module-cdhweb.resources.models">
-<span id="models"></span><h3>Models<a class="headerlink" href="#module-cdhweb.resources.models" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-cdhweb.pages">
+<span id="pages"></span><h2>Pages<a class="headerlink" href="#module-cdhweb.pages" title="Permalink to this headline">¶</a></h2>
+<p>Pages app for the CDH website.
+Includes logic related to generic content pages &amp; landing pages.</p>
+<div class="section" id="module-cdhweb.pages.models">
+<span id="models"></span><h3>Models<a class="headerlink" href="#module-cdhweb.pages.models" title="Permalink to this headline">¶</a></h3>
+<dl class="py data">
+<dt id="cdhweb.pages.models.ALT_TEXT_HELP">
+<code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">ALT_TEXT_HELP</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'Alternative</span> <span class="pre">text</span> <span class="pre">for</span> <span class="pre">visually</span> <span class="pre">impaired</span> <span class="pre">users</span> <span class="pre">to\nbriefly</span> <span class="pre">communicate</span> <span class="pre">the</span> <span class="pre">intended</span> <span class="pre">message</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">image</span> <span class="pre">in</span> <span class="pre">this</span> <span class="pre">context.'</span></em><a class="headerlink" href="#cdhweb.pages.models.ALT_TEXT_HELP" title="Permalink to this definition">¶</a></dt>
+<dd><p>help text for image alternative text</p>
+</dd></dl>
+
 <dl class="py class">
-<dt id="cdhweb.resources.models.Attachment">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.resources.models.</span></code><code class="sig-name descname"><span class="pre">Attachment</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachment_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#Attachment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.resources.models.Attachment" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py exception">
-<dt id="cdhweb.resources.models.Attachment.DoesNotExist">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.resources.models.Attachment.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.pages.models.AttachmentBlock">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">AttachmentBlock</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#AttachmentBlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.AttachmentBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Page attachments, including local files and external URLs.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.BasePage">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">BasePage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#BasePage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.BasePage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract Page class from which all Wagtail page types are derived.</p>
+<dl class="py attribute">
+<dt id="cdhweb.pages.models.BasePage.attachments">
+<code class="sig-name descname"><span class="pre">attachments</span></code><a class="headerlink" href="#cdhweb.pages.models.BasePage.attachments" title="Permalink to this definition">¶</a></dt>
+<dd><p>relationship to uploaded documents and external links</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cdhweb.pages.models.BasePage.body">
+<code class="sig-name descname"><span class="pre">body</span></code><a class="headerlink" href="#cdhweb.pages.models.BasePage.body" title="Permalink to this definition">¶</a></dt>
+<dd><p>main page text</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.BodyContentBlock">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">BodyContentBlock</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#BodyContentBlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.BodyContentBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Common set of blocks available in StreamFields for body text.</p>
+<dl class="py attribute">
+<dt id="cdhweb.pages.models.BodyContentBlock.migrated">
+<code class="sig-name descname"><span class="pre">migrated</span></code><a class="headerlink" href="#cdhweb.pages.models.BodyContentBlock.migrated" title="Permalink to this definition">¶</a></dt>
+<dd><p>used to hold content migrated from mezzanine via a “kitchen-sink”
+approach; enable all supported wagtail features.
+Should NOT be used when creating new pages.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.CaptionedImageBlock">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">CaptionedImageBlock</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#CaptionedImageBlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.CaptionedImageBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StructBlock</span></code> for an image with
+alternative text and optional formatted caption, so
+that both caption and alternative text can be context-specific.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.ContentPage">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">ContentPage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#ContentPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.ContentPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic content page model.</p>
+<dl class="py exception">
+<dt id="cdhweb.pages.models.ContentPage.DoesNotExist">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.pages.models.ContentPage.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py exception">
-<dt id="cdhweb.resources.models.Attachment.MultipleObjectsReturned">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.resources.models.Attachment.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.pages.models.ContentPage.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.pages.models.ContentPage.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="cdhweb.resources.models.DateRange">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.resources.models.</span></code><code class="sig-name descname"><span class="pre">DateRange</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#DateRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.resources.models.DateRange" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.pages.models.DateRange">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">DateRange</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#DateRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.DateRange" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract model with start and end dates. Includes
 validation that requires end date falls after start date (if set),
 and custom properties to check if dates are current/active and to
 display years.</p>
 <dl class="py method">
-<dt id="cdhweb.resources.models.DateRange.clean_fields">
-<code class="sig-name descname"><span class="pre">clean_fields</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#DateRange.clean_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.resources.models.DateRange.clean_fields" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.pages.models.DateRange.clean_fields">
+<code class="sig-name descname"><span class="pre">clean_fields</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#DateRange.clean_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.DateRange.clean_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean all fields and raise a ValidationError containing a dict
 of all validation errors if any occur.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="cdhweb.resources.models.DateRange.end_date">
-<code class="sig-name descname"><span class="pre">end_date</span></code><a class="headerlink" href="#cdhweb.resources.models.DateRange.end_date" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.pages.models.DateRange.end_date">
+<code class="sig-name descname"><span class="pre">end_date</span></code><a class="headerlink" href="#cdhweb.pages.models.DateRange.end_date" title="Permalink to this definition">¶</a></dt>
 <dd><p>end date (optional)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="cdhweb.resources.models.DateRange.is_current">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_current</span></code><a class="headerlink" href="#cdhweb.resources.models.DateRange.is_current" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.pages.models.DateRange.is_current">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_current</span></code><a class="headerlink" href="#cdhweb.pages.models.DateRange.is_current" title="Permalink to this definition">¶</a></dt>
 <dd><p>is current: start date before today and end date
 in the future or not set</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="cdhweb.resources.models.DateRange.start_date">
-<code class="sig-name descname"><span class="pre">start_date</span></code><a class="headerlink" href="#cdhweb.resources.models.DateRange.start_date" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.pages.models.DateRange.start_date">
+<code class="sig-name descname"><span class="pre">start_date</span></code><a class="headerlink" href="#cdhweb.pages.models.DateRange.start_date" title="Permalink to this definition">¶</a></dt>
 <dd><p>start date</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="cdhweb.resources.models.DateRange.years">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">years</span></code><a class="headerlink" href="#cdhweb.resources.models.DateRange.years" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.pages.models.DateRange.years">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">years</span></code><a class="headerlink" href="#cdhweb.pages.models.DateRange.years" title="Permalink to this definition">¶</a></dt>
 <dd><p>year or year range for display</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="cdhweb.resources.models.LandingPage">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.resources.models.</span></code><code class="sig-name descname"><span class="pre">LandingPage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_meta_title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">publish_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expiry_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">short_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_sitemap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_menus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">titles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_required</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tagline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#LandingPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.resources.models.LandingPage" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py exception">
-<dt id="cdhweb.resources.models.LandingPage.DoesNotExist">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.resources.models.LandingPage.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.pages.models.DisplayUrlMixin">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">DisplayUrlMixin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#DisplayUrlMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.DisplayUrlMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mixin that provides a single required URL field and a display method.</p>
+<dl class="py method">
+<dt id="cdhweb.pages.models.DisplayUrlMixin.display_url">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">display_url</span></code><a class="headerlink" href="#cdhweb.pages.models.DisplayUrlMixin.display_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL cleaned up for display, with scheme and extra params removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.ExternalAttachment">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">ExternalAttachment</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#ExternalAttachment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.ExternalAttachment" title="Permalink to this definition">¶</a></dt>
+<dd><p>An externally hosted link or file that can be associated with a Page.</p>
+<dl class="py exception">
+<dt id="cdhweb.pages.models.ExternalAttachment.DoesNotExist">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.pages.models.ExternalAttachment.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py exception">
-<dt id="cdhweb.resources.models.LandingPage.MultipleObjectsReturned">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.resources.models.LandingPage.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dt id="cdhweb.pages.models.ExternalAttachment.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.pages.models.ExternalAttachment.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="cdhweb.pages.models.ExternalAttachment.get_usage">
+<code class="sig-name descname"><span class="pre">get_usage</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cdhweb.pages.models.ExternalAttachment.get_usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a queryset of pages that link to a particular object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.HomePage">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">HomePage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#HomePage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.HomePage" title="Permalink to this definition">¶</a></dt>
+<dd><p>A home page that aggregates and displays featured content.</p>
+<dl class="py exception">
+<dt id="cdhweb.pages.models.HomePage.DoesNotExist">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.pages.models.HomePage.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="cdhweb.pages.models.HomePage.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.pages.models.HomePage.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="cdhweb.pages.models.HomePage.get_context">
+<code class="sig-name descname"><span class="pre">get_context</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#HomePage.get_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.HomePage.get_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add featured updates, projects, and events to the page context.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.LandingPage">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">LandingPage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#LandingPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.LandingPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Page type that aggregates and displays multiple ContentPages.</p>
+<dl class="py exception">
+<dt id="cdhweb.pages.models.LandingPage.DoesNotExist">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.pages.models.LandingPage.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="cdhweb.pages.models.LandingPage.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.pages.models.LandingPage.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cdhweb.pages.models.LandingPage.header_image">
+<code class="sig-name descname"><span class="pre">header_image</span></code><a class="headerlink" href="#cdhweb.pages.models.LandingPage.header_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>image that will be used for the header</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cdhweb.pages.models.LandingPage.tagline">
+<code class="sig-name descname"><span class="pre">tagline</span></code><a class="headerlink" href="#cdhweb.pages.models.LandingPage.tagline" title="Permalink to this definition">¶</a></dt>
+<dd><p>short sentence overlaid on the header image</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.LinkPage">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">LinkPage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#LinkPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.LinkPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link page for controlling appearance in menus of non-Page content.</p>
+<dl class="py exception">
+<dt id="cdhweb.pages.models.LinkPage.DoesNotExist">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.pages.models.LinkPage.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="cdhweb.pages.models.LinkPage.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.pages.models.LinkPage.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="cdhweb.resources.models.PublishedQuerySetMixin">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.resources.models.</span></code><code class="sig-name descname"><span class="pre">PublishedQuerySetMixin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#PublishedQuerySetMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.resources.models.PublishedQuerySetMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>QuerySet mixin. Adds a filter to find published content.
-Uses the published check from
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mezzanine.core.managers.PublishedManager</span></code>.</p>
+<dt id="cdhweb.pages.models.LocalAttachment">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">LocalAttachment</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#LocalAttachment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.LocalAttachment" title="Permalink to this definition">¶</a></dt>
+<dd><p>A locally hosted file that can be associated with a Page.</p>
+<dl class="py exception">
+<dt id="cdhweb.pages.models.LocalAttachment.DoesNotExist">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.pages.models.LocalAttachment.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="cdhweb.pages.models.LocalAttachment.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.pages.models.LocalAttachment.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt id="cdhweb.pages.models.PARAGRAPH_FEATURES">
+<code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">PARAGRAPH_FEATURES</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['h3',</span> <span class="pre">'h4',</span> <span class="pre">'bold',</span> <span class="pre">'italic',</span> <span class="pre">'link',</span> <span class="pre">'ol',</span> <span class="pre">'ul',</span> <span class="pre">'hr',</span> <span class="pre">'blockquote',</span> <span class="pre">'document',</span> <span class="pre">'superscript',</span> <span class="pre">'subscript',</span> <span class="pre">'strikethrough',</span> <span class="pre">'code']</span></em><a class="headerlink" href="#cdhweb.pages.models.PARAGRAPH_FEATURES" title="Permalink to this definition">¶</a></dt>
+<dd><p>common features for paragraph text</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.PageIntro">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">PageIntro</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#PageIntro"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.PageIntro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Snippet for optional page intro text on for pages generated from
+django views not managed by wagtail</p>
+<dl class="py exception">
+<dt id="cdhweb.pages.models.PageIntro.DoesNotExist">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.pages.models.PageIntro.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="cdhweb.pages.models.PageIntro.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.pages.models.PageIntro.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
-<dt id="cdhweb.resources.models.PublishedQuerySetMixin.published">
-<code class="sig-name descname"><span class="pre">published</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">for_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/resources/models.html#PublishedQuerySetMixin.published"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.resources.models.PublishedQuerySetMixin.published" title="Permalink to this definition">¶</a></dt>
-<dd><p>For non-staff users, return items with a published status and
-whose publish and expiry dates fall before and after the
-current date when specified.</p>
+<dt id="cdhweb.pages.models.PageIntro.get_usage">
+<code class="sig-name descname"><span class="pre">get_usage</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cdhweb.pages.models.PageIntro.get_usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a queryset of pages that link to a particular object</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cdhweb.pages.models.PageIntro.paragraph">
+<code class="sig-name descname"><span class="pre">paragraph</span></code><a class="headerlink" href="#cdhweb.pages.models.PageIntro.paragraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>intro text</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.PagePreviewDescriptionMixin">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">PagePreviewDescriptionMixin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#PagePreviewDescriptionMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.PagePreviewDescriptionMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Page mixin with logic for page preview content. Adds an optional
+richtext description field, and methods to get description and plain-text
+description, for use in previews on the site and plain-text metadata
+previews.</p>
+<dl class="py attribute">
+<dt id="cdhweb.pages.models.PagePreviewDescriptionMixin.allowed_tags">
+<code class="sig-name descname"><span class="pre">allowed_tags</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['acronym',</span> <span class="pre">'i',</span> <span class="pre">'em',</span> <span class="pre">'abbr',</span> <span class="pre">'strong',</span> <span class="pre">'b',</span> <span class="pre">'li',</span> <span class="pre">'ul',</span> <span class="pre">'ol',</span> <span class="pre">'code']</span></em><a class="headerlink" href="#cdhweb.pages.models.PagePreviewDescriptionMixin.allowed_tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>allowed tags for bleach html stripping in description</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cdhweb.pages.models.PagePreviewDescriptionMixin.description">
+<code class="sig-name descname"><span class="pre">description</span></code><a class="headerlink" href="#cdhweb.pages.models.PagePreviewDescriptionMixin.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>brief description for preview display</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cdhweb.pages.models.PagePreviewDescriptionMixin.get_description">
+<code class="sig-name descname"><span class="pre">get_description</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#PagePreviewDescriptionMixin.get_description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.PagePreviewDescriptionMixin.get_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get formatted description for preview. Uses description field
+if there is content, otherwise uses beginning of the body content.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cdhweb.pages.models.PagePreviewDescriptionMixin.get_plaintext_description">
+<code class="sig-name descname"><span class="pre">get_plaintext_description</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#PagePreviewDescriptionMixin.get_plaintext_description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.PagePreviewDescriptionMixin.get_plaintext_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get plain-text description for use in metadata. Uses
+search_description field if set; otherwise uses the result of
+<a class="reference internal" href="#cdhweb.pages.models.PagePreviewDescriptionMixin.get_description" title="cdhweb.pages.models.PagePreviewDescriptionMixin.get_description"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_description()</span></code></a> with tags stripped.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cdhweb.pages.models.PagePreviewDescriptionMixin.max_length">
+<code class="sig-name descname"><span class="pre">max_length</span></code><em class="property"> <span class="pre">=</span> <span class="pre">225</span></em><a class="headerlink" href="#cdhweb.pages.models.PagePreviewDescriptionMixin.max_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>maximum length for description to be displayed</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.RelatedLink">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">RelatedLink</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#RelatedLink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.RelatedLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract typed relationship between a URL and a model. Used for personal
+URLs like Twitter, project links like Github, etc.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.RelatedLinkType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">RelatedLinkType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#RelatedLinkType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.RelatedLinkType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link types for RelatedLinks, with sort order determined by type.</p>
+<dl class="py exception">
+<dt id="cdhweb.pages.models.RelatedLinkType.DoesNotExist">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.pages.models.RelatedLinkType.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="cdhweb.pages.models.RelatedLinkType.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.pages.models.RelatedLinkType.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.models.SVGImageBlock">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.models.</span></code><code class="sig-name descname"><span class="pre">SVGImageBlock</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/models.html#SVGImageBlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.models.SVGImageBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StructBlock</span></code> for an SVG image with
+alternative text and optional formatted caption. Separate from
+<a class="reference internal" href="#cdhweb.pages.models.CaptionedImageBlock" title="cdhweb.pages.models.CaptionedImageBlock"><code class="xref py py-class docutils literal notranslate"><span class="pre">CaptionedImageBlock</span></code></a> because Wagtail image handling
+does not work with SVG.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cdhweb.pages.views">
+<span id="views"></span><h3>Views<a class="headerlink" href="#module-cdhweb.pages.views" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="cdhweb.pages.views.LastModifiedListMixin">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.views.</span></code><code class="sig-name descname"><span class="pre">LastModifiedListMixin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/views.html#LastModifiedListMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.views.LastModifiedListMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mixin that adds last-modified timestamps to response for list views.</p>
+<p>Uses Django’s get_conditional_response to return a 304 if none of the
+objects in the list have been modified since time specified in the HTTP
+if-modified-since header.</p>
+<dl class="py method">
+<dt id="cdhweb.pages.views.LastModifiedListMixin.last_modified">
+<code class="sig-name descname"><span class="pre">last_modified</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/views.html#LastModifiedListMixin.last_modified"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.views.LastModifiedListMixin.last_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the most recent modification date among all view objects.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdhweb.pages.views.LastModifiedMixin">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.pages.views.</span></code><code class="sig-name descname"><span class="pre">LastModifiedMixin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/views.html#LastModifiedMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.views.LastModifiedMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mixin that adds last-modified timestamps to response for detail views.</p>
+<p>Uses Django’s get_conditional_response to return a 304 if object has not
+been modified since time specified in the HTTP if-modified-since header.</p>
+<dl class="py method">
+<dt id="cdhweb.pages.views.LastModifiedMixin.last_modified">
+<code class="sig-name descname"><span class="pre">last_modified</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/pages/views.html#LastModifiedMixin.last_modified"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.pages.views.LastModifiedMixin.last_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the last modified date of the view object.</p>
 </dd></dl>
 
 </dd></dl>
@@ -140,29 +418,6 @@ position information.</p>
 <div class="section" id="id1">
 <h3>Models<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-cdhweb.people.models"></span><dl class="py class">
-<dt id="cdhweb.people.models.OldProfile">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.people.models.</span></code><code class="sig-name descname"><span class="pre">OldProfile</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_meta_title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">publish_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expiry_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">short_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_sitemap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_staff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">education</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phone_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">office_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">department</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">institution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pu_status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thumb</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#OldProfile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.people.models.OldProfile" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py exception">
-<dt id="cdhweb.people.models.OldProfile.DoesNotExist">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.people.models.OldProfile.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py exception">
-<dt id="cdhweb.people.models.OldProfile.MultipleObjectsReturned">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.people.models.OldProfile.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.people.models.OldProfile.get_absolute_url">
-<code class="sig-name descname"><span class="pre">get_absolute_url</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#OldProfile.get_absolute_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.people.models.OldProfile.get_absolute_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raise an error if called on a subclass without
-<code class="docutils literal notranslate"><span class="pre">get_absolute_url</span></code> defined, to ensure all search results
-contains a URL.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt id="cdhweb.people.models.PeopleLandingPage">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.people.models.</span></code><code class="sig-name descname"><span class="pre">PeopleLandingPage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#PeopleLandingPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.people.models.PeopleLandingPage" title="Permalink to this definition">¶</a></dt>
 <dd><p>LandingPage subtype for People that holds Profiles.</p>
@@ -192,15 +447,15 @@ contains a URL.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="cdhweb.people.models.Person.cleanup_profile">
-<code class="sig-name descname"><span class="pre">cleanup_profile</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#Person.cleanup_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.people.models.Person.cleanup_profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handler to delete the corresponding Profile on Person deletion.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="cdhweb.people.models.Person.current_title">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">current_title</span></code><a class="headerlink" href="#cdhweb.people.models.Person.current_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the first of any non-expired titles held by this Person.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cdhweb.people.models.Person.lastname_first">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">lastname_first</span></code><a class="headerlink" href="#cdhweb.people.models.Person.lastname_first" title="Permalink to this definition">¶</a></dt>
+<dd><p>display person as lastname, first for sorting</p>
 </dd></dl>
 
 <dl class="py method">
@@ -446,6 +701,12 @@ and titles.  Adds start and end dates to the join table.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="cdhweb.people.models.cleanup_profile">
+<code class="sig-prename descclassname"><span class="pre">cdhweb.people.models.</span></code><code class="sig-name descname"><span class="pre">cleanup_profile</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#cleanup_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.people.models.cleanup_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler to delete the corresponding Profile on Person deletion.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="cdhweb.people.models.init_person_from_ldap">
 <code class="sig-prename descclassname"><span class="pre">cdhweb.people.models.</span></code><code class="sig-name descname"><span class="pre">init_person_from_ldap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ldapinfo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/models.html#init_person_from_ldap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.people.models.init_person_from_ldap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extra User init logic for creating and auto-populating a corresponding
@@ -453,9 +714,9 @@ Person with data from LDAP.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-cdhweb.people.views">
-<span id="views"></span><h3>Views<a class="headerlink" href="#module-cdhweb.people.views" title="Permalink to this headline">¶</a></h3>
-<dl class="py class">
+<div class="section" id="id2">
+<h3>Views<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-cdhweb.people.views"></span><dl class="py class">
 <dt id="cdhweb.people.views.AffiliateListView">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.people.views.</span></code><code class="sig-name descname"><span class="pre">AffiliateListView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/people/views.html#AffiliateListView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.people.views.AffiliateListView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display current and past faculty &amp; staff affiliates</p>
@@ -614,8 +875,8 @@ default, assumes any profiles that aren’t current are past.</p>
 <span id="projects"></span><h2>Projects<a class="headerlink" href="#module-cdhweb.projects" title="Permalink to this headline">¶</a></h2>
 <p>Projects app for the CDH website.
 Handles project data and members associated with projects.</p>
-<div class="section" id="id2">
-<h3>Models<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>Models<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-cdhweb.projects.models"></span><dl class="py class">
 <dt id="cdhweb.projects.models.Grant">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.projects.models.</span></code><code class="sig-name descname"><span class="pre">Grant</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#Grant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.projects.models.Grant" title="Permalink to this definition">¶</a></dt>
@@ -661,54 +922,6 @@ Handles project data and members associated with projects.</p>
 <dt id="cdhweb.projects.models.Membership.MultipleObjectsReturned">
 <em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.projects.models.Membership.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="cdhweb.projects.models.OldProject">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.projects.models.</span></code><code class="sig-name descname"><span class="pre">OldProject</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#OldProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.projects.models.OldProject" title="Permalink to this definition">¶</a></dt>
-<dd><p>A CDH sponsored project</p>
-<dl class="py exception">
-<dt id="cdhweb.projects.models.OldProject.DoesNotExist">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.projects.models.OldProject.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py exception">
-<dt id="cdhweb.projects.models.OldProject.MultipleObjectsReturned">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.projects.models.OldProject.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.projects.models.OldProject.alums">
-<code class="sig-name descname"><span class="pre">alums</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#OldProject.alums"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.projects.models.OldProject.alums" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PersonQueryset</span></code> of past members sorted by last name</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.projects.models.OldProject.current_memberships">
-<code class="sig-name descname"><span class="pre">current_memberships</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#OldProject.current_memberships"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.projects.models.OldProject.current_memberships" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MembershipQueryset</span></code> of current members sorted by role</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.projects.models.OldProject.get_absolute_url">
-<code class="sig-name descname"><span class="pre">get_absolute_url</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#OldProject.get_absolute_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.projects.models.OldProject.get_absolute_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raise an error if called on a subclass without
-<code class="docutils literal notranslate"><span class="pre">get_absolute_url</span></code> defined, to ensure all search results
-contains a URL.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.projects.models.OldProject.latest_grant">
-<code class="sig-name descname"><span class="pre">latest_grant</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/models.html#OldProject.latest_grant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.projects.models.OldProject.latest_grant" title="Permalink to this definition">¶</a></dt>
-<dd><p>Most recent <a class="reference internal" href="#cdhweb.projects.models.Grant" title="cdhweb.projects.models.Grant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Grant</span></code></a></p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.projects.models.OldProject.website_url">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">website_url</span></code><a class="headerlink" href="#cdhweb.projects.models.OldProject.website_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>website url, if set</p>
-</dd></dl>
 
 </dd></dl>
 
@@ -877,8 +1090,8 @@ sort by project title</p>
 </dd></dl>
 
 </div>
-<div class="section" id="id3">
-<h3>Views<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3>Views<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-cdhweb.projects.views"></span><dl class="py class">
 <dt id="cdhweb.projects.views.ProjectListView">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.projects.views.</span></code><code class="sig-name descname"><span class="pre">ProjectListView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/projects/views.html#ProjectListView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.projects.views.ProjectListView" title="Permalink to this definition">¶</a></dt>
@@ -977,8 +1190,8 @@ filter is used.</p>
 <span id="events"></span><h2>Events<a class="headerlink" href="#module-cdhweb.events" title="Permalink to this headline">¶</a></h2>
 <p>Events app for the CDH webapp.
 Provides event types, locations, and events</p>
-<div class="section" id="id4">
-<h3>Models<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>Models<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-cdhweb.events.models"></span><dl class="py class">
 <dt id="cdhweb.events.models.Event">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.events.models.</span></code><code class="sig-name descname"><span class="pre">Event</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#Event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.models.Event" title="Permalink to this definition">¶</a></dt>
@@ -1142,66 +1355,6 @@ have a special-case association with the field defined by NON_FIELD_ERRORS.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="cdhweb.events.models.OldEvent">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.events.models.</span></code><code class="sig-name descname"><span class="pre">OldEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#OldEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.models.OldEvent" title="Permalink to this definition">¶</a></dt>
-<dd><p>An event, such as a workshop, lecture, or conference.</p>
-<dl class="py exception">
-<dt id="cdhweb.events.models.OldEvent.DoesNotExist">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.events.models.OldEvent.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py exception">
-<dt id="cdhweb.events.models.OldEvent.MultipleObjectsReturned">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.events.models.OldEvent.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.events.models.OldEvent.duration">
-<code class="sig-name descname"><span class="pre">duration</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#OldEvent.duration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.models.OldEvent.duration" title="Permalink to this definition">¶</a></dt>
-<dd><p>duration between start and end time as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.timedelta</span></code></a></p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.events.models.OldEvent.full_url">
-<code class="sig-name descname"><span class="pre">full_url</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#OldEvent.full_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.models.OldEvent.full_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>Absolute url, including site address</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.events.models.OldEvent.get_absolute_url">
-<code class="sig-name descname"><span class="pre">get_absolute_url</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#OldEvent.get_absolute_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.models.OldEvent.get_absolute_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>event detail url on this site</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.events.models.OldEvent.get_ical_url">
-<code class="sig-name descname"><span class="pre">get_ical_url</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#OldEvent.get_ical_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.models.OldEvent.get_ical_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>URL to download this event as ical</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.events.models.OldEvent.ical_event">
-<code class="sig-name descname"><span class="pre">ical_event</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#OldEvent.ical_event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.models.OldEvent.ical_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the current event as a <code class="xref py py-class docutils literal notranslate"><span class="pre">icalendar.Event</span></code> for
-inclusion in a <code class="xref py py-class docutils literal notranslate"><span class="pre">icalendar.Calendar</span></code></p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.events.models.OldEvent.is_virtual">
-<code class="sig-name descname"><span class="pre">is_virtual</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#OldEvent.is_virtual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.models.OldEvent.is_virtual" title="Permalink to this definition">¶</a></dt>
-<dd><p>If an event takes place in a virtual location, it is virtual</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.events.models.OldEvent.when">
-<code class="sig-name descname"><span class="pre">when</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#OldEvent.when"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.models.OldEvent.when" title="Permalink to this definition">¶</a></dt>
-<dd><p>Event start/end date and time, formatted for display.
-Removes leading zeros from hours and converts am/pm to lower case.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt id="cdhweb.events.models.Speaker">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.events.models.</span></code><code class="sig-name descname"><span class="pre">Speaker</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/models.html#Speaker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.models.Speaker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Relationship between Person and Event.</p>
@@ -1218,8 +1371,8 @@ Removes leading zeros from hours and converts am/pm to lower case.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="id5">
-<h3>Views<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>Views<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-cdhweb.events.views"></span><dl class="py class">
 <dt id="cdhweb.events.views.EventDetailView">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.events.views.</span></code><code class="sig-name descname"><span class="pre">EventDetailView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/views.html#EventDetailView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.views.EventDetailView" title="Permalink to this definition">¶</a></dt>
@@ -1294,6 +1447,12 @@ along the way for empty lists that aren’t allowed.</p>
 <dd><p>Return (date_list, items, extra_context) for this request.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt id="cdhweb.events.views.EventSemesterArchiveView.get_queryset">
+<code class="sig-name descname"><span class="pre">get_queryset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/events/views.html#EventSemesterArchiveView.get_queryset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.events.views.EventSemesterArchiveView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>use manager to find published events only</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1343,8 +1502,8 @@ August), and Fall.</p>
 <p>Blog app for the CDH website.
 Similar to the built-in grappelli blog, but allows multiple authors
 (other than the current user) to be associated with a post.</p>
-<div class="section" id="id6">
-<h3>Models<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>Models<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-cdhweb.blog.models"></span><dl class="py class">
 <dt id="cdhweb.blog.models.Author">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.blog.models.</span></code><code class="sig-name descname"><span class="pre">Author</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/models.html#Author"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.blog.models.Author" title="Permalink to this definition">¶</a></dt>
@@ -1456,66 +1615,9 @@ Similar to the built-in grappelli blog, but allows multiple authors
 
 </dd></dl>
 
-<dl class="py class">
-<dt id="cdhweb.blog.models.MultiOwnable">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.blog.models.</span></code><code class="sig-name descname"><span class="pre">MultiOwnable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/models.html#MultiOwnable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.blog.models.MultiOwnable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract model based on Mezzanine’s <code class="xref py py-class docutils literal notranslate"><span class="pre">mezzanine.core.models.Ownable</span></code>
-to provides ownership of an object for a user, except allows for
-multiple owners.</p>
-<dl class="py method">
-<dt id="cdhweb.blog.models.MultiOwnable.author_list">
-<code class="sig-name descname"><span class="pre">author_list</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/models.html#MultiOwnable.author_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.blog.models.MultiOwnable.author_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>comma-separated list of authors</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.blog.models.MultiOwnable.is_editable">
-<code class="sig-name descname"><span class="pre">is_editable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/models.html#MultiOwnable.is_editable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.blog.models.MultiOwnable.is_editable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Restrict in-line editing to the objects’s owner and superusers.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="cdhweb.blog.models.OldBlogPost">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.blog.models.</span></code><code class="sig-name descname"><span class="pre">OldBlogPost</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/models.html#OldBlogPost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.blog.models.OldBlogPost" title="Permalink to this definition">¶</a></dt>
-<dd><p>A blog post with multiple authors. Based on
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mezzanine.blog.models.BlogPost</span></code>.</p>
-<dl class="py exception">
-<dt id="cdhweb.blog.models.OldBlogPost.DoesNotExist">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#cdhweb.blog.models.OldBlogPost.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py exception">
-<dt id="cdhweb.blog.models.OldBlogPost.MultipleObjectsReturned">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#cdhweb.blog.models.OldBlogPost.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.blog.models.OldBlogPost.get_absolute_url">
-<code class="sig-name descname"><span class="pre">get_absolute_url</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/models.html#OldBlogPost.get_absolute_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.blog.models.OldBlogPost.get_absolute_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raise an error if called on a subclass without
-<code class="docutils literal notranslate"><span class="pre">get_absolute_url</span></code> defined, to ensure all search results
-contains a URL.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.blog.models.OldBlogPost.short_description">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">short_description</span></code><a class="headerlink" href="#cdhweb.blog.models.OldBlogPost.short_description" title="Permalink to this definition">¶</a></dt>
-<dd><p>shorter description with ellipsis</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="cdhweb.blog.models.OldBlogPost.short_title">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">short_title</span></code><a class="headerlink" href="#cdhweb.blog.models.OldBlogPost.short_title" title="Permalink to this definition">¶</a></dt>
-<dd><p>shorter title with ellipsis</p>
-</dd></dl>
-
-</dd></dl>
-
 </div>
-<div class="section" id="id7">
-<h3>Views<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h3>Views<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-cdhweb.blog.views"></span><dl class="py class">
 <dt id="cdhweb.blog.views.AtomBlogPostFeed">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdhweb.blog.views.</span></code><code class="sig-name descname"><span class="pre">AtomBlogPostFeed</span></code><a class="reference internal" href="_modules/cdhweb/blog/views.html#AtomBlogPostFeed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.blog.views.AtomBlogPostFeed" title="Permalink to this definition">¶</a></dt>
@@ -1548,6 +1650,12 @@ contains a URL.</p>
 <dt id="cdhweb.blog.views.BlogIndexView.get_context_data">
 <code class="sig-name descname"><span class="pre">get_context_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/views.html#BlogIndexView.get_context_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.blog.views.BlogIndexView.get_context_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the context for this view.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cdhweb.blog.views.BlogIndexView.get_queryset">
+<code class="sig-name descname"><span class="pre">get_queryset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdhweb/blog/views.html#BlogIndexView.get_queryset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdhweb.blog.views.BlogIndexView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return published posts with most recent first.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1725,7 +1833,7 @@ the author has a published profile</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Code Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-cdhweb.resources">Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cdhweb.pages">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-cdhweb.people">People</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-cdhweb.projects">Projects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-cdhweb.events">Events</a></li>
@@ -1740,28 +1848,29 @@ the author has a published profile</p>
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Code Documentation</a><ul>
-<li><a class="reference internal" href="#module-cdhweb.resources">Resources</a><ul>
-<li><a class="reference internal" href="#module-cdhweb.resources.models">Models</a></li>
+<li><a class="reference internal" href="#module-cdhweb.pages">Pages</a><ul>
+<li><a class="reference internal" href="#module-cdhweb.pages.models">Models</a></li>
+<li><a class="reference internal" href="#module-cdhweb.pages.views">Views</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-cdhweb.people">People</a><ul>
 <li><a class="reference internal" href="#id1">Models</a></li>
-<li><a class="reference internal" href="#module-cdhweb.people.views">Views</a></li>
+<li><a class="reference internal" href="#id2">Views</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-cdhweb.projects">Projects</a><ul>
-<li><a class="reference internal" href="#id2">Models</a></li>
-<li><a class="reference internal" href="#id3">Views</a></li>
+<li><a class="reference internal" href="#id3">Models</a></li>
+<li><a class="reference internal" href="#id4">Views</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-cdhweb.events">Events</a><ul>
-<li><a class="reference internal" href="#id4">Models</a></li>
-<li><a class="reference internal" href="#id5">Views</a></li>
+<li><a class="reference internal" href="#id5">Models</a></li>
+<li><a class="reference internal" href="#id6">Views</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-cdhweb.blog">Blog</a><ul>
-<li><a class="reference internal" href="#id6">Models</a></li>
-<li><a class="reference internal" href="#id7">Views</a></li>
+<li><a class="reference internal" href="#id7">Models</a></li>
+<li><a class="reference internal" href="#id8">Views</a></li>
 </ul>
 </li>
 </ul>
@@ -1792,7 +1901,7 @@ the author has a published profile</p>
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

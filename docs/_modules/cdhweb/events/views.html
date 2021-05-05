@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.events.views &#8212; CDH website 3.0.1 documentation</title>
+    <title>cdhweb.events.views &#8212; CDH website 3.0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -137,6 +137,10 @@
         <span class="c1"># fall: sep 1 -  dec 31</span>
         <span class="s1">&#39;fall&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">)},</span>
     <span class="p">}</span>
+
+<div class="viewcode-block" id="EventSemesterArchiveView.get_queryset"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.views.EventSemesterArchiveView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span> \
+            <span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s1">&#39;page_ptr&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EventSemesterArchiveView.get_dated_items"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.events.views.EventSemesterArchiveView.get_dated_items">[docs]</a>    <span class="k">def</span> <span class="nf">get_dated_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">date_list</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> \
@@ -304,7 +308,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
