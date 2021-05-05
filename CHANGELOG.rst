@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+3.0.2
+-----
+
+* bugfix: make django admin accessible for management of users, redirects, etc.
+* chore: remove mezzanine and all associated code
+* chore: upgrade django and wagtail
+
 3.0.1
 -----
 
