@@ -75,6 +75,7 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
     content_panels = Page.content_panels + [
         FieldRowPanel((ImageChooserPanel("featured_image"),
                        FieldPanel("featured"))),
+        FieldPanel("description"),
         MultiFieldPanel(
             (InlinePanel("authors", label="Author"),), heading="Authors"),
         StreamFieldPanel("body"),
