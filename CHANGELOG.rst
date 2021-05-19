@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.0.3
+-----
+
+* bugfix: short description for blog posts are not editable in wagtail
+
 3.0.2
 -----
 
