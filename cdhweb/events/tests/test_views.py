@@ -82,19 +82,18 @@ class TestEventSemesterArchiveView:
 
     def test_event_archive(self, client, events):
         """should display all events from requested semester"""
-        # all events were this semester except the course from 2017
-        now = timezone.now()
-        this_semester = EventSemesterDates.get_semester(now).lower()
-        response = client.get(
-            reverse("events:by-semester", args=[this_semester, now.year]))
-        assert events["workshop"] in response.context["events"]
-        assert events["lecture"] in response.context["events"]
-        assert events["deadline"] in response.context["events"]
-        assert events["course"] not in response.context["events"]
         # request spring 2017 only; should see course
         response = client.get(
             reverse("events:by-semester", args=["spring", 2017]))
         assert events["course"] in response.context["events"]
+        assert events["workshop"] not in response.context["events"]
+        assert events["lecture"] not in response.context["events"]
+        assert events["deadline"] not in response.context["events"]
+
+        # request fall 2017; no events were in that semester
+        response = client.get(
+            reverse("events:by-semester", args=["fall", 2017]))
+        assert events["course"] not in response.context["events"]
         assert events["workshop"] not in response.context["events"]
         assert events["lecture"] not in response.context["events"]
         assert events["deadline"] not in response.context["events"]
