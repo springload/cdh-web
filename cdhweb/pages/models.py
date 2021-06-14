@@ -135,7 +135,11 @@ class PagePreviewDescriptionMixin(models.Model):
         if striptags(self.description):
             description = self.description
 
-        # if not, use beginning of body content
+        # if no description, use the search description if set
+        elif self.search_description.strip():
+            description = self.search_description
+
+        # if no description of any kind, use beginning of body content
         else:
             # Iterate over blocks and use content from first paragraph content
             for block in self.body:

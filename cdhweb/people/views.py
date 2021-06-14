@@ -37,6 +37,15 @@ class PersonListView(ListView, LastModifiedListMixin):
         current = self.get_current()
         return self.object_list.exclude(id__in=current.values('id'))
 
+    def grant_label(self, grant):
+        """Convert a grant into a label with date."""
+        # if a fellowship, display as "X fellow"
+        if "Fellow" in grant.grant_type.grant_type:
+            no_ship = grant.grant_type.grant_type.split('ship', 1)[0]
+            return f"{grant.years} {no_ship}"
+        # otherwise "X grant recipient"
+        return f"{grant.years} {grant.grant_type.grant_type} Grant Recipient"
+
     def display_label(self, person):
         # no default; force subclasses to implement
         raise NotImplementedError
@@ -127,10 +136,9 @@ class StudentListView(PersonListView):
                 labels.append(label)
 
         if person.latest_grant:
-            # if student was a project director, show as grant recipient
+            # if student was a project director, show as grant recipient/fellow
             grant = person.latest_grant
-            label = '%s %s Grant Recipient' % \
-                (grant.years, grant.grant_type.grant_type)
+            label = self.grant_label(grant)
             if grant.is_current:
                 current_label = label
             else:
@@ -192,15 +200,7 @@ class AffiliateListView(PersonListView):
 
     def display_label(self, person):
         # use grant information as label
-        grant = person.latest_grant
-        # special case for faculty fellowship display
-        if grant.grant_type.grant_type == 'Faculty Fellowship':
-            label = 'Faculty Fellow'
-        else:
-            label = '%s Grant Recipient' % grant.grant_type.grant_type
-
-        label = '%s %s' % (grant.years, label)
-        return label
+        return self.grant_label(person.latest_grant)
 
     def get_current(self):
         # we only care about current grants, position doesn't matter
