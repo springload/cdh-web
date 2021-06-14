@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.people.views &#8212; CDH website 3.0.3 documentation</title>
+    <title>cdhweb.people.views &#8212; CDH website 3.1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
@@ -69,6 +69,15 @@
 <span class="sd">        default, assumes any profiles that aren&#39;t current are past.&#39;&#39;&#39;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_list</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">current</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PersonListView.grant_label"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.PersonListView.grant_label">[docs]</a>    <span class="k">def</span> <span class="nf">grant_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grant</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert a grant into a label with date.&quot;&quot;&quot;</span>
+        <span class="c1"># if a fellowship, display as &quot;X fellow&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;Fellow&quot;</span> <span class="ow">in</span> <span class="n">grant</span><span class="o">.</span><span class="n">grant_type</span><span class="o">.</span><span class="n">grant_type</span><span class="p">:</span>
+            <span class="n">no_ship</span> <span class="o">=</span> <span class="n">grant</span><span class="o">.</span><span class="n">grant_type</span><span class="o">.</span><span class="n">grant_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;ship&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">grant</span><span class="o">.</span><span class="n">years</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">no_ship</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="c1"># otherwise &quot;X grant recipient&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">grant</span><span class="o">.</span><span class="n">years</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">grant</span><span class="o">.</span><span class="n">grant_type</span><span class="o">.</span><span class="n">grant_type</span><span class="si">}</span><span class="s2"> Grant Recipient&quot;</span></div>
 
     <span class="k">def</span> <span class="nf">display_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">):</span>
         <span class="c1"># no default; force subclasses to implement</span>
@@ -160,10 +169,9 @@
                 <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">person</span><span class="o">.</span><span class="n">latest_grant</span><span class="p">:</span>
-            <span class="c1"># if student was a project director, show as grant recipient</span>
+            <span class="c1"># if student was a project director, show as grant recipient/fellow</span>
             <span class="n">grant</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="n">latest_grant</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> Grant Recipient&#39;</span> <span class="o">%</span> \
-                <span class="p">(</span><span class="n">grant</span><span class="o">.</span><span class="n">years</span><span class="p">,</span> <span class="n">grant</span><span class="o">.</span><span class="n">grant_type</span><span class="o">.</span><span class="n">grant_type</span><span class="p">)</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_label</span><span class="p">(</span><span class="n">grant</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">grant</span><span class="o">.</span><span class="n">is_current</span><span class="p">:</span>
                 <span class="n">current_label</span> <span class="o">=</span> <span class="n">label</span>
             <span class="k">else</span><span class="p">:</span>
@@ -225,15 +233,7 @@
 
     <span class="k">def</span> <span class="nf">display_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">):</span>
         <span class="c1"># use grant information as label</span>
-        <span class="n">grant</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="n">latest_grant</span>
-        <span class="c1"># special case for faculty fellowship display</span>
-        <span class="k">if</span> <span class="n">grant</span><span class="o">.</span><span class="n">grant_type</span><span class="o">.</span><span class="n">grant_type</span> <span class="o">==</span> <span class="s1">&#39;Faculty Fellowship&#39;</span><span class="p">:</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Faculty Fellow&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Grant Recipient&#39;</span> <span class="o">%</span> <span class="n">grant</span><span class="o">.</span><span class="n">grant_type</span><span class="o">.</span><span class="n">grant_type</span>
-
-        <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">grant</span><span class="o">.</span><span class="n">years</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">label</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_label</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">latest_grant</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AffiliateListView.get_current"><a class="viewcode-back" href="../../../codedocs.html#cdhweb.people.views.AffiliateListView.get_current">[docs]</a>    <span class="k">def</span> <span class="nf">get_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># we only care about current grants, position doesn&#39;t matter</span>
@@ -361,7 +361,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

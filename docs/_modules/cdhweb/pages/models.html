@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cdhweb.pages.models &#8212; CDH website 3.0.3 documentation</title>
+    <title>cdhweb.pages.models &#8212; CDH website 3.1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
@@ -168,7 +168,11 @@
         <span class="k">if</span> <span class="n">striptags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">):</span>
             <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
 
-        <span class="c1"># if not, use beginning of body content</span>
+        <span class="c1"># if no description, use the search description if set</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_description</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_description</span>
+
+        <span class="c1"># if no description of any kind, use beginning of body content</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Iterate over blocks and use content from first paragraph content</span>
             <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
@@ -530,7 +534,7 @@
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
