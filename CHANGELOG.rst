@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+3.1
+---
+
+* As a User, I want to see CDH Data Fellows listed on the Affiliates and Students pages so I know who received a fellowship.
+* bugfix: search description is not used as fallback for description
+
 3.0.3
 -----
 
