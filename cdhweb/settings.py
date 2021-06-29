@@ -306,6 +306,16 @@ CACHES = {
     }
 }
 
+WAGTAILEMBEDS_FINDERS = [
+    {
+        'class': 'wagtail.embeds.finders.oembed'
+    },
+    {
+        'class': 'cdhweb.pages.embed_finders.GlitchHubEmbedFinder'
+    },
+]
+
+
 #########################
 # OPTIONAL APPLICATIONS #
 #########################
