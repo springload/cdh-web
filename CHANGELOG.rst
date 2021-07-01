@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+3.2
+---
+
+* As a content editor, I want to embed external content in editorial and other pages, so that I can include dynamic content.
+* bugfix: Unset email for people displays as "none" on profile pages
+
+
 3.1
 ---
 
@@ -56,7 +63,7 @@ CHANGELOG
 * chore: Include DB diagrams in documentation
 * chore: remove inactive user accounts
 * chore: clean image EXIF metadata
-* bugfix: superuser permissions required for editing content due to mezzanine site permissions 
+* bugfix: superuser permissions required for editing content due to mezzanine site permissions
 * bugfix: meta information for project pages is incorrect
 * bugfix: Some past student profiles are displaying twice
 * bugfix: slug logic doesn't ensure uniqueness
