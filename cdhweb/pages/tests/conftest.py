@@ -20,21 +20,21 @@ def to_streamfield_safe(content):
     return json.dumps([{"type": "paragraph", "value": content}])
 
 
-@pytest.fixture
-def site(db):
+def make_wagtail_site():
     """Ensure a single Wagtail site exists for testing."""
     return Site.objects.get()
 
 
-@pytest.fixture
-def homepage(db, site):
+def make_homepage(site):
     """Create a test homepage and set it as the root of the Wagtail site."""
     root = Page.objects.get(title="Root")
-    home = HomePage(title="home", slug="",
-                    body=json.dumps([{
-                        "type": "paragraph",
-                        "value": "<p>content of the home page</p>"
-                    }]))
+    home = HomePage(
+        title="home",
+        slug="",
+        body=json.dumps(
+            [{"type": "paragraph", "value": "<p>content of the home page</p>"}]
+        ),
+    )
     root.add_child(instance=home)
     root.save()
     site.root_page = home
@@ -42,40 +42,67 @@ def homepage(db, site):
     return home
 
 
-@pytest.fixture
-def landing_page(db, homepage):
+def make_landing_page(homepage):
     """Create a test landing page."""
-    landing = LandingPage(title="landing", slug="landing", tagline="tagline",
-                          body=json.dumps([{
-                              "type": "paragraph",
-                              "value": "<p>content of the landing page</p>"
-                          }]))
+    landing = LandingPage(
+        title="landing",
+        slug="landing",
+        tagline="tagline",
+        body=json.dumps(
+            [{"type": "paragraph", "value": "<p>content of the landing page</p>"}]
+        ),
+    )
     homepage.add_child(instance=landing)
     homepage.save()
     return landing
 
 
-@pytest.fixture
-def content_page(db, landing_page):
+def make_content_page(landing_page):
     """Create a test content page."""
-    content = ContentPage(title="content", slug="content",
-                          body=json.dumps([{
-                              "type": "paragraph",
-                              "value": "<p>content of the content page</p>"
-                          }]))
+    content = ContentPage(
+        title="content",
+        slug="content",
+        body=json.dumps(
+            [{"type": "paragraph", "value": "<p>content of the content page</p>"}]
+        ),
+    )
     landing_page.add_child(instance=content)
     landing_page.save()
     return content
 
 
-@pytest.fixture
-def attachment(db):
+def make_attachment():
     """Create a testing external (link) attachment."""
     return ExternalAttachment.objects.create(
         title="Example Attachment",
         url="http://example.com/",
         author="Example Author",
     )
+
+
+@pytest.fixture
+def site(db):
+    return make_wagtail_site()
+
+
+@pytest.fixture
+def homepage(db, site):
+    return make_homepage(site)
+
+
+@pytest.fixture
+def landing_page(db, homepage):
+    return make_landing_page(homepage)
+
+
+@pytest.fixture
+def content_page(db, landing_page):
+    return make_content_page(landing_page)
+
+
+@pytest.fixture
+def attachment(db):
+    return make_attachment()
 
 
 class MyModel:
