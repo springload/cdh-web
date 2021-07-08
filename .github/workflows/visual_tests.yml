@@ -8,7 +8,7 @@ on:
 
 
 env:
-  NODE_VERSION: 12
+  NODE_VERSION: 12  # required for percy CLI
   DB_NAME: cdhweb
   DB_USER: cdhweb
   DB_PASSWORD: cdhweb
