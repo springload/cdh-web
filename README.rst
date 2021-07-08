@@ -19,6 +19,10 @@ CDH Website
     :target: https://dbdocs.io/princetoncdh/cdhweb
     :alt: dbdocs build
 
+.. image:: https://percy.io/static/images/percy-badge.svg
+    :target: https://percy.io/3201ecb4/cdh-web
+    :alt: Visual regression tests
+
 Python 3.6 / Django 2.2 / Node 10 / PostgreSQL 10
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.
