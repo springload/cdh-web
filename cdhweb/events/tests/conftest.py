@@ -1,13 +1,15 @@
-from datetime import timedelta
 from datetime import timezone as tz
 
 import pytest
+import pytz
 from django.utils import timezone
 
-
-from cdhweb.events.models import Event, EventType, EventsLinkPage, Location, Speaker
-from cdhweb.people.models import Person
+from cdhweb.events.models import Event, EventsLinkPage, EventType, Location, Speaker
 from cdhweb.pages.tests.conftest import to_streamfield_safe
+from cdhweb.people.models import Person
+
+
+EST = pytz.timezone("America/New_York")
 
 
 def make_events_link_page(homepage):
@@ -36,14 +38,13 @@ def make_zoom_location():
 
 
 def make_workshop(link_page, cdh_location):
-    """Create a 2hr workshop at the CDH that happened yesterday."""
-    yesterday = timezone.now() - timedelta(days=1)
+    """Create a 2hr workshop at the CDH that happened in 2019."""
     workshop_type = EventType.objects.get_or_create(name="Workshop")[0]
     workshop = Event(
         title="testing workshop",
         body=to_streamfield_safe("<p>my workshop description</p>"),
-        start_time=yesterday,
-        end_time=yesterday + timedelta(hours=2),
+        start_time=timezone.datetime(2019, 10, 5, 9, tzinfo=EST).astimezone(tz.utc),
+        end_time=timezone.datetime(2019, 10, 5, 11, tzinfo=EST).astimezone(tz.utc),
         location=cdh_location,
         type=workshop_type,
     )
@@ -53,14 +54,13 @@ def make_workshop(link_page, cdh_location):
 
 
 def make_lecture(link_page, zoom_location):
-    """Create a 1hr lecture on zoom that happened a month ago with 1 speaker."""
-    last_month = timezone.now() - timedelta(days=30)
+    """Create a 1hr lecture on zoom with 1 speaker from 2018."""
     lecture_type = EventType.objects.get_or_create(name="Lecture")[0]
     lecture = Event(
         title="testing lecture",
         body=to_streamfield_safe("<p>my lecture description</p>"),
-        start_time=last_month,
-        end_time=last_month + timedelta(hours=1),
+        start_time=timezone.datetime(2018, 4, 20, 16, 20, tzinfo=EST).astimezone(tz.utc),
+        end_time=timezone.datetime(2018, 4, 20, 17, 20, tzinfo=EST).astimezone(tz.utc),
         location=zoom_location,
         type=lecture_type,
         join_url="https://princeton.zoom.us/my/zoomroom",
@@ -68,21 +68,22 @@ def make_lecture(link_page, zoom_location):
     link_page.add_child(instance=lecture)
     link_page.save()
     lecturer = Person.objects.create(
-        first_name="john", last_name="lecturer", institution="princeton university"
+        first_name="john",
+        last_name="lecturer",
+        institution="princeton university",
     )
     Speaker.objects.create(person=lecturer, event=lecture)
     return lecture
 
 
 def make_deadline(link_page):
-    """Create a deadline set for tomorrow."""
-    tomorrow = timezone.now() + timedelta(days=1)
+    """Create a deadline set for 2099."""
     deadline_type = EventType.objects.get_or_create(name="Deadline")[0]
     deadline = Event(
         title="testing deadline",
         body=to_streamfield_safe("<p>my deadline description</p>"),
-        start_time=tomorrow,
-        end_time=tomorrow,
+        start_time=timezone.datetime(2099, 1, 1, tzinfo=EST).astimezone(tz.utc),
+        end_time=timezone.datetime(2099, 1, 1, tzinfo=EST).astimezone(tz.utc),
         type=deadline_type,
     )
     link_page.add_child(instance=deadline)
@@ -96,8 +97,8 @@ def make_course(link_page):
     course = Event(
         title="testing course",
         body=to_streamfield_safe("<p>my course description</p>"),
-        start_time=timezone.datetime(2017, 2, 2, tzinfo=tz.utc),
-        end_time=timezone.datetime(2017, 4, 27, tzinfo=tz.utc),
+        start_time=timezone.datetime(2017, 2, 2, tzinfo=EST).astimezone(tz.utc),
+        end_time=timezone.datetime(2017, 4, 27, tzinfo=EST).astimezone(tz.utc),
         type=course_type,
     )
     link_page.add_child(instance=course)
