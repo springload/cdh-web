@@ -9,7 +9,6 @@ env:
   DB_NAME: cdhweb
   DB_USER: cdhweb
   DB_PASSWORD: cdhweb
-  DJANGO_DB_BACKEND: postgresql
 
 jobs:
   visual-tests:
@@ -74,7 +73,7 @@ jobs:
         run: python manage.py migrate
 
       - name: Load test site data
-        run: python manage.py loaddata test_site
+        run: python manage.py create_test_site
 
       - name: Build static assets
         run: python manage.py compress
