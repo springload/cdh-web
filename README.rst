@@ -93,6 +93,20 @@ Run tests using py.test::
 
   py.test
 
+Visual Testing
+--------------
+
+Visual regression tests are written using the Python bindings for Selenium,
+and DOM snapshots are uploaded to `Percy <https://percy.io/>`_. They run in CI
+on pushes or pull requests to the `main` and `develop` branches.
+
+If you need to manually upload snapshots to Percy, you can run::
+
+  npm test
+
+You will need to have the dependencies in `requirements/test.txt` installed, and
+set `PERCY_TOKEN` in your shell environment.
+
 Documentation
 ~~~~~~~~~~~~~
 
