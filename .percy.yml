@@ -5,7 +5,6 @@ snapshot:
     - 768
     - 1280
   minHeight: 1024
-  percyCSS: "ci/percy.css"
 discovery:
   allowedHostnames: []
   networkIdleTimeout: 100
