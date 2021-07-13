@@ -37,13 +37,9 @@ class TestBlogPostDetail:
         announcement = blog_posts["announcement"]
         feature = blog_posts["project_feature"]
         article = blog_posts["article"]
-        response = client.get(feature.get_url())
-        # assertContains(response, article.title)
-        # assertContains(response, article.get_url())
-        # assertContains(response, announcement.title)
-        # assertContains(response, announcement.get_url())
+        response = client.get(article.get_url())
         assertContains(response, '<a rel="prev" href="%s">%s</a>' %
-                       (article.get_url(), article.title), html=True)
+                       (feature.get_url(), feature.title), html=True)
         assertContains(response, '<a rel="next" href="%s">%s</a>' %
                        (announcement.get_url(), announcement.title), html=True)
 
@@ -52,10 +48,10 @@ class TestBlogPostDetail:
         response = client.get(article.get_url())
         # first published in 2019; in GMT
         assertContains(
-            response, '<meta name="article.published_time" content="2019-03-04T13:25:00+00:00">', html=True)
+            response, '<meta name="article.published_time" content="2019-03-04T13:21:00+00:00">', html=True)
         # most recently published/modified in 2020; in GMT
         assertContains(
-            response, '<meta name="article.modified_time" content="2020-01-16T01:12:00+00:00">', html=True)
+            response, '<meta name="article.modified_time" content="2020-01-16T01:08:00+00:00">', html=True)
         # profile URL for staffer (postdoc doesn't have profile)
         assertContains(response, '<meta name="article.author" content="%s"/>' %
                        staffer_profile.get_url(), html=True)
