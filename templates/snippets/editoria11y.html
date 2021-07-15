@@ -1,0 +1,13 @@
+{% load static %}
+{% if perms.wagtailadmin.access_admin %} {# use same check as wagtailuserbar #}
+{# jquery included in base template #}
+<link rel="stylesheet" media="screen" href="{% static "vendor/editoria11y-1.0.6/css/editoria11y.css" %}">
+<script src="{% static "vendor/editoria11y-1.0.6/js/editoria11y-prefs.js" %}"></script>
+<script src="{% static "vendor/editoria11y-1.0.6/js/editoria11y-localization.js" %}"%></script>
+{% if request.is_preview %}
+<script>
+ed11yAlertMode = "assertive";  {# not sure this is actually working #}
+</script>
+{% endif %}
+<script src="{% static "vendor/editoria11y-1.0.6/js/editoria11y.js" %}"></script>
+{% endif %}
