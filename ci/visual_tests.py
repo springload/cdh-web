@@ -77,6 +77,10 @@ def run():
     browser.get("http://localhost:8000/bad-url")
     percy_snapshot(browser, "404 Page")
 
+    # 500 page
+    browser.get("http://localhost:8000/500")
+    percy_snapshot(browser, "500 Page")
+
     # shut down when finished
     browser.quit()
 
