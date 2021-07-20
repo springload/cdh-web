@@ -2,13 +2,14 @@ name: visual tests
 
 on:
   push:
-    branches: [main, develop]
+    branches:
+      - develop
   pull_request:
-    branches: [main, develop]
-
+    branches:
+      - develop
 
 env:
-  NODE_VERSION: 12  # required for percy CLI
+  NODE_VERSION: 12 # required for percy CLI
   DB_NAME: cdhweb
   DB_USER: cdhweb
   DB_PASSWORD: cdhweb
@@ -82,6 +83,6 @@ jobs:
         run: python manage.py compress
 
       - name: Take DOM snapshots and upload to Percy
-        run: npm test
+        run: npm run test:visual
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}

@@ -102,14 +102,23 @@ Visual Testing
 
 Visual regression tests are written using the Python bindings for Selenium,
 and DOM snapshots are uploaded to `Percy <https://percy.io/>`_. They run in CI
-on pushes or pull requests to the `main` and `develop` branches.
+on pushes or pull requests to the `develop` branch.
 
-If you need to manually upload snapshots to Percy, you can run::
+Before visual tests are run, the CI build will execute::
 
-  npm test
+  python manage.py create_test_site
 
-You will need to have the dependencies in `requirements/test.txt` installed, and
-set `PERCY_TOKEN` in your shell environment.
+Which uses existing pytest fixtures to populate the database with content
+approximating a real website in order to execute the tests. It will then run::
+
+  npm run test:visual
+
+Which starts a Django development server and calls the `ci/visual_tests.py` 
+script to upload DOM snapshots to Percy for regression analysis.
+
+You can use both of these commands locally if you need to accomplish either of
+these tasks. You will need to have the dependencies in `requirements/test.txt` 
+installed, and set `PERCY_TOKEN` in your shell environment.
 
 Documentation
 ~~~~~~~~~~~~~
