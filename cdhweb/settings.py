@@ -306,9 +306,26 @@ CACHES = {
     }
 }
 
+# Support embedding content from Princeton's Media Central (Kaltura MediaSpace)
+# See https://knowledge.kaltura.com/help/mediaspace-oembed-integration
+media_central_provider = {
+    "endpoint": "https://mediacentral.princeton.edu/oembed",
+    "urls": (
+        r"^https://mediacentral\.princeton\.edu/id/(?:\w+)\?width=\d+&height=\d+&playerId=\d+$",
+        r"^https://mediacentral\.princeton\.edu/media/[^/]+/(?:\w+)$"
+    )
+}
+
+# These will be tried in order; we put the Media Central one first so that the
+# custom provider will be used. See:
+# https://docs.wagtail.io/en/stable/advanced_topics/embeds.html#customising-the-provider-list
 WAGTAILEMBEDS_FINDERS = [
     {
-        'class': 'wagtail.embeds.finders.oembed'
+        'class': 'wagtail.embeds.finders.oembed',
+        'providers': [media_central_provider],
+    },
+    {
+        'class': 'wagtail.embeds.finders.oembed',
     },
     {
         'class': 'cdhweb.pages.embed_finders.GlitchHubEmbedFinder'
