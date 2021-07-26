@@ -258,7 +258,6 @@ INSTALLED_APPS = [
     # local apps
     "cdhweb.projects",
     "cdhweb.people",
-    "cdhweb.resources",
     "cdhweb.events",
     "cdhweb.blog",
     'cdhweb.pages',
