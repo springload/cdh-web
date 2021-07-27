@@ -19,6 +19,10 @@ CDH Website
     :target: https://dbdocs.io/princetoncdh/cdhweb
     :alt: dbdocs build
 
+.. image:: https://percy.io/static/images/percy-badge.svg
+    :target: https://percy.io/3201ecb4/cdh-web
+    :alt: Visual regression tests
+
 Python 3.6 / Django 2.2 / Node 10 / PostgreSQL 10
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.
@@ -92,6 +96,29 @@ included in dev)::
 Run tests using py.test::
 
   py.test
+
+Visual Testing
+--------------
+
+Visual regression tests are written using the Python bindings for Selenium,
+and DOM snapshots are uploaded to `Percy <https://percy.io/>`_. They run in CI
+on pushes or pull requests to the `develop` branch.
+
+Before visual tests are run, the CI build will execute::
+
+  python manage.py create_test_site
+
+Which uses existing pytest fixtures to populate the database with content
+approximating a real website in order to execute the tests. It will then run::
+
+  npm run test:visual
+
+Which starts a Django development server and calls the `ci/visual_tests.py` 
+script to upload DOM snapshots to Percy for regression analysis.
+
+You can use both of these commands locally if you need to accomplish either of
+these tasks. You will need to have the dependencies in `requirements/test.txt` 
+installed, and set `PERCY_TOKEN` in your shell environment.
 
 Documentation
 ~~~~~~~~~~~~~

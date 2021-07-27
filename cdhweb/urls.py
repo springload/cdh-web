@@ -41,6 +41,7 @@ urlpatterns = [
                                                    content_type='text/plain')),
     re_path(r'^favicon\.ico$', RedirectView.as_view(
         url=FAVICON, permanent=True)),
+    path("500/", lambda _: 1 / 0),  # for testing 500 error page
 
     # main apps
     path("people/", include("cdhweb.people.urls", namespace='people')),

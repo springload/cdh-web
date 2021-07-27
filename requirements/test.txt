@@ -8,3 +8,4 @@ pytest-cov
 wheel
 # fix issue with taggit fields: https://github.com/makecodes/django-dbml/pull/4
 git+git://github.com/thatbudakguy/django-dbml@patch-1#egg=django-dbml
+percy-selenium

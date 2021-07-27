@@ -52,7 +52,8 @@
                 <a class="menu-toggle" name="menu"><i class="fa fa-bars" aria-hidden="true"></i></a>
             </nav>
             <nav id='mainmenu'>
-                <a href='{% pageurl site.root_page %}' class='home-page'>
+                {# NOTE hardcoded homepage URL that works on error pages #}
+                <a href='/' class='home-page'>
                   <img alt="home" src='{% static "img/CDH_logo.svg" %}' />
                 </a>
                 {% include "snippets/primary_navigation.html" %}
