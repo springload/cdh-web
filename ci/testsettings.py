@@ -19,6 +19,9 @@ DATABASES = {
 # turn off debug so we see 404s when testing
 DEBUG = False
 
+# turn off google analytics
+INCLUDE_ANALYTICS = False
+
 # required for tests when DEBUG = False
 ALLOWED_HOSTS = ['*']
 
