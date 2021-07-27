@@ -19,6 +19,8 @@ def register_exodus_log_action(actions):
     actions.register_action("cdhweb.exodus", "Exodus", "Migrated from cdhweb v2")
 
 
+# Copied directly from Wagtail Recipe:
+# https://docs.wagtail.io/en/stable/reference/pages/model_recipes.html#have-redirects-created-automatically-when-changing-page-slug
 @hooks.register("before_edit_page")
 def create_redirect_on_slug_change(request, page):
     """Automatically create a redirect when a page slug is changed."""
