@@ -33,3 +33,6 @@ COMPRESS_ROOT = os.path.join(BASE_DIR, 'sitemedia')
 
 # run a full compress before e2e/a11y tests to serve statically
 COMPRESS_OFFLINE = True
+
+# override software version to avoid creating visual diffs in display
+SW_VERSION = "CI Build"
