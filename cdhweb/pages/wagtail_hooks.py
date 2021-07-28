@@ -31,3 +31,15 @@ def create_redirect_on_slug_change(request, page):
                 site=page.get_site(),
                 redirect_page=page,
             )
+
+
+# Adapted from Wagtail Recipe; see above
+@hooks.register("before_move_page")
+def create_redirect_on_move_page(request, page, destination):
+    """Automatically create a redirect when a page is moved."""
+    if request.method == "POST":
+        Redirect.objects.create(
+            old_path=page.url[:-1],
+            site=page.get_site(),
+            redirect_page=page,
+        )
