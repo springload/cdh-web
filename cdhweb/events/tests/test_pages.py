@@ -13,7 +13,6 @@ from cdhweb.people.models import Person
 
 
 class TestEvent:
-
     def test_str(self, workshop):
         """event string should be its title and start date/time"""
         # make start time into a known datetime for testing
@@ -27,39 +26,46 @@ class TestEvent:
         jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
         workshop.start_time = jan15
         workshop.end_time = jan15
-        assert workshop.get_url().strip("/").split("/") == \
-            ["events", "2015", "01", "testing-workshop"]
+        assert workshop.get_url().strip("/").split("/") == [
+            "events",
+            "2015",
+            "01",
+            "testing-workshop",
+        ]
 
     def test_when(self, workshop):
         """event should report time lowercased, without repeating am/pm"""
         # same day, both pm
-        jan15 = datetime(2015, 1, 15, hour=16,
-                         tzinfo=timezone.get_default_timezone())
+        jan15 = datetime(2015, 1, 15, hour=16, tzinfo=timezone.get_default_timezone())
         end = jan15 + timedelta(hours=1, minutes=30)
         workshop.start_time = jan15
         workshop.end_time = end
         # start day month date time (no pm), end time (pm)
-        assert workshop.when() == "%s – %s" % (jan15.strftime("%b %d %-I:%M"),
-                                               end.strftime("%-I:%M %p").lower())
+        assert workshop.when() == "%s – %s" % (
+            jan15.strftime("%b %d %-I:%M"),
+            end.strftime("%-I:%M %p").lower(),
+        )
 
         # same day, starting in am and ending in pm
         workshop.start_time = jan15 - timedelta(hours=10)
         # should include am on start time
         # NOTE: %-I should be equivalent to %I with lstrip("0")
-        assert workshop.when() == "%s %s – %s" % \
-            (workshop.start_time.strftime("%b %d %-I:%M"),
-             workshop.start_time.strftime("%p").lower(),
-             end.strftime("%I:%M %p").lstrip("0").lower())
+        assert workshop.when() == "%s %s – %s" % (
+            workshop.start_time.strftime("%b %d %-I:%M"),
+            workshop.start_time.strftime("%p").lower(),
+            end.strftime("%I:%M %p").lstrip("0").lower(),
+        )
 
         # different days, same month
         workshop.start_time = jan15 + timedelta(days=1)
-        assert workshop.when() == "%s – %s %s" % \
-            (workshop.start_time.strftime("%b %d %-I:%M"),
-             end.strftime("%d %-I:%M"), end.strftime("%p").lower())
+        assert workshop.when() == "%s – %s %s" % (
+            workshop.start_time.strftime("%b %d %-I:%M"),
+            end.strftime("%d %-I:%M"),
+            end.strftime("%p").lower(),
+        )
 
         # different timezone should get localized to current timezone
-        workshop.start_time = datetime(
-            2015, 1, 15, hour=20, tzinfo=pytz.UTC)
+        workshop.start_time = datetime(2015, 1, 15, hour=20, tzinfo=pytz.UTC)
         workshop.end_time = workshop.start_time + timedelta(hours=12)
         assert "3:00 pm" in workshop.when()
 
@@ -71,8 +77,7 @@ class TestEvent:
         assert end.strftime("%b") in workshop.when()
 
         # different months, same day
-        feb15 = datetime(2015, 2, 15, hour=16,
-                         tzinfo=timezone.get_default_timezone())
+        feb15 = datetime(2015, 2, 15, hour=16, tzinfo=timezone.get_default_timezone())
         workshop.start_time = jan15
         workshop.end_time = feb15
         assert workshop.start_time.strftime("%b %d") in workshop.when()
@@ -85,8 +90,7 @@ class TestEvent:
         # lecture duration is 1hr
         assert events["lecture"].duration() == timedelta(hours=1)
         # should work with days also
-        events["workshop"].end_time = events["workshop"].start_time + \
-            timedelta(days=1)
+        events["workshop"].end_time = events["workshop"].start_time + timedelta(days=1)
         assert events["workshop"].duration().days == 1
 
     def test_ical_event(self, workshop, zoom_location):
@@ -97,14 +101,17 @@ class TestEvent:
         assert ical["uid"] == fullurl
         assert ical["summary"] == workshop.title
         # Dates are in this format, as bytes: 20150115T160000
-        assert ical["dtstart"].to_ical() == \
-            workshop.start_time.strftime("%Y%m%dT%H%M%SZ").encode()
-        assert ical["dtend"].to_ical() == \
-            workshop.end_time.strftime("%Y%m%dT%H%M%SZ").encode()
+        assert (
+            ical["dtstart"].to_ical()
+            == workshop.start_time.strftime("%Y%m%dT%H%M%SZ").encode()
+        )
+        assert (
+            ical["dtend"].to_ical()
+            == workshop.end_time.strftime("%Y%m%dT%H%M%SZ").encode()
+        )
         assert ical["location"] == workshop.location.display_name
         # description should have tags stripped
-        assert strip_tags(
-            workshop.body) in ical["description"].to_ical().decode()
+        assert strip_tags(workshop.body) in ical["description"].to_ical().decode()
         assert fullurl in ical["description"].to_ical().decode()
         # change event to a virtual location & add join url
         workshop.location = zoom_location
@@ -128,7 +135,7 @@ class TestEvent:
             body="my description",
             start_time=timezone.now(),
             end_time=timezone.now(),
-            location=cdh_location
+            location=cdh_location,
         )
         with pytest.raises(ValidationError):
             events_link_page.add_child(instance=reading_grp)
@@ -145,7 +152,6 @@ class TestEvent:
 
 
 class TestEventPage(WagtailPageTests):
-
     def test_subpages(self):
         """event page can't have children"""
         self.assertAllowedSubpageTypes(Event, [])
@@ -156,7 +162,6 @@ class TestEventPage(WagtailPageTests):
 
 
 class TestEventsLinkpage(WagtailPageTests):
-
     def test_subpages(self):
         """events link page only allowed child is event page"""
         self.assertAllowedSubpageTypes(EventsLinkPage, [Event])

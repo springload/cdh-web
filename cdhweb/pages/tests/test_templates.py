@@ -4,9 +4,9 @@ from django.urls import reverse
 from django.utils.dateformat import format
 from pytest_django.asserts import (
     assertContains,
+    assertNotContains,
     assertTemplateNotUsed,
     assertTemplateUsed,
-    assertNotContains,
 )
 
 from cdhweb.pages.models import CaptionedImageBlock, SVGImageBlock

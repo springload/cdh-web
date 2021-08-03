@@ -1,7 +1,11 @@
-from cdhweb.projects.models import Membership, Project, GrantType, Role
 from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
-from wagtail.contrib.modeladmin.options import (ModelAdmin, ModelAdminGroup,
-                                                modeladmin_register)
+from wagtail.contrib.modeladmin.options import (
+    ModelAdmin,
+    ModelAdminGroup,
+    modeladmin_register,
+)
+
+from cdhweb.projects.models import GrantType, Membership, Project, Role
 
 
 class ProjectAdmin(ThumbnailMixin, ModelAdmin):
@@ -11,9 +15,16 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
     list_display = ("admin_thumb", "title", "live", "cdh_built", "highlight")
     list_display_add_buttons = "title"
     list_filter = ("grants__grant_type",)
-    list_export = ("title", "working_group", "cdh_built", "tags",
-                   "short_description", "body", "website_url",
-                   "last_published_at")
+    list_export = (
+        "title",
+        "working_group",
+        "cdh_built",
+        "tags",
+        "short_description",
+        "body",
+        "website_url",
+        "last_published_at",
+    )
     search_fields = ("title", "short_description", "body")
     export_filename = "cdhweb-projects"
     exclude_from_explorer = True
@@ -28,8 +39,12 @@ class MembershipAdmin(ModelAdmin):
     list_display = ("start_date", "end_date", "person", "role", "project")
     list_filter = ("start_date", "end_date")
     list_export = ("start_date", "end_date", "person", "role", "project")
-    search_fields = ("project__title", "role__title",
-                     "person__first_name", "person__last_name")
+    search_fields = (
+        "project__title",
+        "role__title",
+        "person__first_name",
+        "person__last_name",
+    )
     export_filename = "cdhweb-memberships"
     ordering = ("-start_date",)
 

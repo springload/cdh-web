@@ -1,19 +1,37 @@
-from cdhweb.people.models import Person, Profile, Title
 from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
-from wagtail.contrib.modeladmin.options import (ModelAdmin, ModelAdminGroup,
-                                                modeladmin_register)
+from wagtail.contrib.modeladmin.options import (
+    ModelAdmin,
+    ModelAdminGroup,
+    modeladmin_register,
+)
+
+from cdhweb.people.models import Person, Profile, Title
 
 
 class PersonAdmin(ThumbnailMixin, ModelAdmin):
     model = Person
     menu_icon = "group"
-    list_display = ("admin_thumb", "first_name", "last_name", "current_title",
-                    "cdh_staff")
+    list_display = (
+        "admin_thumb",
+        "first_name",
+        "last_name",
+        "current_title",
+        "cdh_staff",
+    )
     list_display_add_buttons = "first_name"
     search_fields = ("first_name", "last_name", "user__username")
     list_filter = ("pu_status", "cdh_staff")
-    list_export = ("first_name", "last_name", "email", "most_recent_title", "department",
-                   "cdh_staff", "pu_status", "latest_grant", "profile_url")
+    list_export = (
+        "first_name",
+        "last_name",
+        "email",
+        "most_recent_title",
+        "department",
+        "cdh_staff",
+        "pu_status",
+        "latest_grant",
+        "profile_url",
+    )
     list_per_page = 25
     export_filename = "cdhweb-people"
     thumb_image_field_name = "image"

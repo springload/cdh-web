@@ -8,7 +8,6 @@ from cdhweb.events.models import Event, EventsLinkPage, EventType, Location, Spe
 from cdhweb.pages.tests.conftest import to_streamfield_safe
 from cdhweb.people.models import Person
 
-
 EST = pytz.timezone("America/New_York")
 
 
@@ -59,7 +58,9 @@ def make_lecture(link_page, zoom_location):
     lecture = Event(
         title="testing lecture",
         body=to_streamfield_safe("<p>my lecture description</p>"),
-        start_time=timezone.datetime(2018, 4, 20, 16, 20, tzinfo=EST).astimezone(tz.utc),
+        start_time=timezone.datetime(2018, 4, 20, 16, 20, tzinfo=EST).astimezone(
+            tz.utc
+        ),
         end_time=timezone.datetime(2018, 4, 20, 17, 20, tzinfo=EST).astimezone(tz.utc),
         location=zoom_location,
         type=lecture_type,
