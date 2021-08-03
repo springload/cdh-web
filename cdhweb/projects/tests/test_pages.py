@@ -2,12 +2,16 @@ from wagtail.tests.utils import WagtailPageTests
 
 from cdhweb.pages.models import LinkPage, RelatedLinkType
 from cdhweb.people.models import Person
-from cdhweb.projects.models import (Grant, GrantType, Project,
-                                    ProjectRelatedLink, ProjectsLandingPage)
+from cdhweb.projects.models import (
+    Grant,
+    GrantType,
+    Project,
+    ProjectRelatedLink,
+    ProjectsLandingPage,
+)
 
 
 class TestProject:
-
     def test_str(self, derrida):
         """project should use title for string display"""
         assert str(derrida) == "Derrida's Margins"
@@ -18,7 +22,8 @@ class TestProject:
         website = RelatedLinkType.objects.get_or_create(name="Website")[0]
         derrida_url = "http://derridas-margins.princeton.edu"
         ProjectRelatedLink.objects.create(
-            project=derrida, type=website, url=derrida_url)
+            project=derrida, type=website, url=derrida_url
+        )
         assert derrida.website_url == derrida_url
 
     def test_latest_grant(self, derrida):
@@ -26,7 +31,8 @@ class TestProject:
         # should return current RPG, not old DCG
         rpg = GrantType.objects.get(grant_type="Research Partnership")
         assert derrida.latest_grant() == Grant.objects.get(
-            project=derrida, grant_type=rpg)
+            project=derrida, grant_type=rpg
+        )
 
     def test_current_memberships(self, derrida):
         """project should return its current team members"""
@@ -73,8 +79,9 @@ class TestProject:
         derrida.cdh_built = False
         derrida.save()
         website = RelatedLinkType.objects.get_or_create(name="Website")[0]
-        ProjectRelatedLink.objects.create(project=derrida, type=website,
-            url="https://derridas-margins.princeton.edu")
+        ProjectRelatedLink.objects.create(
+            project=derrida, type=website, url="https://derridas-margins.princeton.edu"
+        )
         sitemap_urls = derrida.get_sitemap_urls(request=request)
         assert sitemap_urls[0]["priority"] == 0.6
         # having both site and cdh built gets highest priority (0.7)
@@ -85,7 +92,6 @@ class TestProject:
 
 
 class TestProjectPage(WagtailPageTests):
-
     def test_parent_pages(self):
         """project can only be created under projects link page"""
         self.assertAllowedParentPageTypes(Project, [ProjectsLandingPage])
@@ -96,7 +102,6 @@ class TestProjectPage(WagtailPageTests):
 
 
 class TestProjectsLandingPage(WagtailPageTests):
-
     def test_parentpage_types(self):
         """projects link page should not be creatable in admin"""
         self.assertAllowedParentPageTypes(ProjectsLandingPage, [])

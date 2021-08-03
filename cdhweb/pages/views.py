@@ -17,8 +17,7 @@ class LastModifiedMixin(View):
         return getattr(self.get_object(), self.lastmodified_attr)
 
     def dispatch(self, request, *args, **kwargs):
-        response = super(LastModifiedMixin, self).dispatch(
-            request, *args, **kwargs)
+        response = super(LastModifiedMixin, self).dispatch(request, *args, **kwargs)
 
         # NOTE: remove microseconds so that comparison will pass,
         # since microseconds are not included in the last-modified header
@@ -26,12 +25,13 @@ class LastModifiedMixin(View):
         if last_modified:
             last_modified = self.last_modified().replace(microsecond=0)
             response["Last-Modified"] = last_modified.strftime(
-                "%a, %d %b %Y %H:%M:%S GMT")
+                "%a, %d %b %Y %H:%M:%S GMT"
+            )
             last_modified = last_modified.timestamp()
 
-        return get_conditional_response(request,
-                                        last_modified=last_modified,
-                                        response=response)
+        return get_conditional_response(
+            request, last_modified=last_modified, response=response
+        )
 
 
 class LastModifiedListMixin(LastModifiedMixin):
@@ -48,4 +48,5 @@ class LastModifiedListMixin(LastModifiedMixin):
         if queryset.exists():
             return getattr(
                 queryset.order_by(self.lastmodified_attr).reverse().first(),
-                self.lastmodified_attr)
+                self.lastmodified_attr,
+            )

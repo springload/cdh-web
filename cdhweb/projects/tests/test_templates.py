@@ -1,8 +1,7 @@
 from datetime import date, timedelta
 
 from django.urls import reverse
-from pytest_django.asserts import (assertContains, assertNotContains,
-                                   assertTemplateUsed)
+from pytest_django.asserts import assertContains, assertNotContains, assertTemplateUsed
 
 from cdhweb.pages.models import LinkPage, PageIntro, RelatedLinkType
 from cdhweb.pages.tests.conftest import to_streamfield_safe
@@ -10,32 +9,37 @@ from cdhweb.projects.models import ProjectRelatedLink
 
 
 class TestProjectDetail:
-
     def test_related_links(self, client, derrida):
         """project detail page should display project related links"""
         # add a github link for derrida
         github = RelatedLinkType.objects.get_or_create(name="GitHub")[0]
         derrida_gh = ProjectRelatedLink.objects.create(
-            project=derrida, type=github, url="https://github.com/princeton-CDH/derrida-django")
+            project=derrida,
+            type=github,
+            url="https://github.com/princeton-CDH/derrida-django",
+        )
 
         # should display link type and create a link using URL
         response = client.get(derrida.get_url())
-        assertContains(response, '<a href="%s">GitHub</a>' %
-                       derrida_gh.url, html=True)
+        assertContains(response, '<a href="%s">GitHub</a>' % derrida_gh.url, html=True)
 
     def test_website_url(self, client, derrida):
         """project detail page should display website url if set"""
         # create a website URL for derrida
         website = RelatedLinkType.objects.get_or_create(name="Website")[0]
         derrida_site = ProjectRelatedLink.objects.create(
-            project=derrida, type=website, url="https://derridas-margins.princeton.edu")
+            project=derrida, type=website, url="https://derridas-margins.princeton.edu"
+        )
 
         # should display "Project Website" as well as full URL inside link
         response = client.get(derrida.get_url())
         assertContains(response, '<a href="%s">' % derrida_site.url)
-        assertContains(response, '<span>Project Website</span>', html=True)
-        assertContains(response, '<span class="url">%s</span>' %
-                       derrida_site.display_url, html=True)
+        assertContains(response, "<span>Project Website</span>", html=True)
+        assertContains(
+            response,
+            '<span class="url">%s</span>' % derrida_site.display_url,
+            html=True,
+        )
 
     def test_contributors(self, client, derrida):
         """project detail page should display current project team and alums"""
@@ -80,7 +84,6 @@ class TestProjectDetail:
 
 
 class TestProjectLists:
-
     def test_page_titles(self, client, projects):
         """project list pages should show title and past title as headings"""
         # sponsored projects (none currently past)
@@ -121,12 +124,13 @@ class TestProjectLists:
         """project list pages should display an intro snippet if set"""
         # create link page for project list
         sponsored_projects = LinkPage(
-            title='Sponsored Projects',
-            link_url='projects/sponsored')
+            title="Sponsored Projects", link_url="projects/sponsored"
+        )
         projects_landing_page.add_child(instance=sponsored_projects)
         # create a snippet for the sponsored projects page
-        PageIntro.objects.create(page=sponsored_projects,
-                                 paragraph="<i>test content</i>")
+        PageIntro.objects.create(
+            page=sponsored_projects, paragraph="<i>test content</i>"
+        )
 
         # visit and check that it renders
         response = client.get(reverse("projects:sponsored"))
@@ -141,11 +145,8 @@ class TestProjectLists:
 
         # card contains link to project page, title, and short description
         assertContains(response, '<a href="%s">' % projects["pliny"].get_url())
-        assertContains(response, '<a href="%s">' %
-                       projects["ocampo"].get_url())
-        assertContains(response, '<h2>%s</h2>' % projects["pliny"].title)
-        assertContains(response, '<h2>%s</h2>' % projects["ocampo"].title)
-        assertContains(response, '<p>%s</p>' %
-                       projects["pliny"].short_description)
-        assertContains(response, '<p>%s</p>' %
-                       projects["ocampo"].short_description)
+        assertContains(response, '<a href="%s">' % projects["ocampo"].get_url())
+        assertContains(response, "<h2>%s</h2>" % projects["pliny"].title)
+        assertContains(response, "<h2>%s</h2>" % projects["ocampo"].title)
+        assertContains(response, "<p>%s</p>" % projects["pliny"].short_description)
+        assertContains(response, "<p>%s</p>" % projects["ocampo"].short_description)

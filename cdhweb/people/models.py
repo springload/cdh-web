@@ -10,230 +10,293 @@ from django.utils import timezone
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
-from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
-                                         InlinePanel, MultiFieldPanel,
-                                         StreamFieldPanel)
+from wagtail.admin.edit_handlers import (
+    FieldPanel,
+    FieldRowPanel,
+    InlinePanel,
+    MultiFieldPanel,
+    StreamFieldPanel,
+)
 from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import (PARAGRAPH_FEATURES, BasePage, DateRange,
-                                 LandingPage, LinkPage, RelatedLink)
+from cdhweb.pages.models import (
+    PARAGRAPH_FEATURES,
+    BasePage,
+    DateRange,
+    LandingPage,
+    LinkPage,
+    RelatedLink,
+)
 
 
 class Title(models.Model):
-    '''Job titles for people'''
+    """Job titles for people"""
+
     title = models.CharField(max_length=255, unique=True)
-    sort_order = models.PositiveIntegerField(default=0, blank=False,
-                                             null=False)
-    positions = models.ManyToManyField("people.Person", through='Position')
+    sort_order = models.PositiveIntegerField(default=0, blank=False, null=False)
+    positions = models.ManyToManyField("people.Person", through="Position")
 
     class Meta:
-        ordering = ['sort_order']
+        ordering = ["sort_order"]
 
     def __str__(self):
         return self.title
 
     def num_people(self):
-        '''Number of people with this position title'''
+        """Number of people with this position title"""
         # NOTE: maybe more meaningful if count restrict to _current_ titles?
         return self.positions.distinct().count()
-    num_people.short_description = '# People'
+
+    num_people.short_description = "# People"
 
 
 class PersonQuerySet(models.QuerySet):
 
     #: position titles that indicate a person is a postdoc
-    postdoc_titles = ['Postdoctoral Fellow',
-                      'Postdoctoral Fellow and Communications Lead']
+    postdoc_titles = [
+        "Postdoctoral Fellow",
+        "Postdoctoral Fellow and Communications Lead",
+    ]
 
     #: position titles that indicate a person is a project director
-    director_roles = ['Project Director', 'Co-PI: Research Lead']
+    director_roles = ["Project Director", "Co-PI: Research Lead"]
 
     #: position titles that indicate a staff person is a student
-    student_titles = ['Graduate Fellow', 'Graduate Assistant',
-                      'Undergraduate Assistant',
-                      'Postgraduate Research Associate']
+    student_titles = [
+        "Graduate Fellow",
+        "Graduate Assistant",
+        "Undergraduate Assistant",
+        "Postgraduate Research Associate",
+    ]
 
     #: membership roles that indicate someone is an affiliate
-    project_roles = ['Project Director',
-                     'Project Manager', 'Co-PI: Research Lead']
+    project_roles = ["Project Director", "Project Manager", "Co-PI: Research Lead"]
 
     #: student status codes from LDAP
-    student_pu_status = ['graduate', 'undergraduate']
+    student_pu_status = ["graduate", "undergraduate"]
 
     #: executive committee member titles
-    exec_member_title = 'Executive Committee Member'
-    with_exec_title = 'Sits with Executive Committee'
+    exec_member_title = "Executive Committee Member"
+    with_exec_title = "Sits with Executive Committee"
     exec_committee_titles = [exec_member_title, with_exec_title]
 
     def cdh_staff(self):
-        '''Return only CDH staff members'''
+        """Return only CDH staff members"""
         return self.filter(cdh_staff=True)
 
     def student_affiliates(self):
-        '''Return CDH student staff members, grantees, and PGRAs based on
-        Project Director or Project Manager role.'''
-        return self \
-            .filter(models.Q(pu_status__in=self.student_pu_status) |
-                    models.Q(positions__title__title__in=self.student_titles)) \
-            .filter(models.Q(cdh_staff=True) |
-                    models.Q(membership__role__title__in=self.project_roles)) \
+        """Return CDH student staff members, grantees, and PGRAs based on
+        Project Director or Project Manager role."""
+        return (
+            self.filter(
+                models.Q(pu_status__in=self.student_pu_status)
+                | models.Q(positions__title__title__in=self.student_titles)
+            )
+            .filter(
+                models.Q(cdh_staff=True)
+                | models.Q(membership__role__title__in=self.project_roles)
+            )
             .exclude(pu_status="stf")
+        )
 
     def not_students(self):
-        '''Filter out students based on PU status'''
-        return self \
-            .exclude(pu_status__in=self.student_pu_status)
+        """Filter out students based on PU status"""
+        return self.exclude(pu_status__in=self.student_pu_status)
 
     def affiliates(self):
-        '''Faculty and staff affiliates based on PU status and Project Director
-        project role. Excludes CDH staff.'''
-        return self.filter(pu_status__in=('fac', 'stf'),
-                           membership__role__title__in=self.director_roles) \
-            .exclude(cdh_staff=True)
+        """Faculty and staff affiliates based on PU status and Project Director
+        project role. Excludes CDH staff."""
+        return self.filter(
+            pu_status__in=("fac", "stf"),
+            membership__role__title__in=self.director_roles,
+        ).exclude(cdh_staff=True)
 
     def executive_committee(self):
-        '''Executive committee members; based on position title.'''
+        """Executive committee members; based on position title."""
         return self.filter(positions__title__title__in=self.exec_committee_titles)
 
     def exec_member(self):
-        '''Executive committee members'''
+        """Executive committee members"""
         return self.filter(positions__title__title=self.exec_member_title)
 
     def sits_with_exec(self):
-        '''Non-faculty Executive committee members'''
+        """Non-faculty Executive committee members"""
         return self.filter(positions__title__title=self.with_exec_title)
 
     def grant_years(self):
-        '''Annotate with first start and last end grant year for grants
-        that a person was project director.'''
+        """Annotate with first start and last end grant year for grants
+        that a person was project director."""
         # NOTE: filters within the aggregation query on project director
         # but not on the entire query so that e.g. on the students
         # page student staff without grants are still included
         return self.annotate(
-            first_start=models.Min(models.Case(
-                models.When(membership__role__title__in=self.director_roles,
-                            then='membership__start_date'))),
-            last_end=models.Max(models.Case(
-                models.When(membership__role__title__in=self.director_roles,
-                            then='membership__end_date'))))
+            first_start=models.Min(
+                models.Case(
+                    models.When(
+                        membership__role__title__in=self.director_roles,
+                        then="membership__start_date",
+                    )
+                )
+            ),
+            last_end=models.Max(
+                models.Case(
+                    models.When(
+                        membership__role__title__in=self.director_roles,
+                        then="membership__end_date",
+                    )
+                )
+            ),
+        )
 
     def project_manager_years(self):
-        '''Annotate with first start and last end grant year for grants
-        that a person was project manager.'''
+        """Annotate with first start and last end grant year for grants
+        that a person was project manager."""
         # NOTE: filters within the aggregation query on project manager
         # but not on the entire query so that e.g. on the students
         # page student staff without grants are still included
         return self.annotate(
-            pm_start=models.Min(models.Case(
-                models.When(membership__role__title='Project Manager',
-                            then='membership__start_date'))),
-            pm_end=models.Max(models.Case(
-                models.When(membership__role__title='Project Manager',
-                            then='membership__end_date'))))
+            pm_start=models.Min(
+                models.Case(
+                    models.When(
+                        membership__role__title="Project Manager",
+                        then="membership__start_date",
+                    )
+                )
+            ),
+            pm_end=models.Max(
+                models.Case(
+                    models.When(
+                        membership__role__title="Project Manager",
+                        then="membership__end_date",
+                    )
+                )
+            ),
+        )
 
     def _current_position_query(self):
         # query to find a person with a current cdh position
         # person *has* a position and it has no end date or date after today
-        return (
-            models.Q(positions__isnull=False) &
-            (models.Q(positions__end_date__isnull=True) |
-             models.Q(positions__end_date__gte=date.today())
-             )
+        return models.Q(positions__isnull=False) & (
+            models.Q(positions__end_date__isnull=True)
+            | models.Q(positions__end_date__gte=date.today())
         )
 
     def _current_project_member_query(self):
         today = timezone.now()
         return (
             # in one of the allowed roles (project director/project manager)
-            models.Q(membership__role__title__in=self.project_roles) &
+            models.Q(membership__role__title__in=self.project_roles)
+            &
             # current based on membership dates
             (
-                models.Q(membership__start_date__lte=today) &
-                (models.Q(membership__end_date__gte=today) |
-                 models.Q(membership__end_date__isnull=True))
+                models.Q(membership__start_date__lte=today)
+                & (
+                    models.Q(membership__end_date__gte=today)
+                    | models.Q(membership__end_date__isnull=True)
+                )
             )
         )
 
     def current(self):
-        '''Return people with a current position or current grant based on
-        start and end dates.'''
+        """Return people with a current position or current grant based on
+        start and end dates."""
         # annotate with an is_current flag to make template logic simpler
-        return self.filter(models.Q(self._current_position_query()) |
-                           models.Q(self._current_project_member_query())) \
-                   .extra(select={'is_current': True})
+        return self.filter(
+            models.Q(self._current_position_query())
+            | models.Q(self._current_project_member_query())
+        ).extra(select={"is_current": True})
         # NOTE: couldn't get annotate to work
         # .annotate(is_current=models.Value(True, output_field=models.BooleanField))
 
     def current_grant(self):
-        '''Return profiles for users with a current grant.'''
+        """Return profiles for users with a current grant."""
         return self.filter(self._current_project_member_query())
 
     def current_position(self):
-        '''Return profiles for users with a current position.'''
+        """Return profiles for users with a current position."""
         return self.filter(self._current_position_query())
 
     def current_position_nonexec(self):
-        '''Return profiles for users with a current position, excluding
-        executive committee positions.'''
-        return self.filter(models.Q(self._current_position_query()) &
-                           ~models.Q(positions__title__title__in=self.exec_committee_titles))
+        """Return profiles for users with a current position, excluding
+        executive committee positions."""
+        return self.filter(
+            models.Q(self._current_position_query())
+            & ~models.Q(positions__title__title__in=self.exec_committee_titles)
+        )
 
     def order_by_position(self):
-        '''order by job title sort order and then by start date'''
+        """order by job title sort order and then by start date"""
         # annotate to avoid duplicates in the queryset due to multiple positions
         # sort on highest position title (= lowest number) and earliest start date (may
         # not be from the same position)
-        return self.annotate(min_title=models.Min('positions__title__sort_order'),
-                             min_start=models.Min('positions__start_date')) \
-            .order_by('min_title', 'min_start', 'last_name')
+        return self.annotate(
+            min_title=models.Min("positions__title__sort_order"),
+            min_start=models.Min("positions__start_date"),
+        ).order_by("min_title", "min_start", "last_name")
 
 
 class Person(ClusterableModel):
     # in cdhweb 2.x this was a proxy model for User;
     # in 3.x it is a distinct model with 1-1 optional relationship to User
-    first_name = models.CharField('first name', max_length=150)
-    last_name = models.CharField('last name', max_length=150)
+    first_name = models.CharField("first name", max_length=150)
+    last_name = models.CharField("last name", max_length=150)
     email = models.EmailField(null=True, blank=True)
     user = models.OneToOneField(
         User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        help_text='Corresponding user account for this person (optional)'
+        help_text="Corresponding user account for this person (optional)",
     )
     cdh_staff = models.BooleanField(
-        'CDH Staff',
-        default=False,
-        help_text='CDH staff or Postdoctoral Fellow.')
+        "CDH Staff", default=False, help_text="CDH staff or Postdoctoral Fellow."
+    )
     job_title = models.CharField(
-        max_length=255, blank=True,
-        help_text='Professional title, e.g. Professor or Assistant Professor')
+        max_length=255,
+        blank=True,
+        help_text="Professional title, e.g. Professor or Assistant Professor",
+    )
     department = models.CharField(
-        max_length=255, blank=True,
-        help_text='Academic Department at Princeton or other institution')
+        max_length=255,
+        blank=True,
+        help_text="Academic Department at Princeton or other institution",
+    )
     institution = models.CharField(
-        max_length=255, blank=True,
-        help_text='Institutional affiliation (for people not associated with Princeton)')
+        max_length=255,
+        blank=True,
+        help_text="Institutional affiliation (for people not associated with Princeton)",
+    )
     phone_number = models.CharField(
-        max_length=50, blank=True, help_text="Office phone number")
+        max_length=50, blank=True, help_text="Office phone number"
+    )
     office_location = models.CharField(
-        max_length=255, blank=True, help_text="Office number and building")
+        max_length=255, blank=True, help_text="Office number and building"
+    )
 
     PU_STATUS_CHOICES = (
-        ('fac', 'Faculty'),
-        ('stf', 'Staff'),
-        ('graduate', 'Graduate Student'),
-        ('undergraduate', 'Undergraduate Student'),
-        ('external', 'Not associated with Princeton')
+        ("fac", "Faculty"),
+        ("stf", "Staff"),
+        ("graduate", "Graduate Student"),
+        ("undergraduate", "Undergraduate Student"),
+        ("external", "Not associated with Princeton"),
     )
-    pu_status = models.CharField('Princeton Status', choices=PU_STATUS_CHOICES,
-                                 max_length=15, blank=True, default='')
+    pu_status = models.CharField(
+        "Princeton Status",
+        choices=PU_STATUS_CHOICES,
+        max_length=15,
+        blank=True,
+        default="",
+    )
 
-    image = models.ForeignKey('wagtailimages.image', null=True,
-                              blank=True, on_delete=models.SET_NULL,
-                              related_name='+')  # no reverse relationship
+    image = models.ForeignKey(
+        "wagtailimages.image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )  # no reverse relationship
 
     #: update timestamp
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
@@ -241,23 +304,27 @@ class Person(ClusterableModel):
     # wagtail admin setup
     panels = [
         ImageChooserPanel("image"),
-        FieldRowPanel((FieldPanel("first_name"),
-                       FieldPanel("last_name")), "Name"),
+        FieldRowPanel((FieldPanel("first_name"), FieldPanel("last_name")), "Name"),
         FieldPanel("user"),
-        FieldRowPanel((FieldPanel("pu_status"),
-                       FieldPanel("cdh_staff")), "Status"),
-        MultiFieldPanel((
-            FieldPanel("job_title"),
-            FieldPanel("department"),
-            FieldPanel("institution"),
-        ), heading="Employment"),
-        MultiFieldPanel((
-            FieldPanel("phone_number"),
-            FieldPanel("email"),
-            FieldPanel("office_location"),
-        ), heading="Contact"),
+        FieldRowPanel((FieldPanel("pu_status"), FieldPanel("cdh_staff")), "Status"),
+        MultiFieldPanel(
+            (
+                FieldPanel("job_title"),
+                FieldPanel("department"),
+                FieldPanel("institution"),
+            ),
+            heading="Employment",
+        ),
+        MultiFieldPanel(
+            (
+                FieldPanel("phone_number"),
+                FieldPanel("email"),
+                FieldPanel("office_location"),
+            ),
+            heading="Contact",
+        ),
         InlinePanel("positions", heading="Positions"),
-        InlinePanel("related_links", heading="Related Links")
+        InlinePanel("related_links", heading="Related Links"),
     ]
 
     # custom manager for querying
@@ -305,12 +372,14 @@ class Person(ClusterableModel):
 
     @property
     def latest_grant(self):
-        '''most recent grants where this person has director role'''
+        """most recent grants where this person has director role"""
         # find projects where they are director, then get newest grant
         # that overlaps with their directorship dates
-        mship = self.membership_set \
-            .filter(role__title__in=PersonQuerySet.director_roles) \
-            .order_by('-start_date').first()
+        mship = (
+            self.membership_set.filter(role__title__in=PersonQuerySet.director_roles)
+            .order_by("-start_date")
+            .first()
+        )
         # if there is one, find the most recent grant overlapping with their
         # directorship dates
         if mship:
@@ -322,14 +391,17 @@ class Person(ClusterableModel):
             # a membership might have no end date set, in which
             # case it can't be used in a filter — if grant has no end date,
             # it's an automatic overlap
-            grant_overlap = models.Q(end_date__gte=mship.start_date) | \
-                            models.Q(end_date__isnull=True)
+            grant_overlap = models.Q(end_date__gte=mship.start_date) | models.Q(
+                end_date__isnull=True
+            )
             if mship.end_date:
                 grant_overlap &= models.Q(start_date__lte=mship.end_date)
 
-            return mship.project.grants \
-                .filter(grant_overlap) \
-                .order_by('-start_date').first()
+            return (
+                mship.project.grants.filter(grant_overlap)
+                .order_by("-start_date")
+                .first()
+            )
 
     @property
     def profile_url(self):
@@ -357,21 +429,28 @@ def cleanup_profile(sender, **kwargs):
 
 class Profile(BasePage):
     """Profile page for a Person, managed via wagtail."""
+
     person = models.OneToOneField(
-        Person, help_text="Corresponding person for this profile",
-        null=True, on_delete=models.SET_NULL)
-    image = models.ForeignKey('wagtailimages.image', null=True,
-                              blank=True, on_delete=models.SET_NULL,
-                              related_name='+')  # no reverse relationship
+        Person,
+        help_text="Corresponding person for this profile",
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+    image = models.ForeignKey(
+        "wagtailimages.image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )  # no reverse relationship
     education = RichTextField(features=PARAGRAPH_FEATURES, blank=True)
 
     # admin edit configuration
     content_panels = Page.content_panels + [
-        FieldRowPanel(
-            (FieldPanel("person"), ImageChooserPanel("image")), "Person"),
+        FieldRowPanel((FieldPanel("person"), ImageChooserPanel("image")), "Person"),
         FieldPanel("education"),
         StreamFieldPanel("body"),
-        StreamFieldPanel("attachments")
+        StreamFieldPanel("attachments"),
     ]
 
     parent_page_types = ["people.PeopleLandingPage"]
@@ -382,10 +461,12 @@ class Profile(BasePage):
         context = super().get_context(request)
         # get 3 most recent published posts with this person as author;
         # add to context and set open graph metadata
-        context.update({
-            "opengraph_type": "profile",
-            "recent_posts": self.person.posts.live().recent()[:3]
-        })
+        context.update(
+            {
+                "opengraph_type": "profile",
+                "recent_posts": self.person.posts.live().recent()[:3],
+            }
+        )
         return context
 
     def clean(self):
@@ -402,6 +483,7 @@ class Profile(BasePage):
 
 class PeopleLandingPage(LandingPage):
     """LandingPage subtype for People that holds Profiles."""
+
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []
@@ -413,22 +495,22 @@ class PeopleLandingPage(LandingPage):
 
 
 class Position(DateRange):
-    '''Through model for many-to-many relation between people
-    and titles.  Adds start and end dates to the join table.'''
-    person = ParentalKey(Person, on_delete=models.CASCADE,
-                         related_name="positions")
+    """Through model for many-to-many relation between people
+    and titles.  Adds start and end dates to the join table."""
+
+    person = ParentalKey(Person, on_delete=models.CASCADE, related_name="positions")
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['-start_date']
+        ordering = ["-start_date"]
 
     def __str__(self):
-        return '%s %s (%s)' % (self.person, self.title, self.start_date.year)
+        return "%s %s (%s)" % (self.person, self.title, self.start_date.year)
 
 
 def init_person_from_ldap(user, ldapinfo):
-    '''Extra User init logic for creating and auto-populating a corresponding
-    Person with data from LDAP.'''
+    """Extra User init logic for creating and auto-populating a corresponding
+    Person with data from LDAP."""
 
     # update User to use ldap email
     user.email = user.email.lower()
@@ -471,10 +553,10 @@ def init_person_from_ldap(user, ldapinfo):
 
 
 class PersonRelatedLink(RelatedLink):
-    '''Through-model for associating people with resource types and
-    corresponding URLs for the specified resource type.'''
-    person = ParentalKey(Person, on_delete=models.CASCADE,
-                         related_name="related_links")
+    """Through-model for associating people with resource types and
+    corresponding URLs for the specified resource type."""
+
+    person = ParentalKey(Person, on_delete=models.CASCADE, related_name="related_links")
 
     def __str__(self):
         return "%s – %s (%s)" % (self.person, self.type, self.display_url)

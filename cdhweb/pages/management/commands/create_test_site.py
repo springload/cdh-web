@@ -2,19 +2,19 @@ from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 
 from cdhweb.conftest import (
-    make_wagtail_site,
-    make_homepage,
-    make_landing_page,
-    make_content_page,
-    make_projects_landing_page,
-    make_projects,
-    make_people_landing_page,
-    make_people,
-    make_staffer_profile,
-    make_events_link_page,
-    make_events,
     make_blog_link_page,
     make_blog_posts,
+    make_content_page,
+    make_events,
+    make_events_link_page,
+    make_homepage,
+    make_landing_page,
+    make_people,
+    make_people_landing_page,
+    make_projects,
+    make_projects_landing_page,
+    make_staffer_profile,
+    make_wagtail_site,
 )
 
 
@@ -22,7 +22,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Fill the database with models to approximate a real site."""
         # NOTE not idempotent! running more than once will duplicate models.
-        
+
         # set default django site (not wagtail site) domain so sitemaps work
         django_site = Site.objects.get()
         django_site.domain = "localhost:8000"

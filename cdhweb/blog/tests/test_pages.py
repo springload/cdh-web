@@ -1,26 +1,27 @@
 import pytest
-
 from wagtail.tests.utils import WagtailPageTests
 
 from cdhweb.blog.models import BlogLinkPage, BlogPost
 
 
 class TestBlogPost:
-
     def test_short_title(self, article):
         """blog post should truncate title to 65char with ellipsis"""
         # article fixture has a long title
-        assert article.short_title == \
-            "We wrote an article together, and it got published on the CDH we…"
+        assert (
+            article.short_title
+            == "We wrote an article together, and it got published on the CDH we…"
+        )
 
     def test_short_description(self, article):
         """blog post should truncate description to 250char with ellipsis"""
         # article fixture has a long description
-        assert article.short_description == \
-            ("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-             "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut "
-             "enim ad minim veniam, quis nostrud exercitation ullamco laboris "
-             "nisi ut aliquip ex ea commodo con…")
+        assert article.short_description == (
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
+            "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut "
+            "enim ad minim veniam, quis nostrud exercitation ullamco laboris "
+            "nisi ut aliquip ex ea commodo con…"
+        )
 
     def test_author_list(self, article, staffer, postdoc):
         """blog post should list author names in order"""
@@ -38,8 +39,10 @@ class TestBlogPost:
 
     def test_str(self, article):
         """blog post should display as title + formatted date"""
-        assert str(article) == \
-            "\"We wrote an article together, and it got published on the CDH we…\" (March 4, 2019)"
+        assert (
+            str(article)
+            == '"We wrote an article together, and it got published on the CDH we…" (March 4, 2019)'
+        )
 
     def test_get_url(self, article):
         """blog post should be accessed via custom url with y/m/d info"""
@@ -59,8 +62,8 @@ class TestBlogPost:
         sitemap_urls = article.get_sitemap_urls(request=request)
         assert sitemap_urls[0]["priority"] == 0.6
 
-class TestBlogPostPage(WagtailPageTests):
 
+class TestBlogPostPage(WagtailPageTests):
     def test_subpage_types(self):
         """blog posts can't have children"""
         self.assertAllowedSubpageTypes(BlogPost, [])

@@ -13,13 +13,17 @@ from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
-from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
-                                         InlinePanel, MultiFieldPanel,
-                                         StreamFieldPanel)
+from wagtail.admin.edit_handlers import (
+    FieldPanel,
+    FieldRowPanel,
+    InlinePanel,
+    MultiFieldPanel,
+    StreamFieldPanel,
+)
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import LinkPage, BasePage
+from cdhweb.pages.models import BasePage, LinkPage
 from cdhweb.people.models import Person
 
 
@@ -40,17 +44,23 @@ class EventType(models.Model):
         return self.name
 
     def natural_key(self):
-        return (self.name, )
+        return (self.name,)
 
 
 class Location(models.Model):
-    name = models.CharField(max_length=255,
-                            help_text='Name of the location')
+    name = models.CharField(max_length=255, help_text="Name of the location")
     short_name = models.CharField(max_length=80, blank=True)
-    address = models.CharField(max_length=255, null=True, blank=True,
-                               help_text='Address of the location (will not display if same as name)')
-    is_virtual = models.BooleanField(verbose_name="Virtual",
-                                     default=False, help_text='Virtual platforms, i.e. Zoom or Google Hangouts')
+    address = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="Address of the location (will not display if same as name)",
+    )
+    is_virtual = models.BooleanField(
+        verbose_name="Virtual",
+        default=False,
+        help_text="Virtual platforms, i.e. Zoom or Google Hangouts",
+    )
 
     def __str__(self):
         return self.short_name or self.name
@@ -60,9 +70,9 @@ class Location(models.Model):
 
     @property
     def display_name(self):
-        '''A name for template display'''
+        """A name for template display"""
         if self.name and self.address and self.name != self.address:
-            return ', '.join([self.name, self.address])
+            return ", ".join([self.name, self.address])
         return self.name
 
     def clean(self):
@@ -72,24 +82,25 @@ class Location(models.Model):
 
 
 class EventQuerySet(PageQuerySet):
-
     def upcoming(self):
-        '''Find upcoming events. Includes events that end on the current
-        day even if the start time is past.'''
+        """Find upcoming events. Includes events that end on the current
+        day even if the start time is past."""
         now = timezone.now()
         # construct a datetime based on now but with zero hour/minute/second
-        today = datetime(now.year, now.month, now.day,
-                         tzinfo=timezone.get_default_timezone())
+        today = datetime(
+            now.year, now.month, now.day, tzinfo=timezone.get_default_timezone()
+        )
         return self.filter(end_time__gte=today)
 
     def recent(self):
-        '''Find past events, most recent first.  Only includes events
-        with end date in the past.'''
+        """Find past events, most recent first.  Only includes events
+        with end date in the past."""
         now = timezone.now()
         # construct a datetime based on now but with zero hour/minute/second
-        today = datetime(now.year, now.month, now.day,
-                         tzinfo=timezone.get_default_timezone())
-        return self.filter(end_time__lt=today).order_by('-start_time')
+        today = datetime(
+            now.year, now.month, now.day, tzinfo=timezone.get_default_timezone()
+        )
+        return self.filter(end_time__lt=today).order_by("-start_time")
 
 
 # custom manager for wagtail pages, see:
@@ -99,12 +110,15 @@ EventManager = PageManager.from_queryset(EventQuerySet)
 
 class EventTag(TaggedItemBase):
     """Tags for Event pages."""
+
     content_object = ParentalKey(
-        "events.Event", on_delete=models.CASCADE, related_name="tagged_items")
+        "events.Event", on_delete=models.CASCADE, related_name="tagged_items"
+    )
 
 
 class Speaker(models.Model):
     """Relationship between Person and Event."""
+
     event = ParentalKey("events.Event", related_name="speakers")
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     panels = [FieldPanel("person")]
@@ -123,21 +137,38 @@ class Event(BasePage, ClusterableModel):
     sponsor = models.CharField(max_length=80, null=True, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    location = models.ForeignKey(Location, null=True, blank=True,
-                                 on_delete=models.SET_NULL)
+    location = models.ForeignKey(
+        Location, null=True, blank=True, on_delete=models.SET_NULL
+    )
     type = models.ForeignKey(EventType, null=True, on_delete=models.SET_NULL)
-    attendance = models.PositiveIntegerField(null=True, blank=True,
-                                             help_text="Total number of people who attended the event. (Internal only, for reporting purposes.)")
-    join_url = models.URLField(verbose_name="Join URL", null=True, blank=True,
-                               help_text="Join URL for virtual events, e.g. Zoom meetings.")
-    image = models.ForeignKey("wagtailimages.image", null=True, blank=True,
-                              on_delete=models.SET_NULL, related_name="+",
-                              help_text="Image for display on event detail page (optional)")
-    thumbnail = models.ForeignKey("wagtailimages.image", null=True, blank=True,
-                                  on_delete=models.SET_NULL, related_name="+",
-                                  help_text="Image for display on event card (optional)")
-    people = models.ManyToManyField(Person, through=Speaker,
-                                    related_name='events')
+    attendance = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Total number of people who attended the event. (Internal only, for reporting purposes.)",
+    )
+    join_url = models.URLField(
+        verbose_name="Join URL",
+        null=True,
+        blank=True,
+        help_text="Join URL for virtual events, e.g. Zoom meetings.",
+    )
+    image = models.ForeignKey(
+        "wagtailimages.image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Image for display on event detail page (optional)",
+    )
+    thumbnail = models.ForeignKey(
+        "wagtailimages.image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Image for display on event card (optional)",
+    )
+    people = models.ManyToManyField(Person, through=Speaker, related_name="events")
     tags = ClusterTaggableManager(through=EventTag, blank=True)
     # TODO attachments (#245)
 
@@ -149,22 +180,20 @@ class Event(BasePage, ClusterableModel):
     # admin edit configuration
     content_panels = Page.content_panels + [
         FieldPanel("type"),
-        FieldRowPanel((FieldPanel("start_time"),
-                       FieldPanel("end_time")), "Details"),
+        FieldRowPanel((FieldPanel("start_time"), FieldPanel("end_time")), "Details"),
         FieldPanel("location"),
         FieldPanel("join_url"),
-        FieldRowPanel((FieldPanel("sponsor"),
-                       FieldPanel("attendance")), "Tracking"),
-        FieldRowPanel((ImageChooserPanel("thumbnail"),
-                       ImageChooserPanel("image")), "Images"),
+        FieldRowPanel((FieldPanel("sponsor"), FieldPanel("attendance")), "Tracking"),
+        FieldRowPanel(
+            (ImageChooserPanel("thumbnail"), ImageChooserPanel("image")), "Images"
+        ),
         MultiFieldPanel(
-            (InlinePanel("speakers", label="Speaker"),), heading="Speakers"),
+            (InlinePanel("speakers", label="Speaker"),), heading="Speakers"
+        ),
         StreamFieldPanel("body"),
-        StreamFieldPanel("attachments")
+        StreamFieldPanel("attachments"),
     ]
-    promote_panels = Page.promote_panels + [
-        FieldPanel("tags")
-    ]
+    promote_panels = Page.promote_panels + [FieldPanel("tags")]
 
     # custom manager/queryset logic
     objects = EventManager()
@@ -194,27 +223,35 @@ class Event(BasePage, ClusterableModel):
         # happens in QA, not locally.
         if url_parts:
             site_id, root_url, _ = url_parts
-            page_path = reverse("events:detail", kwargs={
-                "year": self.start_time.year,
-                # force two-digit month
-                "month": "%02d" % self.start_time.month,
-                "slug": self.slug,
-            })
+            page_path = reverse(
+                "events:detail",
+                kwargs={
+                    "year": self.start_time.year,
+                    # force two-digit month
+                    "month": "%02d" % self.start_time.month,
+                    "slug": self.slug,
+                },
+            )
             return site_id, root_url, page_path
 
     def get_ical_url(self):
         """URL to download this event as a .ics (iCal) file."""
-        return reverse('events:ical', kwargs={
-            'year': self.start_time.year,
-            # force two-digit month
-            'month': '%02d' % self.start_time.month,
-            'slug': self.slug})
+        return reverse(
+            "events:ical",
+            kwargs={
+                "year": self.start_time.year,
+                # force two-digit month
+                "month": "%02d" % self.start_time.month,
+                "slug": self.slug,
+            },
+        )
 
     def is_virtual(self):
         """If an event takes place in a virtual location, it is virtual"""
         if self.location:
             return self.location.is_virtual
         return False
+
     is_virtual.boolean = True
     is_virtual.short_description = "Virtual"
 
@@ -231,8 +268,9 @@ class Event(BasePage, ClusterableModel):
         # convert dates to local timezone for display
         local_start = self.start_time.astimezone(local_tz)
         local_end = self.end_time.astimezone(local_tz)
-        start = " ".join([local_start.strftime("%b %d"),
-                          local_start.strftime("%-I:%M")])
+        start = " ".join(
+            [local_start.strftime("%b %d"), local_start.strftime("%-I:%M")]
+        )
         start_ampm = local_start.strftime("%p")
         # include start am/pm if *different* from end
         if start_ampm != local_end.strftime("%p"):
@@ -268,13 +306,13 @@ class Event(BasePage, ClusterableModel):
                 event.add("location", self.join_url)
             else:
                 event.add("location", self.location.display_name)
-        event.add("description",
-                  "\n".join([strip_tags(self.body), "", absurl]))
+        event.add("description", "\n".join([strip_tags(self.body), "", absurl]))
         return event
 
 
 class EventsLinkPage(LinkPage):
     """Container page that defines where Project pages can be created."""
+
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []

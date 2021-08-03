@@ -1,13 +1,12 @@
-from django.utils.timezone import localtime
 from django.template.defaultfilters import date
 from django.urls import reverse
+from django.utils.timezone import localtime
 from pytest_django.asserts import assertContains, assertNotContains
 
 from cdhweb.pages.models import PageIntro
 
 
 class TestEventDetailTemplate:
-
     def test_event_title(self, client, workshop):
         """event detail page should include event title"""
         response = client.get(workshop.get_url())
@@ -21,8 +20,8 @@ class TestEventDetailTemplate:
     def test_speakers(self, client, lecture):
         """event detail page should list info for all event speakers"""
         response = client.get(lecture.get_url())
-        assertContains(response, "john lecturer")           # name
-        assertContains(response, "princeton university")    # affiliation
+        assertContains(response, "john lecturer")  # name
+        assertContains(response, "princeton university")  # affiliation
 
     def test_event_type(self, client, workshop):
         """event detail page should include event type"""
@@ -44,16 +43,20 @@ class TestEventDetailTemplate:
     def test_location(self, client, workshop):
         """event detail page should include location of event"""
         response = client.get(workshop.get_url())
-        assertContains(response,
-                       '<span property="schema:name">Center for Digital Humanities</span>',
-                       html=True)
+        assertContains(
+            response,
+            '<span property="schema:name">Center for Digital Humanities</span>',
+            html=True,
+        )
 
     def test_address(self, client, workshop):
         """event detail page should include address for non-virtual event"""
         response = client.get(workshop.get_url())
-        assertContains(response,
-                       '<div property="schema:address">Floor B, Firestone Library</div>',
-                       html=True)
+        assertContains(
+            response,
+            '<div property="schema:address">Floor B, Firestone Library</div>',
+            html=True,
+        )
 
     def test_address(self, client, lecture):
         """event detail page should include join url for virtual event"""
@@ -67,17 +70,15 @@ class TestEventDetailTemplate:
 
 
 class TestEventArchiveTemplate:
-
     def test_title(self, client, events):
         """event archive page should display archive title"""
         # upcoming (default)
         response = client.get(reverse("events:upcoming"))
         assertContains(response, "<h1>Upcoming Events</h1>", html=True)
         # semester view
-        response = client.get(reverse("events:by-semester", kwargs={
-            "semester": "spring",
-            "year": "2017"
-        }))
+        response = client.get(
+            reverse("events:by-semester", kwargs={"semester": "spring", "year": "2017"})
+        )
         assertContains(response, "<h1>Spring 2017 Events</h1>", html=True)
 
     def test_no_events(self, db, client):
@@ -128,8 +129,7 @@ class TestEventArchiveTemplate:
     def test_page_intro(self, client, events_link_page):
         """event archive page should display an intro snippet if set"""
         # create a snippet for the upcoming events page
-        PageIntro.objects.create(page=events_link_page,
-                                 paragraph="<i>test content</i>")
+        PageIntro.objects.create(page=events_link_page, paragraph="<i>test content</i>")
         # visit and check that it renders
         response = client.get(reverse("events:upcoming"))
         assertContains(response, "<i>test content</i>")

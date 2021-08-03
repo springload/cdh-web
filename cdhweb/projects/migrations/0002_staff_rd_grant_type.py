@@ -5,18 +5,19 @@ from django.db import migrations
 
 def create_staff_rd_grant_type(apps, schema_editor):
     # create Staff R&D and postdoc grant types if they do not already exist
-    GrantType = apps.get_model('projects', 'GrantType')
-    GrantType.objects.get_or_create(grant_type='Staff R&D')
-    GrantType.objects.get_or_create(grant_type='Postdoctoral Research Project')
+    GrantType = apps.get_model("projects", "GrantType")
+    GrantType.objects.get_or_create(grant_type="Staff R&D")
+    GrantType.objects.get_or_create(grant_type="Postdoctoral Research Project")
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0001_initial'),
+        ("projects", "0001_initial"),
     ]
 
     operations = [
-        migrations.RunPython(create_staff_rd_grant_type,
-                             reverse_code=migrations.RunPython.noop),
+        migrations.RunPython(
+            create_staff_rd_grant_type, reverse_code=migrations.RunPython.noop
+        ),
     ]
