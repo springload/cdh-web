@@ -78,6 +78,11 @@ class SVGImageBlock(StructBlock):
 
 class BodyContentBlock(StreamBlock):
     '''Common set of blocks available in StreamFields for body text.'''
+
+    EMBED_HELP = """For e.g. videos on YouTube, use the value in the URL bar.
+    For other content, look for an "oEmbed URL" option. For videos from
+    Princeton's Media Central, "oEmbed URL" is in the "Share" menu."""
+
     # NOTE add h2 here so that StreamField content can insert top-level headings
     # (the page title is always h1). However, we don't put it in the config for
     # PARAGRAPH_FEATURES because in some places you shouldn't be allowed to make
@@ -86,7 +91,7 @@ class BodyContentBlock(StreamBlock):
     paragraph = RichTextBlock(features=["h2"] + PARAGRAPH_FEATURES)
     image = CaptionedImageBlock()
     svg_image = SVGImageBlock()
-    embed = EmbedBlock()
+    embed = EmbedBlock(help_text=EMBED_HELP)
     #: used to hold content migrated from mezzanine via a "kitchen-sink"
     #: approach; enable all supported wagtail features.
     #: Should NOT be used when creating new pages.
