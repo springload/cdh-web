@@ -260,7 +260,7 @@ class HomePage(BasePage):
     content_panels = Page.content_panels + [StreamFieldPanel("body")]
 
     parent_page_types = [Page]  # only root
-    subpage_types = ["LandingPage", "ContentPage"]
+    subpage_types = ["LandingPage", "ContentPage", "LinkPage"]
 
     class Meta:
         verbose_name = "Homepage"
