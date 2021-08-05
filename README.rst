@@ -25,12 +25,11 @@ CDH Website
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
-    :target: https://github.com/psf/black
     :alt: "code style Black"
 
- .. image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
-   :target: https://pycqa.github.io/isort/
-   :alt: "imports: isort"
+.. image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
+    :target: https://pycqa.github.io/isort/
+    :alt: "imports: isort"
 
 Python 3.6 / Django 2.2 / Node 10 / PostgreSQL 10
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
