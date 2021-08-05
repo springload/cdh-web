@@ -1,6 +1,16 @@
 CHANGELOG
 =========
 
+3.3
+---
+
+* As a Content Editor, I want existing page links to resolve after I rename or move a page so that I don't have to manually create a redirect.
+* As an Editor, I want to see accessibility checks when I'm logged in or previewing a page so that I will be alerted if something is causing accessibility problems and have guidance about how to fix it.
+* Support embedding Media Central content via oEmbed
+* bugfix: Embed sizing ignores container margins on mobile
+* chore: set up visual regression testing
+* chore: set up black and isort pre-commit hooks
+
 3.2
 ---
 
@@ -95,8 +105,8 @@ CHANGELOG
 * As an admin, I want to add a virtual location to events so that people know they can join remotely.
 * show staff affiliates on affiliates page
 * bugfix: project alums display incorrectly lists members of most recent grant
-* bugfix: blog post links not inside `<div>` don't get link style
-* chore: upgrade django + mezzanine
+* bugfix: blog post links not inside ``<div>`` don't get link style
+* chore: upgrade django & mezzanine
 * chore: remove pa11y-ci
 
 2.6

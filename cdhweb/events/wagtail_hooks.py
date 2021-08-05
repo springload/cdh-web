@@ -1,22 +1,51 @@
-from cdhweb.events.models import Event, EventType, Location
 from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
-from wagtail.contrib.modeladmin.options import (ModelAdmin, ModelAdminGroup,
-                                                modeladmin_register)
+from wagtail.contrib.modeladmin.options import (
+    ModelAdmin,
+    ModelAdminGroup,
+    modeladmin_register,
+)
+
+from cdhweb.events.models import Event, EventType, Location
 
 
 class EventAdmin(ThumbnailMixin, ModelAdmin):
     model = Event
     menu_icon = "date"
-    list_display = ("admin_thumb", "title", "type", "speaker_list",
-                    "start_time", "end_time", "live")
+    list_display = (
+        "admin_thumb",
+        "title",
+        "type",
+        "speaker_list",
+        "start_time",
+        "end_time",
+        "live",
+    )
     list_display_add_buttons = "title"
     list_filter = ("start_time", "end_time", "type")
-    list_export = ("title", "type", "start_time", "end_time", "location", "sponsor",
-                   "speaker_list", "attendance", "join_url", "content", "tags", "updated")
+    list_export = (
+        "title",
+        "type",
+        "start_time",
+        "end_time",
+        "location",
+        "sponsor",
+        "speaker_list",
+        "attendance",
+        "join_url",
+        "content",
+        "tags",
+        "updated",
+    )
     export_filename = "cdhweb-events"
-    search_fields = ("title", "speakers__person__first_name",
-                     "speakers__person__last_name", "body", "type", 
-                     "sponsor", "location")
+    search_fields = (
+        "title",
+        "speakers__person__first_name",
+        "speakers__person__last_name",
+        "body",
+        "type",
+        "sponsor",
+        "location",
+    )
     exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"
     thumb_col_header_text = "thumbnail"

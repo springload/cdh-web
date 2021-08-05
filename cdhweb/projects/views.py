@@ -1,8 +1,8 @@
 from django.urls import reverse
 from django.views.generic.list import ListView
 
-from cdhweb.projects.models import Project
 from cdhweb.pages.views import LastModifiedListMixin
+from cdhweb.projects.models import Project
 
 
 class ProjectListView(ListView, LastModifiedListMixin):
@@ -33,17 +33,19 @@ class ProjectListView(ListView, LastModifiedListMixin):
     def get_context_data(self, *args, **kwargs):
         """Add projects, titles, and navigation to context."""
         context = super().get_context_data(*args, **kwargs)
-        context.update({
-            "current": self.get_current(),
-            "past": self.get_past(),
-            "page_title": self.page_title,
-            "past_title": self.past_title,
-            "archive_nav_urls": (
-                ("Sponsored Projects", reverse("projects:sponsored")),
-                ("Staff Projects", reverse("projects:staff")),
-                ("DH Working Groups", reverse("projects:working-groups")),
-            )
-        })
+        context.update(
+            {
+                "current": self.get_current(),
+                "past": self.get_past(),
+                "page_title": self.page_title,
+                "past_title": self.past_title,
+                "archive_nav_urls": (
+                    ("Sponsored Projects", reverse("projects:sponsored")),
+                    ("Staff Projects", reverse("projects:staff")),
+                    ("DH Working Groups", reverse("projects:working-groups")),
+                ),
+            }
+        )
         return context
 
 
@@ -79,6 +81,6 @@ class WorkingGroupListView(ProjectListView):
     def get_context_data(self, *args, **kwargs):
         """Override so that working groups are never shown as past."""
         context = super().get_context_data(*args, **kwargs)
-        context["current"] = self.object_list   # use cached queryset
+        context["current"] = self.object_list  # use cached queryset
         context["past"] = []
         return context

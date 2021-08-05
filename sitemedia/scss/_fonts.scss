@@ -31,3 +31,11 @@
 */
 
 @include font-face("Lyon Text Web", "/static/fonts/LyonText-Regular-Web", $file-formats: woff2);
+
+
+// Use remote references to proprietary fonts for Percy in CI
+@media only percy {
+        @include font-face("BrownStdBold", "https://cdh.princeton.edu/static/fonts/lineto-brown-bold", bold, $file-formats: woff);
+        @include font-face("BrownStdRegular", "https://cdh.princeton.edu/static/fonts/lineto-brown-regular", $file-formats: woff);
+        @include font-face("Lyon Text Web", "https://cdh.princeton.edu/static/fonts/LyonText-Regular-Web", $file-formats: woff2);
+}

@@ -4,65 +4,74 @@ from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.models import TaggedItemBase
-from wagtail.admin.edit_handlers import (FieldPanel, FieldRowPanel,
-                                         InlinePanel, StreamFieldPanel)
+from wagtail.admin.edit_handlers import (
+    FieldPanel,
+    FieldRowPanel,
+    InlinePanel,
+    StreamFieldPanel,
+)
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 
-from cdhweb.pages.models import (BasePage, DateRange, LandingPage, LinkPage,
-                                 RelatedLink)
+from cdhweb.pages.models import BasePage, DateRange, LandingPage, LinkPage, RelatedLink
 from cdhweb.people.models import Person
 
 
 class ProjectQuerySet(PageQuerySet):
-
     def highlighted(self):
-        '''return projects that are marked as highlighted'''
+        """return projects that are marked as highlighted"""
         return self.filter(highlight=True)
 
     def _current_grant_query(self):
-        '''QuerySet filter to find projects with a current grant,
+        """QuerySet filter to find projects with a current grant,
         based on start date before current date and end date after current
         date or not set.
-        '''
+        """
         today = timezone.now()
-        return (models.Q(grants__start_date__lt=today) &
-                (models.Q(grants__end_date__gt=today) |
-                 models.Q(grants__end_date__isnull=True)))
+        return models.Q(grants__start_date__lt=today) & (
+            models.Q(grants__end_date__gt=today)
+            | models.Q(grants__end_date__isnull=True)
+        )
 
     def current(self):
-        '''Projects with a current grant, based on dates'''
+        """Projects with a current grant, based on dates"""
         return self.filter(self._current_grant_query()).distinct()
 
     def not_current(self):
-        '''Projects with no current grant, based on dates'''
+        """Projects with no current grant, based on dates"""
         return self.exclude(self._current_grant_query())
 
     #: grant types that indicate staff or postdoc project
-    staff_postdoc_grants = ['Staff R&D',
-                            'Staff Project', 'Postdoctoral Research Project']
+    staff_postdoc_grants = [
+        "Staff R&D",
+        "Staff Project",
+        "Postdoctoral Research Project",
+    ]
 
     def staff_or_postdoc(self):
-        '''Staff and postdoc projects, based on grant type'''
-        return self.filter(grants__grant_type__grant_type__in=self.staff_postdoc_grants) \
-            .exclude(working_group=True)
+        """Staff and postdoc projects, based on grant type"""
+        return self.filter(
+            grants__grant_type__grant_type__in=self.staff_postdoc_grants
+        ).exclude(working_group=True)
 
     def not_staff_or_postdoc(self):
-        '''Exclude staff and postdoc projects, based on grant type'''
-        return self.exclude(grants__grant_type__grant_type__in=self.staff_postdoc_grants) \
-            .exclude(working_group=True)
+        """Exclude staff and postdoc projects, based on grant type"""
+        return self.exclude(
+            grants__grant_type__grant_type__in=self.staff_postdoc_grants
+        ).exclude(working_group=True)
 
     def working_groups(self):
-        '''Include only projects with the working group flag set'''
+        """Include only projects with the working group flag set"""
         return self.filter(working_group=True)
 
     def order_by_newest_grant(self):
-        '''order by grant start date, most recent grants first; secondary
-        sort by project title'''
+        """order by grant start date, most recent grants first; secondary
+        sort by project title"""
         # NOTE: using annotation to get just the most recent start date
         # to avoid issues with projects appearing multiple times.
-        return self.annotate(last_start=models.Max('grants__start_date')) \
-                   .order_by('-last_start', 'title')
+        return self.annotate(last_start=models.Max("grants__start_date")).order_by(
+            "-last_start", "title"
+        )
 
 
 # custom manager for wagtail pages, see:
@@ -72,26 +81,50 @@ ProjectManager = PageManager.from_queryset(ProjectQuerySet)
 
 class ProjectTag(TaggedItemBase):
     """Tags for Project pages."""
+
     content_object = ParentalKey(
-        "projects.Project", on_delete=models.CASCADE, related_name="tagged_items")
+        "projects.Project", on_delete=models.CASCADE, related_name="tagged_items"
+    )
 
 
 class Project(BasePage, ClusterableModel):
     """Page type for a CDH sponsored project or working group."""
-    short_description = models.CharField(max_length=255, blank=True,
-                                         help_text="Brief tagline for display on project card in browse view")
-    highlight = models.BooleanField(default=False,
-                                    help_text="Include in randomized project display on the home page.")
-    cdh_built = models.BooleanField("CDH Built", default=False,
-                                    help_text="Project built by CDH Development & Design team.")
+
+    short_description = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Brief tagline for display on project card in browse view",
+    )
+    highlight = models.BooleanField(
+        default=False,
+        help_text="Include in randomized project display on the home page.",
+    )
+    cdh_built = models.BooleanField(
+        "CDH Built",
+        default=False,
+        help_text="Project built by CDH Development & Design team.",
+    )
     working_group = models.BooleanField(
-        "Working Group", default=False, help_text="Project is a long-term collaborative group associated with the CDH.")
-    image = models.ForeignKey('wagtailimages.image', null=True,
-                              blank=True, on_delete=models.SET_NULL,
-                              related_name='+', help_text="Image for display on project detail page (optional)")
-    thumbnail = models.ForeignKey('wagtailimages.image', null=True,
-                                  blank=True, on_delete=models.SET_NULL,
-                                  related_name='+', help_text="Image for display on project card (optional)")
+        "Working Group",
+        default=False,
+        help_text="Project is a long-term collaborative group associated with the CDH.",
+    )
+    image = models.ForeignKey(
+        "wagtailimages.image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Image for display on project detail page (optional)",
+    )
+    thumbnail = models.ForeignKey(
+        "wagtailimages.image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Image for display on project card (optional)",
+    )
     members = models.ManyToManyField(Person, through="Membership")
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
     # TODO attachments (#245)
@@ -103,27 +136,40 @@ class Project(BasePage, ClusterableModel):
 
     # admin edit configuration
     content_panels = Page.content_panels + [
-        FieldRowPanel((FieldPanel("highlight"),
-                       FieldPanel("cdh_built"),
-                       FieldPanel("working_group")), "Settings"),
-        FieldRowPanel((ImageChooserPanel("thumbnail"),
-                       ImageChooserPanel("image")), "Images"),
+        FieldRowPanel(
+            (
+                FieldPanel("highlight"),
+                FieldPanel("cdh_built"),
+                FieldPanel("working_group"),
+            ),
+            "Settings",
+        ),
+        FieldRowPanel(
+            (ImageChooserPanel("thumbnail"), ImageChooserPanel("image")), "Images"
+        ),
         FieldPanel("short_description"),
         StreamFieldPanel("body"),
         InlinePanel("related_links", label="Links"),
-        InlinePanel("grants", panels=[FieldRowPanel((
-            FieldPanel("start_date"), FieldPanel("end_date")
-        )), FieldPanel("grant_type")], label="Grants"),
-        InlinePanel("memberships", panels=[FieldRowPanel((
-            FieldPanel("start_date"),
-            FieldPanel("end_date"))),
-            FieldPanel("person"), FieldPanel("role")
-        ], label="Members"),
-        StreamFieldPanel("attachments")
+        InlinePanel(
+            "grants",
+            panels=[
+                FieldRowPanel((FieldPanel("start_date"), FieldPanel("end_date"))),
+                FieldPanel("grant_type"),
+            ],
+            label="Grants",
+        ),
+        InlinePanel(
+            "memberships",
+            panels=[
+                FieldRowPanel((FieldPanel("start_date"), FieldPanel("end_date"))),
+                FieldPanel("person"),
+                FieldPanel("role"),
+            ],
+            label="Members",
+        ),
+        StreamFieldPanel("attachments"),
     ]
-    promote_panels = Page.promote_panels + [
-        FieldPanel("tags")
-    ]
+    promote_panels = Page.promote_panels + [FieldPanel("tags")]
 
     # custom manager/queryset logic
     objects = ProjectManager()
@@ -155,32 +201,27 @@ class Project(BasePage, ClusterableModel):
         # if the last grant for this project is over, display the team
         # for that grant period
         latest_grant = self.latest_grant()
-        if latest_grant and latest_grant.end_date and \
-           latest_grant.end_date < today:
-            return memberships \
-                .filter(start_date__lte=latest_grant.end_date) \
-                .filter(
-                    models.Q(end_date__gte=latest_grant.start_date) |
-                    models.Q(end_date__isnull=True)
-                )
+        if latest_grant and latest_grant.end_date and latest_grant.end_date < today:
+            return memberships.filter(start_date__lte=latest_grant.end_date).filter(
+                models.Q(end_date__gte=latest_grant.start_date)
+                | models.Q(end_date__isnull=True)
+            )
 
         # otherwise, return current members based on date
-        return memberships \
-            .filter(start_date__lte=today) \
-            .filter(
-                models.Q(end_date__gte=today) |
-                models.Q(end_date__isnull=True)
-            )
+        return memberships.filter(start_date__lte=today).filter(
+            models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
+        )
 
     def alums(self):
         """:class:`PersonQueryset` of past members sorted by last name"""
         # uses people rather than memberships so that we can use distinct()
         # to ensure people aren't counted multiple times for each grant
         # and because we don't care about role (always 'alum')
-        return self.members \
-            .distinct() \
-            .exclude(membership__in=self.current_memberships()) \
+        return (
+            self.members.distinct()
+            .exclude(membership__in=self.current_memberships())
             .order_by("last_name")
+        )
 
     def get_sitemap_urls(self, request):
         """Override sitemap to prioritize projects built by CDH with a website."""
@@ -195,7 +236,8 @@ class Project(BasePage, ClusterableModel):
 
 
 class GrantType(models.Model):
-    '''Model to track kinds of grants'''
+    """Model to track kinds of grants"""
+
     grant_type = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
@@ -203,27 +245,30 @@ class GrantType(models.Model):
 
 
 class Grant(DateRange):
-    '''A specific grant associated with a project'''
-    project = ParentalKey(
-        Project, on_delete=models.CASCADE, related_name="grants")
+    """A specific grant associated with a project"""
+
+    project = ParentalKey(Project, on_delete=models.CASCADE, related_name="grants")
     grant_type = models.ForeignKey(GrantType, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['start_date', 'project']
+        ordering = ["start_date", "project"]
 
     def __str__(self):
-        return '%s: %s (%s)' % (self.project.title, self.grant_type.grant_type,
-                                self.years)
+        return "%s: %s (%s)" % (
+            self.project.title,
+            self.grant_type.grant_type,
+            self.years,
+        )
 
 
 class Role(models.Model):
-    '''A role on a project'''
+    """A role on a project"""
+
     title = models.CharField(max_length=255, unique=True)
-    sort_order = models.PositiveIntegerField(default=0, blank=False,
-                                             null=False)
+    sort_order = models.PositiveIntegerField(default=0, blank=False, null=False)
 
     class Meta:
-        ordering = ['sort_order']
+        ordering = ["sort_order"]
 
     def __str__(self):
         return self.title
@@ -237,33 +282,33 @@ class Role(models.Model):
 
 
 class Membership(DateRange):
-    '''Project membership - joins project, user, and role.'''
-    project = ParentalKey(Project, on_delete=models.CASCADE,
-                          related_name="memberships")
+    """Project membership - joins project, user, and role."""
+
+    project = ParentalKey(Project, on_delete=models.CASCADE, related_name="memberships")
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ('role', 'person')
+        ordering = ("role", "person")
 
     # admin edit configuration
     panels = [
-        FieldRowPanel((FieldPanel("start_date"),
-                       FieldPanel("end_date")), "Dates"),
+        FieldRowPanel((FieldPanel("start_date"), FieldPanel("end_date")), "Dates"),
         FieldPanel("person"),
         FieldPanel("role"),
         FieldPanel("project"),
     ]
 
     def __str__(self):
-        return '%s - %s on %s (%s)' % (self.person, self.role,
-                                       self.project, self.years)
+        return "%s - %s on %s (%s)" % (self.person, self.role, self.project, self.years)
 
 
 class ProjectRelatedLink(RelatedLink):
-    '''Through-model for associating projects with relatedlinks'''
-    project = ParentalKey(Project, on_delete=models.CASCADE,
-                          related_name="related_links")
+    """Through-model for associating projects with relatedlinks"""
+
+    project = ParentalKey(
+        Project, on_delete=models.CASCADE, related_name="related_links"
+    )
 
     def __str__(self):
         return "%s – %s (%s)" % (self.project, self.type, self.display_url)
@@ -271,6 +316,7 @@ class ProjectRelatedLink(RelatedLink):
 
 class ProjectsLandingPage(LandingPage):
     """Container page that defines where Project pages can be created."""
+
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []

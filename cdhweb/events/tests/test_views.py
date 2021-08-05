@@ -11,7 +11,6 @@ from cdhweb.events.views import EventSemesterDates
 
 
 class TestEventDetailView:
-
     def test_url(self, client, workshop):
         """should serve event via custom url with year, month and slug"""
         # check that year, month, and slug are in URL
@@ -37,13 +36,14 @@ class TestEventDetailView:
 
 
 class TestEventIcalView:
-
     def test_ical_response(self, client, workshop):
         """should create iCalendar format file from event"""
         response = client.get(workshop.get_ical_url())
         assert response["Content-Type"] == "text/calendar"
-        assert response["Content-Disposition"] == \
-            'attachment; filename="%s.ics"' % workshop.slug
+        assert (
+            response["Content-Disposition"]
+            == 'attachment; filename="%s.ics"' % workshop.slug
+        )
         # parsable as ical calendar
         cal = icalendar.Calendar.from_ical(response.content)
         # includes the requested event
@@ -51,7 +51,6 @@ class TestEventIcalView:
 
 
 class TestUpcomingEventsView:
-
     def test_no_events(self, db, client):
         """should display message and not error if no events"""
         response = client.get(reverse("events:upcoming"))
@@ -73,26 +72,22 @@ class TestUpcomingEventsView:
 
 
 class TestEventSemesterArchiveView:
-
     def test_no_events(self, db, client):
         """should 404 if no events for requested semester"""
-        response = client.get(
-            reverse("events:by-semester", args=["spring", 2099]))
+        response = client.get(reverse("events:by-semester", args=["spring", 2099]))
         assert response.status_code == 404
 
     def test_event_archive(self, client, events):
         """should display all events from requested semester"""
         # request spring 2017 only; should see course
-        response = client.get(
-            reverse("events:by-semester", args=["spring", 2017]))
+        response = client.get(reverse("events:by-semester", args=["spring", 2017]))
         assert events["course"] in response.context["events"]
         assert events["workshop"] not in response.context["events"]
         assert events["lecture"] not in response.context["events"]
         assert events["deadline"] not in response.context["events"]
 
         # request fall 2017; no events were in that semester
-        response = client.get(
-            reverse("events:by-semester", args=["fall", 2017]))
+        response = client.get(reverse("events:by-semester", args=["fall", 2017]))
         assert events["course"] not in response.context["events"]
         assert events["workshop"] not in response.context["events"]
         assert events["lecture"] not in response.context["events"]

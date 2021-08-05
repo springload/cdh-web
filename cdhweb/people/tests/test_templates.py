@@ -6,12 +6,10 @@ from django.test import TestCase
 from wagtail.core.models import Page, Site
 
 from cdhweb.pages.models import HomePage
-from cdhweb.people.models import (PeopleLandingPage, Person, Position,
-                                  Profile, Title)
+from cdhweb.people.models import PeopleLandingPage, Person, Position, Profile, Title
 
 
 class TestProfile(TestCase):
-
     def setUp(self):
         """create example user/person/profile and testing client"""
         # set up wagtail page tree
@@ -42,7 +40,7 @@ class TestProfile(TestCase):
             title="tom r. jones",
             slug="tom-jones",
             education="<ul><li>college dropout</li></ul>",
-            body=json.dumps([{"type": "paragraph", "value": "<b>about me</b>"}])
+            body=json.dumps([{"type": "paragraph", "value": "<b>about me</b>"}]),
         )
         lp.add_child(instance=self.profile)
         lp.save()
@@ -66,7 +64,10 @@ class TestProfile(TestCase):
         """profile page should display person's email"""
         response = self.client.get(self.profile.relative_url(self.site))
         self.assertContains(
-            response, '<a href="mailto:tom@princeton.edu">tom@princeton.edu</a>', html=True)
+            response,
+            '<a href="mailto:tom@princeton.edu">tom@princeton.edu</a>',
+            html=True,
+        )
 
     def test_missing_email(self):
         """profile page should not display person's email if not set"""
@@ -74,7 +75,7 @@ class TestProfile(TestCase):
         self.person.save()
         response = self.client.get(self.profile.relative_url(self.site))
         self.assertNotContains(response, 'href="mailto')
-        self.assertNotContains(response, 'None')
+        self.assertNotContains(response, "None")
 
     def test_phone_number(self):
         """profile page should display person's phone number"""
@@ -91,15 +92,17 @@ class TestProfile(TestCase):
         # create some positions
         director = Title.objects.create(title="director")
         developer = Title.objects.create(title="developer")
-        Position.objects.create(person=self.person, title=developer,
-                                start_date=datetime.date(2021, 1, 1))
-        Position.objects.create(person=self.person, title=director,
-                                start_date=datetime.date(2020, 1, 1),
-                                end_date=datetime.date(2020, 10, 1))
+        Position.objects.create(
+            person=self.person, title=developer, start_date=datetime.date(2021, 1, 1)
+        )
+        Position.objects.create(
+            person=self.person,
+            title=director,
+            start_date=datetime.date(2020, 1, 1),
+            end_date=datetime.date(2020, 10, 1),
+        )
 
         # should all be displayed with dates
         response = self.client.get(self.profile.relative_url(self.site))
-        self.assertContains(response, "<p class='title'>developer</p>",
-                            html=True)
-        self.assertContains(response, "<p class='title'>2020 director</p>",
-                            html=True)
+        self.assertContains(response, "<p class='title'>developer</p>", html=True)
+        self.assertContains(response, "<p class='title'>2020 director</p>", html=True)

@@ -19,6 +19,18 @@ CDH Website
     :target: https://dbdocs.io/princetoncdh/cdhweb
     :alt: dbdocs build
 
+.. image:: https://percy.io/static/images/percy-badge.svg
+    :target: https://percy.io/3201ecb4/cdh-web
+    :alt: Visual regression tests
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+    :alt: "code style Black"
+
+.. image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
+    :target: https://pycqa.github.io/isort/
+    :alt: "imports: isort"
+
 Python 3.6 / Django 2.2 / Node 10 / PostgreSQL 10
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.
@@ -79,6 +91,26 @@ Remember to add a ``SECRET_KEY`` setting!
 
 - Install OpenCV dependencies (if necessary) for [wagtail image feature detection](https://docs.wagtail.io/en/stable/advanced_topics/images/feature_detection.html)
 
+Setup pre-commit hooks
+~~~~~~~~~~~~~~~~~~~~~~
+
+If you plan to contribute to this repository, please run the following command::
+
+    pre-commit install
+
+This will add a pre-commit hook to automatically style your python code with `black <https://github.com/psf/black>`_.
+
+Because these styling conventions were instituted after multiple releases of
+development on this project, ``git blame`` may not reflect the true author
+of a given line. In order to see a more accurate ``git blame`` execute the
+following command::
+
+    git blame <FILE> --ignore-revs-file .git-blame-ignore-revs
+
+  Or configure your git to always ignore styling revision commits:
+
+    git config blame.ignoreRevsFile .git-blame-ignore-revs
+
 Unit Testing
 ------------
 
@@ -92,6 +124,29 @@ included in dev)::
 Run tests using py.test::
 
   py.test
+
+Visual Testing
+--------------
+
+Visual regression tests are written using the Python bindings for Selenium,
+and DOM snapshots are uploaded to `Percy <https://percy.io/>`_. They run in CI
+on pushes or pull requests to the `develop` branch.
+
+Before visual tests are run, the CI build will execute::
+
+  python manage.py create_test_site
+
+Which uses existing pytest fixtures to populate the database with content
+approximating a real website in order to execute the tests. It will then run::
+
+  npm run test:visual
+
+Which starts a Django development server and calls the `ci/visual_tests.py`
+script to upload DOM snapshots to Percy for regression analysis.
+
+You can use both of these commands locally if you need to accomplish either of
+these tasks. You will need to have the dependencies in `requirements/test.txt`
+installed, and set `PERCY_TOKEN` in your shell environment.
 
 Documentation
 ~~~~~~~~~~~~~

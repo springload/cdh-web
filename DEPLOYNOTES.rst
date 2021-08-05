@@ -30,9 +30,9 @@ Deploy Notes
 -----
 
 - After deploy, run a script to clean up markup in migrated content from the 
-exodus script in the last release::
+  exodus script in the last release::
 
-  python manage.py cleanup_migrated_content
+    python manage.py cleanup_migrated_content
 
 3.0
 ---

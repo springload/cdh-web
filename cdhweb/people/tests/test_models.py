@@ -1,18 +1,24 @@
-import pytest
 from datetime import date, timedelta
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock, Mock
 
-from cdhweb.projects.models import Membership, Role
-from cdhweb.people.models import Person, Position, Title, init_person_from_ldap
+import pytest
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from wagtail.core.models import Page
+
 from cdhweb.pages.models import HomePage
-from cdhweb.projects.models import ProjectsLandingPage, Project, Grant, GrantType
+from cdhweb.people.models import Person, Position, Title, init_person_from_ldap
+from cdhweb.projects.models import (
+    Grant,
+    GrantType,
+    Membership,
+    Project,
+    ProjectsLandingPage,
+    Role,
+)
 
 
 class TestTitle(TestCase):
-
     def setUp(self):
         """create a person and title for testing"""
         self.tom = Person.objects.create(first_name="tom")
@@ -25,23 +31,23 @@ class TestTitle(TestCase):
 
         # give tom the title, should have 1 as num_people
         Position.objects.create(
-            person=self.tom, title=self.director, start_date=date.today())
+            person=self.tom, title=self.director, start_date=date.today()
+        )
         assert self.director.num_people() == 1
 
 
 class TestPosition(TestCase):
-
     def test_str(self):
         """position should be identified by person, title, and start year"""
         tom = Person.objects.create(first_name="tom")
         director = Title.objects.create(title="director")
         position = Position.objects.create(
-            person=tom, title=director, start_date=date(2021, 1, 1))
+            person=tom, title=director, start_date=date(2021, 1, 1)
+        )
         assert str(position) == "tom director (2021)"
 
 
 class TestPerson:
-
     def test_current_title(self, staffer):
         """person should track its currently held title, if any"""
         # should return None if no positions
@@ -98,8 +104,8 @@ class TestPerson:
 
     def test_lt(self):
         # less than comparison based on lastname, firstname
-        able_j = Person(last_name='Able', first_name='Jim')
-        able_b = Person(last_name='Able', first_name='Bean')
+        able_j = Person(last_name="Able", first_name="Jim")
+        able_b = Person(last_name="Able", first_name="Bean")
         assert able_b < able_j
         assert not able_j < able_b
 
@@ -113,17 +119,30 @@ class TestPerson:
         director = Role.objects.get_or_create(title="Project Director")[0]
         pm = Role.objects.get_or_create(title="Project Manager")[0]
         dcg = GrantType.objects.get_or_create(grant_type="Dataset Curation")[0]
-        grant1 = Grant.objects.create(project=project, grant_type=dcg,
-            start_date=date(2016, 5, 1), end_date=date(2016, 9, 30))
-        grant2 = Grant.objects.create(project=project, grant_type=dcg,
-            start_date=date(2017, 1, 1), end_date=date(2017, 5, 31))
+        grant1 = Grant.objects.create(
+            project=project,
+            grant_type=dcg,
+            start_date=date(2016, 5, 1),
+            end_date=date(2016, 9, 30),
+        )
+        grant2 = Grant.objects.create(
+            project=project,
+            grant_type=dcg,
+            start_date=date(2017, 1, 1),
+            end_date=date(2017, 5, 31),
+        )
 
         # no memberships = no latest grant
         assert person.latest_grant is None
 
         # current grant but not project director = no latest grant
-        mship = Membership.objects.create(person=person, role=pm, project=project,
-            start_date=date(2016, 5, 1), end_date=date(2016, 9, 30))
+        mship = Membership.objects.create(
+            person=person,
+            role=pm,
+            project=project,
+            start_date=date(2016, 5, 1),
+            end_date=date(2016, 9, 30),
+        )
         assert person.latest_grant is None
 
         # project director on older grant; should return older grant as latest
@@ -138,9 +157,13 @@ class TestPerson:
         assert person.latest_grant == grant2
 
         # project director on both grants; should return newer one
-        mship2 = Membership.objects.create(person=person, role=director,
-            project=project, start_date=date(2016, 5, 1),
-            end_date=date(2016, 9, 30))
+        mship2 = Membership.objects.create(
+            person=person,
+            role=director,
+            project=project,
+            start_date=date(2016, 5, 1),
+            end_date=date(2016, 9, 30),
+        )
         assert person.latest_grant == grant2
 
         # project directorship with no end date; should count as latest
@@ -156,11 +179,12 @@ class TestPerson:
         grant2.save()
         assert person.latest_grant == grant2
 
+
 def test_profile_url(student, staffer, staffer_profile, faculty_pi):
     # student fixture has neither profile nor website link
     assert not student.profile_url
     # faculty pi has a profile url
-    assert faculty_pi.profile_url == 'example.com'
+    assert faculty_pi.profile_url == "example.com"
     # staff person has local profile
     assert staffer.profile_url == staffer_profile.get_url()
     # unpublish; should be no more profile url
@@ -169,23 +193,21 @@ def test_profile_url(student, staffer, staffer_profile, faculty_pi):
 
 
 class TestPersonQuerySet(TestCase):
-
     def setUp(self):
         """create testing data"""
         # create titles and roles
         self.director = Title.objects.create(title="director", sort_order=0)
         self.dev = Title.objects.create(title="developer", sort_order=1)
         self.data = Title.objects.create(title="data worker", sort_order=2)
-        self.grad = Title.objects.create(
-            title="Graduate Assistant", sort_order=2)
+        self.grad = Title.objects.create(title="Graduate Assistant", sort_order=2)
         self.undergrad = Title.objects.create(
-            title="Undergraduate Assistant", sort_order=3)
-        self.pgra = Title.objects.create(
-            title="Postgraduate Research Associate")
-        self.exec = Title.objects.get_or_create(
-            title="Executive Committee Member")[0]
+            title="Undergraduate Assistant", sort_order=3
+        )
+        self.pgra = Title.objects.create(title="Postgraduate Research Associate")
+        self.exec = Title.objects.get_or_create(title="Executive Committee Member")[0]
         self.sits_exec = Title.objects.get_or_create(
-            title="Sits with Executive Committee")[0]
+            title="Sits with Executive Committee"
+        )[0]
         self.proj_dir = Role.objects.create(title="Project Director")
         self.co_pi = Role.objects.create(title="Co-PI: Research Lead")
         self.pm = Role.objects.create(title="Project Manager")
@@ -194,8 +216,9 @@ class TestPersonQuerySet(TestCase):
         home = HomePage(title="home", slug="")
         root.add_child(instance=home)
         root.save()
-        link = ProjectsLandingPage(title="projects", slug="projects",
-                                   tagline="let's collaborate")
+        link = ProjectsLandingPage(
+            title="projects", slug="projects", tagline="let's collaborate"
+        )
         home.add_child(instance=link)
         home.save()
         self.project = Project(title="project")
@@ -219,8 +242,9 @@ class TestPersonQuerySet(TestCase):
         assert tom not in Person.objects.current()
 
         # add current position - no end date
-        tom_director = Position.objects.create(person=tom, title=self.director,
-                                               start_date=date.today())
+        tom_director = Position.objects.create(
+            person=tom, title=self.director, start_date=date.today()
+        )
         assert tom in Person.objects.current()
 
         # end date in future also considered current
@@ -230,16 +254,22 @@ class TestPersonQuerySet(TestCase):
 
         # previous position = not current
         tom_director.delete()
-        Position.objects.create(person=tom, title=self.dev,
-                                start_date=date.today() - timedelta(weeks=50),
-                                end_date=date.today() - timedelta(weeks=20))
+        Position.objects.create(
+            person=tom,
+            title=self.dev,
+            start_date=date.today() - timedelta(weeks=50),
+            end_date=date.today() - timedelta(weeks=20),
+        )
         assert tom not in Person.objects.current()
 
         # past project director is not current
-        tom_proj_dir = Membership.objects.create(project=self.project,
-                                                 role=self.proj_dir, person=tom,
-                                                 start_date=date.today() - timedelta(weeks=50),
-                                                 end_date=date.today() - timedelta(weeks=20))
+        tom_proj_dir = Membership.objects.create(
+            project=self.project,
+            role=self.proj_dir,
+            person=tom,
+            start_date=date.today() - timedelta(weeks=50),
+            end_date=date.today() - timedelta(weeks=20),
+        )
         assert tom not in Person.objects.current()
 
         # no end date on membership = current
@@ -259,9 +289,13 @@ class TestPersonQuerySet(TestCase):
 
         # past project manager is not current
         tom_proj_dir.delete()
-        tom_pm = Membership.objects.create(project=self.project, person=tom,
-                                           role=self.pm, start_date=date.today() - timedelta(weeks=50),
-                                           end_date=date.today() - timedelta(weeks=20))
+        tom_pm = Membership.objects.create(
+            project=self.project,
+            person=tom,
+            role=self.pm,
+            start_date=date.today() - timedelta(weeks=50),
+            end_date=date.today() - timedelta(weeks=20),
+        )
         assert tom not in Person.objects.current()
 
         # current project manager is current
@@ -283,14 +317,20 @@ class TestPersonQuerySet(TestCase):
         deb = Person.objects.create(first_name="deb")
 
         # assign roles
-        Position.objects.create(person=tom, title=self.director,
-                                start_date=date.today() - timedelta(weeks=30))
-        Position.objects.create(person=sam, title=self.dev,
-                                start_date=date.today() - timedelta(weeks=30))
-        Position.objects.create(person=jim, title=self.dev,
-                                start_date=date.today() - timedelta(weeks=20))
-        Position.objects.create(person=deb, title=self.data,
-                                start_date=date.today() - timedelta(weeks=30))
+        Position.objects.create(
+            person=tom,
+            title=self.director,
+            start_date=date.today() - timedelta(weeks=30),
+        )
+        Position.objects.create(
+            person=sam, title=self.dev, start_date=date.today() - timedelta(weeks=30)
+        )
+        Position.objects.create(
+            person=jim, title=self.dev, start_date=date.today() - timedelta(weeks=20)
+        )
+        Position.objects.create(
+            person=deb, title=self.data, start_date=date.today() - timedelta(weeks=30)
+        )
 
         # sort by position title order; ties broken by earliest start date
         people = Person.objects.order_by_position()
@@ -304,28 +344,44 @@ class TestPersonQuerySet(TestCase):
         # create some people
         tom = Person.objects.create(first_name="tom", cdh_staff=True)
         sam = Person.objects.create(
-            first_name="sam", cdh_staff=True, pu_status="graduate")
+            first_name="sam", cdh_staff=True, pu_status="graduate"
+        )
         jim = Person.objects.create(
-            first_name="jim", cdh_staff=True, pu_status="undergraduate")
+            first_name="jim", cdh_staff=True, pu_status="undergraduate"
+        )
         deb = Person.objects.create(first_name="deb", pu_status="graduate")
         ada = Person.objects.create(first_name="ada", pu_status="graduate")
         eli = Person.objects.create(first_name="eli", cdh_staff=True)
 
         # add various roles and memberships
-        Position.objects.create(person=tom, title=self.director,
-                                start_date=date.today() - timedelta(weeks=30))
-        Position.objects.create(person=sam, title=self.grad,
-                                start_date=date.today() - timedelta(weeks=30))
-        Position.objects.create(person=jim, title=self.undergrad,
-                                start_date=date.today() - timedelta(weeks=30))
-        Membership.objects.create(person=deb, project=self.project,
-                                  role=self.proj_dir,
-                                  start_date=date.today() - timedelta(weeks=30))
-        Membership.objects.create(person=ada, project=self.project,
-                                  role=self.pm,
-                                  start_date=date.today() - timedelta(weeks=30))
-        Position.objects.create(person=eli, title=self.pgra,
-                                start_date=date.today() - timedelta(weeks=30))
+        Position.objects.create(
+            person=tom,
+            title=self.director,
+            start_date=date.today() - timedelta(weeks=30),
+        )
+        Position.objects.create(
+            person=sam, title=self.grad, start_date=date.today() - timedelta(weeks=30)
+        )
+        Position.objects.create(
+            person=jim,
+            title=self.undergrad,
+            start_date=date.today() - timedelta(weeks=30),
+        )
+        Membership.objects.create(
+            person=deb,
+            project=self.project,
+            role=self.proj_dir,
+            start_date=date.today() - timedelta(weeks=30),
+        )
+        Membership.objects.create(
+            person=ada,
+            project=self.project,
+            role=self.pm,
+            start_date=date.today() - timedelta(weeks=30),
+        )
+        Position.objects.create(
+            person=eli, title=self.pgra, start_date=date.today() - timedelta(weeks=30)
+        )
 
         # director (cdh staff) is not a student affiliate
         assert tom not in Person.objects.student_affiliates()
@@ -360,21 +416,36 @@ class TestPersonQuerySet(TestCase):
         ada = Person.objects.create(first_name="ada", cdh_staff=True)
 
         # add various roles and memberships
-        Membership.objects.create(person=tom, project=self.project,
-                                  role=self.proj_dir,
-                                  start_date=date.today() - timedelta(weeks=30))
-        Membership.objects.create(person=sam, project=self.project,
-                                  role=self.co_pi,
-                                  start_date=date.today() - timedelta(weeks=30))
-        Membership.objects.create(person=jim, project=self.project,
-                                  role=self.proj_dir,
-                                  start_date=date.today() - timedelta(weeks=30))
-        Membership.objects.create(person=deb, project=self.project,
-                                  role=self.proj_dir,
-                                  start_date=date.today() - timedelta(weeks=30))
-        Membership.objects.create(person=ada, project=self.project,
-                                  role=self.co_pi,
-                                  start_date=date.today() - timedelta(weeks=30))
+        Membership.objects.create(
+            person=tom,
+            project=self.project,
+            role=self.proj_dir,
+            start_date=date.today() - timedelta(weeks=30),
+        )
+        Membership.objects.create(
+            person=sam,
+            project=self.project,
+            role=self.co_pi,
+            start_date=date.today() - timedelta(weeks=30),
+        )
+        Membership.objects.create(
+            person=jim,
+            project=self.project,
+            role=self.proj_dir,
+            start_date=date.today() - timedelta(weeks=30),
+        )
+        Membership.objects.create(
+            person=deb,
+            project=self.project,
+            role=self.proj_dir,
+            start_date=date.today() - timedelta(weeks=30),
+        )
+        Membership.objects.create(
+            person=ada,
+            project=self.project,
+            role=self.co_pi,
+            start_date=date.today() - timedelta(weeks=30),
+        )
 
         # faculty who are project directors are affiliates
         assert tom in Person.objects.affiliates()
@@ -399,12 +470,19 @@ class TestPersonQuerySet(TestCase):
         jim = Person.objects.create(first_name="jim", pu_status="stf")
 
         # assign roles
-        Position.objects.create(person=tom, title=self.director,
-                                start_date=date.today() - timedelta(weeks=30))
-        Position.objects.create(person=sam, title=self.exec,
-                                start_date=date.today() - timedelta(weeks=30))
-        Position.objects.create(person=jim, title=self.sits_exec,
-                                start_date=date.today() - timedelta(weeks=30))
+        Position.objects.create(
+            person=tom,
+            title=self.director,
+            start_date=date.today() - timedelta(weeks=30),
+        )
+        Position.objects.create(
+            person=sam, title=self.exec, start_date=date.today() - timedelta(weeks=30)
+        )
+        Position.objects.create(
+            person=jim,
+            title=self.sits_exec,
+            start_date=date.today() - timedelta(weeks=30),
+        )
 
         # faculty director is not part of committee
         assert tom not in Person.objects.executive_committee()
@@ -421,10 +499,14 @@ class TestPersonQuerySet(TestCase):
         jim = Person.objects.create(first_name="jim", pu_status="stf")
 
         # assign roles
-        Position.objects.create(person=tom, title=self.exec,
-                                start_date=date.today() - timedelta(weeks=30))
-        Position.objects.create(person=jim, title=self.sits_exec,
-                                start_date=date.today() - timedelta(weeks=30))
+        Position.objects.create(
+            person=tom, title=self.exec, start_date=date.today() - timedelta(weeks=30)
+        )
+        Position.objects.create(
+            person=jim,
+            title=self.sits_exec,
+            start_date=date.today() - timedelta(weeks=30),
+        )
 
         # current exec members are exec members
         assert tom in Person.objects.exec_member()
@@ -438,10 +520,14 @@ class TestPersonQuerySet(TestCase):
         jim = Person.objects.create(first_name="jim", pu_status="stf")
 
         # assign roles
-        Position.objects.create(person=tom, title=self.exec,
-                                start_date=date.today() - timedelta(weeks=30))
-        Position.objects.create(person=jim, title=self.sits_exec,
-                                start_date=date.today() - timedelta(weeks=30))
+        Position.objects.create(
+            person=tom, title=self.exec, start_date=date.today() - timedelta(weeks=30)
+        )
+        Position.objects.create(
+            person=jim,
+            title=self.sits_exec,
+            start_date=date.today() - timedelta(weeks=30),
+        )
 
         # current exec members aren't "sits with"
         assert tom not in Person.objects.sits_with_exec()
@@ -451,20 +537,24 @@ class TestPersonQuerySet(TestCase):
 
 
 class TestInitProfileFromLDAP(TestCase):
-
     def setUp(self):
         """create user and mock ldap data for testing"""
         # create user to test with
         User = get_user_model()
-        self.staff_user = User.objects.create_user(username='staff',
-                                                   email='STAFF@EXAMPLE.com')
+        self.staff_user = User.objects.create_user(
+            username="staff", email="STAFF@EXAMPLE.com"
+        )
 
         # use Mock to simulate ldap data provided by pucas
-        self.ldapinfo = Mock(displayName='Joe E. Schmoe',
-                             # no telephone or office set
-                             telephoneNumber=[], street=[],
-                             title='Freeloader, World at large', pustatus='stf',
-                             ou='English')
+        self.ldapinfo = Mock(
+            displayName="Joe E. Schmoe",
+            # no telephone or office set
+            telephoneNumber=[],
+            street=[],
+            title="Freeloader, World at large",
+            pustatus="stf",
+            ou="English",
+        )
         init_person_from_ldap(self.staff_user, self.ldapinfo)
         self.staff_person = Person.objects.get(user=self.staff_user)
 
