@@ -2,7 +2,7 @@ from wagtail.core.models import Page
 from wagtail.tests.utils import WagtailPageTests
 from wagtail.tests.utils.form_data import nested_form_data, rich_text, streamfield
 
-from cdhweb.pages.models import ContentPage, HomePage, LandingPage
+from cdhweb.pages.models import ContentPage, HomePage, LandingPage, LinkPage
 
 
 class TestHomePage(WagtailPageTests):
@@ -30,7 +30,14 @@ class TestHomePage(WagtailPageTests):
 
     def test_subpages(self):
         """allowed subpage types for homepage should be landing and content"""
-        self.assertAllowedSubpageTypes(HomePage, [LandingPage, ContentPage])
+        self.assertAllowedSubpageTypes(
+            HomePage,
+            [
+                LandingPage,
+                ContentPage,
+                LinkPage,
+            ],
+        )
 
 
 class TestLandingPage(WagtailPageTests):
