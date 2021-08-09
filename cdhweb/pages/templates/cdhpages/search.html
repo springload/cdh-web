@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load humanize cdh_tags wagtailcore_tags %}
+{# Site search page #}
 
 {% block main %}
 <h1>{{ page_title }}</h1>
@@ -13,7 +14,7 @@
     <p class="total-results">{{ page_obj.paginator.count }} total result{{ page_obj.paginator.count|pluralize}}</p>
     <ol start="{{ page_obj.start_index }}">
     {% for page in page_obj %}
-    <li><a href="{% pageurl page %}">{{ page.title }}</a> (<b>{{ page.specific.cached_content_type.name }}</b>) — <i>{{ page.first_published_at|naturalday }}</i></li>
+    {% include "cdhpages/snippets/search_result.html" %}
     {% endfor %}
     </ol>
     {% else %}

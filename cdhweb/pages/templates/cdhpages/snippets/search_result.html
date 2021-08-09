@@ -1,0 +1,10 @@
+{% load humanize wagtailcore_tags %}
+{# Single search result on site search page #}
+
+{% spaceless %}
+<li>
+    <a href="{% pageurl page %}">{{ page.title }}</a>
+    <b>({{ page.specific.cached_content_type.name }})</b>
+    <i>{{ page.first_published_at|naturalday }}</i>
+</li>
+{% endspaceless %}
