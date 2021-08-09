@@ -293,7 +293,6 @@ TEMPLATES = [
                 "cdhweb.context_extras",
                 "cdhweb.context_processors.template_settings",
                 "cdhweb.pages.context_processors.page_intro",
-                "cdhweb.pages.context_processors.site_search",
             ],
         },
     },

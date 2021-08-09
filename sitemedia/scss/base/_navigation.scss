@@ -6,7 +6,7 @@
     width: 100%;
     position: absolute;
     top: -$header-nav-height;
-    z-index: 12;
+    z-index: 11;
     list-style-type: none;
     margin: 0;
 
@@ -87,21 +87,17 @@ header.nav {
 
     }
     #mainmenu {
-        max-width: 1440px;  /* cancel 84% max-width */
-        justify-content: space-around;
-
         @media (max-width: $small-max-width) {
             background-color: white;
             width: 100%;
+            max-width: 100%;  /* cancel 84% max-width */
             padding: 5px 8%;
             border-bottom: 1px solid $dark-grey;
         }
     }
 
     .nav-wrap {
-        position: relative;
         background-color: rgba(255, 255, 255, 0.95);
-        box-shadow: 0 2px 4px 0 rgba(106, 106, 106, 0.315);
     }
 
     nav {
@@ -114,7 +110,11 @@ header.nav {
         a.home-page {
             width: 60px;
             height: 45px;
-            margin-left: 10px;
+            margin-right: 25px;
+
+            @media (max-width: $medium-max-width) {
+                margin-right: 15px;
+            }
 
             img {
                 width: 60px;
@@ -129,16 +129,6 @@ header.nav {
             max-width: 100%;
         }
 
-        label[aria-label="open site search"] {
-            width: 45px;
-            height: 45px;
-            background-image: url("/static/img/cdh-icons/search.svg");
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 80%;
-            margin: 0 10px 0 0;
-            cursor: pointer;
-        }
     }
 
     div.nav-main {
@@ -147,12 +137,11 @@ header.nav {
         flex: auto;
         padding: 0;
         position: relative;
-        max-width: $large-content-width;
 
         ul {
             display: flex;
             flex: auto;
-            justify-content: space-between;
+            text-align: left;
             padding: 0;
             width: 100%;
             // Make sure margins behave for spacing between rows (~28 px)
@@ -186,6 +175,7 @@ header.nav {
             li {
                 display: inline;
                 font-size: 16px;
+                margin-right: 40px;
                 @media (max-width: $small-max-width) {
                     display: block;
                 }
@@ -216,6 +206,7 @@ header.nav {
         top: 55px;
 
         .inner {
+            margin-left: 85px;
             border-top: solid 1px #d8d8d8;
         }
 
@@ -629,52 +620,5 @@ footer {
 
             }
         }
-    }
-}
-
-// site search
-#nav-site-search {
-    width: 100%;
-    height: $header-nav-height;
-    position: absolute;
-    z-index: -1;
-    top: 0;
-
-    &:focus-within {
-        z-index: 0;
-
-        ~ label[for="clear-site-search"] {
-            display: flex;
-        }
-    }
-    
-    input[type="search"] {
-        width: 100%;
-        border: none;
-        margin: 0;
-        height: $header-nav-height;
-        padding-left: 10vw;
-        font-size: 24px;
-    }
-}
-
-.nav-wrap {
-    input[type="submit"],
-    input[type="reset"] {
-        @include sr-only;
-    }
-
-    label[for="clear-site-search"] {
-        position: absolute;
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 1;
-        width: $header-nav-height;
-        height: $header-nav-height;
-        top: 0;
-        right: 10vw;
-        font-size: 40px;
-        cursor: pointer;
     }
 }

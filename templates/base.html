@@ -47,14 +47,12 @@
                 <a class="menu-toggle" name="menu"><i class="fa fa-bars" aria-hidden="true"></i></a>
             </nav>
             <nav id='mainmenu'>
+                {# NOTE hardcoded homepage URL that works on error pages #}
+                <a href='/' class='home-page'>
+                  <img alt="home" src='{% static "img/CDH_logo.svg" %}' />
+                </a>
                 {% include "snippets/primary_navigation.html" %}
             </nav>
-            <form id="nav-site-search" action="{% url 'search' %}" method="get">
-                <input id="nav_q" type="search" name="{{ site_search.q.name }}" placeholder="{{ site_search.q.field.widget.attrs.placeholder }}">
-                <input type="submit" value="search">
-            </form>
-            <input form="nav-site-search" id="clear-site-search" type="reset">
-            <label for="clear-site-search" aria-label="close site search">&times;</label>
         </div>
     </header>
     {% include 'snippets/test_banner.html' %}
