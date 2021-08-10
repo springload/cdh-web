@@ -18,7 +18,7 @@ body.purple-mode {
     .project-detail .links li.website a,
     .subscribe, footer section.subscribe  {
         /* image filter to convert cdh blue in icons to purple */
-        filter: hue-rotate(82deg) saturate(55%);
+        filter: hue-rotate(73deg) saturate(90%) grayscale(30%);
     }
 
     /* override elements that use dark variant color
