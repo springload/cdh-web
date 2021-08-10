@@ -39,8 +39,8 @@
     {% endcompress %}
 
 </head>
-
-<body class="{% block bodyclass %}{% endblock %}">
+{# any feature flags passed in will be included in body class #}
+<body class="{% block bodyclass %}{% endblock %} {{ FEATURE_FLAGS|join:" " }}">
     <ul class="skip-links">
         <li><a href='#maincontent'>Skip to main content</a></li>
         <li><a href='#footermenu'>Skip to footer</a></li>

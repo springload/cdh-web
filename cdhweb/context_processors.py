@@ -17,5 +17,7 @@ def template_settings(request):
         # Include analytics based on settings.DEBUG or override in settings.py
         # Defaults to opposite of settings.DEBUG
         "INCLUDE_ANALYTICS": getattr(settings, "INCLUDE_ANALYTICS", not settings.DEBUG),
+        # pass any feature flags that are configured
+        "FEATURE_FLAGS": getattr(settings, "FEATURE_FLAGS", []),
     }
     return context_extras

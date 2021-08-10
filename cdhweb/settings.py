@@ -410,6 +410,11 @@ WAGTAILEMBEDS_FINDERS = [
 #########################
 
 
+# list of optional features to enable/disable via configuration
+# currently supported: purple-mode
+FEATURE_FLAGS = []  # "purple-mode"
+
+
 try:
     # django-debug-toolbar
     # https://django-debug-toolbar.readthedocs.io/en/latest/
