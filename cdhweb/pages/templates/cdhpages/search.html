@@ -17,10 +17,11 @@
     {% include "cdhpages/snippets/search_result.html" %}
     {% endfor %}
     </ol>
-    {% else %}
+    {% elif form.q.value %}
     <p class="total-results">No results found.</p>
     {% endif %}
 </div>
+{% if page_obj and form.q.value %}
 <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
@@ -36,4 +37,5 @@
         {% endif %}
     </span>
 </div>
+{% endif %}
 {% endblock %}
