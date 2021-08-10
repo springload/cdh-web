@@ -17,7 +17,7 @@
                     aria-haspopup="true"
                     aria-expanded="false"
                     {% endif %}
-                    {% if request.path|startswith:navpage.get_url %} aria-current="page"{% endif %}>{{ navpage.title }}
+                    {% if request and request.path|startswith:navpage.get_url %} aria-current="page"{% endif %}>{{ navpage.title }}
                 </a>
             </li>
         {% endif %}
