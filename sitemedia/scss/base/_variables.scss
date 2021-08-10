@@ -27,6 +27,20 @@ $offwhite: #f9f9f9;
 $black: #000000;
 // NOTE: #d8d8d8 is also in use; create a variable? useful to distinguish/name?
 
+// use css variables for colors so they are easier to override
+// thanks to https://codeburst.io/magic-of-css-sass-variables-b07ae8c1b775
+@function hexToRGB($hex) {
+    @return red($hex), green($hex), blue($hex);
+}
+
+:root {
+    --highlight-color: #00edff;   /* == action color ?? */
+    --highlight-color-rgb: #{hexToRGB(#00edff)};
+    --light-highlight-color: rgba(var(--highlight-color-rgb), 0.3);
+    /* dark and light variants are currently generated with shade & tint,
+       which cannot be used in css variables */
+}
+
 // local items
 $header-nav-height: 65px;
 $small-header-nav-height: 50px;
@@ -60,7 +74,8 @@ $base-background-color: #fff;
 $secondary-background-color: tint($base-border-color, 75%);
 
 // Focus
-$focus-outline-color: transparentize($action-color, 0.4);
+$focus-outline-color: rgba(var(--highlight-color-rgb), 0.4);
+// $focus-outline-color: transparentize($action-color, 0.4);
 $focus-outline-width: 3px;
 $focus-outline: $focus-outline-width solid $focus-outline-color;
 $focus-outline-offset: 2px;
