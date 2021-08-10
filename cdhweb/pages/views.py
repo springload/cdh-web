@@ -82,8 +82,9 @@ class SiteSearchView(ListView, FormMixin):
 
     def get_queryset(self):
         # NOTE not in UI — choose model to search across; Page for everything
-        filter = self.request.GET.get("filter", "everything")
-        model = self.filter_models[filter]
+        # filter = self.request.GET.get("filter", "everything")
+        # model = self.filter_models[filter]
+        model = Page
 
         # get keyword query; support filters & phrase matching with double quotes
         # see https://docs.wagtail.io/en/stable/topics/search/searching.html#query-string-parsing

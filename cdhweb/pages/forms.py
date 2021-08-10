@@ -4,6 +4,7 @@ from django import forms
 class SiteSearchForm(forms.Form):
     """Search form for finding pages across the site."""
 
+    # page filter options — currently not implemented in UI
     FILTER_CHOICES = (
         ("everything", "everything"),
         ("people", "people"),
@@ -24,4 +25,4 @@ class SiteSearchForm(forms.Form):
     )
 
     # filter to different page types
-    filter = forms.ChoiceField(choices=FILTER_CHOICES)
+    # filter = forms.ChoiceField(choices=FILTER_CHOICES)

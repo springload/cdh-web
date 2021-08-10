@@ -7,11 +7,11 @@
 <form action="{% url 'search' %}" method="get">
     {{ form.q }}
     {{ form.filter }}
-    <input type="submit" value="Search">
+    <input type="submit" value="Search" class="sr-only">
 </form>
 <div class="results">
     {% if page_obj %}
-    <p class="total-results">{{ page_obj.paginator.count }} total result{{ page_obj.paginator.count|pluralize}}</p>
+    <p class="total-results">{{ page_obj.paginator.count }} Total Result{{ page_obj.paginator.count|pluralize}}</p>
     <ol start="{{ page_obj.start_index }}">
     {% for page in page_obj %}
     {% include "cdhpages/snippets/search_result.html" %}

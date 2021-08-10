@@ -1,0 +1,3 @@
+@mixin cdh-icon($name) {
+	background-image: url('../img/cdh-icons/#{$name}.svg');
+}

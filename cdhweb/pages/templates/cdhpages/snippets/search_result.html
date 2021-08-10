@@ -1,10 +1,13 @@
-{% load humanize wagtailcore_tags %}
+{% load humanize wagtailcore_tags cdh_tags %}
 {# Single search result on site search page #}
 
 {% spaceless %}
-<li>
-    <a href="{% pageurl page %}">{{ page.title }}</a>
-    <b>({{ page.specific.cached_content_type.name }})</b>
-    <i>{{ page.first_published_at|naturalday }}</i>
+<li class="{{ page.get_url|url_to_icon }}">
+    <h2><a href="{% pageurl page %}">{{ page.title }}</a></h2>
+    {% firstof page.specific.get_description page.specific.body|striptags as description %}
+    {% if description %}
+    <p>{{ description|safe|truncatewords:25 }}</p>
+    {% endif %}
+    <div class="lastmod">Last updated: {{ page.last_published_at|naturalday }}</div>
 </li>
 {% endspaceless %}

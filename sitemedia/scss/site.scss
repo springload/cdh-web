@@ -167,10 +167,6 @@ div.spacer {
 	padding: 1px 5px;
 }
 
-@mixin cdh-icon($name) {
-	background-image: url('../img/cdh-icons/#{$name}.svg');
-}
-
 
 article.landing-page {
 	/* undo default body margin to clear top nav */
