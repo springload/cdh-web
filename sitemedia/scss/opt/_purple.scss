@@ -2,7 +2,7 @@
 body.purple-mode {
     /* override colors */
     $purple: #9A81BA;
-    $dark-purple: shade($purple, 75%);
+    $dark-purple: #533F73;
     $light-purple: tint($purple, 85%);
 
     --highlight-color: #9A81BA;
