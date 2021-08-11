@@ -16,7 +16,8 @@ body.purple-mode {
     .card.attachment a::after,
     header.nav nav a.home-page img,
     .project-detail .links li.website a,
-    .subscribe, footer section.subscribe  {
+    .event-detail .details .ical::before,
+    .subscribe, footer section.subscribe form  {
         /* image filter to convert cdh blue in icons to purple */
         filter: hue-rotate(73deg) saturate(90%) grayscale(30%);
     }
