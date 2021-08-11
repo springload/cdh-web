@@ -83,7 +83,6 @@ def run():
 
     # site search
     browser.get("http://localhost:8000/search?q=network")
-    browser.find_element_by_css_selector('label[aria-label="open site search"]').click()
     percy_snapshot(browser, "Site Search")
 
     # shut down when finished
