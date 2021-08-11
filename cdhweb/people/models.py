@@ -20,6 +20,7 @@ from wagtail.admin.edit_handlers import (
 from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.search import index
 
 from cdhweb.pages.models import (
     PARAGRAPH_FEATURES,
@@ -458,6 +459,9 @@ class Profile(BasePage):
 
     parent_page_types = ["people.PeopleLandingPage"]
     subpage_types = []
+
+    # index fields
+    search_fields = BasePage.search_fields + [index.SearchField("education")]
 
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""
