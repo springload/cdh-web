@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.sites.models import Site
+from django.test import RequestFactory
 
 from cdhweb.pages.templatetags import cdh_tags
 
@@ -29,3 +30,10 @@ def test_startswith():
     assert cdh_tags.startswith("yes", "y")
     assert not cdh_tags.startswith("no", "y")
     assert not cdh_tags.startswith(3, "y")
+
+
+def test_url_replace():
+    rf = RequestFactory()
+    request = rf.get("/search?q=digital&page=2")
+    context = {"request": request}
+    assert cdh_tags.url_replace(context, "page", 3) == "q=digital&page=3"
