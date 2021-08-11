@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.3.1
+-----
+
+* Add optional purple mode, which can be enabled in settings
+
 3.3
 ---
 
