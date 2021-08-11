@@ -15,7 +15,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from cdhweb.blog.sitemaps import BlogListSitemap
 from cdhweb.context_processors import favicon_path
 from cdhweb.events.sitemaps import EventListSitemap
-from cdhweb.pages.views import SiteSearchView
+from cdhweb.pages.views import OpenSearchDescriptionView, SiteSearchView
 from cdhweb.people.sitemaps import PeopleListSitemap
 from cdhweb.projects.sitemaps import ProjectListSitemap
 
@@ -50,6 +50,11 @@ urlpatterns = [
     path("projects/", include("cdhweb.projects.urls", namespace="projects")),
     # search
     path("search/", SiteSearchView.as_view(), name="search"),
+    path(
+        "opensearch-description/",
+        OpenSearchDescriptionView.as_view(),
+        name="opensearch-description",
+    ),
     # CAS login urls
     path("accounts/", include("pucas.cas_urls")),
     # - all blog urls are now under updates/

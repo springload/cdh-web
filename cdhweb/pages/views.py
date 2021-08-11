@@ -1,15 +1,11 @@
 from django.utils.cache import get_conditional_response
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin
 from wagtail.core.models import Page
 from wagtail.search.utils import parse_query_string
 
-from cdhweb.blog.models import BlogPost
-from cdhweb.events.models import Event
 from cdhweb.pages.forms import SiteSearchForm
-from cdhweb.people.models import Profile
-from cdhweb.projects.models import Project
 
 
 class LastModifiedMixin(View):
@@ -92,3 +88,14 @@ class SiteSearchView(ListView, FormMixin):
         context = super().get_context_data(**kwargs)
         context.update({"page_title": self.page_title})
         return context
+
+
+class OpenSearchDescriptionView(TemplateView):
+    """Basic open search description for searching the site via browser or
+    other tools."""
+
+    # adapted from ppa-django:
+    # https://github.com/Princeton-CDH/ppa-django/blob/main/ppa/archive/views.py#L629-L634
+
+    template_name = "cdhpages/opensearch_description.xml"
+    content_type = "application/opensearchdescription+xml"
