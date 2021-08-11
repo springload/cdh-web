@@ -412,7 +412,7 @@ WAGTAILEMBEDS_FINDERS = [
 
 # list of optional features to enable/disable via configuration
 # currently supported: purple-mode
-FEATURE_FLAGS = ["purple-mode"]
+FEATURE_FLAGS = []
 
 
 try:
