@@ -3,7 +3,7 @@
 {# Site search page #}
 
 {% block main %}
-<h1 class="sr-only">{{ page_title }}</h1>
+<h1>{{ page_title }}</h1>
 <form class="search" action="{% url 'search' %}" method="get">
     {{ form.q }}
     {{ form.filter }}
