@@ -3,6 +3,9 @@
 
 """Execute visual regression tests against a running django server."""
 
+import os
+
+import django
 from django.core.management import call_command
 from percy import percy_snapshot
 from selenium import webdriver
@@ -92,5 +95,8 @@ def run():
 
 
 if __name__ == "__main__":
-    call_command(update_index.Command)  # populate wagtail search index
+    # load settings and populate wagtail search index
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cdhweb.settings")
+    django.setup()
+    call_command(update_index.Command)
     run()
