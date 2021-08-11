@@ -19,7 +19,7 @@ class SiteSearchForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "type": "search",
-                "placeholder": "Search pages, people, projects, updates & events",
+                "placeholder": "Search CDH content…",
             }
         ),
     )
