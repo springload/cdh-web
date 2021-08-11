@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.fields.related import RelatedField
 from django.urls import reverse
 from django.utils.dateformat import format
 from django.utils.text import Truncator
@@ -92,7 +93,16 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
     promote_panels = Page.promote_panels + [FieldPanel("tags")]
 
     # index description in addition to body content
-    search_fields = BasePage.search_fields + [index.SearchField("description")]
+    search_fields = BasePage.search_fields + [
+        index.SearchField("description"),
+        index.RelatedFields(
+            "people",
+            [
+                index.SearchField("first_name"),
+                index.SearchField("last_name"),
+            ],
+        ),
+    ]
 
     # custom manager/queryset logic
     objects = BlogPostManager()
