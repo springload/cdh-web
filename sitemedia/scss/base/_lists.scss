@@ -64,12 +64,15 @@ dd {
     font-family: $font-stack-headline-bold;
     font-size: 20px;
     padding: 8px 0;
+    line-height: 1.5;
 
     a {
       color: inherit;
       text-decoration-color: $cdh-blue;
       text-decoration-thickness: 2px;
       text-underline-offset: 8px;
+      position: relative;
+      top: -4px;
     }
 
     &::before {
