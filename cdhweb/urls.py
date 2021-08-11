@@ -12,16 +12,12 @@ from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 from cdhweb.blog.sitemaps import BlogListSitemap
+from cdhweb.context_processors import favicon_path
 from cdhweb.events.sitemaps import EventListSitemap
 from cdhweb.people.sitemaps import PeopleListSitemap
 from cdhweb.projects.sitemaps import ProjectListSitemap
 
 admin.autodiscover()
-
-# use test favicon when test warning is enabled as another visual indicator
-FAVICON = "/static/favicon.ico"
-if getattr(settings, "SHOW_TEST_WARNING", False):
-    FAVICON = "/static/favicon-test.ico"
 
 # sitemap configuration for sections of the site
 sitemaps = {
@@ -41,7 +37,9 @@ urlpatterns = [
         r"^robots\.txt$",
         TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
     ),
-    re_path(r"^favicon\.ico$", RedirectView.as_view(url=FAVICON, permanent=True)),
+    re_path(
+        r"^favicon\.ico$", RedirectView.as_view(url=favicon_path(), permanent=True)
+    ),
     path("500/", lambda _: 1 / 0),  # for testing 500 error page
     # main apps
     path("people/", include("cdhweb.people.urls", namespace="people")),
