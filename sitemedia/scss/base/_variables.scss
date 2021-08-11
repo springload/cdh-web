@@ -36,7 +36,7 @@ $black: #000000;
 :root {
     --highlight-color: #00edff;   /* == action color ?? */
     --highlight-color-rgb: #{hexToRGB(#00edff)};
-    --light-highlight-color: rgba(var(--highlight-color-rgb), 0.3);
+    --light-highlight-color: rgba(var(--highlight-color-rgb), 0.2);
     /* dark and light variants are currently generated with shade & tint,
        which cannot be used in css variables */
 }
