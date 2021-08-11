@@ -3,6 +3,7 @@
 
 """Execute visual regression tests against a running django server."""
 
+from django.core.management import call_command
 from percy import percy_snapshot
 from selenium import webdriver
 
@@ -90,4 +91,5 @@ def run():
 
 
 if __name__ == "__main__":
+    call_command("update_index")  # populate search index
     run()
