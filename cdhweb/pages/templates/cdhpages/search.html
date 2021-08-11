@@ -22,20 +22,6 @@
     {% endif %}
 </div>
 {% if page_obj and form.q.value %}
-<div class="pagination">
-    <span class="step-links">
-        {% if page_obj.has_previous %}
-            <a href="?{% url_replace 'page' '1' %}">&laquo; first</a>
-            <a href="?{% url_replace 'page' page_obj.previous_page_number %}">&lsaquo; previous</a>
-        {% endif %}
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-        </span>
-        {% if page_obj.has_next %}
-            <a href="?{% url_replace 'page' page_obj.next_page_number %}">next &rsaquo;</a>
-            <a href="?{% url_replace 'page' page_obj.paginator.num_pages %}">last &raquo;</a>
-        {% endif %}
-    </span>
-</div>
+{% include "snippets/pagination.html" %}
 {% endif %}
 {% endblock %}
