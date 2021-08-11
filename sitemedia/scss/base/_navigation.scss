@@ -62,7 +62,7 @@ header.nav {
 
         &[aria-current=page] {
             border-bottom: 4px;
-            border-bottom-color: $cdh-blue;
+            border-bottom-color: var(--highlight-color);
             border-bottom-style: solid;
         }
 
@@ -267,7 +267,7 @@ header.nav {
         /* add indicator for section of menu being viewed */
         a:hover {
             border-bottom: 4px;
-            border-bottom-color: $cdh-blue;
+            border-bottom-color: var(--highlight-color);
             border-bottom-style: solid;
         }
     }

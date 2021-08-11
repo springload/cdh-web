@@ -6,6 +6,7 @@
 @import "fontawesome/fontawesome.scss";
 @import "fontawesome/solid.scss";
 @import "fontawesome/brands.scss";
+@import "opt/opt";
 
 
 /* nearly all block elements should be full-width on mobile */
@@ -128,8 +129,8 @@ div.spacer {
 	  45deg,
 	  white,
 	  white 16px,
-	  $cdh-blue 4px,
-	  $cdh-blue 20px
+      var(--highlight-color) 4px,
+      var(--highlight-color) 20px
 	);
 }
 
@@ -157,8 +158,8 @@ div.spacer {
 
 /* small label with cdh shadow; used for event card event type and elsewhere */
 @mixin cdh-shadow-label {
-	border: 2px solid $cdh-blue;
-	box-shadow: 5px 5px 0px $cdh-blue;
+    border: 2px solid var(--highlight-color);
+    box-shadow: 5px 5px 0px var(--highlight-color);
 	background-color: white;
 	color: black;
 	font-family: $font-stack-headline-bold;
@@ -220,7 +221,7 @@ article.landing-page {
             text-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 		}
 		a.home {
-			color: $cdh-blue;
+            color: var(--highlight-color);
 			display: inline-block;
 			text-decoration: none;
 			font-family: $font-stack-headline;
@@ -249,11 +250,11 @@ article.landing-page {
 		}
 		p::before {
 			content: "< ";
-			color: $cdh-blue;
+            color: var(--highlight-color);
 		}
 		p::after {
 			content: " >";
-			color: $cdh-blue;
+            color: var(--highlight-color);
 			display: inline;
 		}
 	}
@@ -374,7 +375,7 @@ article.landing-page {
 			height: 10px;
 
 			&.active {
-				background-color: $cdh-blue;
+                background-color: var(--highlight-color);
 			}
 		}
 	}
@@ -411,7 +412,8 @@ article.landing-page {
 		.header-overlay {
 			width: 100%;
 			height: 100%;
-			background-color: rgba($cdh-blue, 0.2); // tint the header image
+            // fixme hex/rgb
+			background-color: rgba(var(--highlight-color-rgb), 0.2); // tint the header image
 			opacity: 20;
 		}
 
@@ -439,7 +441,7 @@ article.landing-page {
 			.quote {
 				display: none;
 				position: absolute;
-				color: $cdh-blue;
+                color: var(--highlight-color);
 				font-size: 8em;
 				font-family: $font-stack-headline-bold;
 				font-style: italic;
@@ -459,7 +461,7 @@ article.landing-page {
 			.line {
 				width: 30px;
 				height: 4px;
-				background-color: $cdh-blue;
+                background-color: var(--highlight-color);
 				margin: 20px 0;
 
 				@media (max-width: $small-max-width) {
@@ -615,7 +617,7 @@ $event-card-img-height: 240px;
 
 		&:hover {
 			/* using important to override background image set in template */
-		 	background: $cdh-blue !important;
+             background: var(--highlight-color) !important;
 		}
 		a {
 			background-color: white;
@@ -655,7 +657,7 @@ $event-card-img-height: 240px;
 			    text-align: center;
 			    color: $dark-grey;
 			    // color: black;
-			    text-shadow: 2px 2px $cdh-blue;
+                text-shadow: 2px 2px var(--highlight-color);
 			}
 
 			// @include cdh-icon('link');
@@ -807,7 +809,7 @@ $event-card-img-height: 240px;
 		    }
 
 			&:hover {
-				border: solid 2px $action-color;
+                border: solid 2px var(--highlight-color);
 			}
 
 			&::after {
@@ -1014,7 +1016,7 @@ $event-card-img-height: 240px;
 
 
 		.current a {
-			border-bottom: 2px solid $cdh-blue;
+            border-bottom: 2px solid var(--highlight-color);
 		}
 
 		li {
@@ -1488,7 +1490,10 @@ $event-card-img-height: 240px;
             font-style: italic;
         }
 
-    	.ical {
+    	.ical::before {
+            content: "";
+            width: 50px;
+            height: 54px;
     		margin-top: 37px;
     		padding-top: 75px;
     		display: inline-block;
@@ -1724,7 +1729,7 @@ body.richtextpage {
             width: 0;
             height: 0;
             border-left: 150px solid transparent;
-            border-top: 150px solid $cdh-blue;
+            border-top: 150px solid var(--highlight-color);
         }
 
         &::after {
@@ -1753,7 +1758,7 @@ body.richtextpage {
 
 		&.current {
 		  /* use background to do a colored underline */
-		  background-image: linear-gradient(to right, $cdh-blue 100%, transparent 0%);
+          background-image: linear-gradient(to right, var(--highlight-color) 100%, transparent 0%);
 		  background-position: 0 0.85em;
 		  background-repeat: repeat-x;
 		  background-size: 8px 2px;

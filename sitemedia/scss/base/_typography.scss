@@ -39,14 +39,13 @@ p {
 /* mixin for body link style*/
 @mixin body-link-style {
   color: black;
-  text-decoration: none;
+  text-decoration: underline;
   text-decoration-skip: ink;
   transition: color $base-duration $base-timing;
-  /* use background to do a colored underline */
-  background-image: linear-gradient(to right, $cdh-blue 100%, transparent 0%);
-  background-position: 0 1.1em;
-  background-repeat: repeat-x;
-  background-size: 8px 2px;
+  text-decoration-color: var(--highlight-color);
+  text-decoration-thickness: 2px;
+  text-underline-offset: .15rem;
+
   font-family: $font-stack-headline;
   font-size: 18px;  /* adjust so x-height matches Lyon in text */
 
@@ -55,7 +54,7 @@ p {
   }
 
   &:hover {
-    background-color: $light-cdh-blue;
+    background-color: var(--light-highlight-color);
   }
 
   &:focus {

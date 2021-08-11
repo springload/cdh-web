@@ -18,11 +18,7 @@
     {% block title %}
     <title>{% block page-title %}{% firstof page_title page.seo_title page.title %}{% endblock %} – CDH@Princeton</title>
     {% endblock %}
-    {% if SHOW_TEST_WARNING %} {# test variant favicon to help differentiate test/prod sites #}
-    <link rel="shortcut icon" href="{% static 'favicon-test.ico' %}">
-    {% else %}
-    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
-    {% endif %}
+    <link rel="shortcut icon" href="{{ FAVICON }}">
     {% include 'snippets/head_meta.html' %}
     <meta name="google-site-verification" content="pS2kpksxg6JeC90IvA8BHVsFuK_6b7J_vARVLqqu7ck" />
     {% block extra-head %}{% endblock %}
@@ -39,8 +35,8 @@
     {% endcompress %}
 
 </head>
-
-<body {% block bodyattrs %}{% endblock %}>
+{# any feature flags passed in will be included in body class #}
+<body class="{% block bodyclass %}{% endblock %} {{ FEATURE_FLAGS|join:" " }}">
     <ul class="skip-links">
         <li><a href='#maincontent'>Skip to main content</a></li>
         <li><a href='#footermenu'>Skip to footer</a></li>
