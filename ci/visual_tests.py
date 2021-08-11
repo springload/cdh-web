@@ -6,6 +6,7 @@
 from django.core.management import call_command
 from percy import percy_snapshot
 from selenium import webdriver
+from wagtail.search.management.commands import update_index
 
 # For docs on Percy's python/selenium integration, see:
 # https://docs.percy.io/docs/python-selenium
@@ -91,5 +92,5 @@ def run():
 
 
 if __name__ == "__main__":
-    call_command("update_index")  # populate search index
+    call_command(update_index.Command)  # populate wagtail search index
     run()
