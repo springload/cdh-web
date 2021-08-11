@@ -106,13 +106,13 @@ class TestSiteSearchView:
         response = client.get(reverse("search"), {"q": "test"})
         assert response.context["form"]["q"].value() == "test"
 
-    @patch("cdhweb.pages.views.Page")
+    @patch("cdhweb.pages.views.SiteSearchView.model")
     def test_get_queryset(self, mock_page, db, client):
         """should call wagtail search() with query on published pages"""
         client.get(reverse("search"), {"q": "test"})
         # should filter to published pages
         mock_page.objects.live.assert_called_once()
-        # should run search for term using AND logic
+        # should run search for term using OR logic
         query = mock_page.objects.live.return_value.search.call_args[0][0]
         assert query.query_string == "test"
-        assert query.operator == "and"
+        assert query.operator == "or"

@@ -1,3 +1,5 @@
+import operator
+
 from django.utils.cache import get_conditional_response
 from django.views.generic import ListView, TemplateView
 from django.views.generic.base import View
@@ -72,8 +74,9 @@ class SiteSearchView(ListView, FormMixin):
         # see https://docs.wagtail.io/en/stable/topics/search/searching.html#query-string-parsing
         q = self.request.GET.get("q", "")
         _filters, query = parse_query_string(q)  # not using these filters yet
+        query.operator = "or"  # set query operator to OR (default is AND)
 
-        # execute search against specified model; exclude unpublished pages.
+        # execute search; exclude unpublished pages.
         # NOTE results sorted by relevance by default; to override sort the QS
         # first and then pass order_by_relevance=false to .search()
         return self.model.objects.live().search(query)
