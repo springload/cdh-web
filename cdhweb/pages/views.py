@@ -71,21 +71,7 @@ class SiteSearchView(ListView, FormMixin):
     page_title = "Search"
     template_name = "cdhpages/search.html"
 
-    # NOTE filtering by page type currently not implemented in UI
-    filter_models = {
-        "everything": Page,
-        "people": Profile,
-        "updates": BlogPost,
-        "projects": Project,
-        "events": Event,
-    }
-
     def get_queryset(self):
-        # NOTE not in UI — choose model to search across; Page for everything
-        # filter = self.request.GET.get("filter", "everything")
-        # model = self.filter_models[filter]
-        model = Page
-
         # get keyword query; support filters & phrase matching with double quotes
         # see https://docs.wagtail.io/en/stable/topics/search/searching.html#query-string-parsing
         q = self.request.GET.get("q", "")
@@ -94,7 +80,7 @@ class SiteSearchView(ListView, FormMixin):
         # execute search against specified model; exclude unpublished pages.
         # NOTE results sorted by relevance by default; to override sort the QS
         # first and then pass order_by_relevance=false to .search()
-        return model.objects.live().search(query)
+        return self.model.objects.live().search(query)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
