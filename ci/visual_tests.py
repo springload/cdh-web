@@ -83,7 +83,7 @@ def run():
     percy_snapshot(browser, "500 Page")
 
     # site search
-    browser.get("http://localhost:8000/search?q=network")
+    browser.get("http://localhost:8000/search?q=digital")
     percy_snapshot(browser, "Site Search")
 
     # shut down when finished
