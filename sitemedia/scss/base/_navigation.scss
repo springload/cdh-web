@@ -39,14 +39,16 @@ header.nav {
     margin-left: auto;
     margin-right: auto;
     transition: margin-top 0.25s;
+    z-index: 10;
 
     @media (max-width: $small-max-width) {
         height: 50px;
 
     }
 
-    z-index: 10;
-    &.hidden {
+    // hide via pitbar or permanently when on search page
+    &.hidden,
+    body.search & {
         margin-top: -90px;
     }
 
