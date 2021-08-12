@@ -51,7 +51,7 @@ class TestHomePage:
 
         # should display short title, short description, and link
         assertContains(response, "A Big Announcement!")
-        assertContains(response, "here's the text of the announcement")
+        assertContains(response, "We're making a big digital humanities announcement.")
         assertContains(response, announcement.get_url())
 
         # unpublished posts shouldn't be displayed
