@@ -15,7 +15,7 @@ class TestEventDetailTemplate:
     def test_event_content(self, client, workshop):
         """event detail page should include event content"""
         response = client.get(workshop.get_url())
-        assertContains(response, "<p>my workshop description</p>", html=True)
+        assertContains(response, "<p>Digital Mapping workshop for 2019</p>", html=True)
 
     def test_speakers(self, client, lecture):
         """event detail page should list info for all event speakers"""
