@@ -1,7 +1,7 @@
 Deploy Notes
 ============
 
-3.3
+3.4
 ---
 
 - After deployment, the Wagtail search index should be populated::
