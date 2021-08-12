@@ -46,10 +46,14 @@ header.nav {
 
     }
 
-    // hide via pitbar or permanently when on search page
-    &.hidden,
-    body.search & {
+    // hide via pitbar
+    &.hidden {
         margin-top: -90px;
+    }
+
+    // hide and remove from a11y tree on search page
+    body.search & {
+        display: none;   
     }
 
      a {

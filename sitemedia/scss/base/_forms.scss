@@ -96,42 +96,58 @@ select {
 
 // search page form
 form.search {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2), 0px 1px 18px rgba(0, 0, 0, 0.12);
+  background: $base-background-color;
+  height: $small-header-nav-height;
 
-  input[type="search"] {
-    font-size: 16px;
-    line-height: 20px;
-    border: none;
-    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2), 0px 1px 18px rgba(0, 0, 0, 0.12);
-    padding: 16px;  
+  @media (min-width: $medium-min-width) {
+    height: $header-nav-height;
+  }
 
-    @media (min-width: $large-min-width) {
-      font-size: 20px;
-      line-height: 24px;
-      padding: 16px 16px 16px 100px;  
+  a.home-page,
+  label.submit {
+    flex: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 14px;
+
+    img {
+      height: 100%;
     }
   }
 
-  input[type="submit"] {
-    @include cdh-icon("search");
-    background-color: transparent;
-    font-size: 0;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 24px;
-    height: 24px;
-    top: 14px;
-    right: 16px;
+  label.submit {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  input[type="search"] {
+    flex: auto;
+    height: 100%;
+    font-size: 16px;
+    border: none;
+    padding: 0 16px;
+    margin: 0;
+    max-width: $small-content-width;
+    box-shadow: none;
+
+    @media (min-width: $medium-min-width) {
+      max-width: $medium-content-width;
+      font-size: 20px;
+    }
 
     @media (min-width: $large-min-width) {
-      width: 30px;
-      height: 30px;
-      right: 116px;
+      max-width: $large-content-width;
     }
   }
 }

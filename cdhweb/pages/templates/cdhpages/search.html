@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load humanize cdh_tags wagtailcore_tags %}
+{% load static humanize cdh_tags wagtailcore_tags %}
 {# Site search page #}
 
 {% block bodyclass %}search{% endblock bodyclass %}
@@ -7,9 +7,14 @@
 {% block main %}
 <h1 class="sr-only">{{ page_title }}</h1>
 <form class="search" action="{% url 'search' %}" method="get">
+    <a href="/" class="home-page">
+        <img alt="home" src="{% static "img/CDH_logo.svg" %}" />
+    </a>
     {{ form.q }}
-    {{ form.filter }}
-    <input type="submit" value="Search">
+    <label class="submit">
+        <img alt="submit" src="{% static "img/cdh-icons/search.svg" %}" />
+        <input type="submit" class="sr-only">
+    </label>
 </form>
 <div class="results">
     {% if page_obj %}
