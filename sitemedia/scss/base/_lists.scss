@@ -33,8 +33,7 @@ dd {
   padding: 30px 0;
 
   li + li {
-    border-top: 0.5px solid $dark-grey;
-    border-top-width: 90%;
+    border-top: 1px solid $dark-grey;
   }
 }
 

@@ -119,12 +119,14 @@ form.search {
     justify-content: center;
     align-items: center;
     height: 100%;
-    padding: 14px;
 
     img {
       height: 100%;
     }
   }
+
+  a.home-page { padding: 10px; }
+  label.submit { padding: 16px; }
 
   label.submit {
     margin: 0;
@@ -136,7 +138,7 @@ form.search {
     height: 100%;
     font-size: 16px;
     border: none;
-    padding: 0 16px;
+    padding: 0 0 0 16px;
     margin: 0;
     max-width: $small-content-width;
     box-shadow: none;
@@ -144,6 +146,7 @@ form.search {
     @media (min-width: $medium-min-width) {
       max-width: $medium-content-width;
       font-size: 20px;
+      padding: 0 0 0 40px;
     }
 
     @media (min-width: $large-min-width) {
