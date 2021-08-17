@@ -44,15 +44,27 @@
     <header class="nav">
         <div class="nav-wrap">
             <nav class='mobile-nav'>
-                <a class="menu-toggle" name="menu"><i class="fa fa-bars" aria-hidden="true"></i></a>
+                <a class="menu-toggle" name="menu">
+                    <span class="fa fa-bars" aria-label="open main menu"></span>
+                </a>
+                <label class="open" for="{{ site_search.q.id_for_label }}">
+                    <img alt="open site search" src="{% static "img/cdh-icons/search.svg" %}" />
+                </label>
             </nav>
             <nav id='mainmenu'>
-                {# NOTE hardcoded homepage URL that works on error pages #}
-                <a href='/' class='home-page'>
-                  <img alt="home" src='{% static "img/CDH_logo.svg" %}' />
-                </a>
                 {% include "snippets/primary_navigation.html" %}
             </nav>
+            <form class="nav search" action="{% url 'search' %}" method="get">
+                <a href="/" class="home-page">
+                    <img alt="home" src="{% static "img/CDH_logo.svg" %}" />
+                </a>
+                {{ site_search.q }}
+                <input type="submit" value="search" class="sr-only">
+                <label class="close">
+                    <span class="fas fa-times" aria-label="close site search"></span>
+                    <input type="reset" class="sr-only">
+                </label>
+            </form>
         </div>
     </header>
     {% include 'snippets/test_banner.html' %}
