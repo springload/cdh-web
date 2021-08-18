@@ -104,9 +104,17 @@ header.nav {
             justify-content: center;
             align-items: center;
             height: 100%;
-            width: 60px;
             padding: 10px 0;
             height: 100%;
+        }
+
+        label.open {
+            width: 60px;
+        }
+
+        .menu-toggle {
+            margin-right: auto;
+            width: 40px;
         }
 
         .menu-toggle span::before {
