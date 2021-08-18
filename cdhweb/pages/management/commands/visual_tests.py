@@ -24,6 +24,8 @@ class Command(BaseCommand):
 
         # homepage
         browser.get("http://localhost:8000/")
+        browser.find_element_by_css_selector("label.open").click()
+        browser.find_element_by_css_selector("input[type=search]").send_keys("digital")
         percy_snapshot(browser, "Home")
 
         # landing page
