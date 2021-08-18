@@ -153,6 +153,15 @@ header.nav {
             height: 100%;
         }
     }
+
+    a.home-page {
+        @media (min-width: $medium-min-width) {
+            margin-left: 15px;
+        }
+        @media (min-width: $large-max-width) {
+            margin: 0;
+        }
+    }
     
     label.open {
         margin: 0;
