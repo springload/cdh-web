@@ -59,13 +59,6 @@ header.nav {
     body.search & {
         display: none;   
     }
-
-    // no shadow when mobile menu is open
-    body.fixed & {
-        .nav-wrap {
-            box-shadow: none;
-        }
-    }
     
     a {
         color: #000000;
@@ -136,7 +129,6 @@ header.nav {
         align-items: center;
         justify-content: center;
         background-color: rgba(255, 255, 255, 0.95);
-        box-shadow: $header-nav-shadow;
     }
     
     a.home-page,
@@ -683,13 +675,17 @@ footer {
 // site search in nav
 form.nav.search {
     z-index: -1;
+    opacity: 0;
     box-shadow: none;
     
     &:focus-within {
         z-index: 0;
-        
-        ~ label[for="clear-site-search"] {
-            visibility: visible;
+        opacity: 1;
+        box-shadow: $header-nav-shadow;
+
+        // no shadow when mobile menu is open
+        body.fixed & {
+            box-shadow: none;
         }
     }
 }
