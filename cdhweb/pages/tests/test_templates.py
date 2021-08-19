@@ -9,7 +9,7 @@ from pytest_django.asserts import (
     assertTemplateUsed,
 )
 
-from cdhweb.pages.models import CaptionedImageBlock, SVGImageBlock
+from cdhweb.pages.models import CaptionedImageBlock, ContentPage, SVGImageBlock
 
 
 class TestHomePage:
@@ -127,6 +127,40 @@ class TestHomePage:
         events["deadline"].unpublish()
         response = client.get(homepage.relative_url(site))
         assert events["deadline"] not in response.context["events"]
+
+    @pytest.mark.skip("fixme")
+    def test_empty_featured_pages(self, client, site, homepage):
+        """homepage should not render featured pages if missing or unpublished"""
+        # no about or consult page: nothing rendered
+        response = client.get(homepage.relative_url(site))
+        assertTemplateNotUsed(response, "cdhpages/snippets/featured_page.html")
+        # only about page: nothing rendered
+        about = ContentPage(title="about", slug="about", body="")
+        homepage.add_child(instance=about)
+        homepage.save()
+        response = client.get(homepage.relative_url(site))
+        assertTemplateNotUsed(response, "cdhpages/snippets/featured_page.html")
+        # only consults page: nothing rendered
+        about.delete()
+        consult = ContentPage(title="consult", slug="consult")
+        homepage.add_child(instance=consult)
+        homepage.save()
+        response = client.get(homepage.relative_url(site))
+        assertTemplateNotUsed(response, "cdhpages/snippets/featured_page.html")
+        # both pages; should render
+        homepage.add_child(instance=about)
+        homepage.save()
+        response = client.get(homepage.relative_url(site))
+        assertTemplateUsed(response, "cdhpages/snippets/featured_page.html")
+        # unpublish either one; shouldn't render
+        consult.unpublish()
+        response = client.get(homepage.relative_url(site))
+        assertTemplateNotUsed(response, "cdhpages/snippets/featured_page.html")
+
+    def test_featured_pages(self, client, site, homepage):
+        """homepage should render special featured pages section with image"""
+        # create consultations page: section won't render since no about page
+        pass
 
 
 class TestLandingPage:

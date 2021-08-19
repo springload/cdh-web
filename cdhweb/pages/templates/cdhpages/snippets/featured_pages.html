@@ -1,0 +1,28 @@
+{% load static wagtailcore_tags wagtailimages_tags %}
+{% spaceless %}
+<section class="featured">
+    <h2>{{ about.title }}</h2>
+    <div class="content">
+        <p>{{ about.description|striptags|safe }}</p>
+        {# avoid having the accessible label be "read more" #}
+        <a class="about" href="{% pageurl about %}" aria-label="{{ about.title }}">
+            <span>Read More</span>
+            <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </a>
+        {% if featured_img %}
+        <div class="img-bg">
+            <div class="img-overlay">
+            {% image featured_img fill-660x400-c25 as img %}
+            {# mark the image as presentational since we can't generate an alt #}
+            <img src="{{ img.url }}" alt=""/>
+            </div>
+        </div>
+        {% endif %}
+        {# hardcode consultation link text #}
+        <a class="consult" href="{% pageurl consult %}">
+            <span>Request a Consultation</span>
+            <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </a>
+    </div>
+</section>
+{% endspaceless %}
