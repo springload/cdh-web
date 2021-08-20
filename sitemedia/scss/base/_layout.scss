@@ -124,4 +124,10 @@ section.featured {
       grid-area: link-consult;
     }
   }
+
+  .purple-mode & {
+    .img-bg {
+      background: url("/static/img/consult-icon-bg-purple.png")
+    }
+  }
 }
