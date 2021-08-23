@@ -128,34 +128,28 @@ class TestHomePage:
         response = client.get(homepage.relative_url(site))
         assert events["deadline"] not in response.context["events"]
 
-    @pytest.mark.skip("fixme")
     def test_empty_featured_pages(self, client, site, homepage):
         """homepage should not render featured pages if missing or unpublished"""
         # no about or consult page: nothing rendered
         response = client.get(homepage.relative_url(site))
-        assertTemplateNotUsed(response, "cdhpages/snippets/featured_page.html")
+        assertTemplateNotUsed(response, "cdhpages/snippets/featured_pages.html")
         # only about page: nothing rendered
         about = ContentPage(title="about", slug="about", body="")
         homepage.add_child(instance=about)
         homepage.save()
         response = client.get(homepage.relative_url(site))
-        assertTemplateNotUsed(response, "cdhpages/snippets/featured_page.html")
-        # only consults page: nothing rendered
-        about.delete()
+        assertTemplateNotUsed(response, "cdhpages/snippets/featured_pages.html")
+        # only consults page is live: nothing rendered
+        about.unpublish()
         consult = ContentPage(title="consult", slug="consult")
         homepage.add_child(instance=consult)
         homepage.save()
         response = client.get(homepage.relative_url(site))
-        assertTemplateNotUsed(response, "cdhpages/snippets/featured_page.html")
-        # both pages; should render
-        homepage.add_child(instance=about)
-        homepage.save()
+        assertTemplateNotUsed(response, "cdhpages/snippets/featured_pages.html")
+        # both pages live; should render
+        about.save_revision().publish()
         response = client.get(homepage.relative_url(site))
-        assertTemplateUsed(response, "cdhpages/snippets/featured_page.html")
-        # unpublish either one; shouldn't render
-        consult.unpublish()
-        response = client.get(homepage.relative_url(site))
-        assertTemplateNotUsed(response, "cdhpages/snippets/featured_page.html")
+        assertTemplateUsed(response, "cdhpages/snippets/featured_pages.html")
 
     def test_featured_pages(self, client, site, homepage):
         """homepage should render special featured pages section with image"""
