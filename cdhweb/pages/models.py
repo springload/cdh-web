@@ -295,12 +295,12 @@ class HomePage(BasePage):
         # add "featured pages" with special section: currently about/consult,
         # don't add them to context if not published
         # NOTE effectively hardcoding by slug for now; could generalize later
-        context["about"] = ContentPage.objects.live().filter(slug="about").first()
-        context["consult"] = ContentPage.objects.live().filter(slug="consult").first()
-
-        # about page image to be used for featured page section
-        context["featured_img"] = Image.objects.filter(tags__name="homepage").first()
-
+        context.update(
+            {
+                "about": ContentPage.objects.live().filter(slug="about").first(),
+                "consult": ContentPage.objects.live().filter(slug="consult").first(),
+            }
+        )
         return context
 
 

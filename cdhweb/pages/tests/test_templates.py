@@ -153,8 +153,22 @@ class TestHomePage:
 
     def test_featured_pages(self, client, site, homepage):
         """homepage should render special featured pages section with image"""
-        # create consultations page: section won't render since no about page
-        pass
+        # create pages with test content
+        about = ContentPage(title="about", slug="about", description="lorem ipsum")
+        homepage.add_child(instance=about)
+        homepage.save()
+        consult = ContentPage(title="consult", slug="consult")
+        homepage.add_child(instance=consult)
+        homepage.save()
+        response = client.get(homepage.relative_url(site))
+        # should render featured pages section
+        assertTemplateUsed(response, "cdhpages/snippets/featured_pages.html")
+        # should include description from about page
+        assertContains(response, "lorem ipsum")
+        # should include link to about page
+        assertContains(response, about.get_url())
+        # should include link to consult page
+        assertContains(response, consult.get_url())
 
 
 class TestLandingPage:

@@ -9,15 +9,12 @@
             <span>Read More</span>
             <i class="fas fa-arrow-right" aria-hidden="true"></i>
         </a>
-        {% if featured_img %}
         <div class="img-bg">
             <div class="img-overlay">
-            {% image featured_img fill-660x400-c25 as img %}
-            {# mark the image as presentational since we can't generate an alt #}
-            <img src="{{ img.url }}" alt=""/>
+            {# hardcoded image; presentational so no alt #}
+            <img src="{% static 'img/rm-consults.jpg' %}" width="330" height="200" alt=""/>
             </div>
         </div>
-        {% endif %}
         {# hardcode consultation link text #}
         <a class="consult" href="{% pageurl consult %}">
             <span>Request a Consultation</span>
