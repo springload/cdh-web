@@ -27,7 +27,6 @@ header, div, p, img, section, article {
 
     @media (max-width: $small-max-width) {
         max-width: $small-content-width;
-        min-width: $small-min-width;
     }
 }
 
