@@ -782,9 +782,9 @@ $event-card-img-height: 240px;
 
 }
 
-.homepage section.events, 
-.homepage section.projects, 
-.homepage section.people {
+section.events, 
+section.projects, 
+section.people {
     @media (min-width: $medium-min-width) {
 		@include grid-container;
 	}
