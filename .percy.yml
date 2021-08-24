@@ -1,9 +1,9 @@
 version: 2
 snapshot:
   widths:
-    - 375
-    - 768
-    - 1280
+    - 320
+    - 736
+    - 1069
   minHeight: 1024
 discovery:
   allowedHostnames: []
