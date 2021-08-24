@@ -68,7 +68,7 @@ section.featured {
     min-height: 275px;
     justify-content: center;
     align-items: center;
-    background-image: url("/static/img/consult-icon-bg.png");
+    background-image: url("/static/img/consult-blue-bg-desktop.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -127,7 +127,7 @@ section.featured {
 
   .purple-mode & {
     .img-bg {
-      background: url("/static/img/consult-icon-bg-purple.png")
+      background: url("/static/img/consult-purple-bg-desktop.png");
     }
   }
 }
