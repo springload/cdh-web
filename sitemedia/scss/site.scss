@@ -19,14 +19,11 @@ header, div, p, img, section, article {
 
 /* container with max-width for large, medium, and small viewports */
 .responsive-container {
-    max-width: $large-content-width;
+	max-width: $small-content-width;
     margin: auto;
-    @media (max-width: $medium-max-width) {
-        max-width: $medium-content-width;
-    }
 
-    @media (max-width: $small-max-width) {
-        max-width: $small-content-width;
+    @media (min-width: $large-min-width) {
+		max-width: $large-content-width;
     }
 }
 
