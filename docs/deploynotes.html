@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Deploy Notes &#8212; CDH website 3.3.0 documentation</title>
+    <title>Deploy Notes &#8212; CDH website 3.4.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -35,7 +35,22 @@
   <section id="deploy-notes">
 <h1>Deploy Notes<a class="headerlink" href="#deploy-notes" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
-<h2>3.0.2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>3.4<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>After deployment, the Wagtail search index should be populated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">update_index</span>
+</pre></div>
+</div>
+<p>This command only needs to be run once, since signals will take care of any
+indexing after the initial run.</p>
+</li>
+<li><p>In order to power the featured section on the homepage, the About and
+Consultations pages should exist, and the About page should have a description
+set in Wagtail.</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>3.0.2<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>This release reset migrations without mezzanine dependencies. Updating
 requires the following steps:</p>
@@ -64,8 +79,8 @@ choose the “continue” (c) option to finish the rest of the playbook normally
 </li>
 </ul>
 </section>
-<section id="id2">
-<h2>3.0.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<section id="id3">
+<h2>3.0.1<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>After deploy, run a script to clean up markup in migrated content from the
 exodus script in the last release:</p>
@@ -75,22 +90,22 @@ exodus script in the last release:</p>
 </li>
 </ul>
 </section>
-<section id="id3">
-<h2>3.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<section id="id4">
+<h2>3.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>After deployment, the main exodus script should be run to move content from
 mezzanine to wagtail with <cite>python manage.py exodus</cite>.</p></li>
 </ul>
 </section>
-<section id="id4">
-<h2>2.8.1<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<section id="id5">
+<h2>2.8.1<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Data will need to be migrated out of the existing database and into a Postgres
 database. The <cite>pgloader</cite> tool can be used for this purpose.</p></li>
 </ul>
 </section>
-<section id="id5">
-<h2>2.8<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<section id="id6">
+<h2>2.8<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>The “Postdocs” list page has been removed, so its corresponding page should be
 deleted in Mezzanine.</p></li>
@@ -105,8 +120,8 @@ this removed, and the grant type can be deleted.</p></li>
 have this changed to “Staff Projects”, and the grant type can be deleted.</p></li>
 </ul>
 </section>
-<section id="id6">
-<h2>2.7<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<section id="id7">
+<h2>2.7<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>The “Faculty Affiliates” page has changed to show both Faculty and Staff, and
 thus its title and content should be updated accordingly in Mezzanine.</p></li>
@@ -114,8 +129,8 @@ thus its title and content should be updated accordingly in Mezzanine.</p></li>
 that v10 is installed and available on the target machine.</p></li>
 </ul>
 </section>
-<section id="id7">
-<h2>2.6<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<section id="id8">
+<h2>2.6<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Adds a cosponsorship request form embed template similar to the consult form.
 A <cite>RichTextPage</cite> needs to be created with its url set to <cite>/events/cosponsor</cite>
@@ -125,8 +140,8 @@ text at the top of the page. To disable the text at the top, enter two non-
 breaking spaces in the text field. Make sure the url remains <cite>/events</cite>.</p></li>
 </ul>
 </section>
-<section id="id8">
-<h2>2.2<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<section id="id9">
+<h2>2.2<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Adds an alumni page, parallel to current staff.  Existing profile pages
 for past staff should be republished.</p></li>
@@ -134,16 +149,16 @@ for past staff should be republished.</p></li>
 content with the title repeated will need to be edited.</p></li>
 </ul>
 </section>
-<section id="id9">
-<h2>2.1<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<section id="id10">
+<h2>2.1<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Resource names have been changed to store proper case in the database.
 Existing installations should update the three pre-populated items manually.</p></li>
 <li><p>Update local settings to turn on Google Analytics.</p></li>
 </ul>
 </section>
-<section id="id10">
-<h2>2.0<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<section id="id11">
+<h2>2.0<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Update default site in Django admin to match deployed site url</p></li>
 <li><p>Initialize admin and other users with createcasuser before running
@@ -204,22 +219,23 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></p
 </a>
 </p>
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="codedocs.html">Code Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Deploy Notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">3.0.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">3.0.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">2.8.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">2.8</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id6">2.7</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id7">2.6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id8">2.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id9">2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id10">2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">3.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">3.0.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">3.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">2.8.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">2.8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">2.7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">2.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id11">2.0</a></li>
 </ul>
 </li>
 </ul>
@@ -228,16 +244,17 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></p
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Deploy Notes</a><ul>
-<li><a class="reference internal" href="#id1">3.0.2</a></li>
-<li><a class="reference internal" href="#id2">3.0.1</a></li>
-<li><a class="reference internal" href="#id3">3.0</a></li>
-<li><a class="reference internal" href="#id4">2.8.1</a></li>
-<li><a class="reference internal" href="#id5">2.8</a></li>
-<li><a class="reference internal" href="#id6">2.7</a></li>
-<li><a class="reference internal" href="#id7">2.6</a></li>
-<li><a class="reference internal" href="#id8">2.2</a></li>
-<li><a class="reference internal" href="#id9">2.1</a></li>
-<li><a class="reference internal" href="#id10">2.0</a></li>
+<li><a class="reference internal" href="#id1">3.4</a></li>
+<li><a class="reference internal" href="#id2">3.0.2</a></li>
+<li><a class="reference internal" href="#id3">3.0.1</a></li>
+<li><a class="reference internal" href="#id4">3.0</a></li>
+<li><a class="reference internal" href="#id5">2.8.1</a></li>
+<li><a class="reference internal" href="#id6">2.8</a></li>
+<li><a class="reference internal" href="#id7">2.7</a></li>
+<li><a class="reference internal" href="#id8">2.6</a></li>
+<li><a class="reference internal" href="#id9">2.2</a></li>
+<li><a class="reference internal" href="#id10">2.1</a></li>
+<li><a class="reference internal" href="#id11">2.0</a></li>
 </ul>
 </li>
 </ul>
@@ -246,7 +263,7 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></p
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -266,7 +283,7 @@ dumpdata) using <cite>python manage.py import_datav1 path_to_data.json</cite></p
       &copy;2017, CDH @ Princeton & Trustees of Princeton University.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
