@@ -23,6 +23,7 @@ from wagtail.documents.models import AbstractDocument, DocumentQuerySet
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.images.models import Image
 from wagtail.search import index
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.models import register_snippet
@@ -226,6 +227,9 @@ class ContentPage(BasePage, PagePreviewDescriptionMixin):
         StreamFieldPanel("attachments"),
     ]
 
+    # index description in addition to body content
+    search_fields = BasePage.search_fields + [index.SearchField("description")]
+
     parent_page_types = ["HomePage", "LandingPage", "ContentPage"]
     subpage_types = ["ContentPage"]
 
@@ -266,7 +270,7 @@ class HomePage(BasePage):
         verbose_name = "Homepage"
 
     def get_context(self, request):
-        """Add featured updates, projects, and events to the page context."""
+        """Add featured updates, projects, pages, and events to page context."""
         context = super().get_context(request)
 
         # FIXME because these apps import LandingPage, there is a circular
@@ -288,6 +292,15 @@ class HomePage(BasePage):
         # add up to 3 upcoming, published events
         context["events"] = Event.objects.live().upcoming()[:3]
 
+        # add "featured pages" with special section: currently about/consult,
+        # don't add them to context if not published
+        # NOTE effectively hardcoding by slug for now; could generalize later
+        context.update(
+            {
+                "about": ContentPage.objects.live().filter(slug="about").first(),
+                "consult": ContentPage.objects.live().filter(slug="consult").first(),
+            }
+        )
         return context
 
 

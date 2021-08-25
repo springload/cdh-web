@@ -105,11 +105,26 @@ TAGGIT_CASE_INSENSITIVE = True
 # https://docs.wagtail.io/en/latest/reference/settings.html#usage-for-images-documents-and-snippets
 WAGTAIL_USAGE_COUNT_ENABLED = True
 
+# Use Wagtail's postgresql search backend.
+# https://docs.wagtail.io/en/latest/reference/contrib/postgres_search.html
+WAGTAILSEARCH_BACKENDS = {
+    "default": {
+        "BACKEND": "wagtail.contrib.postgres_search.backend",
+        "SEARCH_CONFIG": "english",
+    },
+}
+
 # enable feature detection in images
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = True
 
 # custom document model
 WAGTAILDOCS_DOCUMENT_MODEL = "cdhpages.LocalAttachment"
+
+# custom embed finders
+WAGTAILEMBEDS_FINDERS = [
+    {"class": "wagtail.embeds.finders.oembed"},
+    {"class": "cdhweb.pages.embed_finders.GlitchHubEmbedFinder"},
+]
 
 
 ########################
@@ -273,11 +288,12 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.request",
                 "django.template.context_processors.tz",
-                # 'wagtail.contrib.settings.context_processors.settings',
-                # 'wagtailmenus.context_processors.wagtailmenus',
+                # "wagtail.contrib.settings.context_processors.settings",
+                # "wagtailmenus.context_processors.wagtailmenus",
                 "cdhweb.context_extras",
                 "cdhweb.context_processors.template_settings",
                 "cdhweb.pages.context_processors.page_intro",
+                "cdhweb.pages.context_processors.site_search",
             ],
         },
     },
@@ -312,6 +328,7 @@ INSTALLED_APPS = [
     "wagtail.search",
     "wagtail.admin",
     "wagtail.contrib.modeladmin",
+    "wagtail.contrib.postgres_search",
     "wagtail.core",
     "wagtailmenus",
     "modelcluster",

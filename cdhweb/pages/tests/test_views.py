@@ -1,8 +1,16 @@
 from datetime import timedelta
 from operator import attrgetter
-from unittest.mock import patch
+from re import search
+from unittest.mock import MagicMock, patch
 
+import pytest
 from django.http import HttpResponse
+from django.urls import reverse
+from pytest_django.asserts import assertTemplateUsed
+from wagtail.core.models import PageQuerySet
+from wagtail.search.query import PlainText
+
+from cdhweb.pages.views import SiteSearchView
 
 
 class TestLastModifiedMixin:
@@ -85,3 +93,26 @@ class TestLastModifiedListMixin:
         mock_dispatch.return_value = HttpResponse()
         response = lmod_list_view.dispatch(request)
         assert response.status_code == 200
+
+
+class TestSiteSearchView:
+    def test_get_context_data(self, db, client):
+        """should add page title to context"""
+        response = client.get(reverse("search"))
+        assert response.context["page_title"] == SiteSearchView.page_title
+
+    def test_get_form_kwargs(self, db, client):
+        """should populate form using GET data"""
+        response = client.get(reverse("search"), {"q": "test"})
+        assert response.context["form"]["q"].value() == "test"
+
+    @patch("cdhweb.pages.views.SiteSearchView.model")
+    def test_get_queryset(self, mock_page, db, client):
+        """should call wagtail search() with query on published pages"""
+        client.get(reverse("search"), {"q": "test"})
+        # should filter to published pages
+        mock_page.objects.live.assert_called_once()
+        # should run search for term using OR logic
+        query = mock_page.objects.live.return_value.search.call_args[0][0]
+        assert query.query_string == "test"
+        assert query.operator == "or"

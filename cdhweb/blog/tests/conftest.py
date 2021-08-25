@@ -23,7 +23,9 @@ def make_announcement(blog_link_page):
     pubdate = timezone.datetime(2020, 11, 2, 15, tzinfo=EST).astimezone(tz.utc)
     post = BlogPost(
         title="A Big Announcement!",
-        body=to_streamfield_safe("<p>here's the text of the announcement</p>"),
+        body=to_streamfield_safe(
+            "<p>We're making a big digital humanities announcement.</p>"
+        ),
     )
     blog_link_page.add_child(instance=post)
     blog_link_page.save()
@@ -38,7 +40,9 @@ def make_project_feature(blog_link_page, grad_pm):
     pubdate = timezone.datetime(2018, 5, 19, 17, 31, tzinfo=EST).astimezone(tz.utc)
     post = BlogPost(
         title="Making progress on the Cool Project",
-        body=to_streamfield_safe("<p>the Cool Project is getting cooler every day</p>"),
+        body=to_streamfield_safe(
+            "<p>the Cool Digital Project is getting cooler every day</p>"
+        ),
     )
     blog_link_page.add_child(instance=post)
     blog_link_page.save()

@@ -1,5 +1,13 @@
+import operator
+
 from django.utils.cache import get_conditional_response
+from django.views.generic import ListView, TemplateView
 from django.views.generic.base import View
+from django.views.generic.edit import FormMixin
+from wagtail.core.models import Page
+from wagtail.search.utils import parse_query_string
+
+from cdhweb.pages.forms import SiteSearchForm
 
 
 class LastModifiedMixin(View):
@@ -50,3 +58,47 @@ class LastModifiedListMixin(LastModifiedMixin):
                 queryset.order_by(self.lastmodified_attr).reverse().first(),
                 self.lastmodified_attr,
             )
+
+
+class SiteSearchView(ListView, FormMixin):
+    """Search across all pages on the site."""
+
+    model = Page
+    form_class = SiteSearchForm
+    paginate_by = 10
+    page_title = "Search"
+    template_name = "cdhpages/search.html"
+
+    def get_queryset(self):
+        # get keyword query; support filters & phrase matching with double quotes
+        # see https://docs.wagtail.io/en/stable/topics/search/searching.html#query-string-parsing
+        q = self.request.GET.get("q", "")
+        _filters, query = parse_query_string(q)  # not using these filters yet
+        query.operator = "or"  # set query operator to OR (default is AND)
+
+        # execute search; exclude unpublished pages.
+        # NOTE results sorted by relevance by default; to override sort the QS
+        # first and then pass order_by_relevance=false to .search()
+        return self.model.objects.live().search(query)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # use GET instead of default POST/PUT for form data
+        kwargs["data"] = self.request.GET.copy()
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({"page_title": self.page_title})
+        return context
+
+
+class OpenSearchDescriptionView(TemplateView):
+    """Basic open search description for searching the site via browser or
+    other tools."""
+
+    # adapted from ppa-django:
+    # https://github.com/Princeton-CDH/ppa-django/blob/main/ppa/archive/views.py#L629-L634
+
+    template_name = "cdhpages/opensearch_description.xml"
+    content_type = "application/opensearchdescription+xml"

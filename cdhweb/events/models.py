@@ -5,6 +5,7 @@ from datetime import datetime
 import icalendar
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.fields.related import RelatedField
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import strip_tags
@@ -22,6 +23,7 @@ from wagtail.admin.edit_handlers import (
 )
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.search import index
 
 from cdhweb.pages.models import BasePage, LinkPage
 from cdhweb.people.models import Person
@@ -197,6 +199,30 @@ class Event(BasePage, ClusterableModel):
 
     # custom manager/queryset logic
     objects = EventManager()
+
+    # index fields
+    search_fields = BasePage.search_fields + [
+        index.SearchField("sponsor"),
+        index.RelatedFields(
+            "location",
+            [
+                index.SearchField("name"),
+            ],
+        ),
+        index.RelatedFields(
+            "type",
+            [
+                index.SearchField("name"),
+            ],
+        ),
+        index.RelatedFields(
+            "people",
+            [
+                index.SearchField("first_name"),
+                index.SearchField("last_name"),
+            ],
+        ),
+    ]
 
     def __str__(self):
         return " - ".join([self.title, self.start_time.strftime("%b %d, %Y")])

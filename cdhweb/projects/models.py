@@ -12,6 +12,7 @@ from wagtail.admin.edit_handlers import (
 )
 from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.search import index
 
 from cdhweb.pages.models import BasePage, DateRange, LandingPage, LinkPage, RelatedLink
 from cdhweb.people.models import Person
@@ -173,6 +174,18 @@ class Project(BasePage, ClusterableModel):
 
     # custom manager/queryset logic
     objects = ProjectManager()
+
+    # search fields
+    search_fields = BasePage.search_fields + [
+        index.SearchField("short_description"),
+        index.RelatedFields(
+            "members",
+            [
+                index.SearchField("first_name"),
+                index.SearchField("last_name"),
+            ],
+        ),
+    ]
 
     def __str__(self):
         return self.title

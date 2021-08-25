@@ -9,7 +9,7 @@ from pytest_django.asserts import (
     assertTemplateUsed,
 )
 
-from cdhweb.pages.models import CaptionedImageBlock, SVGImageBlock
+from cdhweb.pages.models import CaptionedImageBlock, ContentPage, SVGImageBlock
 
 
 class TestHomePage:
@@ -51,7 +51,7 @@ class TestHomePage:
 
         # should display short title, short description, and link
         assertContains(response, "A Big Announcement!")
-        assertContains(response, "here's the text of the announcement")
+        assertContains(response, "We're making a big digital humanities announcement.")
         assertContains(response, announcement.get_url())
 
         # unpublished posts shouldn't be displayed
@@ -127,6 +127,48 @@ class TestHomePage:
         events["deadline"].unpublish()
         response = client.get(homepage.relative_url(site))
         assert events["deadline"] not in response.context["events"]
+
+    def test_empty_featured_pages(self, client, site, homepage):
+        """homepage should not render featured pages if missing or unpublished"""
+        # no about or consult page: nothing rendered
+        response = client.get(homepage.relative_url(site))
+        assertTemplateNotUsed(response, "cdhpages/snippets/featured_pages.html")
+        # only about page: nothing rendered
+        about = ContentPage(title="about", slug="about", body="")
+        homepage.add_child(instance=about)
+        homepage.save()
+        response = client.get(homepage.relative_url(site))
+        assertTemplateNotUsed(response, "cdhpages/snippets/featured_pages.html")
+        # only consults page is live: nothing rendered
+        about.unpublish()
+        consult = ContentPage(title="consult", slug="consult")
+        homepage.add_child(instance=consult)
+        homepage.save()
+        response = client.get(homepage.relative_url(site))
+        assertTemplateNotUsed(response, "cdhpages/snippets/featured_pages.html")
+        # both pages live; should render
+        about.save_revision().publish()
+        response = client.get(homepage.relative_url(site))
+        assertTemplateUsed(response, "cdhpages/snippets/featured_pages.html")
+
+    def test_featured_pages(self, client, site, homepage):
+        """homepage should render special featured pages section with image"""
+        # create pages with test content
+        about = ContentPage(title="about", slug="about", description="lorem ipsum")
+        homepage.add_child(instance=about)
+        homepage.save()
+        consult = ContentPage(title="consult", slug="consult")
+        homepage.add_child(instance=consult)
+        homepage.save()
+        response = client.get(homepage.relative_url(site))
+        # should render featured pages section
+        assertTemplateUsed(response, "cdhpages/snippets/featured_pages.html")
+        # should include description from about page
+        assertContains(response, "lorem ipsum")
+        # should include link to about page
+        assertContains(response, about.get_url())
+        # should include link to consult page
+        assertContains(response, consult.get_url())
 
 
 class TestLandingPage:

@@ -20,6 +20,7 @@ from wagtail.admin.edit_handlers import (
 from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.search import index
 
 from cdhweb.pages.models import (
     PARAGRAPH_FEATURES,
@@ -178,7 +179,8 @@ class PersonQuerySet(models.QuerySet):
     def _current_position_query(self):
         # query to find a person with a current cdh position
         # person *has* a position and it has no end date or date after today
-        return models.Q(positions__isnull=False) & (
+        today = date.today()
+        return models.Q(positions__start_date__lte=today) & (
             models.Q(positions__end_date__isnull=True)
             | models.Q(positions__end_date__gte=date.today())
         )
@@ -220,10 +222,12 @@ class PersonQuerySet(models.QuerySet):
 
     def current_position_nonexec(self):
         """Return profiles for users with a current position, excluding
-        executive committee positions."""
-        return self.filter(
-            models.Q(self._current_position_query())
-            & ~models.Q(positions__title__title__in=self.exec_committee_titles)
+        current executive committee positions."""
+        cpq = self._current_position_query()
+        return (
+            self.filter(cpq)
+            .annotate(current_position_title=models.F("positions__title__title"))
+            .exclude(current_position_title__in=self.exec_committee_titles)
         )
 
     def order_by_position(self):
@@ -455,6 +459,9 @@ class Profile(BasePage):
 
     parent_page_types = ["people.PeopleLandingPage"]
     subpage_types = []
+
+    # index fields
+    search_fields = BasePage.search_fields + [index.SearchField("education")]
 
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""

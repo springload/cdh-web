@@ -1,6 +1,21 @@
 Deploy Notes
 ============
 
+3.4
+---
+
+- After deployment, the Wagtail search index should be populated::
+
+    python manage.py update_index
+
+  This command only needs to be run once, since signals will take care of any
+  indexing after the initial run.
+
+- In order to power the featured section on the homepage, the About and 
+  Consultations pages should exist, and the About page should have a description
+  set in Wagtail.
+
+
 3.0.2
 -----
 

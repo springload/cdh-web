@@ -3,6 +3,7 @@ from datetime import date, timedelta
 import pytest
 
 from cdhweb.pages.models import RelatedLinkType
+from cdhweb.pages.tests.conftest import to_streamfield_safe
 from cdhweb.people.models import (
     PeopleLandingPage,
     Person,
@@ -217,7 +218,14 @@ def make_people(projects_landing_page):
 
 def make_staffer_profile(people_landing_page, staffer):
     """Create a profile page for a given staff person."""
-    profile = Profile(person=staffer, title="Staffer", education="Princeton University")
+    profile = Profile(
+        person=staffer,
+        title="Staffer",
+        education="Princeton University",
+        body=to_streamfield_safe(
+            "<p>I'm a member of the CDH staff. I do digital humanities.</p>"
+        ),
+    )
     people_landing_page.add_child(instance=profile)
     people_landing_page.save()
     return profile

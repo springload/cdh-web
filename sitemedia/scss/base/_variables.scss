@@ -46,6 +46,7 @@ $header-nav-height: 65px;
 $small-header-nav-height: 50px;
 $carousel-height: 680px;
 $small-carousel-height: 520px;
+$header-nav-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2), 0px 1px 18px rgba(0, 0, 0, 0.12);
 
 // breakpoints and content sizes for large, medium, and small viewports
 $small-max-width: 735px;
@@ -58,6 +59,7 @@ $medium-content-width: 735px;
 
 $large-content-width: 990px;
 $large-min-width: $medium-max-width + 1;
+$large-max-width: 1280px;
 
 // bitters built-ins
 
@@ -87,3 +89,7 @@ $base-timing: ease;
 
 // font awesome webfont location
 $fa-font-path: "../webfonts/fontawesome/";
+
+// CDH Icons
+$cdh-icons: "book", "cal", "convo", "doc", "email", "folder", "grant", "img",
+            "link", "location", "medal", "pdf", "ppl", "search", "seed", "vid";

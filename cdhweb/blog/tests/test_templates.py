@@ -15,7 +15,9 @@ class TestBlogPostDetail:
         """blog post detail page should include post body"""
         response = client.get(announcement.get_url())
         assertContains(
-            response, "<p>here's the text of the announcement</p>", html=True
+            response,
+            "<p>We're making a big digital humanities announcement.</p>",
+            html=True,
         )
 
     def test_authors(self, site, client, article, staffer_profile):

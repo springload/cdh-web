@@ -1,6 +1,10 @@
-{% load i18n cdh_tags %}
+{% load static i18n cdh_tags %}
 {# top level menu, with secondary nav for current site section #}
 <div class="nav-main">
+    {# NOTE hardcoded homepage URL that works on error pages #}
+    <a href="/" class="home-page">
+        <img alt="home" src='{% static "img/CDH_logo.svg" %}'/>
+    </a>
     {# top-level pages #}
     {% with toplevel_pages=site.root_page.get_children.live.in_menu %}
     <ul class='primary-nav' role="menubar" aria-label="main navigation">
@@ -17,12 +21,15 @@
                     aria-haspopup="true"
                     aria-expanded="false"
                     {% endif %}
-                    {% if request.path|startswith:navpage.get_url %} aria-current="page"{% endif %}>{{ navpage.title }}
+                    {% if request and request.path|startswith:navpage.get_url %} aria-current="page"{% endif %}>{{ navpage.title }}
                 </a>
             </li>
         {% endif %}
         {% endfor %}
     </ul>
+    <label class="open" for="{{ site_search.q.id_for_label }}">
+        <img alt="open site search" src="{% static "img/cdh-icons/search.svg" %}" />
+    </label>
 </div>
 {% for navpage in toplevel_pages %}
     {% include "snippets/navigation_card.html" with navpages=navpage.get_children.live.in_menu %}

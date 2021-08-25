@@ -1,0 +1,13 @@
+{% load fullurl %}
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>CDHWeb</ShortName>
+  <Description>Center for Digital Humanities @ Princeton</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image width="16" height="16" type="image/x-icon">{% fullstatic 'favicon.ico' %}</Image>
+  <Image width="64" height="64" type="image/png">{% fullstatic 'cdh-logo64x64.png' %}</Image>
+  <Url type="text/html" template="{% fullurl 'search' %}">
+    <Param name="q" value="{searchTerms}"/>
+  </Url>
+  <moz:SearchForm>{% fullurl 'search' %}</moz:SearchForm>
+</OpenSearchDescription>

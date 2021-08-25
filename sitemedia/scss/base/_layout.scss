@@ -27,3 +27,109 @@ body {
   }
 }
 
+// featured page sections
+section.featured {
+  h2 {
+    @include cdh-icon('doc');
+    @include header-with-icon;
+  }
+
+  .content {
+    display: grid;
+    gap: 30px;
+    grid-template-areas: "text"
+                         "link-about"
+                         "img"
+                         "link-consult";
+                          
+  
+    @media (min-width: $medium-min-width) {
+      grid-template-areas: "text img"
+                           "link-about link-consult";
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  p {
+    grid-area: text;
+    margin: auto 0;
+    font-size: 16px;
+    line-height: 24px;
+
+    @media (min-width: $medium-min-width) {
+      font-size: 20px;
+      line-height: 30px;
+    }
+  }
+
+  .img-bg {
+    grid-area: img;
+    display: flex;
+    flex-direction: column;
+    min-height: 275px;
+    justify-content: center;
+    align-items: center;
+    background-image: url("/static/img/consult-blue-bg-desktop.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .img-overlay {
+    position: relative;
+    flex: none;
+    max-height: 200px;
+    max-width: 330px;
+  }
+
+  .img-overlay::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(var(--highlight-color-rgb), 0.5) 0%, rgba(0, 0, 0, 0) 50%, rgba(var(--highlight-color-rgb), 0.5) 100%);
+  }
+
+  img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  a {
+    display: inline-block;
+    font-family: $font-stack-headline-bold;
+    font-size: 16px;
+    text-decoration: none;
+    color: $base-font-color;
+    border-bottom: 2px solid var(--highlight-color);
+    max-width: max-content;
+
+    @media (min-width: $medium-min-width) {
+      font-size: 18px;
+    }
+
+    i, span {
+      vertical-align: middle;
+    }
+
+    i {
+      margin-left: 12px;
+    }
+
+    &.about {
+      grid-area: link-about;
+    }
+
+    &.consult {
+      grid-area: link-consult;
+    }
+  }
+
+  .purple-mode & {
+    .img-bg {
+      background: url("/static/img/consult-purple-bg-desktop.png");
+    }
+  }
+}

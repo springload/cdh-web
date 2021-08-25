@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "serve": "python manage.py runserver --insecure",
-    "percy": "percy exec -- python ci/visual_tests.py",
+    "percy": "percy exec -- python manage.py visual_tests",
     "test:visual": "start-server-and-test serve http://localhost:8000 percy"
   },
   "dependencies": {

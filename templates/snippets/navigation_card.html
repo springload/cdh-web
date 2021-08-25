@@ -11,7 +11,7 @@
                     href="{{ navpage.get_url }}"
                     tabindex="-1"
                     {% if navpage.get_children.live.in_menu %} aria-owns="{{ navpage.slug }}-tertiary"{% endif %}
-                    {% if request.path|startswith:navpage.get_url %} aria-current="page"{% endif %}>{{ navpage.title }}</a>
+                    {% if request and request.path|startswith:navpage.get_url %} aria-current="page"{% endif %}>{{ navpage.title }}</a>
                 {% include "snippets/tertiary_navigation.html" with navpages=navpage.get_children.live.in_menu %}
             </li>
         {% endfor %}
