@@ -1,11 +1,7 @@
 import pytest
 from django.core.exceptions import ValidationError
-from datetime import timezone as tz
-from datetime import timedelta
-from django.utils import timezone
 
-from cdhweb.events.models import Event, EventType, Location, EventsLinkPage
-from cdhweb.events.tests.conftest import make_second_course 
+from cdhweb.events.models import Event, EventType, Location
 
 class TestSpeaker:
     def test_str(self, lecture):
@@ -57,17 +53,17 @@ class TestLocation:
 
 
 class TestEventQueryset:
-    def test_upcoming(self, events):
+    def test_upcoming(self, events, upcoming_event):
         """upcoming should include all events that haven't started yet"""
-        # An extra course is needed to test sorting
-        make_second_course()
-        
+
         upcoming = list(Event.objects.upcoming())
         assert events["deadline"] in upcoming
         assert events["workshop"] not in upcoming
         assert events["lecture"] not in upcoming
 
         # Ensure that the order is correct
+        # upcoming_event is included as a fixture so that there are enough upcoming
+        #  events to test sorting
         assert upcoming[0].start_time < upcoming[1].start_time
 
     def test_recent(self, events):

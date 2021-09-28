@@ -119,7 +119,7 @@ def make_course(link_page):
     link_page.save()
     return course
 
-def make_second_course():
+def add_upcoming_event(link_page):
     """Create a course that will happen in 2080. This second course is not defined
     as a fixture since it only needs to be called once."""
     course_type = EventType.objects.get_or_create(name="Course")[0]
@@ -133,7 +133,6 @@ def make_second_course():
         type=course_type,
     )
     course.last_published_at = start_time - timedelta(days=10)
-    link_page = EventsLinkPage.objects.get(slug="events")
     link_page.add_child(instance=course)
     link_page.save()
     return course
@@ -193,3 +192,7 @@ def events(db, workshop, lecture, deadline, course):
         "deadline": deadline,
         "course": course,
     }
+
+@pytest.fixture
+def upcoming_event(events_link_page):
+    return add_upcoming_event(events_link_page)
