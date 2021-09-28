@@ -1,8 +1,11 @@
 import pytest
 from django.core.exceptions import ValidationError
+from datetime import timezone as tz
+from datetime import timedelta
+from django.utils import timezone
 
-from cdhweb.events.models import Event, EventType, Location
-
+from cdhweb.events.models import Event, EventType, Location, EventsLinkPage
+from cdhweb.pages.tests.conftest import to_streamfield_safe
 
 class TestSpeaker:
     def test_str(self, lecture):
@@ -54,12 +57,36 @@ class TestLocation:
 
 
 class TestEventQueryset:
+    def make_second_course(self):
+        """Create a course that will happen in 2080. An extra course is needed
+        to test sorting"""
+        course_type = EventType.objects.get_or_create(name="Course")[0]
+        start_time = timezone.datetime(2080, 2, 2).astimezone(tz.utc)
+        end_time = timezone.datetime(2080, 4, 27).astimezone(tz.utc)
+        course = Event(
+            title="second testing course",
+            body=to_streamfield_safe("<p>February 2080 History of Digital Humanities</p>"),
+            start_time=start_time,
+            end_time=end_time,
+            type=course_type,
+        )
+        course.last_published_at = start_time - timedelta(days=10)
+        link_page = EventsLinkPage.objects.get(slug="events")
+        link_page.add_child(instance=course)
+        link_page.save()
+        return course
+
     def test_upcoming(self, events):
         """upcoming should include all events that haven't started yet"""
+        self.make_second_course()
         upcoming = list(Event.objects.upcoming())
         assert events["deadline"] in upcoming
         assert events["workshop"] not in upcoming
         assert events["lecture"] not in upcoming
+
+        # Ensure that the order is correct
+        assert upcoming[0].start_time < upcoming[1].start_time
+
 
     def test_recent(self, events):
         """recent should include past events with most recent first"""
