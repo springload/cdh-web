@@ -92,7 +92,7 @@ class EventQuerySet(PageQuerySet):
         today = datetime(
             now.year, now.month, now.day, tzinfo=timezone.get_default_timezone()
         )
-        return self.filter(end_time__gte=today)
+        return self.filter(end_time__gte=today).order_by("start_time")
 
     def recent(self):
         """Find past events, most recent first.  Only includes events
