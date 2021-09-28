@@ -119,6 +119,24 @@ def make_course(link_page):
     link_page.save()
     return course
 
+def make_second_course():
+    """Create a course that will happen in 2080. This second course is not defined
+    as a fixture since it only needs to be called once."""
+    course_type = EventType.objects.get_or_create(name="Course")[0]
+    start_time = timezone.datetime(2080, 2, 2).astimezone(tz.utc)
+    end_time = timezone.datetime(2080, 4, 27).astimezone(tz.utc)
+    course = Event(
+        title="second testing course",
+        body=to_streamfield_safe("<p>February 2080 History of Digital Humanities</p>"),
+        start_time=start_time,
+        end_time=end_time,
+        type=course_type,
+    )
+    course.last_published_at = start_time - timedelta(days=10)
+    link_page = EventsLinkPage.objects.get(slug="events")
+    link_page.add_child(instance=course)
+    link_page.save()
+    return course
 
 def make_events(link_page):
     """Create a variety of events and locations for testing."""
