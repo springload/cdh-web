@@ -119,6 +119,23 @@ def make_course(link_page):
     link_page.save()
     return course
 
+def add_upcoming_event(link_page):
+    """Create a course that will happen in 2080. This second course is not defined
+    as a fixture since it only needs to be called once."""
+    course_type = EventType.objects.get_or_create(name="Course")[0]
+    start_time = timezone.datetime(2080, 2, 2).astimezone(tz.utc)
+    end_time = timezone.datetime(2080, 4, 27).astimezone(tz.utc)
+    course = Event(
+        title="second testing course",
+        body=to_streamfield_safe("<p>February 2080 History of Digital Humanities</p>"),
+        start_time=start_time,
+        end_time=end_time,
+        type=course_type,
+    )
+    course.last_published_at = start_time - timedelta(days=10)
+    link_page.add_child(instance=course)
+    link_page.save()
+    return course
 
 def make_events(link_page):
     """Create a variety of events and locations for testing."""
@@ -175,3 +192,7 @@ def events(db, workshop, lecture, deadline, course):
         "deadline": deadline,
         "course": course,
     }
+
+@pytest.fixture
+def upcoming_event(events_link_page):
+    return add_upcoming_event(events_link_page)
