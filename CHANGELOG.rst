@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+3.4.1
+---
+
+* bugfix: Event cards showing up out of order. (#384)
+
+
 3.4
 ---
 
