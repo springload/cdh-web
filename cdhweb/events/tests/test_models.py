@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 
 from cdhweb.events.models import Event, EventType, Location
 
-
 class TestSpeaker:
     def test_str(self, lecture):
         """speaker should be identified by person and event"""
@@ -54,12 +53,18 @@ class TestLocation:
 
 
 class TestEventQueryset:
-    def test_upcoming(self, events):
+    def test_upcoming(self, events, upcoming_event):
         """upcoming should include all events that haven't started yet"""
+
         upcoming = list(Event.objects.upcoming())
         assert events["deadline"] in upcoming
         assert events["workshop"] not in upcoming
         assert events["lecture"] not in upcoming
+
+        # Ensure that the order is correct
+        # upcoming_event is included as a fixture so that there are enough upcoming
+        #  events to test sorting
+        assert upcoming[0].start_time < upcoming[1].start_time
 
     def test_recent(self, events):
         """recent should include past events with most recent first"""
