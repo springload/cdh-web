@@ -475,6 +475,22 @@ $event-card-img-height: 240px;
 		}
 		.presenter {
 			font-family: $font-stack-headline;
+			line-height: 1.5; /* tighten slightly to handle multiple names better */
+
+			/* for 4 or more speakers, display names inline separated by commas */
+			div:first-child:nth-last-child(4),
+			div:first-child:nth-last-child(4) ~ div,
+			div:first-child:nth-last-child(5),
+			div:first-child:nth-last-child(5) ~ div,
+			div:first-child:nth-last-child(6),
+			div:first-child:nth-last-child(6) ~ div {
+				display: inline;
+
+				&:not(:last-child) span::after {
+					content: ", "
+				}
+			}
+
 		}
 
 	} /* end event card */
@@ -778,8 +794,8 @@ $event-card-img-height: 240px;
 
 }
 
-section.events, 
-section.projects, 
+section.events,
+section.projects,
 section.people {
     @media (min-width: $medium-min-width) {
 		@include grid-container;
