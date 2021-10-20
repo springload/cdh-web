@@ -1,10 +1,16 @@
 CHANGELOG
 =========
 
-3.4.1
----
+3.4.2
+-----
 
-* bugfix: Event cards showing up out of order. (#384)
+* bugfix: improve display for event cards with more than 3 speakers
+* bugfix: persist larger upload file size limit setting
+
+3.4.1
+-----
+
+* bugfix: Event cards showing up out of order on the homepage and upcoming events
 
 
 3.4
@@ -12,7 +18,7 @@ CHANGELOG
 
 * As a user, I want to search across all pages by keyword so I can find specific content that interests me.
 * As a user, I want to access the site search via the main navigation so I can start a search from anywhere.
-* As a user, I want basic information about the CDH displayed on the homepage so that I can learn about the CDH and read more about its values. 
+* As a user, I want basic information about the CDH displayed on the homepage so that I can learn about the CDH and read more about its values.
 * bugfix: Can't add someone to current staff if they have any exec committee position, whether current or not
 
 
