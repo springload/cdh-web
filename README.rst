@@ -89,7 +89,7 @@ Remember to add a ``SECRET_KEY`` setting!
   See `MariaDB <https://mariadb.com/kb/en/library/mysql_tzinfo_to_sql/>`_'s
   info on the utility for more information.
 
-- Install OpenCV dependencies (if necessary) for [wagtail image feature detection](https://docs.wagtail.io/en/stable/advanced_topics/images/feature_detection.html)
+- Install OpenCV dependencies (if necessary) for `wagtail image feature detection <https://docs.wagtail.io/en/stable/advanced_topics/images/feature_detection.html>`_
 
 Setup pre-commit hooks
 ~~~~~~~~~~~~~~~~~~~~~~

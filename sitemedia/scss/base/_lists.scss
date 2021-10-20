@@ -67,7 +67,7 @@ dd {
 
     a {
       color: inherit;
-      text-decoration-color: $cdh-blue;
+      text-decoration-color: var(--highlight-color);
       text-decoration-thickness: 2px;
       text-underline-offset: 6px;
       position: relative;
