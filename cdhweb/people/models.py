@@ -61,8 +61,13 @@ class PersonQuerySet(models.QuerySet):
         "Postdoctoral Fellow and Communications Lead",
     ]
 
-    #: position titles that indicate a person is a project director
-    director_roles = ["Project Director", "Co-PI: Research Lead"]
+    #: position titles that indicate a person is a CDH affiliate
+    director_roles = ["Project Director", "Co-PI: Research Lead", "Co-PI"]
+
+    affiliate_titles = [
+        "Humanities + Data Science Institute Instructor",
+        "Humanities + Data Science Institute Participant",
+    ]
 
     #: position titles that indicate a staff person is a student
     student_titles = [
@@ -109,10 +114,14 @@ class PersonQuerySet(models.QuerySet):
     def affiliates(self):
         """Faculty and staff affiliates based on PU status and Project Director
         project role. Excludes CDH staff."""
-        return self.filter(
-            pu_status__in=("fac", "stf"),
-            membership__role__title__in=self.director_roles,
-        ).exclude(cdh_staff=True)
+        return (
+            self.filter(pu_status__in=("fac", "stf"))
+            .filter(
+                models.Q(positions__title__title__in=self.affiliate_titles)
+                | models.Q(membership__role__title__in=self.director_roles)
+            )
+            .exclude(cdh_staff=True)
+        )
 
     def executive_committee(self):
         """Executive committee members; based on position title."""
