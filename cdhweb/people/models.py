@@ -62,11 +62,12 @@ class PersonQuerySet(models.QuerySet):
     ]
 
     #: position titles that indicate a person is a CDH affiliate
-    director_roles = ["Project Director", "Co-PI: Research Lead", "Co-PI"]
-
-    affiliate_titles = [
-        "Humanities + Data Science Institute Instructor",
-        "Humanities + Data Science Institute Participant",
+    affiliate_roles = [
+        "Project Director",
+        "Co-PI: Research Lead",
+        "Co-PI",
+        "Instructor",
+        "Participant",
     ]
 
     #: position titles that indicate a staff person is a student
@@ -116,10 +117,7 @@ class PersonQuerySet(models.QuerySet):
         project role. Excludes CDH staff."""
         return (
             self.filter(pu_status__in=("fac", "stf"))
-            .filter(
-                models.Q(positions__title__title__in=self.affiliate_titles)
-                | models.Q(membership__role__title__in=self.director_roles)
-            )
+            .filter(membership__role__title__in=self.affiliate_roles)
             .exclude(cdh_staff=True)
         )
 
@@ -145,7 +143,7 @@ class PersonQuerySet(models.QuerySet):
             first_start=models.Min(
                 models.Case(
                     models.When(
-                        membership__role__title__in=self.director_roles,
+                        membership__role__title__in=self.affiliate_roles,
                         then="membership__start_date",
                     )
                 )
@@ -153,7 +151,7 @@ class PersonQuerySet(models.QuerySet):
             last_end=models.Max(
                 models.Case(
                     models.When(
-                        membership__role__title__in=self.director_roles,
+                        membership__role__title__in=self.affiliate_roles,
                         then="membership__end_date",
                     )
                 )
@@ -198,7 +196,9 @@ class PersonQuerySet(models.QuerySet):
         today = timezone.now()
         return (
             # in one of the allowed roles (project director/project manager)
-            models.Q(membership__role__title__in=self.project_roles)
+            models.Q(
+                membership__role__title__in=self.project_roles + self.affiliate_roles
+            )
             &
             # current based on membership dates
             (
@@ -388,14 +388,16 @@ class Person(ClusterableModel):
         """most recent grants where this person has director role"""
         # find projects where they are director, then get newest grant
         # that overlaps with their directorship dates
+
         mship = (
-            self.membership_set.filter(role__title__in=PersonQuerySet.director_roles)
+            self.membership_set.filter(role__title__in=PersonQuerySet.affiliate_roles)
             .order_by("-start_date")
             .first()
         )
         # if there is one, find the most recent grant overlapping with their
-        # directorship dates
+        # affiliation dates
         if mship:
+
             # find most recent grant that overlaps with membership dates
             # - grant start before membership end AND
             # - grant end after membership start OR
@@ -409,7 +411,6 @@ class Person(ClusterableModel):
             )
             if mship.end_date:
                 grant_overlap &= models.Q(start_date__lte=mship.end_date)
-
             return (
                 mship.project.grants.filter(grant_overlap)
                 .order_by("-start_date")

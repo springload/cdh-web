@@ -43,6 +43,9 @@ class PersonListView(ListView, LastModifiedListMixin):
         if "Fellow" in grant.grant_type.grant_type:
             no_ship = grant.grant_type.grant_type.split("ship", 1)[0]
             return f"{grant.years} {no_ship}"
+        # FIXME: need role!
+        if "Humanities + Data Science" in grant.grant_type.grant_type:
+            return f"{grant.grant_type.grant_type}"
         # otherwise "X grant recipient"
         return f"{grant.years} {grant.grant_type.grant_type} Grant Recipient"
 
@@ -218,7 +221,13 @@ class AffiliateListView(PersonListView):
         return super().get_queryset().affiliates().grant_years().order_by("last_name")
 
     def display_label(self, person):
-        # use grant information as label
+        # use grant information or membership role for label
+        mship = person.membership_set.first()  # is this reliable?
+        # special case; use grant + role
+        hum_datasci = "Humanities + Data Science Institute"
+        if mship.project.grants.first().grant_type.grant_type == hum_datasci:
+            return "%s %s" % (hum_datasci, person.membership_set.first().role.title)
+
         return self.grant_label(person.latest_grant)
 
     def get_current(self):
