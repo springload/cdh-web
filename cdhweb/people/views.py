@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views.generic.list import ListView
 
 from cdhweb.pages.views import LastModifiedListMixin
-from cdhweb.people.models import Person
+from cdhweb.people.models import Person, PersonQuerySet
 
 
 class PersonListView(ListView, LastModifiedListMixin):
@@ -112,6 +112,10 @@ class StaffListView(PersonListView):
         return self.object_list.current_position_nonexec()
 
 
+# yet another special case for labels/membership
+HUM_DATASCI = "Humanities + Data Science Institute"
+
+
 class StudentListView(PersonListView):
     """Display current and past graduate fellows, graduate and undergraduate
     assistants."""
@@ -155,11 +159,17 @@ class StudentListView(PersonListView):
                 labels.append(label)
 
         # for students on projects, label based on project membership
-        for membership in person.membership_set.filter(role__title="Project Manager"):
+        roles = set(PersonQuerySet.project_roles + PersonQuerySet.affiliate_roles) - {
+            "Project Director"
+        }
+        for membership in person.membership_set.filter(role__title__in=roles):
             # NOTE: it might be better to use memberships for
             # project director / grant role as well, but with the new
             # data model it's harder to determine what type of grant they were on
             label = membership.role.title
+            # if in humanities data science, use title + role
+            if membership.project.title == HUM_DATASCI:
+                label = "%s %s" % (HUM_DATASCI, label)
             if membership.is_current:
                 current_label = label
             else:
@@ -218,7 +228,12 @@ class AffiliateListView(PersonListView):
         return super().get_queryset().affiliates().grant_years().order_by("last_name")
 
     def display_label(self, person):
-        # use grant information as label
+        # use grant information or membership role for label
+        mship = person.membership_set.first()  # is this reliable?
+        # special case; use grant + role
+        if mship.project.title == HUM_DATASCI:
+            return "%s %s" % (HUM_DATASCI, person.membership_set.first().role.title)
+
         return self.grant_label(person.latest_grant)
 
     def get_current(self):
