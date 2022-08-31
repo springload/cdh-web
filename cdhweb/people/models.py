@@ -103,7 +103,10 @@ class PersonQuerySet(models.QuerySet):
             )
             .filter(
                 models.Q(cdh_staff=True)
-                | models.Q(membership__role__title__in=self.project_roles)
+                | models.Q(
+                    membership__role__title__in=self.project_roles
+                    + self.affiliate_roles
+                )
             )
             .exclude(pu_status="stf")
         )
