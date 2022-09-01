@@ -19,13 +19,16 @@
 
 <div class="details">
     {% if page.speakers.exists %}
+    <h2 class="sr-only">Speakers</h2>
     <ul>
     {% for speaker in page.speakers.all %}
     {# performer == presenter #}
     <li property="schema:performer" typeof="schema:Person">
-        <h3><a property="schema:name"
-            {% if speaker.person.profile_url %}href="{{ speaker.person.profile_url }}"{% endif %}>
-            {{ speaker.person }}</a></h3>
+        <h3><span property="schema:name">
+            <a
+            {% if speaker.person.profile_url %}href="{{ speaker.person.profile_url }}" property="schema:sameAs"{% endif %}>
+            {{ speaker.person }}</a></span>
+        </h3>
         {% if speaker.person.institution %}
         <p class="affiliation">
             {{ speaker.person.institution }}

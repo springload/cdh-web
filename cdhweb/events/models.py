@@ -25,7 +25,7 @@ from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 
-from cdhweb.pages.models import BasePage, LinkPage
+from cdhweb.pages.models import BasePage, ContentPage, LinkPage
 from cdhweb.people.models import Person
 
 
@@ -92,7 +92,7 @@ class EventQuerySet(PageQuerySet):
         today = datetime(
             now.year, now.month, now.day, tzinfo=timezone.get_default_timezone()
         )
-        return self.filter(end_time__gte=today).order_by("start_time")
+        return self.filter(end_time__gte=today).order_by_start()
 
     def recent(self):
         """Find past events, most recent first.  Only includes events
@@ -103,6 +103,10 @@ class EventQuerySet(PageQuerySet):
             now.year, now.month, now.day, tzinfo=timezone.get_default_timezone()
         )
         return self.filter(end_time__lt=today).order_by("-start_time")
+
+    def order_by_start(self):
+        """Order events by start time"""
+        return self.order_by("start_time")
 
 
 # custom manager for wagtail pages, see:
@@ -337,11 +341,10 @@ class Event(BasePage, ClusterableModel):
 
 
 class EventsLinkPage(LinkPage):
-    """Container page that defines where Project pages can be created."""
+    """Container page that defines where Event pages can be created."""
 
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []
-    # NOTE the only allowed child page type is an Event; this is so that
-    # Events made in the admin automatically are created here.
-    subpage_types = [Event]
+    # allow content pages to be added under events for special event series
+    subpage_types = [Event, ContentPage]

@@ -137,7 +137,9 @@ class EventSemesterArchiveView(
             year,
             tzinfo=timezone.get_default_timezone(),
         )
-        items = items.filter(start_time__gte=start, start_time__lte=end)
+        items = items.filter(
+            start_time__gte=start, start_time__lte=end
+        ).order_by_start()
 
         return (date_list, items, context)
 

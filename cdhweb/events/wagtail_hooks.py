@@ -42,9 +42,10 @@ class EventAdmin(ThumbnailMixin, ModelAdmin):
         "speakers__person__first_name",
         "speakers__person__last_name",
         "body",
-        "type",
+        "type__name",
         "sponsor",
-        "location",
+        "location__name",
+        "location__address",
     )
     exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"
