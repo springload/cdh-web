@@ -19,6 +19,7 @@
 
 <div class="details">
     {% if page.speakers.exists %}
+    <h2 class="sr-only">Speakers</h2>
     <ul>
     {% for speaker in page.speakers.all %}
     {# performer == presenter #}
