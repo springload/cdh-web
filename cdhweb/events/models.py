@@ -25,7 +25,7 @@ from wagtail.core.models import Page, PageManager, PageQuerySet
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 
-from cdhweb.pages.models import BasePage, LinkPage
+from cdhweb.pages.models import BasePage, ContentPage, LinkPage
 from cdhweb.people.models import Person
 
 
@@ -346,6 +346,5 @@ class EventsLinkPage(LinkPage):
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []
-    # NOTE the only allowed child page type is an Event; this is so that
-    # Events made in the admin automatically are created here.
-    subpage_types = [Event]
+    # allow content pages to be added under events for special event series
+    subpage_types = [Event, ContentPage]
