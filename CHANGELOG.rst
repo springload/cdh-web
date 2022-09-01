@@ -1,6 +1,19 @@
 CHANGELOG
 =========
 
+3.4.3
+-----
+
+* Update to include Humanities + Data Science Institute instructors and participants as 
+affiliates and student affiliates
+* bugfixes:
+  * correct Event ordering on semester archive pages
+  * fix search fields for Events in wagtail interface (solves 500 error)
+  * correct RDFa structure for event speakers with URLs
+* accessibility:
+  * fix semantic heading hierarchy problem on project and event detail pages
+
+
 3.4.2
 -----
 
