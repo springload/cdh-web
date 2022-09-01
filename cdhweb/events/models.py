@@ -341,7 +341,7 @@ class Event(BasePage, ClusterableModel):
 
 
 class EventsLinkPage(LinkPage):
-    """Container page that defines where Project pages can be created."""
+    """Container page that defines where Event pages can be created."""
 
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
