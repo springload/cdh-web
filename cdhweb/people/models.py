@@ -429,9 +429,11 @@ class Person(ClusterableModel):
             if profile.live:
                 return profile.get_url()
         except Profile.DoesNotExist:
-            website = self.related_links.filter(type__name="Website").first()
-            if website:
-                return website.url
+            pass
+
+        website = self.related_links.filter(type__name="Website").first()
+        if website:
+            return website.url
 
 
 @receiver(pre_delete, sender=Person)
