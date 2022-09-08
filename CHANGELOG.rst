@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.4.4
+-----
+
+* bugfix: website link isn't available on person list pages if person has an unpublished profile page
+
 3.4.3
 -----
 
