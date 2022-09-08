@@ -6,8 +6,14 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from wagtail.core.models import Page
 
-from cdhweb.pages.models import HomePage
-from cdhweb.people.models import Person, Position, Title, init_person_from_ldap
+from cdhweb.pages.models import HomePage, RelatedLinkType
+from cdhweb.people.models import (
+    Person,
+    PersonRelatedLink,
+    Position,
+    Title,
+    init_person_from_ldap,
+)
 from cdhweb.projects.models import (
     Grant,
     GrantType,
@@ -190,6 +196,10 @@ def test_profile_url(student, staffer, staffer_profile, faculty_pi):
     # unpublish; should be no more profile url
     staffer_profile.unpublish()
     assert not staffer.profile_url
+    # add web link for staffer with unpublished profile
+    website = RelatedLinkType.objects.get_or_create(name="Website")[0]
+    PersonRelatedLink.objects.create(person=staffer, type=website, url="ex.com/p/staff")
+    assert staffer.profile_url == "ex.com/p/staff"
 
 
 class TestPersonQuerySet(TestCase):
