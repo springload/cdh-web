@@ -339,4 +339,4 @@ class EventsLinkPage(LinkPage):
     # via a script or the console, since there's only one.
     parent_page_types = []
     # allow content pages to be added under events for special event series
-    subpage_types = [Event, ContentPage]
+    subpage_types = [Event, LinkPage, ContentPage]

@@ -1,4 +1,4 @@
-from wagtail.test.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTestCase
 
 from cdhweb.pages.models import LinkPage, RelatedLinkType
 from cdhweb.people.models import Person
@@ -91,7 +91,7 @@ class TestProject:
         assert sitemap_urls[0]["priority"] == 0.7
 
 
-class TestProjectPage(WagtailPageTests):
+class TestProjectPage(WagtailPageTestCase):
     def test_parent_pages(self):
         """project can only be created under projects link page"""
         self.assertAllowedParentPageTypes(Project, [ProjectsLandingPage])
@@ -101,7 +101,7 @@ class TestProjectPage(WagtailPageTests):
         self.assertAllowedSubpageTypes(Project, [])
 
 
-class TestProjectsLandingPage(WagtailPageTests):
+class TestProjectsLandingPage(WagtailPageTestCase):
     def test_parentpage_types(self):
         """projects link page should not be creatable in admin"""
         self.assertAllowedParentPageTypes(ProjectsLandingPage, [])

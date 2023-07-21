@@ -1,11 +1,11 @@
 from wagtail.models import Page
-from wagtail.test.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTestCase
 from wagtail.test.utils.form_data import nested_form_data, rich_text, streamfield
 
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage, LinkPage
 
 
-class TestHomePage(WagtailPageTests):
+class TestHomePage(WagtailPageTestCase):
     def test_can_create(self):
         """should be able to create homepage at root"""
         self.assertCanCreateAt(
@@ -40,7 +40,7 @@ class TestHomePage(WagtailPageTests):
         )
 
 
-class TestLandingPage(WagtailPageTests):
+class TestLandingPage(WagtailPageTestCase):
     def test_can_create(self):
         """should be able to create landing page under homepage"""
         self.assertCanCreateAt(
@@ -69,7 +69,7 @@ class TestLandingPage(WagtailPageTests):
         self.assertAllowedSubpageTypes(LandingPage, [ContentPage])
 
 
-class TestContentPage(WagtailPageTests):
+class TestContentPage(WagtailPageTestCase):
     def test_can_create(self):
         """should be able to create contentpage under landingpage"""
         self.assertCanCreateAt(

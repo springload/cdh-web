@@ -6,7 +6,7 @@ import pytz
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.html import strip_tags
-from wagtail.test.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTestCase
 
 from cdhweb.events.models import Event, EventsLinkPage, Speaker
 from cdhweb.pages.models import ContentPage, LinkPage
@@ -152,7 +152,7 @@ class TestEvent:
         assert lecture.speaker_list == "sam brown, john lecturer"
 
 
-class TestEventPage(WagtailPageTests):
+class TestEventPage(WagtailPageTestCase):
     def test_subpages(self):
         """event page can't have children"""
         self.assertAllowedSubpageTypes(Event, [])
@@ -162,8 +162,9 @@ class TestEventPage(WagtailPageTests):
         self.assertAllowedParentPageTypes(Event, [EventsLinkPage])
 
 
-class TestEventsLinkpage(WagtailPageTests):
-    # skip because this is failing for no reason
+class TestEventsLinkpage(WagtailPageTestCase):
+    # this is failing; does not include content page here,
+    # even though configured to allow
     @pytest.mark.skip
     def test_subpages(self):
         """events link page only allowed child is event page"""
