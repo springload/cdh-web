@@ -1,8 +1,7 @@
 
-Django==3.1.13
-#Django>=3.2,<3.3
+Django>=3.2,<4.0
 pillow>=5.2.0
-wagtail>=2.14,<2.15
+wagtail>=2.15,<2.16
 django-compressor
 django-compressor-autoprefixer
 psycopg2

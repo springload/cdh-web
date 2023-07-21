@@ -1,4 +1,4 @@
-from django.db.models import Case, Max, Value, When
+from django.db.models import Case, DateField, Max, Value, When
 from django.db.models.functions import Greatest
 from django.shortcuts import render
 from django.urls import reverse
@@ -202,14 +202,14 @@ class StudentListView(PersonListView):
                             membership__end_date__isnull=False,
                             then=Max("membership__end_date"),
                         ),
-                        default=Value("1900-01-01"),
+                        default=Value("1900-01-01", output_field=DateField()),
                     ),
                     Case(
                         When(
                             positions__end_date__isnull=False,
                             then=Max("positions__end_date"),
                         ),
-                        default=Value("1900-01-01"),
+                        default=Value("1900-01-01", output_field=DateField()),
                     ),
                 )
             )
