@@ -19,7 +19,7 @@
   "devDependencies": {
     "@percy/cli": "^1.0.0-beta.68",
     "chromedriver": "^93.0.1",
-    "dbdocs": "^0.3.1",
+    "dbdocs": "^0.7.5",
     "start-server-and-test": "^1.11.6"
   },
   "volta": {
