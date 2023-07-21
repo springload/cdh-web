@@ -119,10 +119,14 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
         return ", ".join(str(author.person) for author in self.authors.all())
 
     def __str__(self):
-        return '"%s" (%s)' % (
-            self.short_title,
-            format(self.first_published_at, "F j, Y"),
-        )
+        # string is used for logging actions on drafts,
+        # needs to handle cases where first published date is not set
+        if self.first_published_at:
+            pubdate = format(self.first_published_at, "F j, Y")
+        else:
+            pubdate = "draft"
+
+        return '"%s" (%s)' % (self.short_title, pubdate)
 
     def get_url_parts(self, *args, **kwargs):
         """Custom blog post URLs of the form /updates/2014/03/01/my-post."""

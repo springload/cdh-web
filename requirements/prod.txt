@@ -1,7 +1,7 @@
 
 Django>=3.2,<4.0
 pillow>=5.2.0
-wagtail>=3.0,<4.0
+wagtail>=4.0,<4.1
 django-compressor
 django-compressor-autoprefixer
 psycopg2
@@ -13,6 +13,6 @@ icalendar
 attrdict
 django-fullurl
 django-apptemplates
-wagtailmenus>=3.0,<3.1
+wagtailmenus>=3.1
 opencv-python
 bleach
