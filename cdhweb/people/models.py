@@ -54,7 +54,6 @@ class Title(models.Model):
 
 
 class PersonQuerySet(models.QuerySet):
-
     #: position titles that indicate a person is a postdoc
     postdoc_titles = [
         "Postdoctoral Fellow",
@@ -238,8 +237,12 @@ class PersonQuerySet(models.QuerySet):
         cpq = self._current_position_query()
         return (
             self.filter(cpq)
-            .annotate(current_position_title=models.F("positions__title__title"))
-            .exclude(current_position_title__in=self.exec_committee_titles)
+            .annotate(
+                current_position_title=models.F("positions__title__title"),
+            )
+            .exclude(
+                current_position_title__in=self.exec_committee_titles,
+            )
         )
 
     def order_by_position(self):
@@ -400,7 +403,6 @@ class Person(ClusterableModel):
         # if there is one, find the most recent grant overlapping with their
         # affiliation dates
         if mship:
-
             # find most recent grant that overlaps with membership dates
             # - grant start before membership end AND
             # - grant end after membership start OR

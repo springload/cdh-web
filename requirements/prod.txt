@@ -1,8 +1,8 @@
-## production requirements
 
-Django>=3.1.12,<3.2
+Django==3.1.13
+#Django>=3.2,<3.3
 pillow>=5.2.0
-wagtail
+wagtail>=2.14,<2.15
 django-compressor
 django-compressor-autoprefixer
 psycopg2
@@ -14,6 +14,6 @@ icalendar
 attrdict
 django-fullurl
 django-apptemplates
-wagtailmenus
+wagtailmenus>=3.0,<3.1
 opencv-python
 bleach
