@@ -1,5 +1,5 @@
 import pytest
-from wagtail.tests.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTests
 
 from cdhweb.blog.models import BlogLinkPage, BlogPost
 

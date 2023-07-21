@@ -8,22 +8,22 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
 from taggit.managers import TaggableManager
-from wagtail.admin.edit_handlers import (
+from wagtail.admin.panels import (
     FieldPanel,
     MultiFieldPanel,
     ObjectList,
     StreamFieldPanel,
     TabbedInterface,
 )
-from wagtail.core.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import CollectionMember, Page
+from wagtail.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.documents.models import AbstractDocument, DocumentQuerySet
 from wagtail.embeds.blocks import EmbedBlock
+from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import Image
+from wagtail.models import CollectionMember, Page
 from wagtail.search import index
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.models import register_snippet
@@ -54,7 +54,7 @@ briefly communicate the intended message of the image in this context."""
 
 
 class CaptionedImageBlock(StructBlock):
-    """:class:`~wagtail.core.blocks.StructBlock` for an image with
+    """:class:`~wagtail.blocks.StructBlock` for an image with
     alternative text and optional formatted caption, so
     that both caption and alternative text can be context-specific."""
 
@@ -70,7 +70,7 @@ class CaptionedImageBlock(StructBlock):
 
 
 class SVGImageBlock(StructBlock):
-    """:class:`~wagtail.core.blocks.StructBlock` for an SVG image with
+    """:class:`~wagtail.blocks.StructBlock` for an SVG image with
     alternative text and optional formatted caption. Separate from
     :class:`CaptionedImageBlock` because Wagtail image handling
     does not work with SVG."""

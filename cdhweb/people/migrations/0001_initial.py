@@ -2,10 +2,10 @@
 
 import django.db.models.deletion
 import modelcluster.fields
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
 import wagtail.documents.blocks
 import wagtail.embeds.blocks
+import wagtail.fields
 import wagtail.images.blocks
 import wagtail.snippets.blocks
 from django.conf import settings
@@ -222,11 +222,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "body",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         [
                             (
                                 "paragraph",
-                                wagtail.core.blocks.RichTextBlock(
+                                wagtail.blocks.RichTextBlock(
                                     features=[
                                         "h2",
                                         "h3",
@@ -248,7 +248,7 @@ class Migration(migrations.Migration):
                             ),
                             (
                                 "image",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
                                         (
                                             "image",
@@ -256,14 +256,14 @@ class Migration(migrations.Migration):
                                         ),
                                         (
                                             "alternative_text",
-                                            wagtail.core.blocks.TextBlock(
+                                            wagtail.blocks.TextBlock(
                                                 help_text="Alternative text for visually impaired users to\nbriefly communicate the intended message of the image in this context.",
                                                 required=True,
                                             ),
                                         ),
                                         (
                                             "caption",
-                                            wagtail.core.blocks.RichTextBlock(
+                                            wagtail.blocks.RichTextBlock(
                                                 features=[
                                                     "bold",
                                                     "italic",
@@ -278,7 +278,7 @@ class Migration(migrations.Migration):
                             ),
                             (
                                 "svg_image",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
                                         (
                                             "image",
@@ -286,14 +286,14 @@ class Migration(migrations.Migration):
                                         ),
                                         (
                                             "alternative_text",
-                                            wagtail.core.blocks.TextBlock(
+                                            wagtail.blocks.TextBlock(
                                                 help_text="Alternative text for visually impaired users to\nbriefly communicate the intended message of the image in this context.",
                                                 required=True,
                                             ),
                                         ),
                                         (
                                             "caption",
-                                            wagtail.core.blocks.RichTextBlock(
+                                            wagtail.blocks.RichTextBlock(
                                                 features=[
                                                     "bold",
                                                     "italic",
@@ -305,7 +305,7 @@ class Migration(migrations.Migration):
                                         ),
                                         (
                                             "extended_description",
-                                            wagtail.core.blocks.RichTextBlock(
+                                            wagtail.blocks.RichTextBlock(
                                                 features=["p"],
                                                 help_text="This text will only be read to     non-sighted users and should describe the major insights or     takeaways from the graphic. Multiple paragraphs are allowed.",
                                                 required=False,
@@ -317,7 +317,7 @@ class Migration(migrations.Migration):
                             ("embed", wagtail.embeds.blocks.EmbedBlock()),
                             (
                                 "migrated",
-                                wagtail.core.blocks.RichTextBlock(
+                                wagtail.blocks.RichTextBlock(
                                     features=[
                                         "h3",
                                         "h4",
@@ -345,7 +345,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "attachments",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         [
                             (
                                 "document",
@@ -361,7 +361,7 @@ class Migration(migrations.Migration):
                         blank=True,
                     ),
                 ),
-                ("education", wagtail.core.fields.RichTextField(blank=True)),
+                ("education", wagtail.fields.RichTextField(blank=True)),
                 (
                     "image",
                     models.ForeignKey(

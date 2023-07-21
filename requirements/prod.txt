@@ -1,7 +1,7 @@
 
 Django>=3.2,<4.0
 pillow>=5.2.0
-wagtail>=2.16,<3.0
+wagtail>=3.0,<4.0
 django-compressor
 django-compressor-autoprefixer
 psycopg2

@@ -1,4 +1,4 @@
-from wagtail.tests.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTests
 
 from cdhweb.pages.models import LinkPage, RelatedLinkType
 from cdhweb.people.models import Person

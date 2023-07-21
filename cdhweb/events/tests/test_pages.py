@@ -6,7 +6,7 @@ import pytz
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.html import strip_tags
-from wagtail.tests.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTests
 
 from cdhweb.events.models import Event, EventsLinkPage, Speaker
 from cdhweb.pages.models import ContentPage, LinkPage

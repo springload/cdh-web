@@ -7,7 +7,7 @@ import pytest
 from django.http import HttpResponse
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
-from wagtail.core.models import PageQuerySet
+from wagtail.models import PageQuerySet
 from wagtail.search.query import PlainText
 
 from cdhweb.pages.views import SiteSearchView

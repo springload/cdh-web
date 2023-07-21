@@ -1,7 +1,7 @@
 from django.templatetags.static import static
 from django.utils.html import format_html
+from wagtail import hooks
 from wagtail.contrib.redirects.models import Redirect
-from wagtail.core import hooks
 
 
 @hooks.register("insert_global_admin_css")
