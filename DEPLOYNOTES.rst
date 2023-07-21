@@ -1,6 +1,13 @@
 Deploy Notes
 ============
 
+3.4.1
+-----
+
+- Wagtail upgrade requires updating the search index::
+
+    python manage.py update_index
+
 3.4
 ---
 

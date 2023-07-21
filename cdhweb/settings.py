@@ -109,7 +109,7 @@ WAGTAIL_USAGE_COUNT_ENABLED = True
 # https://docs.wagtail.io/en/latest/reference/contrib/postgres_search.html
 WAGTAILSEARCH_BACKENDS = {
     "default": {
-        "BACKEND": "wagtail.contrib.postgres_search.backend",
+        "BACKEND": "wagtail.search.backends.database",
         "SEARCH_CONFIG": "english",
     },
 }
@@ -328,7 +328,6 @@ INSTALLED_APPS = [
     "wagtail.search",
     "wagtail.admin",
     "wagtail.contrib.modeladmin",
-    "wagtail.contrib.postgres_search",
     "wagtail.core",
     "wagtailmenus",
     "modelcluster",
