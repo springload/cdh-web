@@ -10,15 +10,8 @@ from django.utils import timezone
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
-from wagtail.admin.panels import (
-    FieldPanel,
-    FieldRowPanel,
-    InlinePanel,
-    MultiFieldPanel,
-    StreamFieldPanel,
-)
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
 from wagtail.fields import RichTextField
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.models import Page
 from wagtail.search import index
 
@@ -322,7 +315,7 @@ class Person(ClusterableModel):
 
     # wagtail admin setup
     panels = [
-        ImageChooserPanel("image"),
+        FieldPanel("image"),
         FieldRowPanel((FieldPanel("first_name"), FieldPanel("last_name")), "Name"),
         FieldPanel("user"),
         FieldRowPanel((FieldPanel("pu_status"), FieldPanel("cdh_staff")), "Status"),
@@ -468,10 +461,10 @@ class Profile(BasePage):
 
     # admin edit configuration
     content_panels = Page.content_panels + [
-        FieldRowPanel((FieldPanel("person"), ImageChooserPanel("image")), "Person"),
+        FieldRowPanel((FieldPanel("person"), FieldPanel("image")), "Person"),
         FieldPanel("education"),
-        StreamFieldPanel("body"),
-        StreamFieldPanel("attachments"),
+        FieldPanel("body"),
+        FieldPanel("attachments"),
     ]
 
     parent_page_types = ["people.PeopleLandingPage"]

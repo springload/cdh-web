@@ -96,6 +96,9 @@ RICHTEXT_ALLOWED_TAGS = [
 # https://docs.wagtail.io/en/latest/reference/settings.html#site-name
 WAGTAIL_SITE_NAME = "CDH Website"
 
+# base url to wagtail, for use in notification emails
+WAGTAILADMIN_BASE_URL = "https://cdh.princeton.edu/cms/"
+
 # Tags are case-sensitive by default. In many cases the reverse is preferable.
 # https://docs.wagtail.io/en/latest/reference/settings.html#case-insensitive-tags
 TAGGIT_CASE_INSENSITIVE = True

@@ -12,7 +12,6 @@ from wagtail.admin.panels import (
     FieldPanel,
     MultiFieldPanel,
     ObjectList,
-    StreamFieldPanel,
     TabbedInterface,
 )
 from wagtail.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
@@ -21,7 +20,6 @@ from wagtail.documents.models import AbstractDocument, DocumentQuerySet
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import Image
 from wagtail.models import CollectionMember, Page
 from wagtail.search import index
@@ -224,8 +222,8 @@ class ContentPage(BasePage, PagePreviewDescriptionMixin):
 
     content_panels = Page.content_panels + [
         FieldPanel("description"),
-        StreamFieldPanel("body"),
-        StreamFieldPanel("attachments"),
+        FieldPanel("body"),
+        FieldPanel("attachments"),
     ]
 
     # index description in addition to body content
@@ -251,8 +249,8 @@ class LandingPage(BasePage):
 
     content_panels = Page.content_panels + [
         FieldPanel("tagline"),
-        ImageChooserPanel("header_image"),
-        StreamFieldPanel("body"),
+        FieldPanel("header_image"),
+        FieldPanel("body"),
     ]
 
     parent_page_types = ["HomePage"]
@@ -262,7 +260,7 @@ class LandingPage(BasePage):
 class HomePage(BasePage):
     """A home page that aggregates and displays featured content."""
 
-    content_panels = Page.content_panels + [StreamFieldPanel("body")]
+    content_panels = Page.content_panels + [FieldPanel("body")]
 
     parent_page_types = [Page]  # only root
     subpage_types = ["LandingPage", "ContentPage", "LinkPage"]

@@ -8,14 +8,7 @@ from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.models import TaggedItemBase
-from wagtail.admin.panels import (
-    FieldPanel,
-    FieldRowPanel,
-    InlinePanel,
-    MultiFieldPanel,
-    StreamFieldPanel,
-)
-from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
 from wagtail.models import Orderable, Page, PageManager, PageQuerySet
 from wagtail.search import index
 
@@ -84,11 +77,11 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
 
     # admin edit configuration
     content_panels = Page.content_panels + [
-        FieldRowPanel((ImageChooserPanel("featured_image"), FieldPanel("featured"))),
+        FieldRowPanel((FieldPanel("featured_image"), FieldPanel("featured"))),
         FieldPanel("description"),
         MultiFieldPanel((InlinePanel("authors", label="Author"),), heading="Authors"),
-        StreamFieldPanel("body"),
-        StreamFieldPanel("attachments"),
+        FieldPanel("body"),
+        FieldPanel("attachments"),
     ]
     promote_panels = Page.promote_panels + [FieldPanel("tags")]
 
