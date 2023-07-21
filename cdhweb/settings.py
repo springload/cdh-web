@@ -106,6 +106,7 @@ TAGGIT_CASE_INSENSITIVE = True
 # Shows where a particular image, document or snippet is being used on your site.
 # Generates a query which may run slowly on sites with large numbers of pages.
 # https://docs.wagtail.io/en/latest/reference/settings.html#usage-for-images-documents-and-snippets
+# NOTE: handled by reference index starting in wagtail 4.1
 WAGTAIL_USAGE_COUNT_ENABLED = True
 
 # Use Wagtail's postgresql search backend.

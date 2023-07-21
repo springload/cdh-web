@@ -207,9 +207,9 @@ class BasePage(Page):
     """Abstract Page class from which all Wagtail page types are derived."""
 
     #: main page text
-    body = StreamField(BodyContentBlock, blank=True)
+    body = StreamField(BodyContentBlock, blank=True, use_json_field=True)
     #: relationship to uploaded documents and external links
-    attachments = StreamField(AttachmentBlock, blank=True)
+    attachments = StreamField(AttachmentBlock, blank=True, use_json_field=True)
     # index body content to make it searchable
     search_fields = Page.search_fields + [index.SearchField("body")]
 
