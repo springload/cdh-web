@@ -202,6 +202,7 @@ class LinkPage(AbstractLinkPage):
             ObjectList((MultiFieldPanel((FieldPanel("slug"),)),), heading="Promote"),
         ]
     )
+    search_fields = Page.search_fields
 
 
 class BasePage(Page):
