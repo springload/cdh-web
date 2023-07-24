@@ -401,14 +401,13 @@ class ExternalAttachment(
     # adapted from AbstractDocument but with URL instead; see:
     # https://github.com/wagtail/wagtail/blob/master/wagtail/documents/models.py#L47-L56
     search_fields = CollectionMember.search_fields + [
-        index.SearchField("title", partial_match=True, boost=10),
-        index.AutocompleteField("title"),
+        index.AutocompleteField("title", boost=10),
         index.FilterField("title"),
-        index.SearchField("url", partial_match=True),
+        index.AutocompleteField("url"),
         index.RelatedFields(
             "tags",
             [
-                index.SearchField("name", partial_match=True, boost=10),
+                index.AutocompleteField("name", boost=10),
                 index.AutocompleteField("name"),
             ],
         ),
