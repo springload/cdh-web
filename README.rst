@@ -31,7 +31,7 @@ CDH Website
     :target: https://pycqa.github.io/isort/
     :alt: "imports: isort"
 
-Python 3.9 / Django 4.0 / Node 10 / PostgreSQL 12
+Python 3.9 / Django 4.2 / Node 18 / PostgreSQL 12
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.
 
@@ -48,9 +48,9 @@ Development instructions
 
 Initial setup and installation:
 
-- Recommended: create and activate a python 3.6 virtualenv::
+- Recommended: create and activate a python 3.9 virtualenv::
 
-    virtualenv cdhweb -p python3.6
+    virtualenv cdhweb -p python3.9
     source cdhweb/bin/activate
 
 - Use pip to install required python dependencies.  To install production
@@ -70,24 +70,9 @@ Initial setup and installation:
 
     cp cdhweb/local_settings.py.sample cdhweb/local_settings.py
 
-Remember to add a ``SECRET_KEY`` setting!
+You must add a ``SECRET_KEY`` value in your local settings.
 
 - Download licensed fonts and install locally under /sitemedia/fonts/
-
-- If running this application on MariaDB/MySQL, you must make sure that
-  time zone definitions are installed. On most flavors of Linux/MacOS,
-  you may use the following command, which will prompt
-  for the database server's root password::
-
-    mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql -p
-
-  If this command does not work, make sure you have the command line utilities
-  for MariaDB/MySQL installed and consult the documentation for your OS for
-  timezone info. Windows users will need to install a copy of the zoneinfo
-  files.
-
-  See `MariaDB <https://mariadb.com/kb/en/library/mysql_tzinfo_to_sql/>`_'s
-  info on the utility for more information.
 
 - Install OpenCV dependencies (if necessary) for `wagtail image feature detection <https://docs.wagtail.io/en/stable/advanced_topics/images/feature_detection.html>`_
 
@@ -174,7 +159,7 @@ License
 -------
 This project is licensed under the `Apache 2.0 License <https://github.com/Princeton-CDH/cdh-web/blob/main/LICENSE>`_.
 
-©2019 Trustees of Princeton University.  Permission granted via
+©2023 Trustees of Princeton University.  Permission granted via
 Princeton Docket #20-2634 for distribution online under a standard Open Source
 license. Ownership rights transferred to Rebecca Koeser provided software
 is distributed online via open source.
