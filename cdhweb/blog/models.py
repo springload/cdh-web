@@ -3,7 +3,7 @@ from django.db.models.fields.related import RelatedField
 from django.urls import reverse
 from django.utils.dateformat import format
 from django.utils.text import Truncator
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel

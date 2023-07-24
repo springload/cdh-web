@@ -1,5 +1,5 @@
 
-Django>=3.2,<4.0
+Django>=4.0,<4.1
 pillow>=5.2.0
 wagtail>=4.2,<5.0
 django-compressor
