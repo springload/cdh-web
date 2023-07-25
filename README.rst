@@ -31,7 +31,7 @@ CDH Website
     :target: https://pycqa.github.io/isort/
     :alt: "imports: isort"
 
-Python 3.9 / Django 4.2 / Node 18 / PostgreSQL 12
+Python 3.11 / Django 4.2 / Node 18 / PostgreSQL 12
 `cdhweb` is a Django+Mezzanine application that powers the CDH website
 with custom models for people, events, and projects.
 
