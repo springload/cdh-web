@@ -4,7 +4,7 @@ from django.utils.cache import get_conditional_response
 from django.views.generic import ListView, TemplateView
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin
-from wagtail.core.models import Page
+from wagtail.models import Page
 from wagtail.search.utils import parse_query_string
 
 from cdhweb.pages.forms import SiteSearchForm

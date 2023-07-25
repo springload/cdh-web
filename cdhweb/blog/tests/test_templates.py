@@ -64,13 +64,15 @@ class TestBlogPostDetail:
         # first published in 2019; in GMT
         assertContains(
             response,
-            '<meta name="article.published_time" content="2019-03-04T13:21:00+00:00">',
+            '<meta name="article.published_time" content="%s">'
+            % article.first_published_at.isoformat(),
             html=True,
         )
         # most recently published/modified in 2020; in GMT
         assertContains(
             response,
-            '<meta name="article.modified_time" content="2020-01-16T01:08:00+00:00">',
+            '<meta name="article.modified_time" content="%s">'
+            % article.last_published_at.isoformat(),
             html=True,
         )
         # profile URL for staffer (postdoc doesn't have profile)

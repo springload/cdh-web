@@ -7,7 +7,7 @@ import pytest
 from django.utils import timezone
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from wagtail.core.models import Page, Site
+from wagtail.models import Page, Site
 
 from cdhweb.pages.models import ContentPage, ExternalAttachment, HomePage, LandingPage
 from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin

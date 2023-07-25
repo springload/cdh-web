@@ -1,5 +1,6 @@
+import zoneinfo
+
 import pytest
-import pytz
 from django.urls import reverse
 from django.utils.dateformat import format
 from pytest_django.asserts import (
@@ -112,7 +113,7 @@ class TestHomePage:
         assert events["lecture"] not in response.context["events"]
 
         # shows event title, start/end time in local tz, and link to view
-        est = pytz.timezone("America/New_York")
+        est = zoneinfo.ZoneInfo("America/New_York")
         assertContains(response, events["deadline"].get_url())
         assertContains(response, events["deadline"].title)
         assertContains(

@@ -1,6 +1,18 @@
 Deploy Notes
 ============
 
+3.4.1
+-----
+
+- Wagtail upgrade requires updating the search index::
+
+    python manage.py update_index
+
+- Wagtail update allows for better management and reporting of where content is used; the reference index should be updated::
+
+    python manage.py rebuild_references_index
+
+
 3.4
 ---
 
@@ -11,7 +23,7 @@ Deploy Notes
   This command only needs to be run once, since signals will take care of any
   indexing after the initial run.
 
-- In order to power the featured section on the homepage, the About and 
+- In order to power the featured section on the homepage, the About and
   Consultations pages should exist, and the About page should have a description
   set in Wagtail.
 
@@ -44,7 +56,7 @@ Deploy Notes
 3.0.1
 -----
 
-- After deploy, run a script to clean up markup in migrated content from the 
+- After deploy, run a script to clean up markup in migrated content from the
   exodus script in the last release::
 
     python manage.py cleanup_migrated_content

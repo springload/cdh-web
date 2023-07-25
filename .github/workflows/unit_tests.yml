@@ -7,7 +7,7 @@ on:
     - cron: "0 16 * * 2"
 
 env:
-  NODE_VERSION: 10
+  NODE_VERSION: 18
   DB_NAME: cdhweb
   DB_USER: cdhweb
   DB_PASSWORD: cdhweb
@@ -32,14 +32,14 @@ jobs:
           - 5432:5432
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # We need node to install the JS dependencies used to build static assets.
       # Because some unit tests use Django's test client to visit pages, we need
       # to have JS and styles ready to be loaded on those pages or there will be
       # errors.
       - name: Setup node
-        uses: actions/setup-node@v2-beta
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -64,7 +64,7 @@ jobs:
       - name: Get Python version
         run: echo "PYTHON_VERSION=$(cat .python-version)" >> $GITHUB_ENV
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -94,7 +94,7 @@ jobs:
         run: py.test --cov=./ --cov-config=.coveragerc --cov-report=xml
 
       - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
 
       # Set the color of the slack message used in the next step based on the
       # status of the build: "warning" for failure and "good" for success

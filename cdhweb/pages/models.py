@@ -8,22 +8,20 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
 from taggit.managers import TaggableManager
-from wagtail.admin.edit_handlers import (
+from wagtail.admin.panels import (
     FieldPanel,
     MultiFieldPanel,
     ObjectList,
-    StreamFieldPanel,
     TabbedInterface,
 )
-from wagtail.core.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import CollectionMember, Page
+from wagtail.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.documents.models import AbstractDocument, DocumentQuerySet
 from wagtail.embeds.blocks import EmbedBlock
+from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import Image
+from wagtail.models import CollectionMember, Page
 from wagtail.search import index
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.models import register_snippet
@@ -54,7 +52,7 @@ briefly communicate the intended message of the image in this context."""
 
 
 class CaptionedImageBlock(StructBlock):
-    """:class:`~wagtail.core.blocks.StructBlock` for an image with
+    """:class:`~wagtail.blocks.StructBlock` for an image with
     alternative text and optional formatted caption, so
     that both caption and alternative text can be context-specific."""
 
@@ -70,7 +68,7 @@ class CaptionedImageBlock(StructBlock):
 
 
 class SVGImageBlock(StructBlock):
-    """:class:`~wagtail.core.blocks.StructBlock` for an SVG image with
+    """:class:`~wagtail.blocks.StructBlock` for an SVG image with
     alternative text and optional formatted caption. Separate from
     :class:`CaptionedImageBlock` because Wagtail image handling
     does not work with SVG."""
@@ -202,15 +200,16 @@ class LinkPage(AbstractLinkPage):
             ObjectList((MultiFieldPanel((FieldPanel("slug"),)),), heading="Promote"),
         ]
     )
+    search_fields = Page.search_fields
 
 
 class BasePage(Page):
     """Abstract Page class from which all Wagtail page types are derived."""
 
     #: main page text
-    body = StreamField(BodyContentBlock, blank=True)
+    body = StreamField(BodyContentBlock, blank=True, use_json_field=True)
     #: relationship to uploaded documents and external links
-    attachments = StreamField(AttachmentBlock, blank=True)
+    attachments = StreamField(AttachmentBlock, blank=True, use_json_field=True)
     # index body content to make it searchable
     search_fields = Page.search_fields + [index.SearchField("body")]
 
@@ -223,8 +222,8 @@ class ContentPage(BasePage, PagePreviewDescriptionMixin):
 
     content_panels = Page.content_panels + [
         FieldPanel("description"),
-        StreamFieldPanel("body"),
-        StreamFieldPanel("attachments"),
+        FieldPanel("body"),
+        FieldPanel("attachments"),
     ]
 
     # index description in addition to body content
@@ -250,8 +249,8 @@ class LandingPage(BasePage):
 
     content_panels = Page.content_panels + [
         FieldPanel("tagline"),
-        ImageChooserPanel("header_image"),
-        StreamFieldPanel("body"),
+        FieldPanel("header_image"),
+        FieldPanel("body"),
     ]
 
     parent_page_types = ["HomePage"]
@@ -261,7 +260,7 @@ class LandingPage(BasePage):
 class HomePage(BasePage):
     """A home page that aggregates and displays featured content."""
 
-    content_panels = Page.content_panels + [StreamFieldPanel("body")]
+    content_panels = Page.content_panels + [FieldPanel("body")]
 
     parent_page_types = [Page]  # only root
     subpage_types = ["LandingPage", "ContentPage", "LinkPage"]
@@ -402,14 +401,13 @@ class ExternalAttachment(
     # adapted from AbstractDocument but with URL instead; see:
     # https://github.com/wagtail/wagtail/blob/master/wagtail/documents/models.py#L47-L56
     search_fields = CollectionMember.search_fields + [
-        index.SearchField("title", partial_match=True, boost=10),
-        index.AutocompleteField("title"),
+        index.AutocompleteField("title", boost=10),
         index.FilterField("title"),
-        index.SearchField("url", partial_match=True),
+        index.AutocompleteField("url"),
         index.RelatedFields(
             "tags",
             [
-                index.SearchField("name", partial_match=True, boost=10),
+                index.AutocompleteField("name", boost=10),
                 index.AutocompleteField("name"),
             ],
         ),

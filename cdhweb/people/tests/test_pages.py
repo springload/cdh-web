@@ -6,16 +6,16 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import RequestFactory
 from django.utils import timezone
-from wagtail.core.models import Page
-from wagtail.tests.utils import WagtailPageTests
-from wagtail.tests.utils.form_data import rich_text
+from wagtail.models import Page
+from wagtail.test.utils import WagtailPageTestCase
+from wagtail.test.utils.form_data import rich_text
 
 from cdhweb.blog.models import Author, BlogPost
 from cdhweb.pages.models import LinkPage, PageIntro
 from cdhweb.people.models import PeopleLandingPage, Person, Profile
 
 
-class TestPeopleLandingPage(WagtailPageTests):
+class TestPeopleLandingPage(WagtailPageTestCase):
     def test_parent_pages(self):
         """no allowed parent page type; must be created manually"""
         self.assertAllowedParentPageTypes(PeopleLandingPage, [])
@@ -111,7 +111,7 @@ class TestProfile:
         assert posts["one"] not in context["recent_posts"]
 
 
-class TestProfilePage(WagtailPageTests):
+class TestProfilePage(WagtailPageTestCase):
     def test_parent_pages(self):
         """only allowed parent is people landing page"""
         self.assertAllowedParentPageTypes(Profile, [PeopleLandingPage])

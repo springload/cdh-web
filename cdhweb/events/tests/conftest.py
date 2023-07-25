@@ -1,15 +1,15 @@
+import zoneinfo
 from datetime import timedelta
 from datetime import timezone as tz
 
 import pytest
-import pytz
 from django.utils import timezone
 
 from cdhweb.events.models import Event, EventsLinkPage, EventType, Location, Speaker
 from cdhweb.pages.tests.conftest import to_streamfield_safe
 from cdhweb.people.models import Person
 
-EST = pytz.timezone("America/New_York")
+EST = zoneinfo.ZoneInfo("America/New_York")
 
 
 def make_events_link_page(homepage):
@@ -119,6 +119,7 @@ def make_course(link_page):
     link_page.save()
     return course
 
+
 def add_upcoming_event(link_page):
     """Create a course that will happen in 2080. This second course is not defined
     as a fixture since it only needs to be called once."""
@@ -136,6 +137,7 @@ def add_upcoming_event(link_page):
     link_page.add_child(instance=course)
     link_page.save()
     return course
+
 
 def make_events(link_page):
     """Create a variety of events and locations for testing."""
@@ -192,6 +194,7 @@ def events(db, workshop, lecture, deadline, course):
         "deadline": deadline,
         "course": course,
     }
+
 
 @pytest.fixture
 def upcoming_event(events_link_page):

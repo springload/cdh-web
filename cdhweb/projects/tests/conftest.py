@@ -1,8 +1,8 @@
+import zoneinfo
 from datetime import datetime, timedelta
 from datetime import timezone as tz
 
 import pytest
-import pytz
 from django.utils import timezone
 
 from cdhweb.people.models import Person
@@ -15,7 +15,7 @@ from cdhweb.projects.models import (
     Role,
 )
 
-EST = pytz.timezone("America/New_York")
+EST = zoneinfo.ZoneInfo("America/New_York")
 
 
 def add_project_member(project, role, start_date=None, end_date=None, **person_opts):

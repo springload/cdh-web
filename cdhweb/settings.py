@@ -96,6 +96,9 @@ RICHTEXT_ALLOWED_TAGS = [
 # https://docs.wagtail.io/en/latest/reference/settings.html#site-name
 WAGTAIL_SITE_NAME = "CDH Website"
 
+# base url to wagtail, for use in notification emails
+WAGTAILADMIN_BASE_URL = "https://cdh.princeton.edu/cms/"
+
 # Tags are case-sensitive by default. In many cases the reverse is preferable.
 # https://docs.wagtail.io/en/latest/reference/settings.html#case-insensitive-tags
 TAGGIT_CASE_INSENSITIVE = True
@@ -103,13 +106,14 @@ TAGGIT_CASE_INSENSITIVE = True
 # Shows where a particular image, document or snippet is being used on your site.
 # Generates a query which may run slowly on sites with large numbers of pages.
 # https://docs.wagtail.io/en/latest/reference/settings.html#usage-for-images-documents-and-snippets
+# NOTE: handled by reference index starting in wagtail 4.1
 WAGTAIL_USAGE_COUNT_ENABLED = True
 
 # Use Wagtail's postgresql search backend.
 # https://docs.wagtail.io/en/latest/reference/contrib/postgres_search.html
 WAGTAILSEARCH_BACKENDS = {
     "default": {
-        "BACKEND": "wagtail.contrib.postgres_search.backend",
+        "BACKEND": "wagtail.search.backends.database",
         "SEARCH_CONFIG": "english",
     },
 }
@@ -328,8 +332,7 @@ INSTALLED_APPS = [
     "wagtail.search",
     "wagtail.admin",
     "wagtail.contrib.modeladmin",
-    "wagtail.contrib.postgres_search",
-    "wagtail.core",
+    "wagtail",
     "wagtailmenus",
     "modelcluster",
     "taggit",
@@ -361,6 +364,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # pucas configuration that is not expected to change across deploys
 # and does not reference local server configurations or fields

@@ -1,13 +1,13 @@
+import zoneinfo
 from datetime import timezone as tz
 
 import pytest
-import pytz
 from django.utils import timezone
 
 from cdhweb.blog.models import Author, BlogLinkPage, BlogPost
 from cdhweb.pages.tests.conftest import to_streamfield_safe
 
-EST = pytz.timezone("America/New_York")
+EST = zoneinfo.ZoneInfo("America/New_York")
 
 
 def make_blog_link_page(homepage):

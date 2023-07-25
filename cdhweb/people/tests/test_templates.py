@@ -3,7 +3,7 @@ import json
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from wagtail.core.models import Page, Site
+from wagtail.models import Page, Site
 
 from cdhweb.pages.models import HomePage
 from cdhweb.people.models import PeopleLandingPage, Person, Position, Profile, Title

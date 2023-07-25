@@ -1,5 +1,5 @@
 import pytest
-from wagtail.tests.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTestCase
 
 from cdhweb.blog.models import BlogLinkPage, BlogPost
 
@@ -63,7 +63,7 @@ class TestBlogPost:
         assert sitemap_urls[0]["priority"] == 0.6
 
 
-class TestBlogPostPage(WagtailPageTests):
+class TestBlogPostPage(WagtailPageTestCase):
     def test_subpage_types(self):
         """blog posts can't have children"""
         self.assertAllowedSubpageTypes(BlogPost, [])
@@ -73,7 +73,7 @@ class TestBlogPostPage(WagtailPageTests):
         self.assertAllowedParentPageTypes(BlogPost, [BlogLinkPage])
 
 
-class TestBlogLinkPage(WagtailPageTests):
+class TestBlogLinkPage(WagtailPageTestCase):
     def test_subpage_types(self):
         """only allowed child of blog link page is blogpost"""
         self.assertAllowedSubpageTypes(BlogLinkPage, [BlogPost])
