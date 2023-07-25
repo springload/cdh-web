@@ -4,7 +4,7 @@ pillow>=5.2.0
 wagtail>=5.0,<5.1
 django-compressor
 django-compressor-autoprefixer
-psycopg2
+psycopg2-binary
 django-admin-sortable2
 django-taggit
 pucas>=0.6
