@@ -7,6 +7,7 @@ CHANGELOG
 - updated to python 3.8+ (tested against 3.8-3.11)
 - updated node version 18
 - removed editoria11y v1 integration 
+- removed Percy visual testing workflow
 
 3.4.4
 -----
