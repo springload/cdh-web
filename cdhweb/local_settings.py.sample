@@ -14,8 +14,8 @@ INTERNAL_IPS = [
 # Turn this on in test/QA site to show test banner
 # SHOW_TEST_WARNING = True
 
-# Turn this on to enable google analytics in production
-# INCLUDE_ANALYTICS = True
+# Configure google id to enable analytics in production
+# GTAGS_ANALYTICS_ID = ""
 
 # Make these unique, and don't share it with anybody.
 SECRET_KEY = ""

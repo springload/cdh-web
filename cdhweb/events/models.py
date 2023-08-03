@@ -14,15 +14,8 @@ from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
-from wagtail.admin.edit_handlers import (
-    FieldPanel,
-    FieldRowPanel,
-    InlinePanel,
-    MultiFieldPanel,
-    StreamFieldPanel,
-)
-from wagtail.core.models import Page, PageManager, PageQuerySet
-from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 
 from cdhweb.pages.models import BasePage, ContentPage, LinkPage
@@ -190,14 +183,12 @@ class Event(BasePage, ClusterableModel):
         FieldPanel("location"),
         FieldPanel("join_url"),
         FieldRowPanel((FieldPanel("sponsor"), FieldPanel("attendance")), "Tracking"),
-        FieldRowPanel(
-            (ImageChooserPanel("thumbnail"), ImageChooserPanel("image")), "Images"
-        ),
+        FieldRowPanel((FieldPanel("thumbnail"), FieldPanel("image")), "Images"),
         MultiFieldPanel(
             (InlinePanel("speakers", label="Speaker"),), heading="Speakers"
         ),
-        StreamFieldPanel("body"),
-        StreamFieldPanel("attachments"),
+        FieldPanel("body"),
+        FieldPanel("attachments"),
     ]
     promote_panels = Page.promote_panels + [FieldPanel("tags")]
 
@@ -347,4 +338,4 @@ class EventsLinkPage(LinkPage):
     # via a script or the console, since there's only one.
     parent_page_types = []
     # allow content pages to be added under events for special event series
-    subpage_types = [Event, ContentPage]
+    subpage_types = [Event, LinkPage, ContentPage]

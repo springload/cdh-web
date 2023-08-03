@@ -1,12 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import icalendar
 import pytest
-import pytz
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 from django.utils.html import strip_tags
-from wagtail.tests.utils import WagtailPageTests
+from django.utils.timezone import get_default_timezone
+from wagtail.test.utils import WagtailPageTestCase
 
 from cdhweb.events.models import Event, EventsLinkPage, Speaker
 from cdhweb.pages.models import ContentPage, LinkPage
@@ -17,14 +16,14 @@ class TestEvent:
     def test_str(self, workshop):
         """event string should be its title and start date/time"""
         # make start time into a known datetime for testing
-        jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
+        jan15 = datetime(2015, 1, 15, tzinfo=get_default_timezone())
         workshop.start_time = jan15
         assert str(workshop) == "testing workshop - Jan 15, 2015"
 
     def test_get_url(self, workshop):
         """event URL should include two-digit month, year, and slug"""
         # make start time into a known datetime for testing; january -> 01
-        jan15 = datetime(2015, 1, 15, tzinfo=timezone.get_default_timezone())
+        jan15 = datetime(2015, 1, 15, tzinfo=get_default_timezone())
         workshop.start_time = jan15
         workshop.end_time = jan15
         assert workshop.get_url().strip("/").split("/") == [
@@ -37,7 +36,7 @@ class TestEvent:
     def test_when(self, workshop):
         """event should report time lowercased, without repeating am/pm"""
         # same day, both pm
-        jan15 = datetime(2015, 1, 15, hour=16, tzinfo=timezone.get_default_timezone())
+        jan15 = datetime(2015, 1, 15, hour=16, tzinfo=get_default_timezone())
         end = jan15 + timedelta(hours=1, minutes=30)
         workshop.start_time = jan15
         workshop.end_time = end
@@ -66,7 +65,7 @@ class TestEvent:
         )
 
         # different timezone should get localized to current timezone
-        workshop.start_time = datetime(2015, 1, 15, hour=20, tzinfo=pytz.UTC)
+        workshop.start_time = datetime(2015, 1, 15, hour=20, tzinfo=timezone.utc)
         workshop.end_time = workshop.start_time + timedelta(hours=12)
         assert "3:00 pm" in workshop.when()
 
@@ -78,7 +77,7 @@ class TestEvent:
         assert end.strftime("%b") in workshop.when()
 
         # different months, same day
-        feb15 = datetime(2015, 2, 15, hour=16, tzinfo=timezone.get_default_timezone())
+        feb15 = datetime(2015, 2, 15, hour=16, tzinfo=get_default_timezone())
         workshop.start_time = jan15
         workshop.end_time = feb15
         assert workshop.start_time.strftime("%b %d") in workshop.when()
@@ -134,8 +133,8 @@ class TestEvent:
         reading_grp = Event(
             title="testing reading group",
             body="my description",
-            start_time=timezone.now(),
-            end_time=timezone.now(),
+            start_time=datetime.now(tz=timezone.utc),
+            end_time=datetime.now(tz=timezone.utc),
             location=cdh_location,
         )
         with pytest.raises(ValidationError):
@@ -152,7 +151,7 @@ class TestEvent:
         assert lecture.speaker_list == "sam brown, john lecturer"
 
 
-class TestEventPage(WagtailPageTests):
+class TestEventPage(WagtailPageTestCase):
     def test_subpages(self):
         """event page can't have children"""
         self.assertAllowedSubpageTypes(Event, [])
@@ -162,8 +161,9 @@ class TestEventPage(WagtailPageTests):
         self.assertAllowedParentPageTypes(Event, [EventsLinkPage])
 
 
-class TestEventsLinkpage(WagtailPageTests):
-    # skip because this is failing for no reason
+class TestEventsLinkpage(WagtailPageTestCase):
+    # this is failing; does not include content page here,
+    # even though configured to allow
     @pytest.mark.skip
     def test_subpages(self):
         """events link page only allowed child is event page"""

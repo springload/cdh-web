@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+3.4.5
+-----
+- updated to django 4.2 and wagtail 5.0
+- updated to python 3.8+ (tested against 3.8-3.11)
+- updated node version 18
+- removed editoria11y v1 integration 
+
 3.4.4
 -----
 

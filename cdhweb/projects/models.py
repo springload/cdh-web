@@ -4,14 +4,8 @@ from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.models import TaggedItemBase
-from wagtail.admin.edit_handlers import (
-    FieldPanel,
-    FieldRowPanel,
-    InlinePanel,
-    StreamFieldPanel,
-)
-from wagtail.core.models import Page, PageManager, PageQuerySet
-from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel
+from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 
 from cdhweb.pages.models import BasePage, DateRange, LandingPage, LinkPage, RelatedLink
@@ -145,11 +139,9 @@ class Project(BasePage, ClusterableModel):
             ),
             "Settings",
         ),
-        FieldRowPanel(
-            (ImageChooserPanel("thumbnail"), ImageChooserPanel("image")), "Images"
-        ),
+        FieldRowPanel((FieldPanel("thumbnail"), FieldPanel("image")), "Images"),
         FieldPanel("short_description"),
-        StreamFieldPanel("body"),
+        FieldPanel("body"),
         InlinePanel("related_links", label="Links"),
         InlinePanel(
             "grants",
@@ -168,7 +160,7 @@ class Project(BasePage, ClusterableModel):
             ],
             label="Members",
         ),
-        StreamFieldPanel("attachments"),
+        FieldPanel("attachments"),
     ]
     promote_panels = Page.promote_panels + [FieldPanel("tags")]
 

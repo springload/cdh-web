@@ -1,5 +1,5 @@
 import pytest
-from wagtail.core.models import Page
+from wagtail.models import Page
 
 from cdhweb.pages.context_processors import page_intro
 from cdhweb.pages.models import LinkPage, PageIntro

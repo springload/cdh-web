@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, Mock
 import pytest
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from wagtail.core.models import Page
+from wagtail.models import Page
 
 from cdhweb.pages.models import HomePage, RelatedLinkType
 from cdhweb.people.models import (

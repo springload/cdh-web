@@ -10,16 +10,9 @@ from django.utils import timezone
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
-from wagtail.admin.edit_handlers import (
-    FieldPanel,
-    FieldRowPanel,
-    InlinePanel,
-    MultiFieldPanel,
-    StreamFieldPanel,
-)
-from wagtail.core.fields import RichTextField
-from wagtail.core.models import Page
-from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.fields import RichTextField
+from wagtail.models import Page
 from wagtail.search import index
 
 from cdhweb.pages.models import (
@@ -54,7 +47,6 @@ class Title(models.Model):
 
 
 class PersonQuerySet(models.QuerySet):
-
     #: position titles that indicate a person is a postdoc
     postdoc_titles = [
         "Postdoctoral Fellow",
@@ -238,8 +230,12 @@ class PersonQuerySet(models.QuerySet):
         cpq = self._current_position_query()
         return (
             self.filter(cpq)
-            .annotate(current_position_title=models.F("positions__title__title"))
-            .exclude(current_position_title__in=self.exec_committee_titles)
+            .annotate(
+                current_position_title=models.F("positions__title__title"),
+            )
+            .exclude(
+                current_position_title__in=self.exec_committee_titles,
+            )
         )
 
     def order_by_position(self):
@@ -319,7 +315,7 @@ class Person(ClusterableModel):
 
     # wagtail admin setup
     panels = [
-        ImageChooserPanel("image"),
+        FieldPanel("image"),
         FieldRowPanel((FieldPanel("first_name"), FieldPanel("last_name")), "Name"),
         FieldPanel("user"),
         FieldRowPanel((FieldPanel("pu_status"), FieldPanel("cdh_staff")), "Status"),
@@ -400,7 +396,6 @@ class Person(ClusterableModel):
         # if there is one, find the most recent grant overlapping with their
         # affiliation dates
         if mship:
-
             # find most recent grant that overlaps with membership dates
             # - grant start before membership end AND
             # - grant end after membership start OR
@@ -466,10 +461,10 @@ class Profile(BasePage):
 
     # admin edit configuration
     content_panels = Page.content_panels + [
-        FieldRowPanel((FieldPanel("person"), ImageChooserPanel("image")), "Person"),
+        FieldRowPanel((FieldPanel("person"), FieldPanel("image")), "Person"),
         FieldPanel("education"),
-        StreamFieldPanel("body"),
-        StreamFieldPanel("attachments"),
+        FieldPanel("body"),
+        FieldPanel("attachments"),
     ]
 
     parent_page_types = ["people.PeopleLandingPage"]

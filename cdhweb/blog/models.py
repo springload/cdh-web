@@ -3,20 +3,13 @@ from django.db.models.fields.related import RelatedField
 from django.urls import reverse
 from django.utils.dateformat import format
 from django.utils.text import Truncator
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.models import TaggedItemBase
-from wagtail.admin.edit_handlers import (
-    FieldPanel,
-    FieldRowPanel,
-    InlinePanel,
-    MultiFieldPanel,
-    StreamFieldPanel,
-)
-from wagtail.core.models import Orderable, Page, PageManager, PageQuerySet
-from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.models import Orderable, Page, PageManager, PageQuerySet
 from wagtail.search import index
 
 from cdhweb.pages.models import BasePage, LinkPage, PagePreviewDescriptionMixin
@@ -84,11 +77,11 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
 
     # admin edit configuration
     content_panels = Page.content_panels + [
-        FieldRowPanel((ImageChooserPanel("featured_image"), FieldPanel("featured"))),
+        FieldRowPanel((FieldPanel("featured_image"), FieldPanel("featured"))),
         FieldPanel("description"),
         MultiFieldPanel((InlinePanel("authors", label="Author"),), heading="Authors"),
-        StreamFieldPanel("body"),
-        StreamFieldPanel("attachments"),
+        FieldPanel("body"),
+        FieldPanel("attachments"),
     ]
     promote_panels = Page.promote_panels + [FieldPanel("tags")]
 
@@ -126,10 +119,14 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
         return ", ".join(str(author.person) for author in self.authors.all())
 
     def __str__(self):
-        return '"%s" (%s)' % (
-            self.short_title,
-            format(self.first_published_at, "F j, Y"),
-        )
+        # string is used for logging actions on drafts,
+        # needs to handle cases where first published date is not set
+        if self.first_published_at:
+            pubdate = format(self.first_published_at, "F j, Y")
+        else:
+            pubdate = "draft"
+
+        return '"%s" (%s)' % (self.short_title, pubdate)
 
     def get_url_parts(self, *args, **kwargs):
         """Custom blog post URLs of the form /updates/2014/03/01/my-post."""

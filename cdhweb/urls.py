@@ -5,12 +5,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic.base import RedirectView, TemplateView
+from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.contrib.sitemaps import Sitemap
 from wagtail.contrib.sitemaps import views as sitemap_views
-from wagtail.core import urls as wagtail_urls
-from wagtail.core.models import Page
 from wagtail.documents import urls as wagtaildocs_urls
+from wagtail.models import Page
 
 from cdhweb.blog.sitemaps import BlogListSitemap
 from cdhweb.context_processors import favicon_path
@@ -80,7 +80,6 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-
     # serve static files in development - automatically activates in DEBUG; see
     # https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-files-uploaded-by-a-user-during-development
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

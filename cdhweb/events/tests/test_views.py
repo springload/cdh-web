@@ -5,7 +5,7 @@ import icalendar
 from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains
-from wagtail.core.models import Page
+from wagtail.models import Page
 
 from cdhweb.events.views import EventSemesterDates
 
