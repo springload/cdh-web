@@ -1,14 +1,14 @@
 Deploy Notes
 ============
 
-3.4.1
+3.4.5
 -----
 
-- Wagtail upgrade requires updating the search index::
+- The Wagtail upgrade in this release requires updating the search index::
 
     python manage.py update_index
 
-- Wagtail update allows for better management and reporting of where content is used; the reference index should be updated::
+- The Wagtail update allows for better management and reporting of where content is used; the reference index should be updated::
 
     python manage.py rebuild_references_index
 
