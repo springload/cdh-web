@@ -25,6 +25,9 @@ def template_settings(request):
         # Include analytics based on settings.DEBUG or override in settings.py
         # Defaults to opposite of settings.DEBUG
         "INCLUDE_ANALYTICS": getattr(settings, "INCLUDE_ANALYTICS", not settings.DEBUG),
+        "GTAGS_ANALYTICS_ID": getattr(
+            settings, "GTAGS_ANALYTICS_ID", not settings.DEBUG
+        ),
         # pass any feature flags that are configured
         "FEATURE_FLAGS": feature_flags,
         "FAVICON": favicon_path(),
