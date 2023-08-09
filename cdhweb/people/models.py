@@ -430,6 +430,18 @@ class Person(ClusterableModel):
         if website:
             return website.url
 
+    def autocomplete_label(self):
+        """label when chosen with wagtailautocomplete"""
+        return str(self)
+
+    @staticmethod
+    def autocomplete_custom_queryset_filter(search_term):
+        """custom lookup for wagtailautocomplete; searches on first and last name"""
+        return Person.objects.filter(
+            models.Q(first_name__icontains=search_term)
+            | models.Q(last_name__icontains=search_term)
+        )
+
 
 @receiver(pre_delete, sender=Person)
 def cleanup_profile(sender, **kwargs):

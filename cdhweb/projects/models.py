@@ -7,6 +7,7 @@ from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
+from wagtailautocomplete.edit_handlers import AutocompletePanel
 
 from cdhweb.pages.models import BasePage, DateRange, LandingPage, LinkPage, RelatedLink
 from cdhweb.people.models import Person
@@ -155,7 +156,7 @@ class Project(BasePage, ClusterableModel):
             "memberships",
             panels=[
                 FieldRowPanel((FieldPanel("start_date"), FieldPanel("end_date"))),
-                FieldPanel("person"),
+                AutocompletePanel("person"),
                 FieldPanel("role"),
             ],
             label="Members",

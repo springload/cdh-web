@@ -16,3 +16,4 @@ django-apptemplates
 wagtailmenus>=3.1
 opencv-python
 bleach
+wagtail-autocomplete
