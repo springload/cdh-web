@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.5
+---
+
+- Added `wagtailcodeblock` to support formatted code in content pages
+
 3.4.5
 -----
 - updated to django 4.2 and wagtail 5.0
