@@ -340,6 +340,7 @@ INSTALLED_APPS = [
     "compressor",
     "fullurl",
     "django_cas_ng",
+    "wagtailcodeblock",
     "pucas",
     # local apps
     "cdhweb.projects",
@@ -394,6 +395,27 @@ PUCAS_LDAP = {
     "EXTRA_USER_INIT": "cdhweb.people.models.init_person_from_ldap",
 }
 
+
+WAGTAIL_CODE_BLOCK_THEME = "coy"
+
+WAGTAIL_CODE_BLOCK_LANGUAGES = (
+    # default
+    ("bash", "Bash/Shell"),
+    ("css", "CSS"),
+    ("diff", "diff"),
+    ("html", "HTML"),
+    ("javascript", "Javascript"),
+    ("json", "JSON"),
+    ("python", "Python"),
+    ("scss", "SCSS"),
+    ("yaml", "YAML"),
+    # extras
+    ("django", "Django/Jinja2"),
+    ("git", "Git"),
+    ("go", "Go"),
+    ("markup", "Markup + HTML + XML + SVG + MathML"),
+    ("r", "R"),
+)
 
 CACHES = {
     "default": {
