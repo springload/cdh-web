@@ -185,6 +185,22 @@ class TestPerson:
         grant2.save()
         assert person.latest_grant == grant2
 
+    def test_autocomplete_label(self, staffer):
+        assert staffer.autocomplete_label() == str(staffer)
+
+    def test_autocomplete_custom_queryset_filter(self, staffer, postdoc, student):
+        # look for something that will match all three
+        results = Person.autocomplete_custom_queryset_filter("s")
+        # all three have s
+        assert results.count() == 3
+        for p in [staffer, postdoc, student]:
+            assert p in results
+
+        # search for just one (staffer)
+        results = Person.autocomplete_custom_queryset_filter("aff")
+        assert results.count() == 1
+        assert staffer in results
+
 
 def test_profile_url(student, staffer, staffer_profile, faculty_pi):
     # student fixture has neither profile nor website link

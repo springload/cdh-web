@@ -334,6 +334,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.modeladmin",
     "wagtail",
     "wagtailmenus",
+    "wagtailautocomplete",
     "modelcluster",
     "taggit",
     "adminsortable2",
