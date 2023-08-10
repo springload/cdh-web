@@ -25,6 +25,7 @@ from wagtail.models import CollectionMember, Page
 from wagtail.search import index
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.models import register_snippet
+from wagtailcodeblock.blocks import CodeBlock
 from wagtailmenus.models import AbstractLinkPage
 from wagtailmenus.panels import linkpage_tab
 
@@ -114,6 +115,7 @@ class BodyContentBlock(StreamBlock):
     migrated = RichTextBlock(
         features=PARAGRAPH_FEATURES + ["image", "embed"], icon="warning"
     )
+    code = CodeBlock(label="Code")
 
 
 class AttachmentBlock(StreamBlock):
@@ -229,7 +231,12 @@ class ContentPage(BasePage, PagePreviewDescriptionMixin):
     # index description in addition to body content
     search_fields = BasePage.search_fields + [index.SearchField("description")]
 
-    parent_page_types = ["HomePage", "LandingPage", "ContentPage"]
+    parent_page_types = [
+        "HomePage",
+        "LandingPage",
+        "ContentPage",
+        "events.EventsLinkPage",
+    ]
     subpage_types = ["ContentPage"]
 
 

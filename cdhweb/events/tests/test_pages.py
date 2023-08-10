@@ -162,9 +162,6 @@ class TestEventPage(WagtailPageTestCase):
 
 
 class TestEventsLinkpage(WagtailPageTestCase):
-    # this is failing; does not include content page here,
-    # even though configured to allow
-    @pytest.mark.skip
     def test_subpages(self):
         """events link page only allowed child is event page"""
         self.assertAllowedSubpageTypes(EventsLinkPage, [Event, ContentPage, LinkPage])
