@@ -231,7 +231,12 @@ class ContentPage(BasePage, PagePreviewDescriptionMixin):
     # index description in addition to body content
     search_fields = BasePage.search_fields + [index.SearchField("description")]
 
-    parent_page_types = ["HomePage", "LandingPage", "ContentPage"]
+    parent_page_types = [
+        "HomePage",
+        "LandingPage",
+        "ContentPage",
+        "events.EventsLinkPage",
+    ]
     subpage_types = ["ContentPage"]
 
 
