@@ -2,3 +2,8 @@
 header .right .actionbutton {
     float: right;
 }
+
+/* set default color for autocomplete text (otherwise unreadable when not selected) */
+span[data-autocomplete-input] {
+    color: black;
+}
