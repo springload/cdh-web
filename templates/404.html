@@ -1,6 +1,11 @@
 {% extends 'error_base.html' %}
+{% load static %}
 {# defaults to 404, but pass error code and message for alternate use #}
 {% block page-title %}{{ page_title|default:'Not Found' }}{% endblock %}
 
 {% block error-code %}{{ error_code|default:'404' }}{% endblock %}
 {% block message %}{{ message|default:"We can’t seem to find the page you’re looking for." }}{% endblock %}
+
+{% block error-image %}
+    <img src="{% static 'img/cdh-logo-assets/CDH_logo_notfound.svg' %}" alt="CDH logo with text faded and the words can't find it overlaid">
+{% endblock %}
