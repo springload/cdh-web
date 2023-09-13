@@ -4,7 +4,10 @@ CHANGELOG
 3.5
 ---
 
-- Added `wagtailcodeblock` to support formatted code in content pages
+- As a content editor, I want to search for people by name when adding them to projects, events, or setting tem as blog post authors, so that I can easily lookup the correct person.
+- As a content editor, I want an option to add formatted code to blog posts or other content pages, so I can share technical content clearly.
+- update 404 and 500 error page images
+- bugfix: project thumbnails not displaying on project card if project doesn't have a larger image associated
 
 3.4.5
 -----
