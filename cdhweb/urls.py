@@ -11,6 +11,7 @@ from wagtail.contrib.sitemaps import Sitemap
 from wagtail.contrib.sitemaps import views as sitemap_views
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.models import Page
+from wagtailautocomplete.urls.admin import urlpatterns as autocomplete_admin_urls
 
 from cdhweb.blog.sitemaps import BlogListSitemap
 from cdhweb.context_processors import favicon_path
@@ -32,6 +33,8 @@ sitemaps = {
 
 
 urlpatterns = [
+    # wagtail autocompletes; must come before admin urls
+    re_path(r"^cms/autocomplete/", include(autocomplete_admin_urls)),
     # admin site
     path("admin/", admin.site.urls),
     # special paths
@@ -42,7 +45,7 @@ urlpatterns = [
     re_path(
         r"^favicon\.ico$", RedirectView.as_view(url=favicon_path(), permanent=True)
     ),
-    path("500/", lambda _: 1 / 0),  # for testing 500 error page
+    path("_500/", lambda _: 1 / 0),  # for testing 500 error page
     # main apps
     path("people/", include("cdhweb.people.urls", namespace="people")),
     path("updates/", include("cdhweb.blog.urls", namespace="blog")),

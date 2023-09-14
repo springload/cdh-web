@@ -17,6 +17,7 @@ from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
+from wagtailautocomplete.edit_handlers import AutocompletePanel
 
 from cdhweb.pages.models import BasePage, ContentPage, LinkPage
 from cdhweb.people.models import Person
@@ -185,7 +186,8 @@ class Event(BasePage, ClusterableModel):
         FieldRowPanel((FieldPanel("sponsor"), FieldPanel("attendance")), "Tracking"),
         FieldRowPanel((FieldPanel("thumbnail"), FieldPanel("image")), "Images"),
         MultiFieldPanel(
-            (InlinePanel("speakers", label="Speaker"),), heading="Speakers"
+            (InlinePanel("speakers", [AutocompletePanel("person")], label="Speaker"),),
+            heading="Speakers",
         ),
         FieldPanel("body"),
         FieldPanel("attachments"),

@@ -11,6 +11,7 @@ from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
 from wagtail.models import Orderable, Page, PageManager, PageQuerySet
 from wagtail.search import index
+from wagtailautocomplete.edit_handlers import AutocompletePanel
 
 from cdhweb.pages.models import BasePage, LinkPage, PagePreviewDescriptionMixin
 from cdhweb.people.models import Person
@@ -79,7 +80,10 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
     content_panels = Page.content_panels + [
         FieldRowPanel((FieldPanel("featured_image"), FieldPanel("featured"))),
         FieldPanel("description"),
-        MultiFieldPanel((InlinePanel("authors", label="Author"),), heading="Authors"),
+        MultiFieldPanel(
+            [InlinePanel("authors", [AutocompletePanel("person")], label="Author")],
+            heading="Authors",
+        ),
         FieldPanel("body"),
         FieldPanel("attachments"),
     ]

@@ -60,6 +60,7 @@ class PersonQuerySet(models.QuerySet):
         "Co-PI",
         "Instructor",
         "Participant",
+        "Content Lead",
     ]
 
     #: position titles that indicate a staff person is a student
@@ -71,7 +72,11 @@ class PersonQuerySet(models.QuerySet):
     ]
 
     #: membership roles that indicate someone is an affiliate
-    project_roles = ["Project Director", "Project Manager", "Co-PI: Research Lead"]
+    project_roles = [
+        "Project Director",
+        "Project Manager",
+        "Co-PI: Research Lead",
+    ]
 
     #: student status codes from LDAP
     student_pu_status = ["graduate", "undergraduate"]
@@ -429,6 +434,18 @@ class Person(ClusterableModel):
         website = self.related_links.filter(type__name="Website").first()
         if website:
             return website.url
+
+    def autocomplete_label(self):
+        """label when chosen with wagtailautocomplete"""
+        return str(self)
+
+    @staticmethod
+    def autocomplete_custom_queryset_filter(search_term):
+        """custom lookup for wagtailautocomplete; searches on first and last name"""
+        return Person.objects.filter(
+            models.Q(first_name__icontains=search_term)
+            | models.Q(last_name__icontains=search_term)
+        )
 
 
 @receiver(pre_delete, sender=Person)

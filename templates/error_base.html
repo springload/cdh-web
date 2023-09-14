@@ -7,7 +7,9 @@
 <article class="error-page">
     <h1>{% block error-code %}{% endblock %}</h1>
     <p>{% block message %}{% endblock %}</p>
-    <img src="{% static 'img/rubberchicken.png' %}" alt="Claus the Chicken">
+    {% block error-image %}
+    <img src="{% static 'img/cdh-logo-assets/CDH_logo_warped.svg' %}" alt="warped version of CDH logo">
+    {% endblock %}
 </article>
 
 {% endblock %}

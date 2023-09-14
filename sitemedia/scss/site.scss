@@ -1656,12 +1656,6 @@ body.richtextpage {
 	}
 }
 
-/* override default editoria11y placement to avoid overlap with wagtail userbar */
-#ed11y-panel {
-	bottom: 6.5em !important;
-	right: 3em !important; /* line up with wagtail user bar */
-}
-
 /* search page */
 body.search {
 	padding: 0;

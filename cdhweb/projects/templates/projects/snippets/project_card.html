@@ -5,7 +5,7 @@
     {% image project.thumbnail max-310x240 as project_thumb %}
 {% endif %}
 <div class="card project {% if large %}project-large{% endif %}"
-{% if project.image %}style="background-image:url('{{ project_thumb.url }}')"{% endif %}>
+{% if project.thumbnail %}style="background-image:url('{{ project_thumb.url }}')"{% endif %}>
 {% if project.cdh_built %}<div class="cdh-built">Built by CDH</div>{% endif %}
 {% if project.website_url %}<a class="external" title="Project Website" href="{{ project.website_url }}"> </a>{% endif %}
     <a href="{{ project.get_url }}">

@@ -1,12 +1,21 @@
 CHANGELOG
 =========
 
+3.5
+---
+
+- As a content editor, I want to search for people by name when adding them to projects, events, or setting tem as blog post authors, so that I can easily lookup the correct person.
+- As a content editor, I want an option to add formatted code to blog posts or other content pages, so I can share technical content clearly.
+- update 404 and 500 error page images
+- bugfix: project thumbnails not displaying on project card if project doesn't have a larger image associated
+
 3.4.5
 -----
 - updated to django 4.2 and wagtail 5.0
 - updated to python 3.8+ (tested against 3.8-3.11)
 - updated node version 18
 - removed editoria11y v1 integration 
+- removed Percy visual testing workflow
 
 3.4.4
 -----
