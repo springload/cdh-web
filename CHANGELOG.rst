@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.5.1
+-----
+
+Maintenance release: npm package updates
+
 3.5
 ---
 

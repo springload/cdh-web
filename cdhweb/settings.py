@@ -250,9 +250,7 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, *MEDIA_URL.strip("/").split("/"))
 FILEBROWSER_MAX_UPLOAD_SIZE = 50000000
 
 # Use local node-sass installed via npm
-COMPRESS_PRECOMPILERS = (
-    ("text/x-scss", "node_modules/node-sass/bin/node-sass {infile} {outfile}"),
-)
+COMPRESS_PRECOMPILERS = (("text/x-scss", "node_modules/.bin/sass {infile} {outfile}"),)
 
 # Use local postcss-cli and autoprefixer installed via npm
 COMPRESS_AUTOPREFIXER_BINARY = "node_modules/postcss-cli/bin/postcss"
