@@ -261,6 +261,10 @@ COMPRESS_CSS_FILTERS = (
     "django_compressor_autoprefixer.AutoprefixerFilter",
 )
 
+# use content hashing to ensure same url on both servers
+COMPRESS_CSS_HASHING_METHOD = "content"
+
+
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
