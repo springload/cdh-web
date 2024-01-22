@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.5.2
+-----
+
+Configure django-compressor to use content hash so css urls will be the same for load-balanced servers.
+
 3.5.1
 -----
 
