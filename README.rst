@@ -11,10 +11,6 @@ CDH Website
    :target: https://codecov.io/gh/Princeton-CDH/cdh-web
    :alt: Code coverage
 
-.. image:: https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=main
-   :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=main
-   :alt: Requirements Status
-
 .. image:: https://github.com/Princeton-CDH/cdh-web/workflows/dbdocs/badge.svg
     :target: https://dbdocs.io/princetoncdh/cdhweb
     :alt: dbdocs build
