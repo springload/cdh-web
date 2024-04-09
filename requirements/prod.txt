@@ -1,12 +1,13 @@
 
 Django>=4.2,<5.1
-pillow>=5.2.0
-wagtail>=5.0,<5.1
+pillow>=9.1.0
+wagtail>=5.2,<6.0
 django-compressor
 django-compressor-autoprefixer
 psycopg2-binary
 django-admin-sortable2
-django-taggit
+# wagtail 4.2 requires taggit<5.0
+django-taggit>=4.0,<5.0
 pucas>=0.6
 python-dateutil
 icalendar
@@ -18,3 +19,4 @@ opencv-python
 bleach
 wagtail-autocomplete
 wagtailcodeblock
+wagtail_modeladmin
