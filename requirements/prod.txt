@@ -1,12 +1,12 @@
 
 Django>=4.2,<5.1
 pillow>=9.1.0
-wagtail>=5.1,<5.2
+wagtail>=5.2,<6.0
 django-compressor
 django-compressor-autoprefixer
 psycopg2-binary
 django-admin-sortable2
-django-taggit
+django-taggit>=5.0.1
 pucas>=0.6
 python-dateutil
 icalendar
