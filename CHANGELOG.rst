@@ -4,7 +4,8 @@ CHANGELOG
 3.5.3
 -----
 
- - Upgrade to wagtail 5.2 (LTS)
+- Upgrade to wagtail 5.2 (LTS)
+- Use django-split-settings to manage application settings
 
 3.5.2
 -----

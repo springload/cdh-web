@@ -64,7 +64,7 @@ Initial setup and installation:
 
 - Copy sample local settings and configure for your environment::
 
-    cp cdhweb/local_settings.py.sample cdhweb/local_settings.py
+    cp cdhweb/settings/local_settings.py.sample cdhweb/settings/local_settings.py
 
 You must add a ``SECRET_KEY`` value in your local settings.
 

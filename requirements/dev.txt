@@ -2,8 +2,6 @@
 -r prod.txt
 -r test.txt
 
-# sugar is optional but pretty
-pytest-sugar
 django-debug-toolbar
 sphinx
 recommonmark
