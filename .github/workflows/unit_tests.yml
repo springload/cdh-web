@@ -7,6 +7,7 @@ on:
     - cron: "0 16 * * 2"
 
 env:
+  DJANGO_ENV: test
   DB_NAME: cdhweb
   DB_USER: cdhweb
   DB_PASSWORD: cdhweb
