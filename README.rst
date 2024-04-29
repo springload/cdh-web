@@ -11,10 +11,6 @@ CDH Website
    :target: https://codecov.io/gh/Princeton-CDH/cdh-web
    :alt: Code coverage
 
-.. image:: https://requires.io/github/Princeton-CDH/cdh-web/requirements.svg?branch=main
-   :target: https://requires.io/github/Princeton-CDH/cdh-web/requirements/?branch=main
-   :alt: Requirements Status
-
 .. image:: https://github.com/Princeton-CDH/cdh-web/workflows/dbdocs/badge.svg
     :target: https://dbdocs.io/princetoncdh/cdhweb
     :alt: dbdocs build
@@ -32,15 +28,15 @@ CDH Website
     :alt: "imports: isort"
 
 Python 3.11 / Django 4.2 / Node 18 / PostgreSQL 12
-`cdhweb` is a Django+Mezzanine application that powers the CDH website
+`cdhweb` is a Django+Wagtail application that powers the CDH website
 with custom models for people, events, and projects.
 
 View `software and architecture documentation <https://princeton-cdh.github.io/cdh-web/>`_
 for the current release.
 
-This repository uses `git-flow <https://github.com/nvie/gitflow>`_ conventions; main
-contains the most recent release, and work in progress will be on the develop branch.
-Pull requests should be made against develop.
+This repository uses `git-flow <https://github.com/nvie/gitflow>`_ conventions; **main**
+contains the most recent release, and work in progress will be on the **develop** branch.
+Pull requests should be made against **develop**.
 
 
 Development instructions
@@ -68,7 +64,7 @@ Initial setup and installation:
 
 - Copy sample local settings and configure for your environment::
 
-    cp cdhweb/local_settings.py.sample cdhweb/local_settings.py
+    cp cdhweb/settings/local_settings.py.sample cdhweb/settings/local_settings.py
 
 You must add a ``SECRET_KEY`` value in your local settings.
 

@@ -7,11 +7,10 @@ on:
     - cron: "0 16 * * 2"
 
 env:
-  NODE_VERSION: 18
+  DJANGO_ENV: test
   DB_NAME: cdhweb
   DB_USER: cdhweb
   DB_PASSWORD: cdhweb
-  DJANGO_DB_BACKEND: postgresql
 
 jobs:
   python-unit:
@@ -32,16 +31,15 @@ jobs:
           - 5432:5432
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # We need node to install the JS dependencies used to build static assets.
       # Because some unit tests use Django's test client to visit pages, we need
       # to have JS and styles ready to be loaded on those pages or there will be
       # errors.
+      # Uses the node version specified in package.json
       - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
 
       # Basing the cache on the hash of the lockfile means that the cache should
       # only ever be invalidated when we update package-lock.json, which happens
@@ -60,13 +58,10 @@ jobs:
         run: npm ci
 
       # Python version to use is stored in the .python-version file, which is the
-      # convention for pyenv: https://github.com/pyenv/pyenv
-      - name: Get Python version
-        run: echo "PYTHON_VERSION=$(cat .python-version)" >> $GITHUB_ENV
+      # convention for pyenv (https://github.com/pyenv/pyenv)
+      # setup-python automatically picks up version from .python-version
       - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
 
       # We base the python cache on the hash of all requirements files, so that
       # if any change, the cache is invalidated.
@@ -83,18 +78,16 @@ jobs:
         run: pip install -r requirements/test.txt
 
       - name: Setup local_settings.py
-        run: |
-          cp ci/testsettings.py cdhweb/local_settings.py
-          python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
+        run: python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/settings/local_settings.py
 
       - name: Build static assets
         run: python manage.py compress
 
       - name: Run pytest
-        run: py.test --cov=./ --cov-config=.coveragerc --cov-report=xml
+        run: pytest --cov=./ --cov-config=.coveragerc --cov-report=xml
 
       - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
 
       # Set the color of the slack message used in the next step based on the
       # status of the build: "warning" for failure and "good" for success

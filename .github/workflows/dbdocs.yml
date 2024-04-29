@@ -6,10 +6,7 @@ on:
       - main
 
 env:
-  NODE_VERSION: 18
-  DB_NAME: cdhweb
-  DB_USER: cdhweb
-  DB_PASSWORD: cdhweb
+  DJANGO_ENV: test
 
 jobs:
   publish-dbdocs:
@@ -17,33 +14,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Node is required to use dbdocs
       - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
 
       - name: Install dbdocs
         run: npm install -g dbdocs
 
-      # Python version to use is stored in the .python-version file, which is the
-      # convention for pyenv: https://github.com/pyenv/pyenv
-      - name: Get Python version
-        run: echo "PYTHON_VERSION=$(cat .python-version)" >> $GITHUB_ENV
-
       - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
 
-      - name: Install dependencies
+      - name: Install python dependencies
         run: pip install -r requirements/test.txt
+
       - name: Setup local_settings.py
-        run: |
-          cp ci/testsettings.py cdhweb/local_settings.py
-          python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/local_settings.py
+        run: python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/settings/local_settings.py
 
       # Build and publish dbdocs
       - name: Generate DBML

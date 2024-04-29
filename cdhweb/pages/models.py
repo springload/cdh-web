@@ -40,7 +40,6 @@ PARAGRAPH_FEATURES = [
     "ul",
     "hr",
     "blockquote",
-    "document",
     "superscript",
     "subscript",
     "strikethrough",
