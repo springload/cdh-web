@@ -86,6 +86,7 @@ if settings.DEBUG:
     # serve static files in development - automatically activates in DEBUG; see
     # https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-files-uploaded-by-a-user-during-development
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
     try:
         import debug_toolbar
