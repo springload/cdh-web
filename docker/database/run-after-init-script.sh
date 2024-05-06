@@ -12,8 +12,12 @@ BEGIN
       site_name = '${WAGTAIL_SITE_NAME-Dev}'
     WHERE is_default_site = TRUE;
   END IF;
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='accounts_user') THEN
-    UPDATE accounts_user SET
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='auth_user') THEN
+    INSERT INTO auth_user
+      (password, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined)
+    VALUES
+      ('dummy-changed-below', true, 'cms-superadmin', '', '', 'cms-superadmin@springload.co.nz', true, true, CURRENT_TIMESTAMP);
+    UPDATE auth_user SET
       password = '${WAGTAIL_USER_PASSWORD-pbkdf2_sha256\$36000\$Q6T4uYTWfQnP\$pErPo1iWfTDAHTRZxC+aboPjo3NzIrR0Ks9x521APAg=}';
   END IF;
 END
