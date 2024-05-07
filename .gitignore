@@ -2,6 +2,7 @@
 local_settings.py
 db.sqlite3
 cdhweb.dbml
+*.sql
 
 # Media ignores
 static

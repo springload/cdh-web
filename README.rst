@@ -81,6 +81,9 @@ Docker (Springload)
 - Download the database and media dump from https://drive.google.com/drive/u/0/folders/1B7qObEuO6sYJhVyE23RP8Tf0IbFCLlMf
 - Copy the database dump into `docker/database`
 - Extract the media into `media`
+
+    tar -xvzf path_to_file.tar.gz -C media
+
 - Copy cdhweb/settings/local_settings.py.docker-sample to cdhweb/settings/local_settings.py
 - Run `docker-compose up`
 
