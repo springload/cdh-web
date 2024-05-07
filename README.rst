@@ -42,6 +42,9 @@ Pull requests should be made against **develop**.
 Development instructions
 ------------------------
 
+Bare-metal
+~~~~~~~~~~
+
 Initial setup and installation:
 
 - Recommended: create and activate a python 3.9 virtualenv::
@@ -71,6 +74,18 @@ You must add a ``SECRET_KEY`` value in your local settings.
 - Download licensed fonts and install locally under /sitemedia/fonts/
 
 - Install OpenCV dependencies (if necessary) for `wagtail image feature detection <https://docs.wagtail.io/en/stable/advanced_topics/images/feature_detection.html>`_
+
+Docker (Springload)
+~~~~~~~~~~~~~~~~~~~
+
+- Download the database and media dump from https://drive.google.com/drive/u/0/folders/1B7qObEuO6sYJhVyE23RP8Tf0IbFCLlMf
+- Copy the database dump into `docker/database`
+- Extract the media into `media`
+
+    tar -xvzf path_to_file.tar.gz -C media
+
+- Copy cdhweb/settings/local_settings.py.docker-sample to cdhweb/settings/local_settings.py
+- Run `docker-compose up`
 
 Setup pre-commit hooks
 ~~~~~~~~~~~~~~~~~~~~~~
