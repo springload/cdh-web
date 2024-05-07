@@ -36,6 +36,7 @@ WORKDIR /app
 
 COPY requirements /app/requirements
 COPY docker/requirements.txt docker/constraints.txt /app/docker/
+COPY springkit_wagtail-dev.zip /app/springkit_wagtail-dev.zip
 
 # RUN --mount=type=cache,target=/var/lib/apt/lists \
 #     --mount=type=cache,target=/var/cache/apt \
