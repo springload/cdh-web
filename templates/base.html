@@ -1,4 +1,4 @@
-{% load static compress wagtailuserbar wagtailcore_tags wagtailcodeblock_tags %}
+{% load static compress wagtailuserbar wagtailcore_tags wagtailcodeblock_tags core_tags %}
 <!DOCTYPE html>
 <html lang='en' xmlns:schema="http://schema.org/" prefix="og: http://ogp.me/ns# profile: http://ogp.me/ns/profile#" {% block headattrs %}{% endblock %}>
 <head>
@@ -52,7 +52,10 @@
                 </label>
             </nav>
             <nav id='mainmenu'>
-                {% include "snippets/primary_navigation.html" %}
+                {% primary_navigation %}
+            </nav>
+            <nav>
+                {% secondary_navigation %}
             </nav>
             <form class="nav search" action="{% url 'search' %}" method="get">
                 <a href="/" class="home-page">
@@ -95,8 +98,10 @@
         {% include 'snippets/subscribe.html' %}
 
         <section class="footer-menu" id="footermenu">
-            {% include "snippets/footer_menu.html" %}
+            {% site_footer %}
         </section>
+
+
 
         <section class="contact" typeof="schema:Organization">
         {# RDFa markup for organization and address #}

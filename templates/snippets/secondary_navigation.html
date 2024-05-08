@@ -1,0 +1,7 @@
+{% load wagtailcore_tags core_tags static %}
+
+<div>
+    {% for item in secondary_nav_items %}
+        <a href="{{ item.link_url }}">{{ item.title }}</a>
+        {% endfor %}
+    </div>
