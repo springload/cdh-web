@@ -177,6 +177,14 @@ class SecondaryNavigationItem(MiniMenuItemBase):
     def __str__(self):
         return f"Secondary navigation item: {self.title}"
 
+class SecondaryNavigationCTAButton(MiniMenuItemBase):
+    secondary_menu = ParentalKey(
+        "SecondaryNavigation", related_name="cta_button", on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return f"Secondary navigation item: {self.title}"
+
 
 @register_snippet
 class SecondaryNavigation(MiniMenu):
@@ -193,6 +201,7 @@ class SecondaryNavigation(MiniMenu):
 
     panels = [
         InlinePanel("items", label="Secondary navigation items", max_num=3),
+        InlinePanel("cta_button", label="Secondary navigation cta button", max_num=1),
     ]
 
 

@@ -4,4 +4,7 @@
     {% for item in secondary_nav_items %}
         <a href="{{ item.link_url }}">{{ item.title }}</a>
         {% endfor %}
+    {% if cta_button %}
+        <a href="{{ cta_button.link_url }}">{{ cta_button.title }}</a>
+        {% endif %}
     </div>

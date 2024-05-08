@@ -57,12 +57,14 @@ def secondary_navigation(context):
     """
 
     items = []
-    secondary_menu = SecondaryNavigation.objects.prefetch_related("items")
+    secondary_menu = SecondaryNavigation.objects.prefetch_related("items", "cta_button")
     if secondary_menu.exists():
         items = secondary_menu.first().items.all()
+        cta_button = secondary_menu.first().cta_button.first()
 
     data = {
         "secondary_nav_items": items,
+        "cta_button": cta_button,
         "request": context["request"],
     }
     return data
