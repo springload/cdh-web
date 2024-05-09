@@ -34,8 +34,9 @@
   <script defer src="{% static 'dist/main.js' %}"></script><link href="{% static 'dist/styles.css' %}" rel="stylesheet"></head>
   <body class="{% block body_class %}{% endblock %}">
     
-    <h1>BASE SRC CHANGE again c!</h1>
-    
+    {% block content %}{% endblock %}
+    {% block main %}{% endblock %}
+
     {% if GOOGLE_TAG_MANAGER %}
         <!-- Google Tag Manager -->
         <noscript><iframe src="//www.googletagmanager.com/ns.html?id={{ GOOGLE_TAG_MANAGER }}"
@@ -49,8 +50,6 @@
     {% endif %}
     {# Feel free to drop the bar if not necessary #}
     {% wagtailuserbar %}
-
-    {% block content %}{% endblock %}
 
     {% block extra_js %}
       {# Needed for specific cases #}
