@@ -1,0 +1,4 @@
+**/*.html
+**/*.ss
+**/*.yml
+node_modules
