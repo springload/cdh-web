@@ -1,0 +1,28 @@
+// Styles for longform and "rich" text are in rich-text.scss.
+// These are some base rules for all typography, inside a rich-text
+// wrapper or not.
+
+h1 {
+  @include h1;
+}
+h2 {
+  @include h2;
+}
+h3 {
+  @include h3;
+}
+h4 {
+  @include h4;
+}
+
+p {
+  // margin bottom by default.
+  // Safety net in case paragraph appears without a rich-text wrapper.
+  // Rich-text styles should override and ensure the last child of a
+  // rich-text wrapper does not have a bottom margin.
+  margin-bottom: 1em;
+}
+
+a {
+  @include link-style;
+}

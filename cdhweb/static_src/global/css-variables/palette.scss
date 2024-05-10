@@ -1,0 +1,15 @@
+:root {
+  --color-black: black;
+  --color-white: white;
+
+  // UPDATE_ME
+  // Add your brand-specific colours here
+  // --color-primary: whatever;
+  // etc
+
+  // UPDATE_ME probably.
+  --color-text: var(--color-black);
+  --color-link-text: #337ab7;
+  --color-link-underline: currentColor;
+  --color-link-text-hover: #115ea2;
+}
