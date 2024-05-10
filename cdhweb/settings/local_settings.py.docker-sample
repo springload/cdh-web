@@ -68,3 +68,6 @@ LOGGING = {
 }
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost", "https://cdh.dev.springload.nz"]
+
+# disable feature detection in images
+WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False
