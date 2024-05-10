@@ -1,0 +1,21 @@
+html {
+  @media screen and (prefers-reduced-motion: reduce), (update: slow) {
+    * {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+body {
+  background-color: pink;
+  color: var(--color-text, var(--color-black));
+  font-family: var(--font-family-primary);
+  font-size: px2rem(18);
+  line-height: var(--base-line-height);
+
+  @include xl {
+    font-size: px2rem(20);
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "target": "es6",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "skipLibCheck": true,
+    "downlevelIteration": true, // allow [...new Set(myArray.map(item => item.property))])
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext", // allow dynamic imports (lazy load)
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "sourceMap": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "./cdhweb/static_src/**/*.tsx",
+    "./custom.d.ts",
+    "./types/**/*.d.ts",
+    "."
+  ],
+  "exclude": ["node_modules", "cypress"]
+}

@@ -1,0 +1,42 @@
+// Standard responsive grid with gaps, different by breakpoint.
+// If you need something different to this, use the mixins further down.
+@mixin grid-standard {
+  display: grid;
+  grid-template-columns: repeat(var(--standard-cols), minmax(0, 1fr));
+  @include grid-standard-col-gaps;
+}
+
+@mixin grid-standard-col-gaps {
+  column-gap: var(--standard-gap);
+}
+
+// Mixins for bespoke grid rules:
+
+// Pass in a different number as needed. Defaults to 12.
+@mixin grid($cols: 12) {
+  display: grid;
+  grid-template-columns: repeat($cols, minmax(0, 1fr));
+}
+
+// Pass in a different number as needed. Defaults to grid-standard's gap.
+@mixin row-gap($row-gap: var(--standard-gap)) {
+  row-gap: $row-gap;
+}
+
+// For elements like images that sometimes need to break outside grid and stick
+// to one or both sides of the page.
+// Note, margins and width need to be reset when you don't want this (e.g. at higher breakpoints).
+// `* -1` = hackery for negative css var
+@mixin break-grid {
+  width: calc(100% + (var(--page-gutter) * 2));
+  margin-left: calc(#{var(--page-gutter)} * -1);
+  margin-right: calc(#{var(--page-gutter)} * -1);
+}
+@mixin break-grid-left {
+  width: calc(100% + var(--page-gutter));
+  margin-left: calc(#{var(--page-gutter)} * -1);
+}
+@mixin break-grid-right {
+  width: calc(100% + var(--page-gutter));
+  margin-right: calc(#{var(--page-gutter)} * -1);
+}

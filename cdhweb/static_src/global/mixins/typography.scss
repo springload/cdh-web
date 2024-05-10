@@ -1,0 +1,62 @@
+// Mixins for typography
+
+// These mixins are intended to allow you to style (e.g.) an h2 to look like (e.g.) an h3.
+@mixin h1 {
+  font-size: px2rem(40);
+  line-height: 1.2;
+  font-weight: bold;
+  text-wrap: balance;
+
+  @include xl {
+    font-size: px2rem(64);
+    line-height: 1.12;
+  }
+}
+
+@mixin h2 {
+  font-size: px2rem(24);
+  line-height: 1.33;
+  font-weight: bold;
+
+  @include xl {
+    font-size: px2rem(32);
+    line-height: 1.25;
+  }
+}
+
+@mixin h3 {
+  font-size: px2rem(22);
+  line-height: 1.4;
+  font-weight: bold;
+
+  @include xl {
+    font-size: px2rem(24);
+    line-height: 1.45;
+  }
+}
+
+@mixin h4 {
+  font-size: px2rem(18);
+  line-height: 1.33;
+  font-weight: bold;
+
+  @include xl {
+    font-size: px2rem(20);
+    line-height: 1.4;
+  }
+}
+
+// This is a mixin because sometimes we need to make things look like a link which aren't
+// (e.g. disclosure widget, the occasional <button>).
+@mixin link-style {
+  color: var(--color-link-text);
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: var(--color-link-underline);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+
+  &:hover {
+    color: var(--color-link-text-hover);
+  }
+}

@@ -1,0 +1,50 @@
+// ================================================
+// Functions, variables & mixins.
+// Should not add any code to the main bundle.
+// i.e. DO NOT add classes here.
+// ================================================
+@import './global/functions';
+@import './global/mixins';
+
+// ================================================
+// Code above this line should not output any CSS.
+// ================================================
+
+// CSS variables
+@import './global/css-variables';
+
+// Reset
+@import './global/reset';
+
+// Fonts. Put font files in this directory (only woff2 is needed).
+@import './global/fonts/fonts';
+
+// Elements
+@import './global/elements/typography';
+@import './global/elements/page.scss';
+
+// Page templates
+
+// Layout
+@import './global/layout/content-width.scss';
+@import './global/layout/grid.scss';
+
+// Styles for long-form prose, inside a 'rich-text' wrapper.
+// Mainly for handling spacing between each type of typographic element
+@import './global/rich-text';
+
+// Components
+
+// "Micro component" classes e.g. for buttons or form elements, which
+// aren't "components" (they don't have their own html template) and
+// aren't "utilities" (they aren't !important - they're just base styles
+// that can be overridden easily).
+// Should be listed before other components.
+@import './global/components/btn.scss';
+@import './global/components/forms.scss';
+
+// All other components go here:
+// e.g. footer.scss, video-block.scss, etc
+
+// Utility classes. This should go last.
+@import './global/utilities';

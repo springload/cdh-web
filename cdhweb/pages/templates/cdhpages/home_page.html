@@ -6,6 +6,7 @@
 
 {% block content %} {# add a class to main content for home-page specific styles #}
 
+
 <h2>Homepage hero</h2>
 <div>{{ self.title}}</div>
 <div>{{ self.summary }}</div>
@@ -14,7 +15,10 @@
 <img src="{{ image.url }}" alt="{{ image.title }}" />
 {% endif %}
 
+<div class="homepage{% if updates %} with-carousel{% endif %}">
 
+{{ block.super }}
+</div>
 
 {% endblock %}
 
