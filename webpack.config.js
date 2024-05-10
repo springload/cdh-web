@@ -1,7 +1,6 @@
 const path = require('path');
 const glob = require('glob');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const FixPaths = require('./webpack.fix-django-paths');
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const cssnano = require('cssnano');
 const autoprefixer = require('autoprefixer');
@@ -14,17 +13,16 @@ const svgSpritePattern = path.join(SVG_SPRITE_DIR, '*/'); // note: trailing slas
 
 module.exports = (env, options) => {
   const plugins = [
-    ...['base', '500'].map((page) => {
-      return new HtmlWebpackPlugin({
-        title: 'Output Management',
-        // Take a template at `cdhweb/templates_src/`, output it at `templates/`
-        template: path.resolve(__dirname, `cdhweb/templates_src/${page}.html`),
-        filename: path.resolve(__dirname, `templates/${page}.html`),
-        scriptLoading: 'defer',
-        minify: false, // we want to retain HTML comments in output
-      });
-    }),
-    new FixPaths(),
+    // ...['base', '500'].map((page) => {
+    //   return new HtmlWebpackPlugin({
+    //     title: 'Output Management',
+    //     // Take a template at `cdhweb/templates_src/`, output it at `templates/`
+    //     template: path.resolve(__dirname, `cdhweb/templates_src/${page}.html`),
+    //     filename: path.resolve(__dirname, `templates/${page}.html`),
+    //     scriptLoading: 'defer',
+    //     minify: false, // we want to retain HTML comments in output
+    //   });
+    // }),
     new MiniCssExtractPlugin({
       filename: 'styles.css',
       chunkFilename: '[name]-[id].css',
