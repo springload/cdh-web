@@ -1,14 +1,25 @@
 {% extends 'base.html' %}
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags wagtailimages_tags %}
 
 {# Override entire title so there's no extra context appended #}
 {% block title %}<title>{% firstof page.seo_title page.title %}</title>{% endblock %}
 
 {% block content %} {# add a class to main content for home-page specific styles #}
+
+
+<h2>Homepage hero</h2>
+<div>{{ self.title}}</div>
+<div>{{ self.summary }}</div>
+{% if self.hero_image %}
+{% image self.hero_image width-400 as image %}
+<img src="{{ image.url }}" alt="{{ image.title }}" />
+{% endif %}
+
 <div class="homepage{% if updates %} with-carousel{% endif %}">
 
 {{ block.super }}
 </div>
+
 {% endblock %}
 
 {% block bodyclass %}with-cards{% endblock %}

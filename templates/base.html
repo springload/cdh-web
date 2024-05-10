@@ -1,4 +1,3 @@
-
 {% comment %}
 
   DEV WARNING
@@ -14,6 +13,7 @@
     <title>{% block title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}{% block title_suffix %}{% endblock %}</title>
     <meta name="description" content="{% firstof self.search_description self.intro|default:''|striptags self.body_excerpt|default:''|striptags|truncatewords:40 self.title %}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
     <script type="text/javascript"> window.staticRoot = "{% static 'dist/' %}"; </script>
 
@@ -48,7 +48,9 @@
         })(window,document,'script','dataLayer','{{ GOOGLE_TAG_MANAGER }}');</script>
         <!-- End Google Tag Manager -->
     {% endif %}
+
     {# Feel free to drop the bar if not necessary #}
+
     {% wagtailuserbar %}
 
     {% block extra_js %}

@@ -211,6 +211,7 @@ INSTALLED_APPS = [
     "django_cas_ng",
     "wagtailcodeblock",
     "pucas",
+    "springkit",
     # local apps
     "cdhweb.projects",
     "cdhweb.people",

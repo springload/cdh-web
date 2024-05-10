@@ -1,44 +1,30 @@
-{% load i18n cache %}
-{# display full top-level and secondary navigation in the footer #}
-{# adapted from mezzanine pages/menus/primary.html template #}
+{% load wagtailcore_tags static %}
 
-{% cache 3600 footer %}
-{% with toplevel_pages=site.root_page.get_children.live.in_menu %}
-<ul>
-    {# special case: home & top-level content pages #}
-    <li class='menu-header'>
-        <a class="toggle"><span class="button">+</span></a> {# toggle for mobile menu #}
-        <a href="{{ site.root_page.get_url }}">{{ site.root_page.title }}</a>
-        {% with child_pages=site.root_page.get_children.live.in_menu %}
-            <ul class="submenu">
-                {% include "snippets/footer_secondary_nav.html" with navpages=child_pages content_only=1 %}
+
+{% for column in footer_columns %}
+        <div class="footer__column">
+
+            <h2 class="footer__column-heading" >
+                <span>{{ column.title }}</span>
+            </h2>
+
+            <ul class="footer__column-list">
+                {% for item in column.column_items.all %}
+                <li class="footer__item">
+                    {% if item.title %}
+                    <h3 class="footer__item-heading">
+                        {{ item.title }}
+                    </h3>
+                    {% endif %}
+                    <div class="footer__item-body rich-text">
+                        {{ item.body|richtext }}
+                    </div>
+                </li>
+                {% endfor %}
             </ul>
-        {% endwith %}
-    </li>
-</ul>
-<ul>
-{% for navpage in toplevel_pages %}
-    {% if navpage.landingpage or navpage.linkpage %} {# exclude content pages #}
- {# footer has 6 columns; ul breaks to next column #}
-    {% if not forloop.first and forloop.counter <= 5 %}<ul>{% endif %}
-        <li class='menu-header'>
-            {% with child_pages=navpage.get_children.live.in_menu %}
-            {# set page_branch for submenu if there is one #}
-            {% if child_pages %}
-            <a class="toggle"><span class="button">+</span></a> {# toggle for mobile menu #}
-            {% endif %}
-            <a href="{{ navpage.get_url }}">{{ navpage.title }}</a>
-            {% if child_pages %}
-            <ul class="submenu">
-                {% include "snippets/footer_secondary_nav.html" with navpages=child_pages %}
-            </ul>
-            {% endif %}
-            {% endwith %}
-        </li>
-        {% if forloop.counter < 5 %}
-        </ul>
-        {% endif %}
-    {% endif %}
-{% endfor %}
-{% endwith %}
-{% endcache %}
+        </div>
+    {% endfor %}
+
+    {% for item in imprint_links.all %}
+    <a href="{{ item.link_url }}">{{ item.title }}</a>
+    {% endfor %}

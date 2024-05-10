@@ -1,4 +1,5 @@
 from django.contrib.sites.models import Site
+from django.forms.widgets import TextInput
 
 
 def absolutize_url(local_url):
@@ -25,3 +26,32 @@ def absolutize_url(local_url):
         root = root.rstrip("/")
 
     return root + local_url
+
+
+class LengthOverrideWidget(TextInput):
+    """
+    Enforce a client-side text length limit in a widget
+
+    This can be used in conjuction with a Wagtail fieldpanel
+    to allow a limit to be enforced without making changes
+    to the Page model - particularly useful for the title
+    field.
+
+    Usage:
+        content_panels = [
+            FieldPanel(
+                "title",
+                widget=LengthOverrideWidget(max_length=70),
+            ),
+            ...
+        ]
+    """
+
+    def __init__(self, attrs=None, max_length=None):
+        super().__init__(attrs)
+        self.max_length = max_length
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context["widget"]["attrs"]["maxlength"] = self.max_length
+        return context

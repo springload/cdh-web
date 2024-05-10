@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
+from springkit.blocks.link import LinkBlock
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
     FieldPanel,
@@ -28,6 +29,11 @@ from wagtail.snippets.models import register_snippet
 from wagtailcodeblock.blocks import CodeBlock
 from wagtailmenus.models import AbstractLinkPage
 from wagtailmenus.panels import linkpage_tab
+
+from cdhweb.pages import snippets  # needed for import order
+
+from .blocks.cta_block import CTABlock
+from .mixin import HomePageHeroMixin
 
 #: common features for paragraph text
 PARAGRAPH_FEATURES = [
@@ -115,6 +121,7 @@ class BodyContentBlock(StreamBlock):
         features=PARAGRAPH_FEATURES + ["image", "embed"], icon="warning"
     )
     code = CodeBlock(label="Code")
+    # cta = CTABlock()
 
 
 class AttachmentBlock(StreamBlock):
@@ -263,10 +270,10 @@ class LandingPage(BasePage):
     subpage_types = ["ContentPage"]
 
 
-class HomePage(BasePage):
+class HomePage(BasePage, HomePageHeroMixin):
     """A home page that aggregates and displays featured content."""
 
-    content_panels = Page.content_panels + [FieldPanel("body")]
+    content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]
 
     parent_page_types = [Page]  # only root
     subpage_types = ["LandingPage", "ContentPage", "LinkPage"]

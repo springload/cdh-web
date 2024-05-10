@@ -1,37 +1,19 @@
-{% load static i18n cdh_tags %}
-{# top level menu, with secondary nav for current site section #}
-<div class="nav-main">
-    {# NOTE hardcoded homepage URL that works on error pages #}
-    <a href="/" class="home-page">
-        <img alt="home" src='{% static "img/CDH_logo.svg" %}'/>
-    </a>
-    {# top-level pages #}
-    {% with toplevel_pages=site.root_page.get_children.live.in_menu %}
-    <ul class='primary-nav' role="menubar" aria-label="main navigation">
-        {% for navpage in toplevel_pages %}
-        {% if navpage.landingpage or navpage.linkpage %} {# exclude content pages under home #}
-            <li role="none">
-                <a
-                    id="{{ navpage.slug }}"
-                    role="menuitem"
-                    href="{{ navpage.get_url }}"
-                    {% if forloop.first %} tabindex="0"{% else %} tabindex="-1"{% endif %}
-                    {% if navpage.get_childen.live.in_menu %}
-                    aria-owns="{{ navpage.slug }}-secondary"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    {% endif %}
-                    {% if request and request.path|startswith:navpage.get_url %} aria-current="page"{% endif %}>{{ navpage.title }}
-                </a>
-            </li>
-        {% endif %}
-        {% endfor %}
-    </ul>
-    <label class="open" for="{{ site_search.q.id_for_label }}">
-        <img alt="open site search" src="{% static "img/cdh-icons/search.svg" %}" />
-    </label>
-</div>
-{% for navpage in toplevel_pages %}
-    {% include "snippets/navigation_card.html" with navpages=navpage.get_children.live.in_menu %}
+{% load wagtailcore_tags core_tags static %}
+
+
+{% for item in l1_menu_items %}
+                <div>
+                <h2>{{ item.title }}</h2>
+                <ul>
+                <div>{{ item.overview }}<div>
+                <a href="{{ item.link_url }}">{{ item.section_link_title }}</a>
+                </ul>
+            <ul>
+            {% for link in item.l2_items.all %}
+            <a href="{{ link.link_url }}">{{ link.title }}</a>
+            {% endfor %}
+            </ul>
+
+    </div>
+
 {% endfor %}
-{% endwith %}
