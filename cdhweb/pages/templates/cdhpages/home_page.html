@@ -16,13 +16,6 @@
 
 
 
-
-<div class="homepage{% if updates %} with-carousel{% endif %}">
-{% if updates %}
-{% include 'snippets/carousel.html' %}
-{% endif %}
-{{ block.super }}
-</div>
 {% endblock %}
 
 {% block bodyclass %}with-cards{% endblock %}

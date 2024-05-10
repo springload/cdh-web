@@ -1,16 +1,10 @@
 from django.db import models
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, TitleFieldPanel
 
+from .utils import LengthOverrideWidget
+
 
 class HomePageHeroMixin(models.Model):
-    title = models.CharField(
-        max_length=45,
-        blank=True,
-        null=False,
-        verbose_name="Hero title",
-        help_text="Heading on the larger hero banner at top of the page",
-    )
-
     summary = models.TextField(
         max_length=150,
         blank=True,
@@ -31,7 +25,12 @@ class HomePageHeroMixin(models.Model):
     content_panels = [
         MultiFieldPanel(
             [
-                TitleFieldPanel("title"),
+                TitleFieldPanel(
+                    "title",
+                    help_text=""" Heading on the larger hero banner at top of the page.
+                                Ideal length < 45 characters (around 5 words)""",
+                    widget=LengthOverrideWidget(max_length=80),
+                ),
                 FieldPanel("summary"),
                 FieldPanel("hero_image"),
             ],
