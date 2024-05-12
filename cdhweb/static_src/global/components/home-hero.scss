@@ -1,0 +1,153 @@
+// has `.grid-standard`
+.home-hero {
+  --bg-box-border-width: 8px;
+  --total-border-width: calc(var(--bg-box-border-width) * 2);
+
+  // Spacing around the text inside the box:
+  --bg-box-x-pad: 24px;
+  --bg-box-y-pad: 24px;
+  --space-below-box: 56px;
+
+  // TODO might need fine-tuning later. Tricky to get this value in figma.
+  --image-overlap: -30px;
+
+  // Needs a big bottom space due to absolute-positioned 3d box shape.
+  margin-block-end: calc(
+    var(--space-below-box) + var(--bg-box-y-pad) + var(--total-border-width)
+  );
+
+  // i = image
+  // c = content
+  grid-template-areas:
+    'i i i i i i i i i i i i'
+    '. c c c c c c c c c . .';
+
+  @include sm {
+    --space-below-box: 80px;
+  }
+
+  @include md {
+    --space-below-box: 104px;
+
+    grid-template-areas:
+      'i i i i i i i i i i i i'
+      '. c c c c c c c . . . .';
+  }
+  @include lg {
+    --bg-box-x-pad: 56px;
+    --bg-box-y-pad: 40px;
+
+    grid-template-areas:
+      'i i i i i i i i i i i i'
+      '. . c c c c c c . . . .';
+  }
+
+  @include xl {
+    grid-template-areas:
+      '. i i i i i i i i i i .'
+      '. . c c c c c . . . . .';
+  }
+
+  @include xxl {
+    --space-below-box: 136px;
+  }
+}
+
+.home-hero__content {
+  grid-area: c;
+  position: relative;
+  transform: translateY(var(--image-overlap));
+}
+
+.home-hero__content-text {
+  position: relative;
+  z-index: 1; // in front of white 3d box
+
+  :where(h1) {
+    margin: 0 0 8px;
+    @include lg {
+      margin-block-end: 16px;
+    }
+  }
+  :where(p) {
+    margin: 0;
+    font-size: px2rem(24);
+    line-height: 1.5;
+  }
+}
+
+// fancy 3d-lookin' background box
+.hero-home__box {
+  position: absolute;
+  background-color: var(--color-white);
+  // Using an inset box shadow instead of border because it makes positioning the 3d sides MUCH simpler.
+  box-shadow: 0 0 0 var(--bg-box-border-width) var(--color-brand-100) inset;
+  top: 0;
+  width: calc(100% + var(--bg-box-x-pad) * 2);
+  height: calc(100% + var(--bg-box-y-pad) * 2);
+  transform: translate(
+    calc(-1 * var(--bg-box-x-pad)),
+    calc(-1 * var(--bg-box-y-pad))
+  );
+  pointer-events: none;
+}
+
+// more fancy 3d-lookin' background box: the raised sides
+.hero-home__box-bit {
+  --box-3d-side-size: 18px;
+
+  background-color: var(--color-brand-100);
+  position: absolute;
+  transform-origin: top left;
+
+  @include md {
+    --box-3d-side-size: 56px;
+  }
+}
+
+.hero-home__box-bit--right {
+  width: var(--box-3d-side-size);
+  height: 100%;
+  right: calc(-1 * var(--box-3d-side-size));
+  top: 0;
+  transform: skew(0, 45deg);
+}
+
+.hero-home__box-bit--bottom {
+  // The +1px is to stop a pixel rounding bug where a diagonal
+  // transparent line shows where the two 3d box bits meet.
+  // To fix this, we need to make one of the 3d bits (the bottom) 1px wider.
+  // BUT that causes it to have an extra li'l pointy pixel sticking out the side.
+  // So to stop THAT happening, we use clip-path to lop that bottom-right pixel off.
+  width: calc(100% + 1px);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 1px),
+    calc(100% - 1px) 100%,
+    0 100%
+  );
+
+  height: var(--box-3d-side-size);
+  left: 0;
+  bottom: calc(-1 * var(--box-3d-side-size));
+  transform: skew(45deg, 0);
+}
+
+.home-hero__img {
+  grid-area: i;
+  @include break-grid;
+
+  @include xl {
+    @include undo-break-grid;
+  }
+
+  :where(img) {
+    object-fit: cover;
+    height: 312px;
+
+    @include sm {
+      height: 498px;
+    }
+  }
+}

@@ -2,14 +2,17 @@
 
 // These mixins are intended to allow you to style (e.g.) an h2 to look like (e.g.) an h3.
 @mixin h1 {
-  font-size: px2rem(40);
-  line-height: 1.2;
-  font-weight: bold;
+  font-size: px2rem(36);
+  line-height: 1;
+  font-weight: 900;
   text-wrap: balance;
 
+  @include md {
+    font-size: px2rem(48);
+  }
+
   @include xl {
-    font-size: px2rem(64);
-    line-height: 1.12;
+    font-size: px2rem(56);
   }
 }
 

@@ -1,0 +1,27 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+
+<div class="home-hero content-width grid-standard">
+    <div class="home-hero__content">
+        <div class="home-hero__content-text">    
+            <h1>{{ self.title}}</h1>
+            {% if self.summary %}
+                <p>{{ self.summary }}</p>
+            {% endif %}
+        </div>
+        <div class="hero-home__box">
+            <div class="hero-home__box-bit hero-home__box-bit--right"></div>
+            <div class="hero-home__box-bit hero-home__box-bit--bottom"></div>
+        </div>
+    </div>
+    {# In the browser, image *heights* are capped. So we make them be high-res based on that dimension. #}
+    {% image self.hero_image height-624 as img_sm %}
+    {% image self.hero_image height-996 as img_lg %}
+    <img src="{{ img_sm.url }}" 
+        class="home-hero__img"
+        alt="{{ img_sm.alt }}"
+        srcset="{{ img_sm.url }} {{ img_sm.width|unlocalize }}w,
+                {{ img_sm.url }} {{ img_sm.width|unlocalize }}w"
+        sizes="(min-width: 500px) {{ img_sm.width|unlocalize }}px, 100vw"
+    />
+    
+</div>

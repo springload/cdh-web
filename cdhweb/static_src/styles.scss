@@ -44,7 +44,7 @@
 @import './global/components/forms.scss';
 
 // All other components go here:
-// e.g. footer.scss, video-block.scss, etc
+@import './global/components/home-hero.scss';
 
 // Utility classes. This should go last.
 @import './global/utilities';
