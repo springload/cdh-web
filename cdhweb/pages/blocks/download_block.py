@@ -37,10 +37,7 @@ class DownloadBlock(blocks.StructBlock):
     heading = blocks.CharBlock(
         required=False,
         max_length=80,
-        help_text=(
-            "If left blank then the title of the document file will be used. "
-            "(80 characters maximum)."
-        ),
+        help_text=("Heading for document block"),
     )
     description = blocks.TextBlock(
         required=False,
