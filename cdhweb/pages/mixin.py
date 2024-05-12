@@ -7,8 +7,8 @@ from .utils import LengthOverrideWidget
 class HomePageHeroMixin(models.Model):
     summary = models.TextField(
         max_length=150,
-        blank=True,
-        null=False,
+        blank=False,
+        null=True,
         verbose_name="Page Summary",
         help_text="Text that supports / qualifies the hero header and gives people a sense of who you are",
     )
@@ -16,7 +16,7 @@ class HomePageHeroMixin(models.Model):
     hero_image = models.ForeignKey(
         "wagtailimages.Image",
         null=True,
-        blank=True,
+        blank=False,
         on_delete=models.SET_NULL,
         related_name="+",
         help_text="Image that conveys sense of site / brand",
