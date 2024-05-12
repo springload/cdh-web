@@ -7,7 +7,7 @@ from .utils import LengthOverrideWidget
 class HomePageHeroMixin(models.Model):
     summary = models.TextField(
         max_length=150,
-        blank=False,
+        blank=True,
         null=True,
         verbose_name="Page Summary",
         help_text="Text that supports / qualifies the hero header and gives people a sense of who you are",
