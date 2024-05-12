@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
+from springkit.blocks import CTABlock
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
     FieldPanel,
@@ -31,7 +32,6 @@ from wagtailmenus.panels import linkpage_tab
 
 from cdhweb.pages import snippets  # needed for import order
 
-from .blocks.cta_block import CTABlock
 from .blocks.download_block import DownloadBlock
 from .mixin import HomePageHeroMixin
 
@@ -59,6 +59,7 @@ briefly communicate the intended message of the image in this context."""
 
 STANDARD_BLOCKS = [
     ("Downloads", DownloadBlock()),
+    ("CTA_Block", CTABlock()),
 ]
 
 

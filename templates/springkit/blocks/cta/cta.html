@@ -1,0 +1,7 @@
+{% load wagtailcore_tags %}
+<div>
+  {% if self.introduction %}
+    <div>{{ self.introduction }}</div>
+  {% endif %}
+  {% include_block self.cta_buttons %}
+</div>

@@ -452,3 +452,8 @@ WAGTAILEMBEDS_FINDERS = [
 # list of optional features to enable/disable via configuration
 # currently supported: purple-mode
 FEATURE_FLAGS = []
+
+
+# Springkit Settings
+BILINGUAL_HEADINGS = False
+BILINGUAL_LINKS = False
