@@ -1,0 +1,144 @@
+// has `.grid-standard`
+.home-hero {
+  --bg-box-border-width: 8px;
+  --total-border-width: calc(var(--bg-box-border-width) * 2);
+
+  // Spacing around the text inside the box:
+  --bg-box-x-pad: 24px;
+  --bg-box-y-pad: 24px;
+  --space-below-box: 56px;
+
+  // TODO might need fine-tuning later. Tricky to get this value in figma.
+  --image-overlap: -30px;
+
+  // Needs a big bottom space due to absolute-positioned 3d box shape.
+  margin-block-end: calc(
+    var(--space-below-box) + var(--bg-box-y-pad) + var(--total-border-width)
+  );
+
+  // i = image
+  // c = content
+  grid-template-areas:
+    'i i i i i i i i i i i i'
+    '. c c c c c c c c c . .';
+
+  @include sm {
+    --space-below-box: 80px;
+  }
+
+  @include md {
+    --space-below-box: 104px;
+
+    grid-template-areas:
+      'i i i i i i i i i i i i'
+      '. c c c c c c c . . . .';
+  }
+  @include lg {
+    --bg-box-x-pad: 56px;
+    --bg-box-y-pad: 40px;
+
+    grid-template-areas:
+      'i i i i i i i i i i i i'
+      '. . c c c c c c . . . .';
+  }
+
+  @include xl {
+    grid-template-areas:
+      '. i i i i i i i i i i .'
+      '. . c c c c c . . . . .';
+  }
+
+  @include xxl {
+    --space-below-box: 136px;
+  }
+}
+
+.home-hero__content {
+  grid-area: c;
+  position: relative;
+  transform: translateY(var(--image-overlap));
+}
+
+.home-hero__content-text {
+  position: relative;
+  z-index: 1; // in front of white 3d box
+
+  :where(h1) {
+    margin: 0 0 8px;
+    @include lg {
+      margin-block-end: 16px;
+    }
+  }
+  :where(p) {
+    margin: 0;
+    font-size: px2rem(24);
+    line-height: 1.5;
+  }
+}
+
+// fancy 3d-lookin' background box
+.hero-home__box {
+  --box-3d-side-size: 18px;
+
+  position: absolute;
+  top: 0;
+  width: calc(100% + var(--bg-box-x-pad) * 2);
+  height: calc(100% + var(--bg-box-y-pad) * 2);
+  transform: translate(
+    calc(-1 * var(--bg-box-x-pad)),
+    calc(-1 * var(--bg-box-y-pad))
+  );
+
+  @include md {
+    --box-3d-side-size: 56px;
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+  }
+
+  // white box with border
+  &::before {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-white);
+    border: var(--bg-box-border-width) solid var(--color-brand-100);
+  }
+
+  // fancy 3d-lookin' box sides (just a rectangle with the top-right and bottom-left corners removed)
+  &::after {
+    z-index: -1; // behind white content box
+    width: calc(100% + var(--box-3d-side-size));
+    height: calc(100% + var(--box-3d-side-size));
+    background-color: var(--color-brand-100);
+
+    clip-path: polygon(
+      calc(100% - var(--box-3d-side-size)) 0,
+      100% var(--box-3d-side-size),
+      100% 100%,
+      var(--box-3d-side-size) 100%,
+      0 calc(100% - var(--box-3d-side-size)),
+      0 0
+    );
+  }
+}
+
+.home-hero__img {
+  grid-area: i;
+  @include break-grid;
+
+  @include xl {
+    @include undo-break-grid;
+  }
+
+  :where(img) {
+    object-fit: cover;
+    height: 312px;
+
+    @include sm {
+      height: 498px;
+    }
+  }
+}

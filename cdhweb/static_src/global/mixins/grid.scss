@@ -40,3 +40,8 @@
   width: calc(100% + var(--page-gutter));
   margin-right: calc(#{var(--page-gutter)} * -1);
 }
+@mixin undo-break-grid {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
