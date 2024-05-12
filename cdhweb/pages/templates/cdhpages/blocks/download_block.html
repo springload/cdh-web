@@ -1,0 +1,21 @@
+{% load wagtailimages_tags %}
+
+<div>
+  {% if self.heading %}
+    <h2>{{ self.heading }}</h2>
+  {% endif %}
+  
+  {% if self.description %}
+    <p>{{ self.description }}</p>
+  {% endif %}
+
+  <ul class="downloads__list">
+    {% for file in file_links %}
+      <li>
+        <a {% if file.file.url %}href="{{ file.file.url }}"{% endif %} class="downloads__link" download>
+          {{ file.title }} ({{ file.file_size | filesizeformat }} {{ file.file_type }})
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
