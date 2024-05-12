@@ -27,15 +27,15 @@
       {% primary_navigation %}
     </nav>
 
-    {% if secondary_navigation %}
       <nav>
         {% secondary_navigation %}
       </nav>
-    {% endif %}
+
 
     <script defer src="{% static 'dist/main.js' %}"></script><link href="{% static 'dist/styles.css' %}" rel="stylesheet"></head>
 
   </head>
+
   <body class="{% block body_class %}{% endblock %}">
     
     {% block content %}{% endblock %}

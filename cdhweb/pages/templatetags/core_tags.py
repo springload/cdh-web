@@ -23,12 +23,14 @@ def site_footer(context):
         footer_columns = footers.first().footer_columns.all()
         imprint_links = footers.first().imprint_links.all()
 
-    data = {
-        "footer_columns": footer_columns,
-        "imprint_links": imprint_links,
-        "request": context["request"],
-    }
-    return data
+        data = {
+            "footer_columns": footer_columns,
+            "imprint_links": imprint_links,
+            "request": context["request"],
+        }
+        return data
+    else:
+        return None
 
 
 @register.inclusion_tag("snippets/primary_navigation.html", takes_context=True)
@@ -43,11 +45,13 @@ def primary_navigation(context):
     if main_menu.exists():
         l1_menu_items = main_menu.first().l1_items.all()
 
-    data = {
-        "l1_menu_items": l1_menu_items,
-        "request": context["request"],
-    }
-    return data
+        data = {
+            "l1_menu_items": l1_menu_items,
+            "request": context["request"],
+        }
+        return data
+    else:
+        return None
 
 
 @register.inclusion_tag("snippets/secondary_navigation.html", takes_context=True)
@@ -62,9 +66,12 @@ def secondary_navigation(context):
         items = secondary_menu.first().items.all()
         cta_button = secondary_menu.first().cta_button.first()
 
-    data = {
-        "secondary_nav_items": items,
-        "cta_button": cta_button,
-        "request": context["request"],
-    }
-    return data
+        data = {
+            "secondary_nav_items": items,
+            "cta_button": cta_button,
+            "request": context["request"],
+        }
+
+        return data
+    else:
+        return None

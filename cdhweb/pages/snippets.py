@@ -55,10 +55,23 @@ class Level1MenuItem(Orderable, ClusterableModel):
         "PrimaryNavigation", related_name="l1_items", on_delete=models.CASCADE
     )
 
-    title = models.CharField(max_length=60, verbose_name="Menu item title")
-    overview = models.TextField(verbose_name="Section overview", max_length=120)
+    title = models.CharField(
+        max_length=60,
+        verbose_name="Menu item title",
+        blank=False,
+        null=False,
+    )
+    overview = models.TextField(
+        verbose_name="Section overview",
+        max_length=120,
+        blank=True,
+        null=False,
+    )
     section_link_title = models.CharField(
-        max_length=60, verbose_name="Section link title"
+        max_length=60,
+        verbose_name="Section link title",
+        blank=True,
+        null=False,
     )
     section_link = StreamField(
         [
@@ -176,6 +189,7 @@ class SecondaryNavigationItem(MiniMenuItemBase):
 
     def __str__(self):
         return f"Secondary navigation item: {self.title}"
+
 
 class SecondaryNavigationCTAButton(MiniMenuItemBase):
     secondary_menu = ParentalKey(
