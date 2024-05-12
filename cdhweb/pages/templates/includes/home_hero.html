@@ -8,10 +8,7 @@
                 <p>{{ self.summary }}</p>
             {% endif %}
         </div>
-        <div class="hero-home__box">
-            <div class="hero-home__box-bit hero-home__box-bit--right"></div>
-            <div class="hero-home__box-bit hero-home__box-bit--bottom"></div>
-        </div>
+        <div class="hero-home__box"></div>
     </div>
     {# In the browser, image *heights* are capped. So we make them be high-res based on that dimension. #}
     {% image self.hero_image height-624 as img_sm %}
