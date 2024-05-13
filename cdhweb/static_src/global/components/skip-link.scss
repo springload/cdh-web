@@ -1,16 +1,10 @@
-/* 
-Template example:
-<a class="skip-link" href="#content">
-  Skip to content
-</a>
-*/
-
 .skip-link {
   position: absolute;
   // more than 100% to avoid pixel rounding issue where a sliver might always show
   transform: translateY(-105%);
   z-index: 100; // should be in front of everything
   background: var(--color-black);
+  padding: 4px;
   color: var(--color-white);
   left: 1em;
   top: 0;

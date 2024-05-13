@@ -38,8 +38,13 @@
 
   <body class="{% block body_class %}{% endblock %}">
     
-    {% block content %}{% endblock %}
-    {% block main %}{% endblock %}
+    <a class="skip-link" href="#content">
+      Skip to content
+    </a>
+
+    <main id="content">
+      {% block main %}{% endblock %}
+    </main>
 
     {% if GOOGLE_TAG_MANAGER %}
         <!-- Google Tag Manager -->
