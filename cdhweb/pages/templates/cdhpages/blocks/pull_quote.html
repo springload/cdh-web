@@ -1,6 +1,6 @@
 {% load wagtailcore_tags %}
 
-<div>{{ self.quote }}</div>
+<div>{{ self.quote|richtext }}</div>
 {% if self.attribution %}
     <div>{{ self.attribution|richtext }} </div>
 {% endif %}

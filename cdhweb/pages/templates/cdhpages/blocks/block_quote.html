@@ -1,1 +1,3 @@
-<p>{{ self.quote }}</p>
+{% load wagtailcore_tags %}
+
+<p>{{ self.quote|richtext }}</p>

@@ -33,7 +33,7 @@ STATIC_ROOT = BASE_DIR / STATIC_URL.strip("/")
 # Additional locations of static files
 # Always use forward slashes, even on Windows.
 # Don't forget to use absolute paths, not relative paths.
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = ()
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
