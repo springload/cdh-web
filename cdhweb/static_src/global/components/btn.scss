@@ -1,14 +1,20 @@
-// Examples:
+.sk-btn {
+  @include btn;
+}
+.sk-btn--primary {
+  @include btn-primary;
+}
+.sk-btn--secondary {
+  @include btn-secondary;
+}
+.sk-btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 13px 16px;
+  align-items: center;
 
-// .btn {
-//   // ...
-// }
-// .btn--primary {
-//   // ...
-// }
-// .btn--secondary {
-//   // ...
-// }
-// .btn-group {
-//   // ...
-// }
+  @include sm {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}

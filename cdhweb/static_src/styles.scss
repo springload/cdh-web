@@ -24,10 +24,12 @@
 @import './global/elements/page.scss';
 
 // Page templates
+@import './global/pages/home.scss';
 
 // Layout
 @import './global/layout/content-width.scss';
 @import './global/layout/grid.scss';
+@import './global/layout/streamfields.scss';
 
 // Styles for long-form prose, inside a 'rich-text' wrapper.
 // Mainly for handling spacing between each type of typographic element
@@ -46,6 +48,7 @@
 // All other components go here:
 @import './global/components/home-hero.scss';
 @import './global/components/accordion.scss';
+@import './global/components/cta.scss';
 
 // Utility classes. This should go last.
 @import './global/utilities';

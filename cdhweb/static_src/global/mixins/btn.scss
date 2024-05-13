@@ -1,0 +1,61 @@
+@mixin btn {
+  // <button> fixes (in case it's literally a button)
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+
+  text-decoration-line: none;
+  font-size: px2rem(16);
+  font-weight: bold;
+  background-color: var(--btn-bg);
+  border: 2px solid var(--btn-border-color);
+  color: var(--btn-color);
+  border-radius: px2rem(32);
+  padding: 14px 24px;
+  line-height: 1.5;
+
+  display: flex; // may include an icon
+  gap: 8px;
+  flex-wrap: nowrap; // (text may wrap, but not icon)
+
+  // Full width on small screens
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+
+  @include sm {
+    width: auto;
+    max-width: fit-content;
+  }
+
+  &:hover {
+    color: currentColor;
+    background-color: var(--btn-bg-hover);
+    border-color: var(--btn-border-color-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--btn-focus-ring-color);
+  }
+
+  &:active {
+    background-color: var(--btn-bg-hover);
+  }
+}
+
+@mixin btn-primary {
+  --btn-border-color: var(--color-brand-100);
+  --btn-bg: var(--color-brand-100);
+  --btn-bg-hover: var(--color-brand-110);
+  --btn-border-color-hover: transparent;
+  --btn-focus-ring-color: var(--color-brand-120);
+}
+
+@mixin btn-secondary {
+  --btn-border-color: var(--color-brand-100);
+  --btn-bg: transparent;
+  --btn-bg-hover: transparent;
+  --btn-border-color-hover: var(--color-brand-110);
+  --btn-focus-ring-color: var(--color-brand-120);
+}

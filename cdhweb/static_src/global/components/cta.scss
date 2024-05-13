@@ -1,0 +1,13 @@
+.block-cta_block {
+  border: 1px solid var(--color-brand-100);
+  background-color: var(--color-brand-5);
+  padding: 24px;
+
+  @include sm {
+    padding: 40px;
+  }
+
+  :where(p) {
+    margin-block-end: 24px;
+  }
+}
