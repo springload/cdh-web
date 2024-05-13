@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
-from springkit.blocks import CTABlock
+from springkit.blocks import AccordionBlock, CTABlock, FeatureBlock, ImageBlock
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
     FieldPanel,
@@ -58,8 +58,9 @@ briefly communicate the intended message of the image in this context."""
 
 
 STANDARD_BLOCKS = [
-    ("Downloads", DownloadBlock()),
-    ("CTA_Block", CTABlock()),
+    ("download_block", DownloadBlock()),
+    ("cta_block", CTABlock()),
+    ("accordion_block", AccordionBlock()),
 ]
 
 
