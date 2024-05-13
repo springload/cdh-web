@@ -7,7 +7,13 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
-from springkit.blocks import AccordionBlock, CTABlock, FeatureBlock, ImageBlock
+from springkit.blocks import (
+    AccordionBlock,
+    CTABlock,
+    FeatureBlock,
+    ImageBlock,
+    VideoBlock,
+)
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
     FieldPanel,
@@ -63,6 +69,7 @@ STANDARD_BLOCKS = [
     ("cta_block", CTABlock()),
     ("accordion_block", AccordionBlock()),
     ("block_quote", BlockQuote()),
+    ("video_block", VideoBlock()),
 ]
 
 
