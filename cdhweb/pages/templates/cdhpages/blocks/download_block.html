@@ -12,7 +12,7 @@
   <ul>
     {% for file in file_links %}
       <li>
-        <a {% if file.file.url %}href="{{ file.file.url }}"{% endif %} download>
+        <a href="{{ file.file.url }}" download>
           {% include 'includes/svg.html' with sprite="two-tone" svg="download" %}
           <span>
             <strong class="download__file-title">
