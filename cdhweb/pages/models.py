@@ -40,6 +40,7 @@ from cdhweb.pages import snippets  # needed for import order
 
 from .blocks.block_quote import BlockQuote
 from .blocks.download_block import DownloadBlock
+from .blocks.note import Note
 from .blocks.pull_quote import PullQuote
 from .mixin import HomePageHeroMixin
 
@@ -72,6 +73,7 @@ STANDARD_BLOCKS = [
     ("block_quote", BlockQuote()),
     ("video_block", VideoBlock()),
     ("pull_quote", PullQuote()),
+    ("note", Note()),
 ]
 
 
