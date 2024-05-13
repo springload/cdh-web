@@ -7,18 +7,22 @@
 
 :root {
   --standard-cols: 12;
-  --standard-gap: 12px;
+  --standard-gap: 16px;
   --page-gutter: 16px;
   --content-max-width: #{px2rem(1770)};
 
   @include sm {
-    --standard-gap: 16px;
-    --page-gutter: 24px;
+    --standard-gap: 24px;
+    --page-gutter: 32px;
+  }
+  @include md {
+    --page-gutter: 80px;
   }
   @include lg {
-    --page-gutter: 48px;
+    --standard-gap: 32px;
   }
   @include xl {
-    --standard-gap: 24px;
+    --standard-gap: 48px;
+    --page-gutter: 64px;
   }
 }
