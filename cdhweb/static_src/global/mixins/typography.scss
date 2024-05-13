@@ -17,16 +17,16 @@
 }
 
 @mixin h2 {
-  font-size: px2rem(24);
-  line-height: 1.33;
-  font-weight: bold;
+  font-size: px2rem(32);
+  line-height: 1.125;
+  font-weight: 900;
 
-  @include xl {
-    font-size: px2rem(32);
-    line-height: 1.25;
+  @include sm {
+    font-size: px2rem(36);
   }
 }
 
+// TODO styles for h3 and onwards
 @mixin h3 {
   font-size: px2rem(22);
   line-height: 1.4;
