@@ -1,17 +1,16 @@
 {% load wagtailcore_tags %}
 
+<div data-component="accordion" class="sk-accordion">
   {% for item in self.accordion_items %}
-    <div data-component-accordion-item>
-
-      <h2 class="sk-accordion__heading" data-component-accordion-item-heading>
+    <details>
+      <summary>
         {{ item.heading }}
-      </h2>
-
-      <div class="sk-accordion__content" data-component-accordion-item-content>
+        {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-up" classes="sk-accordion__chevron-up" %}
+        {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-down" classes="sk-accordion__chevron-down" %}
+      </summary>
+      <div class="sk-accordion__content rich-text">
         {{ item.body|richtext }}
       </div>
-
-    </div>
+    </details>
   {% endfor %}
-
 </div>

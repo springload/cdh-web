@@ -11,10 +11,10 @@ html {
 body {
   color: var(--color-text, var(--color-black));
   font-family: var(--font-family-primary);
-  font-size: px2rem(18);
+  font-size: px2rem(20);
   line-height: var(--base-line-height);
 
-  @include xl {
-    font-size: px2rem(20);
+  @include sm {
+    font-size: px2rem(22);
   }
 }
