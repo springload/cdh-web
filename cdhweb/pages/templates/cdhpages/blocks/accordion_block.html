@@ -1,0 +1,17 @@
+{% load wagtailcore_tags %}
+
+  {% for item in self.accordion_items %}
+    <div data-component-accordion-item>
+
+      <h2 class="sk-accordion__heading" data-component-accordion-item-heading>
+        {{ item.heading }}
+      </h2>
+
+      <div class="sk-accordion__content" data-component-accordion-item-content>
+        {{ item.body|richtext }}
+      </div>
+
+    </div>
+  {% endfor %}
+
+</div>

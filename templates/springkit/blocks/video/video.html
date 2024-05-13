@@ -1,0 +1,27 @@
+{% load wagtailcore_tags %}
+
+{% if video_embed_url %}
+    <iframe
+        class="sk-video-iframe"
+        loading="lazy"
+        src="{{ video_embed_url }}"
+        frameborder="0"
+        title="{{ self.accessibility_description }}"
+    ></iframe>
+
+    {% if self.transcript %}
+        <div class="sk-video-transcript">
+            <details class="sk-video-transcript__details">
+                <summary class="sk-video-transcript__summary">
+                    {% include 'springkit/includes/svg.html' with sprite="global" svg="chevron-down" classes="sk-video-transcript__icon" %}
+                    <span class="sk-video-transcript__summary-text" lang="en-NZ">
+                        Video transcript
+                    </span>
+                </summary>
+                <div class="sk-video-transcript__content">
+                    {{ self.transcript }}
+                </div>
+            </details>
+        </div>
+    {% endif %}
+{% endif %}

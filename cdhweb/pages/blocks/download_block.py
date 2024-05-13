@@ -33,6 +33,7 @@ class DownloadBlock(blocks.StructBlock):
         template = "cdhpages/blocks/download_block.html"
         label = "Download Block"
         icon = "download"
+        group = "Body copy components"
 
     heading = blocks.CharBlock(
         required=False,
