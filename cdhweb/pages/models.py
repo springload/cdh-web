@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
-from springkit.blocks.link import LinkBlock
+from springkit.blocks import AccordionBlock, CTABlock, FeatureBlock, ImageBlock
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
     FieldPanel,
@@ -32,7 +32,7 @@ from wagtailmenus.panels import linkpage_tab
 
 from cdhweb.pages import snippets  # needed for import order
 
-from .blocks.cta_block import CTABlock
+from .blocks.download_block import DownloadBlock
 from .mixin import HomePageHeroMixin
 
 #: common features for paragraph text
@@ -55,6 +55,13 @@ PARAGRAPH_FEATURES = [
 #: help text for image alternative text
 ALT_TEXT_HELP = """Alternative text for visually impaired users to
 briefly communicate the intended message of the image in this context."""
+
+
+STANDARD_BLOCKS = [
+    ("download_block", DownloadBlock()),
+    ("cta_block", CTABlock()),
+    ("accordion_block", AccordionBlock()),
+]
 
 
 class CaptionedImageBlock(StructBlock):
@@ -273,10 +280,18 @@ class LandingPage(BasePage):
 class HomePage(BasePage, HomePageHeroMixin):
     """A home page that aggregates and displays featured content."""
 
-    content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]
+    body = StreamField(
+        STANDARD_BLOCKS,
+        blank=True,
+        help_text="Put content for the body of the page here. Start with using the + button.",
+        verbose_name="Page content",
+        use_json_field=True,
+    )
 
     parent_page_types = [Page]  # only root
     subpage_types = ["LandingPage", "ContentPage", "LinkPage"]
+
+    content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]
 
     class Meta:
         verbose_name = "Homepage"
