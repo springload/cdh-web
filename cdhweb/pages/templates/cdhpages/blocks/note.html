@@ -1,6 +1,8 @@
 {% load wagtailcore_tags %}
 
-{% if self.heading %}
-<div>{{ self.heading }}</div>
-{% endif %}
-<div>{{ self.message|richtext }}</div>
+<div class="note">
+    {% if self.heading %}
+    <h2>{{ self.heading }}</h2>
+    {% endif %}
+    {{ self.message|richtext }}
+</div>
