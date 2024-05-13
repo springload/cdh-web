@@ -32,6 +32,7 @@ from wagtailmenus.panels import linkpage_tab
 
 from cdhweb.pages import snippets  # needed for import order
 
+from .blocks.block_quote import BlockQuote
 from .blocks.download_block import DownloadBlock
 from .mixin import HomePageHeroMixin
 
@@ -61,6 +62,7 @@ STANDARD_BLOCKS = [
     ("download_block", DownloadBlock()),
     ("cta_block", CTABlock()),
     ("accordion_block", AccordionBlock()),
+    ("block_quote", BlockQuote()),
 ]
 
 
