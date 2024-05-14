@@ -248,54 +248,7 @@ class Footer(ClusterableModel):
                 "Only one Footer allowed. Please go back and edit the existing one."
             )
         super().clean()
-
-
-# class FooterColumn(ClusterableModel):
-#     """
-#     Represents a column in the footer, which can contain multiple items.
-#     Each column has a bilingual heading.
-#     """
-
-#     class Meta:
-#         verbose_name = "Contact link"
-#         verbose_name_plural = "Contact links"
-
-#     footer = ParentalKey(
-#         "Footer", related_name="contact_links", on_delete=models.CASCADE
-#     )
-#     title = models.CharField(  # noqa: DJ001
-#         max_length=255, verbose_name="Column heading", blank=True, default=""
-#     )
-
-#     panels = [
-#         FieldPanel("title"),
-#         InlinePanel("column_items", label="Column item(s)", max_num=10),
-#     ]
-
-#     def __str__(self):
-#         return self.title
-
-
-# class ColumnItem(models.Model):
-#     """
-#     Represents an item within a footer column, containing a rich text field
-#     for contact item body, which supports bold, text, and links.
-#     """
-
-#     column = ParentalKey(
-#         "FooterColumn", related_name="column_items", on_delete=models.CASCADE
-#     )
-#     body = RichTextField(features=["bold", "link"])
-
-#     panels = [
-#         FieldPanel("body"),
-#     ]
-
-#     def __str__(self):
-#         if self.title:
-#             return self.title
-#         return "Column Item"
-
+        
 
 class ImprintLinkItem(MiniMenuItemBase):
     """
