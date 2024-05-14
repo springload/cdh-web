@@ -13,18 +13,21 @@ def site_footer(context):
     """
     Returns the site footer data.
     """
-    # Get footer columns
-    footer_columns = []
+    # Get footer items
     footers = Footer.objects.prefetch_related(
-        "footer_columns", "footer_columns__column_items", "imprint_links"
+        "contact_links", "physical_address", "useful_links", "imprint_links"
     )
 
     if footers.exists():
-        footer_columns = footers.first().footer_columns.all()
+        contact_links = footers.first().contact_links.all()
+        physical_address = footers.first().physical_address.first()
+        useful_links = footers.first().useful_links.all()
         imprint_links = footers.first().imprint_links.all()
 
         data = {
-            "footer_columns": footer_columns,
+            "contact_links": contact_links,
+            "physical_address": physical_address,
+            "useful_links": useful_links,
             "imprint_links": imprint_links,
             "request": context["request"],
         }

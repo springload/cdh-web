@@ -230,7 +230,9 @@ class Footer(ClusterableModel):
         verbose_name_plural = "Footer"
 
     panels = [
-        InlinePanel("footer_columns", label="Footer column(s)", max_num=2),
+        InlinePanel("contact_links", label="Contact Links", min_num=1),
+        InlinePanel("physical_address", label="Physical Address", max_num=1),
+        InlinePanel("useful_links", label="Useful links", min_num=1),
         InlinePanel("imprint_links", label="Imprint links", max_num=4),
     ]
 
@@ -248,51 +250,51 @@ class Footer(ClusterableModel):
         super().clean()
 
 
-class FooterColumn(ClusterableModel):
-    """
-    Represents a column in the footer, which can contain multiple items.
-    Each column has a bilingual heading.
-    """
+# class FooterColumn(ClusterableModel):
+#     """
+#     Represents a column in the footer, which can contain multiple items.
+#     Each column has a bilingual heading.
+#     """
 
-    class Meta:
-        verbose_name = "Footer column"
-        verbose_name_plural = "Footer columns"
+#     class Meta:
+#         verbose_name = "Contact link"
+#         verbose_name_plural = "Contact links"
 
-    footer = ParentalKey(
-        "Footer", related_name="footer_columns", on_delete=models.CASCADE
-    )
-    title = models.CharField(  # noqa: DJ001
-        max_length=255, verbose_name="Column heading", blank=True, default=""
-    )
+#     footer = ParentalKey(
+#         "Footer", related_name="contact_links", on_delete=models.CASCADE
+#     )
+#     title = models.CharField(  # noqa: DJ001
+#         max_length=255, verbose_name="Column heading", blank=True, default=""
+#     )
 
-    panels = [
-        FieldPanel("title"),
-        InlinePanel("column_items", label="Column item(s)", max_num=10),
-    ]
+#     panels = [
+#         FieldPanel("title"),
+#         InlinePanel("column_items", label="Column item(s)", max_num=10),
+#     ]
 
-    def __str__(self):
-        return self.title
+#     def __str__(self):
+#         return self.title
 
 
-class ColumnItem(models.Model):
-    """
-    Represents an item within a footer column, containing a rich text field
-    for contact item body, which supports bold, text, and links.
-    """
+# class ColumnItem(models.Model):
+#     """
+#     Represents an item within a footer column, containing a rich text field
+#     for contact item body, which supports bold, text, and links.
+#     """
 
-    column = ParentalKey(
-        "FooterColumn", related_name="column_items", on_delete=models.CASCADE
-    )
-    body = RichTextField(features=["bold", "link"])
+#     column = ParentalKey(
+#         "FooterColumn", related_name="column_items", on_delete=models.CASCADE
+#     )
+#     body = RichTextField(features=["bold", "link"])
 
-    panels = [
-        FieldPanel("body"),
-    ]
+#     panels = [
+#         FieldPanel("body"),
+#     ]
 
-    def __str__(self):
-        if self.title:
-            return self.title
-        return "Column Item"
+#     def __str__(self):
+#         if self.title:
+#             return self.title
+#         return "Column Item"
 
 
 class ImprintLinkItem(MiniMenuItemBase):
@@ -307,3 +309,50 @@ class ImprintLinkItem(MiniMenuItemBase):
 
     def __str__(self):
         return f"Imprint link item: {self.title}"
+
+
+class UsefulLinksItem(MiniMenuItemBase):
+    """
+    Useful link item for the second column of the footer.
+    Consists of a title and link to internal or external page.
+    """
+
+    contact_link = ParentalKey(
+        "Footer", related_name="useful_links", on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return f"Useful link item: {self.title}"
+
+
+class ContactLinksItem(models.Model):
+    """
+    Contact link item for the first column of the footer.
+    Consists of a title and link to internal or external page.
+    """
+
+    contact_link = ParentalKey(
+        "Footer", related_name="contact_links", on_delete=models.CASCADE
+    )
+
+    body = RichTextField(features=["bold", "link"])
+
+    panels = [
+        FieldPanel("body"),
+    ]
+
+
+class PhysicalAddress(models.Model):
+    """
+    Physical address field for footer.
+    """
+
+    address = ParentalKey(
+        "Footer", related_name="physical_address", on_delete=models.CASCADE
+    )
+
+    body = RichTextField(features=["bold"])
+
+    panels = [
+        FieldPanel("body"),
+    ]
