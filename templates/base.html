@@ -23,14 +23,7 @@
       {# Needed for specific cases #}
     {% endblock %}
 
-    <nav> 
-      {% primary_navigation %}
-    </nav>
-
-      <nav>
-        {% secondary_navigation %}
-      </nav>
-
+    {% include "includes/header.html" %}
 
     <script defer src="{% static 'dist/main.js' %}"></script><link href="{% static 'dist/styles.css' %}" rel="stylesheet"></head>
 

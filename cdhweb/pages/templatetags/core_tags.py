@@ -136,8 +136,8 @@ def _get_secondary_nav_cta_button():
     return cta_button
 
 
-@register.inclusion_tag("snippets/primary_navigation.html", takes_context=True)
-def primary_navigation(context):
+@register.simple_tag()
+def primary_navigation():
     """
     Returns the primary navigation menu.
     """
@@ -150,15 +150,14 @@ def primary_navigation(context):
 
         data = {
             "l1_menu_items": l1_menu_items,
-            "request": context["request"],
         }
         return data
     else:
         return None
 
 
-@register.inclusion_tag("snippets/secondary_navigation.html", takes_context=True)
-def secondary_navigation(context):
+@register.simple_tag()
+def secondary_navigation():
     """
     Returns the secondary navigation menu.
     """
@@ -172,7 +171,6 @@ def secondary_navigation(context):
         data = {
             "secondary_nav_items": items,
             "cta_button": cta_button,
-            "request": context["request"],
         }
 
         return data
