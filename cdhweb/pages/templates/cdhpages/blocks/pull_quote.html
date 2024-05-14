@@ -1,6 +1,12 @@
 {% load wagtailcore_tags %}
 
-<div>{{ self.quote|richtext }}</div>
-{% if self.attribution %}
-    <div>{{ self.attribution|richtext }} </div>
-{% endif %}
+<blockquote class="pull-quote">
+    <div class="pull-quote__quote rich-text">{{ self.quote|richtext }}</div>
+    {% if self.attribution %}
+        {% comment %}
+            NOTE: deliberately not using a `<cite>` here, as the CMS field is richtext, 
+                and `p` is an invalid child of `cite`
+        {% endcomment %}
+        <div class="pull-quote__citation rich-text">{{ self.attribution|richtext }}</div>
+    {% endif %}
+</blockquote>
