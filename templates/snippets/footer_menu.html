@@ -10,6 +10,12 @@
         </div>
     {% endif %}
 
+    <ul class="footer__social-icons-list">
+        {% for link in social_media_links.all %}
+          <div>{{ link.url }}</div>
+          <div>{{ link.site }}</div>
+        {% endfor %}
+      </ul>
 
     {% for item in useful_links.all %}
     <a href="{{ item.link_url }}">{{ item.title }}</a>

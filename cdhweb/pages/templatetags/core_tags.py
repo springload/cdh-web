@@ -20,12 +20,14 @@ def site_footer(context):
 
     if footers.exists():
         contact_links = footers.first().contact_links.all()
+        social_media_links = footers.first().social_media_links.all()
         physical_address = footers.first().physical_address.first()
         useful_links = footers.first().useful_links.all()
         imprint_links = footers.first().imprint_links.all()
 
         data = {
             "contact_links": contact_links,
+            "social_media_links": social_media_links,
             "physical_address": physical_address,
             "useful_links": useful_links,
             "imprint_links": imprint_links,
@@ -105,10 +107,7 @@ def secondary_nav_dict():
     cta_button = [_minor_menu_item_to_dict(item) for item in cta_button]
 
     secondary_nav_data = {
-        "secondary_nav": {
-            "items": secondary_nav_item_data,
-            "cta": cta_button
-        },
+        "secondary_nav": {"items": secondary_nav_item_data, "cta": cta_button},
     }
 
     return {"secondary_nav_data": secondary_nav_data}

@@ -231,6 +231,7 @@ class Footer(ClusterableModel):
 
     panels = [
         InlinePanel("contact_links", label="Contact Links", min_num=1),
+        InlinePanel("social_media_links", label="Social Media Links", max_num=4),
         InlinePanel("physical_address", label="Physical Address", max_num=1),
         InlinePanel("useful_links", label="Useful links", min_num=1),
         InlinePanel("imprint_links", label="Imprint links", max_num=4),
@@ -308,4 +309,26 @@ class PhysicalAddress(models.Model):
 
     panels = [
         FieldPanel("body"),
+    ]
+
+
+class SocialMediaLinks(models.Model):
+    class SocialChoices(models.TextChoices):
+        FACEBOOK = "facebook", "Facebook"
+        INSTAGRAM = "instagram", "Instagram"
+        TWITTER = "twitter", "Twitter"
+        LINKEDIN = "github", "Github"
+
+    social_media_link = ParentalKey(
+        "Footer", related_name="social_media_links", on_delete=models.CASCADE
+    )
+
+    site = models.CharField(
+        choices=SocialChoices.choices,
+    )
+    url = models.URLField(null=False, blank=False)
+
+    panels = [
+        FieldPanel("site"),
+        FieldPanel("url"),
     ]
