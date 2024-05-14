@@ -1,0 +1,6 @@
+.streamfields-wrapper {
+  //   TODO adjust this when we add full-bleed bg components
+  & > * + * {
+    margin-block-start: var(--streamfield-space);
+  }
+}

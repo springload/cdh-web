@@ -1,0 +1,7 @@
+.note {
+  @include outdented-line-block;
+
+  :where(h2) {
+    margin-block-end: 8px;
+  }
+}

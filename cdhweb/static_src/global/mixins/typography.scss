@@ -17,16 +17,16 @@
 }
 
 @mixin h2 {
-  font-size: px2rem(24);
-  line-height: 1.33;
-  font-weight: bold;
+  font-size: px2rem(32);
+  line-height: 1.125;
+  font-weight: 900;
 
-  @include xl {
-    font-size: px2rem(32);
-    line-height: 1.25;
+  @include sm {
+    font-size: px2rem(36);
   }
 }
 
+// TODO styles for h3 and onwards
 @mixin h3 {
   font-size: px2rem(22);
   line-height: 1.4;
@@ -56,8 +56,8 @@
   text-decoration-line: underline;
   text-decoration-style: solid;
   text-decoration-color: var(--color-link-underline);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
 
   &:hover {
     color: var(--color-link-text-hover);

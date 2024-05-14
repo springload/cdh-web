@@ -10,6 +10,8 @@
   --standard-gap: 16px;
   --page-gutter: 16px;
   --content-max-width: #{px2rem(1770)};
+  --streamfield-space: 56px;
+  --content-outdent: 0px;
 
   @include sm {
     --standard-gap: 24px;
@@ -17,12 +19,19 @@
   }
   @include md {
     --page-gutter: 80px;
+    --streamfield-space: 80px;
+    --content-outdent: 72px;
   }
   @include lg {
     --standard-gap: 32px;
+    --streamfield-space: 104px;
   }
   @include xl {
     --standard-gap: 48px;
     --page-gutter: 64px;
+    --content-outdent: 104px;
+  }
+  @include xxl {
+    --content-outdent: 128px;
   }
 }
