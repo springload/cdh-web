@@ -134,7 +134,7 @@ class MiniMenuItemBase(Orderable, ClusterableModel):
     class Meta:
         abstract = True
 
-    title = models.CharField(max_length=60, verbose_name="Menu title")
+    title = models.CharField(max_length=60, verbose_name="link title")
     link = StreamField(
         [
             ("page", blocks.PageChooserBlock()),
@@ -248,7 +248,7 @@ class Footer(ClusterableModel):
                 "Only one Footer allowed. Please go back and edit the existing one."
             )
         super().clean()
-        
+
 
 class ImprintLinkItem(MiniMenuItemBase):
     """
