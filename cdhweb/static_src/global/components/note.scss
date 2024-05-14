@@ -1,21 +1,5 @@
 .note {
-  position: relative;
-  padding-inline-start: 32px;
-
-  @include md {
-    padding-inline-start: 0;
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: translateX(calc(-1 * var(--content-outdent)));
-    width: 8px;
-    height: 100%;
-    background-color: var(--color-brand-100);
-  }
+  @include outdented-line-block;
 
   :where(h2) {
     margin-block-end: 8px;
