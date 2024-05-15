@@ -102,9 +102,8 @@ const DesktopMenu = ({
             '.main-nav-desktop__item',
           );
 
-          if (closestNavItemLink) {
-            closestNavItemLink &&
-              (closestNavItemLink as HTMLButtonElement).focus();
+          if (closestNavItemLink instanceof HTMLButtonElement) {
+            closestNavItemLink.focus();
           }
         }
 
