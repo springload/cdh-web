@@ -37,13 +37,6 @@
   grid-template-areas:
     '. . s s s s s s s s s s'
     'l l p p p p p p p p p p';
-
-  // Setting row height of the main nav items.
-  grid-template-rows: auto 102px;
-
-  @include xl {
-    grid-template-rows: auto 120px;
-  }
 }
 
 .main-nav-desktop__logo-link {
