@@ -35,4 +35,15 @@
   --color-link-text: currentColor;
   --color-link-underline: var(--color-brand-100);
   --color-link-text-hover: var(--color-brand-110);
+
+  --logo-accent-color: var(--color-brand-100);
+  --logo-accent-color-dark: var(--color-brand-120);
+
+  --icon-color: var(--color-grey-100);
+  --icon-color-dark: var(--color-grey-110);
+
+  --icon-accent-color: var(--color-brand-100);
+  --icon-accent-color-dark: var(--color-brand-120);
+
+  --focus-ring-color: var(--color-brand-120);
 }

@@ -1,0 +1,214 @@
+.main-nav-desktop {
+  --logo-overlap: 23px;
+
+  display: none;
+
+  background-color: var(--desktop-nav-bg);
+  isolation: isolate; // stacking context for dropdown menus
+  padding-block-start: 24px;
+  color: var(--color-grey-110);
+
+  @include lg {
+    display: block;
+  }
+  @include xl {
+    --logo-overlap: 29px;
+  }
+
+  &:has(.main-nav-desktop__item--open) {
+    --logo-accent-color: var(--logo-accent-color-dark);
+    --color-link-underline: var(--color-brand-110);
+    --icon-color: var(--icon-color-dark);
+    --icon-accent-color: var(--icon-accent-color-dark);
+
+    background: var(--color-brand-100);
+
+    :where(.main-nav-desktop__cta) {
+      border-color: var(--color-brand-120);
+    }
+  }
+}
+
+// has `.grid-standard`
+.main-nav-desktop__grid {
+  // s = secondary nav
+  // l = logo
+  // p = primary nav
+  grid-template-areas:
+    '. . s s s s s s s s s s'
+    'l l p p p p p p p p p p';
+
+  // Setting row height of the main nav items.
+  grid-template-rows: auto 102px;
+
+  @include xl {
+    grid-template-rows: auto 120px;
+  }
+}
+
+.main-nav-desktop__logo-link {
+  grid-area: l;
+
+  // Overlap hero/breadcrumb area slightly
+  position: relative;
+  transform: translateY(var(--logo-overlap));
+
+  :where(svg) {
+    width: 138px;
+    aspect-ratio: 160 / 120;
+
+    @include xl {
+      width: 160px;
+    }
+  }
+}
+
+.main-nav-desktop__secondary {
+  grid-area: s;
+  justify-self: end;
+
+  // Close the extra gap we created by moving the logo down:
+  margin-bottom: calc(-1 * var(--logo-overlap));
+
+  list-style-type: none;
+  padding: 0;
+  font-size: px2rem(14);
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 26px;
+}
+
+.main-nav-desktop__cta {
+  font-size: px2rem(14);
+  padding: 8px 16px;
+}
+
+.main-nav-desktop__primary {
+  grid-area: p;
+  align-self: end;
+}
+
+.main-nav-desktop__list {
+  list-style-type: none;
+  display: flex;
+  flex-wrap: wrap; // hopefully won't need to, but just in case.
+  gap: 32px;
+  padding: 0;
+  font-size: px2rem(16);
+
+  @include xxl {
+    font-size: px2rem(18);
+  }
+}
+
+// May be a button (with dropdown) or a link
+.main-nav-desktop__item {
+  cursor: pointer;
+  font: inherit;
+  background: none;
+  border: none;
+  text-decoration-line: none;
+
+  font-weight: bold;
+  padding: 0 0 24px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  border-bottom: 8px solid transparent;
+
+  :hover {
+    color: var(--color-brand-120);
+  }
+
+  &[aria-expanded='true'] {
+    border-bottom-color: var(--color-white);
+  }
+
+  // TODO current section, something similar to above
+}
+
+.main-nav-desktop__dropdown-icon {
+  width: 17px;
+  aspect-ratio: 24 / 16;
+}
+
+.main-nav-desktop__search-icon {
+  width: 20px;
+  aspect-ratio: 1;
+}
+
+.main-nav-desktop__sub-menu {
+  position: absolute;
+  z-index: -1; //behind hanging logo. TODO is this the best way?
+  left: 0;
+  width: 100%;
+  padding-block: 128px 96px;
+  border-top: 1px solid var(--color-brand-110);
+  border-bottom: 8px solid var(--color-brand-100);
+  background: linear-gradient(
+    to bottom,
+    var(--color-brand-100),
+    var(--color-white) 150px,
+    var(--color-white)
+  );
+}
+
+.main-nav-desktop__sub-menu-goto-link {
+  padding: 10px 16px;
+}
+
+// has `.grid-standard`
+.main-nav-desktop__sub-menu-grid {
+  // o = overview
+  // l = links
+  grid-template-areas: 'o o o o l l l l l l l l ';
+}
+
+.main-nav-desktop__sub-menu-overview {
+  grid-area: o;
+
+  :where(h2) {
+    margin-block-end: 16px;
+    font-size: px2rem(32);
+  }
+  :where(p) {
+    margin: 0;
+    font-size: px2rem(18);
+  }
+  :where(.sk-btn) {
+    margin-block-start: 24px;
+  }
+}
+
+.main-nav-desktop__sub-menu-main-content {
+  grid-area: l;
+  --space-between-links: 32px;
+
+  :where(a) {
+    text-decoration-thickness: 4px;
+  }
+
+  @include xl {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48;
+  }
+}
+
+.main-nav-desktop__sub-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-between-links);
+  align-items: start;
+
+  // Breathing room when stacked (`lg` only)
+  & + & {
+    margin-block-start: var(--space-between-links);
+
+    @include xl {
+      margin-block-start: 0;
+    }
+  }
+}
