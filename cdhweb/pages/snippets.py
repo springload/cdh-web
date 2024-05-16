@@ -229,10 +229,12 @@ class Footer(ClusterableModel):
         verbose_name = "Footer"
         verbose_name_plural = "Footer"
 
+    address = RichTextField(features=["bold"], verbose_name="Physical Address")
+
     panels = [
         InlinePanel("contact_links", label="Contact Links", min_num=1),
         InlinePanel("social_media_links", label="Social Media Links", max_num=4),
-        InlinePanel("physical_address", label="Physical Address", max_num=1),
+        FieldPanel("address"),
         InlinePanel("useful_links", label="Useful links", min_num=1),
         InlinePanel("imprint_links", label="Imprint links", max_num=4),
     ]
@@ -290,22 +292,6 @@ class ContactLinksItem(models.Model):
     )
 
     body = RichTextField(features=["bold", "link"])
-
-    panels = [
-        FieldPanel("body"),
-    ]
-
-
-class PhysicalAddress(models.Model):
-    """
-    Physical address field for footer.
-    """
-
-    address = ParentalKey(
-        "Footer", related_name="physical_address", on_delete=models.CASCADE
-    )
-
-    body = RichTextField(features=["bold"])
 
     panels = [
         FieldPanel("body"),

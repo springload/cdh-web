@@ -15,13 +15,13 @@ def site_footer(context):
     """
     # Get footer items
     footers = Footer.objects.prefetch_related(
-        "contact_links", "physical_address", "useful_links", "imprint_links"
+        "contact_links", "useful_links", "imprint_links"
     )
 
     if footers.exists():
         contact_links = footers.first().contact_links.all()
         social_media_links = footers.first().social_media_links.all()
-        physical_address = footers.first().physical_address.first()
+        physical_address = footers.first().address
         useful_links = footers.first().useful_links.all()
         imprint_links = footers.first().imprint_links.all()
 
