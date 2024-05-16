@@ -10,7 +10,7 @@ media
 static/CACHE
 sitemedia/fonts
 **/.sass-cache/
-static_src/fonts/**/*.woff2
+cdhweb/static_src/fonts/**/*.woff2
 
 # Vim stuff
 *.pyc
