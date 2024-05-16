@@ -23,7 +23,7 @@
       {% if contact_links or social_media_links.all %}
         <div class="footer__contact">
           {% if contact_links %}
-          <ul class="footer__contact-links footer__link-list">
+          <ul class="footer__link-list">
               {% for item in contact_links %}
                 <li>{{ item.body|richtext }}</li>
               {% endfor %}
