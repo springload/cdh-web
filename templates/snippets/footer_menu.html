@@ -1,26 +1,94 @@
 {% load wagtailcore_tags static %}
 
-    <h2>Contact</h2>
-    {% for item in contact_links %}
-        <h3>{{ item.body|richtext }}</h3>
-    {% endfor %}
+<footer class="footer">
 
-    {% if physical_address %}
-        <div>{{ physical_address.body|richtext }}
+  <div class="content-width">
+    
+    <div class="footer__top grid-standard">
+      <div class="footer__logo">
+        <a href="/" aria-label="The Center for Digital Humanities at Princeton">
+          {% include 'includes/svg.html' with sprite="logo" svg="cdh-logo" %}
+        </a>
+      </div>
+      <div class="footer__search">
+        <h2 class="footer__search-heading footer__heading-text">Search</h2>
+        {% include 'includes/search_form.html' with uniqueID="footer" %}
+      </div>
+    </div>
+
+    <div class="footer__main grid-standard">
+
+      <h2 class="footer__main-heading footer__heading-text">Contact</h2>
+
+      {% if contact_links or social_media_links.all %}
+        <div class="footer__contact">
+          {% if contact_links %}
+          <ul class="footer__link-list">
+              {% for item in contact_links %}
+                <li>{{ item.body|richtext }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          {% if social_media_links.all %}
+            <ul class="footer__social-links">
+              {% for link in social_media_links.all %}
+                <li>
+                  <a href="{{ link.url }}" aria-label="{{ link.site }}">
+                    {% include 'includes/svg.html' with sprite="social" svg=link.site %}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
         </div>
-    {% endif %}
+      {% endif %}
 
-    <ul class="footer__social-icons-list">
-        {% for link in social_media_links.all %}
-          <div>{{ link.url }}</div>
-          <div>{{ link.site }}</div>
-        {% endfor %}
-      </ul>
+      <div class="footer__address-and-newsletter">
+        {% if physical_address %}
+          <h2 class="sr-only">Address</h2>
+          <div class="footer__address">{{ physical_address.body|richtext }}</div>
+        {% endif %}
+        <div class="footer__newsletter">
+          <h2>Subscribe to our newsletter</h2>
+          <form>[TODO newsletter form]</form>
+        </div>
+      </div>
 
-    {% for item in useful_links.all %}
-    <a href="{{ item.link_url }}">{{ item.title }}</a>
-    {% endfor %}
+      {% if useful_links.all %}
+        <h2 class="sr-only">Useful links</h2>
+        <ul class="footer__useful-links footer__link-list">
+          {% for item in useful_links.all %}
+            <li>
+              <a href="{{ item.link_url }}">{{ item.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
 
-    {% for item in imprint_links.all %}
-    <a href="{{ item.link_url }}">{{ item.title }}</a>
-    {% endfor %}
+      <div class="footer__princeton-logo">
+        <a href="https://www.princeton.edu/" aria-label="Princeton University">
+          {% include 'includes/svg.html' with sprite="logo" svg="princeton-logo" %}
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="footer__imprint">
+    <div class="content-width footer__imprint-content">
+      {% if imprint_links.all %}
+        <ul>
+          {% for item in imprint_links.all %}
+            <li>
+              <a href="{{ item.link_url }}">{{ item.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <span class="footer__copyright">©{% now "Y" %} Trustees of Princeton University</span>
+    </div>
+  </div>
+
+</footer>

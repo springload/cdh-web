@@ -1,0 +1,268 @@
+.footer {
+  --color-link-underline: var(--color-brand-110);
+
+  color: var(--color-primary-grey-110);
+  margin-block-start: 112px;
+  padding-block-start: 24px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-white),
+    var(--color-brand-100) 224px
+  );
+
+  @include md {
+    margin-block-start: 184px;
+    padding-block-start: 128px;
+
+    :where(a) {
+      text-decoration-thickness: 4px;
+      &:hover {
+        color: var(--color-brand-120);
+      }
+    }
+  }
+  @include lg {
+    margin-block-start: 208px;
+  }
+  @include xl {
+    padding-block-start: 176px;
+  }
+}
+
+// Wrapper for logo and search.
+// Has `.grid-standard`
+.footer__top {
+  // l = logo
+  // s = search
+  grid-template-areas:
+    'l l l l l . . . . . . .'
+    's s s s s s s s s s s s';
+  gap: 24px;
+  margin-block-end: 32px;
+
+  @include md {
+    grid-template-areas: 'l l l s s s s s s s s s';
+    margin-block-end: 56px;
+  }
+  @include lg {
+    grid-template-areas: 'l l l s s s s s s s s .';
+  }
+  @include xl {
+    grid-template-areas: 'l l s s s s s s s . . .';
+  }
+  @include xxl {
+    grid-template-areas: 'l l s s s s s s . . . .';
+  }
+}
+
+.footer__logo {
+  grid-area: l;
+  :where(svg) {
+    --logo-accent-color: var(--logo-accent-color-dark);
+    max-width: 120px;
+    aspect-ratio: 160 / 120;
+
+    @include md {
+      max-width: 136px;
+    }
+    @include xl {
+      max-width: 160px;
+    }
+  }
+}
+
+.footer__search {
+  grid-area: s;
+}
+
+.footer__search-heading {
+  margin-block-end: 16px;
+
+  @include md {
+    margin-block-end: 20px;
+  }
+}
+
+// Has `.grid-standard`
+.footer__main {
+  --v-link-space: 12px;
+
+  // h = heading (hard-coded)
+  // c = contact links (including socials)
+  // a = address & newsletter signup form
+  // u = useful links
+  // p = princeton logo (not the CDH logo)
+  grid-template-areas:
+    'h h h h h h h h h h h h'
+    'c c c c c c c c c c c c'
+    'a a a a a a a a a a a a'
+    'u u u u u u u u u u u u'
+    'p p p p p p p p p p p p';
+
+  // Default, overridden for some elements
+  font-size: px2rem(16);
+
+  @include md {
+    grid-template-areas:
+      'h h h h h h h h h h h h'
+      'c c c c c . u u u u u .'
+      'a a a a a a . . . . . .'
+      'p p p p . . . . . . . .';
+    font-size: px2rem(18);
+  }
+  @include lg {
+    --v-link-space: 16px;
+  }
+  @include xl {
+    grid-template-areas:
+      'h h h h h h h h h h h h'
+      'c c c c a a a a u u u u'
+      'p p p p . . . . . . . .';
+  }
+}
+
+.footer__main-heading {
+  grid-area: h;
+  margin-block-end: 16px;
+
+  @include md {
+    margin-block-end: 24px;
+  }
+}
+
+// Shared font styles only
+.footer__heading-text {
+  font-size: px2rem(20);
+  font-weight: 900;
+}
+
+.footer__contact {
+  grid-area: c;
+}
+
+.footer__link-list {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--v-link-space);
+
+  :where(p) {
+    margin: 0;
+  }
+}
+
+.footer__social-links {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  gap: 24px;
+  margin-block-start: 40px;
+
+  @include xl {
+    margin-block-start: 56px;
+  }
+
+  :where(svg) {
+    width: 24px;
+    aspect-ratio: 1;
+  }
+}
+
+.footer__address {
+  font-size: px2rem(14);
+  margin-block-start: 32px;
+
+  @include xl {
+    margin-block-start: 0;
+  }
+
+  :where(p) {
+    margin: 0;
+    line-height: 1.625;
+  }
+}
+
+.footer__newsletter {
+  margin-block-start: 24px;
+
+  :where(h2) {
+    font-weight: bold;
+    font-size: px2rem(15);
+    margin-block-end: 14px;
+
+    @include md {
+      font-size: px2rem(17);
+      margin-block-end: 20px;
+    }
+  }
+
+  @include md {
+    margin-block-start: 24px;
+  }
+}
+
+.footer__address-and-newsletter {
+  grid-area: a;
+}
+
+.footer__useful-links {
+  grid-area: u;
+  margin-block-start: 32px;
+
+  @include md {
+    margin-block-start: 0;
+  }
+}
+
+.footer__princeton-logo {
+  grid-area: p;
+
+  margin-block-start: 56px;
+
+  :where(svg) {
+    width: 244px;
+    aspect-ratio: 244 / 17;
+  }
+}
+
+.footer__imprint {
+  border-top: 1px solid var(--color-brand-110);
+  padding-block: 30px;
+  margin-block-start: 24px;
+
+  @include md {
+    margin-block-start: 80px;
+  }
+}
+
+// Imprint content and copyright blurb
+.footer__imprint-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-size: px2rem(14);
+
+  @include lg {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  :where(ul) {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @include lg {
+      flex-direction: row;
+      flex-wrap: wrap;
+      column-gap: 72px;
+    }
+  }
+}
+
+.footer__copyright {
+  flex-shrink: 0;
+}
