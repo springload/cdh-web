@@ -2,8 +2,9 @@
 
 <div data-component="accordion" class="sk-accordion">
   {% for item in self.accordion_items %}
+    <h2 class="sr-only">{{ item.heading }}</h2>
     <details>
-      <summary>
+      <summary aria-label="Toggle section: {{ item.heading }}">
         {{ item.heading }}
         {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-up" classes="sk-accordion__chevron-up" %}
         {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-down" classes="sk-accordion__chevron-down" %}

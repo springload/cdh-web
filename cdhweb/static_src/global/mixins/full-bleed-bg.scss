@@ -2,5 +2,5 @@
 // https://www.smashingmagazine.com/2024/01/css-border-image-property/#full-width-backgrounds
 // Note the 2nd 0 in `0/0/0` is only needed because otherwise Sass sees `//` and comments out the rest of the line :/
 @mixin full-bleed-bg($color) {
-  border-image: conic-gradient($color 0 0) fill 0/0/0 100vw;
+  border-image: linear-gradient($color, $color) fill 0/0/0 100vw;
 }
