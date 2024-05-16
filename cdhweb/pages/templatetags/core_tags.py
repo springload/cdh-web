@@ -13,18 +13,23 @@ def site_footer(context):
     """
     Returns the site footer data.
     """
-    # Get footer columns
-    footer_columns = []
+    # Get footer items
     footers = Footer.objects.prefetch_related(
-        "footer_columns", "footer_columns__column_items", "imprint_links"
+        "contact_links", "useful_links", "imprint_links"
     )
 
     if footers.exists():
-        footer_columns = footers.first().footer_columns.all()
+        contact_links = footers.first().contact_links.all()
+        social_media_links = footers.first().social_media_links.all()
+        physical_address = footers.first().address
+        useful_links = footers.first().useful_links.all()
         imprint_links = footers.first().imprint_links.all()
 
         data = {
-            "footer_columns": footer_columns,
+            "contact_links": contact_links,
+            "social_media_links": social_media_links,
+            "physical_address": physical_address,
+            "useful_links": useful_links,
             "imprint_links": imprint_links,
             "request": context["request"],
         }
@@ -102,9 +107,7 @@ def secondary_nav_dict():
     cta_button = [_minor_menu_item_to_dict(item) for item in cta_button]
 
     secondary_nav_data = {
-        "secondary_nav": {
-            "items": secondary_nav_item_data,
-        },
+        "secondary_nav": {"items": secondary_nav_item_data, "cta": cta_button},
     }
 
     return {"secondary_nav_data": secondary_nav_data}
@@ -133,8 +136,8 @@ def _get_secondary_nav_cta_button():
     return cta_button
 
 
-@register.inclusion_tag("snippets/primary_navigation.html", takes_context=True)
-def primary_navigation(context):
+@register.simple_tag()
+def primary_navigation():
     """
     Returns the primary navigation menu.
     """
@@ -147,15 +150,14 @@ def primary_navigation(context):
 
         data = {
             "l1_menu_items": l1_menu_items,
-            "request": context["request"],
         }
         return data
     else:
         return None
 
 
-@register.inclusion_tag("snippets/secondary_navigation.html", takes_context=True)
-def secondary_navigation(context):
+@register.simple_tag()
+def secondary_navigation():
     """
     Returns the secondary navigation menu.
     """
@@ -169,7 +171,6 @@ def secondary_navigation(context):
         data = {
             "secondary_nav_items": items,
             "cta_button": cta_button,
-            "request": context["request"],
         }
 
         return data
