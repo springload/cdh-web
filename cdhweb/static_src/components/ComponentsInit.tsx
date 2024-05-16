@@ -1,3 +1,6 @@
+import MainNavMobile from './MainNavMobile/MainNavMobile.mount';
+import MainNavDesktop from './MainNavDesktop/MainNavDesktop.mount';
+
 /**
  * This is where the page is hydrated with types of components.
  *
@@ -52,14 +55,16 @@ async function ComponentInit(
   ): Promise<CleanupFunction> =>
     (await asyncComponent).default(componentEl, componentConfig);
 
-  // TODO uncomment when needed (main nav)
-  // const mountSyncComponent = async (
-  //   initComponent: InitComponent,
-  // ): Promise<CleanupFunction> => initComponent(componentEl, componentConfig);
+  const mountSyncComponent = async (
+    initComponent: InitComponent,
+  ): Promise<CleanupFunction> => initComponent(componentEl, componentConfig);
 
   switch (componentName) {
-    // case 'example-sync-component':
-    //   return mountSyncComponent(exampleSyncComponent);
+    case 'main-nav-mobile':
+      return mountSyncComponent(MainNavMobile);
+
+    case 'main-nav-desktop':
+      return mountSyncComponent(MainNavDesktop);
 
     case 'accordion':
       return mountAsyncComponent(

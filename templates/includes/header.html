@@ -1,35 +1,66 @@
 {% load wagtailcore_tags core_tags static %}
 
-{% secondary_nav_dict as secondary_dict %}
-{{ secondary_dict | json_script:"navigation-data" }}
-{% secondary_navigation as secondary_nav %}
-
 {% primary_nav_dict as primary_dict %}
-{{ primary_dict | json_script:"navigation-data" }}
+{{ primary_dict | json_script:"navigation-data-primary" }}
 {% primary_navigation as primary_nav %}
 
-{% for item in primary_nav.l1_menu_items %}
-                <div>
-                <h2>{{ item.title }}</h2>
-                <ul>
-                <div>{{ item.overview }}<div>
-                <a href="{{ item.link_url }}">{{ item.section_link_title }}</a>
+{% secondary_nav_dict as secondary_dict %}
+{{ secondary_dict | json_script:"navigation-data-secondary" }}
+{% secondary_navigation as secondary_nav %}
+
+<header>
+    <nav class="main-nav-mobile" data-component="main-nav-mobile" aria-label="Main">
+        {# the following gets swapped out when react component mounts #}
+        <div class="mobile-menu__header">
+            <a href="/" aria-label="The Center for Digital Humanities at Princeton" class="mobile-menu__logo-link">
+                {% include 'includes/svg.html' with sprite="logo" svg="cdh-logo" classes="mobile-menu__header-logo" %}
+            </a>
+        </div>
+    </nav>
+
+    <nav class="main-nav-desktop" aria-label="Main">
+        <div class="content-width grid-standard main-nav-desktop__grid">
+            <a href="/" class="main-nav-desktop__logo-link" aria-label="The Center for Digital Humanities at Princeton">
+                {% include 'includes/svg.html' with sprite="logo" svg="cdh-logo" %}
+            </a>
+
+            {# Desktop react component is only the primary nav links area. Logo and secondary nav is static. #}
+            <div class="main-nav-desktop__primary" data-component="main-nav-desktop" data-search-url="{% url 'search' %}">
+                {# the following gets swapped out when react component mounts #}
+                <ul class="main-nav-desktop__list">
+                    {% for item in primary_nav.l1_menu_items %}
+                        <li>
+                            <a href="{{ item.link_url }}" class="main-nav-desktop__item">
+                                <span>{{ item.title }}</span>
+                                {# Reserve space for dropdown icon, to stop jank when the React version replaces this version. #}
+                                {% if item.l2_items.all %}
+                                    <span class="main-nav-desktop__dropdown-icon"></span>
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    <li>
+                        <a href="{% url 'search' %}" class="main-nav-desktop__item">
+                            <span>Search</span>
+                            {% include 'includes/svg.html' with sprite="two-tone" svg="search" classes="main-nav-desktop__search-icon" %}
+                        </a>
+                    </li>
                 </ul>
-            <ul>
-            {% for link in item.l2_items.all %}
-            <a href="{{ link.link_url }}">{{ link.title }}</a>
-            {% endfor %}
-            </ul>
+            </div>
 
-    </div>
+            <ul class="main-nav-desktop__secondary">
+                {% for item in secondary_nav.secondary_nav_items %}
+                    <li>
+                        <a href="{{ item.link_url }}">{{ item.title }}</a>
+                    </li>
+                {% endfor %}
+                {% if secondary_nav.cta_button %}
+                    <li>
+                        <a href="{{ secondary_nav.cta_button.link_url }}" class="sk-btn sk-btn--secondary main-nav-desktop__cta">{{ secondary_nav.cta_button.title }}</a>
+                    </li>
+                {% endif %}
+            </ul>  
 
-{% endfor %}
-
-<div>
-    {% for item in secondary_nav.secondary_nav_items %}
-        <a href="{{ item.link_url }}">{{ item.title }}</a>
-        {% endfor %}
-    {% if secondary_navnav.cta_button %}
-        <a href="{{ secondary_nav.cta_button.link_url }}">{{ secondary_nav.cta_button.title }}</a>
-        {% endif %}
-    </div>  
+        </div>
+    </nav>
+</header>

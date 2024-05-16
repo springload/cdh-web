@@ -4,15 +4,11 @@
 {# TODO fix weird title tag #}
 {% block title %}<title>{% firstof page.seo_title page.title %}</title>{% endblock %}
 
-{% block content %} {# add a class to main content for home-page specific styles #}
-
-{% include 'includes/home_hero.html' %}
-
-{% endblock %}
-
 {% block bodyclass %}{% endblock %}
 
 {% block main %}
+    {% include 'includes/home_hero.html' %}
+    
     <div class="home__main-content content-width grid-standard streamfields-wrapper">
         {% if page.body %}
             {% include_block page.body %}

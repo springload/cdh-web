@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 16">
   <g fill-rule="evenodd" clip-rule="evenodd">
-    <path fill="#00EDFF" d="m22.462 6.66-8.564 8.333-2.333-2.102 8.634-8.462 2.263 2.23Z"/>
-    <path fill="#414042" d="m21.796 2.898-10.231 10-10.231-10L3.597.667l7.968 7.767L19.533.667l2.263 2.231Z"/>
+    <path fill="var(--icon-accent-color, #00edff)" d="m22.462 6.66-8.564 8.333-2.333-2.102 8.634-8.462 2.263 2.23Z" />
+    <path fill="var(--icon-color, #414042)"
+      d="m21.796 2.898-10.231 10-10.231-10L3.597.667l7.968 7.767L19.533.667l2.263 2.231Z" />
   </g>
 </svg>

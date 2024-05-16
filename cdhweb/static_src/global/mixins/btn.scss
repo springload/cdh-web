@@ -17,7 +17,7 @@
 
   display: flex; // may include an icon
   gap: 8px;
-  flex-wrap: nowrap; // (text may wrap, but not icon)
+  align-items: center;
 
   // Full width on small screens
   justify-content: center;
@@ -41,6 +41,12 @@
 
   &:active {
     background-color: var(--btn-bg-hover);
+  }
+
+  // Just for safety. Probably overridden on a case-by-case basis.
+  :where(svg) {
+    max-width: 20px;
+    max-height: 20px;
   }
 }
 

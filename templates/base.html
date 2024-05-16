@@ -23,8 +23,6 @@
       {# Needed for specific cases #}
     {% endblock %}
 
-    {% include "includes/header.html" %}
-
     <script defer src="{% static 'dist/main.js' %}"></script><link href="{% static 'dist/styles.css' %}" rel="stylesheet"></head>
 
   </head>
@@ -34,6 +32,8 @@
     <a class="skip-link" href="#content">
       Skip to content
     </a>
+
+    {% include "includes/header.html" %}
 
     <main id="content">
       {% block main %}{% endblock %}
