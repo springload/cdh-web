@@ -1,0 +1,36 @@
+{% load core_tags %}
+
+{% comment %} 
+  This form will appear in more than one place on the page (header, footer, possibly elsewhere).
+  So `uniqueID` is used to prefix IDs (and their `for`s), so we don't get duplicate IDs in the markup.
+{% endcomment%}
+<form class="search-form {{ extra_classes }}" action="{% url 'search' %}">
+  <label class="sr-only" for="search-input_{{ uniqueID }}">Search</label>
+  <div class="search-form__input-btn-group">
+    <input type="text" id="search-input_{{ uniqueID }}" />
+    <input type="submit" value="Search" />
+  </div>
+  <fieldset class="search-form__filters">
+    <legend class="sr-only">Filter search results by</legend>
+    <div class="search-form__radio">
+      <input type="radio" name="filter" id="{{ uniqueID }}_everything" checked />
+      <label for="{{ uniqueID }}_everything">Everything</label>
+    </div>
+    <div class="search-form__radio">
+      <input type="radio" name="filter" id="{{ uniqueID }}_people" />
+      <label for="{{ uniqueID }}_people">People</label>
+    </div>
+    <div class="search-form__radio">
+      <input type="radio" name="filter" id="{{ uniqueID }}_projects" />
+      <label for="{{ uniqueID }}_projects">Projects</label>
+    </div>
+    <div class="search-form__radio">
+      <input type="radio" name="filter" id="{{ uniqueID }}_events" />
+      <label for="{{ uniqueID }}_events">Events</label>
+    </div>
+    <div class="search-form__radio">
+      <input type="radio" name="filter" id="{{ uniqueID }}_blogs-and-news" />
+      <label for="{{ uniqueID }}_blogs-and-news">Blogs & news</label>
+    </div>
+  </fieldset>
+</form>
