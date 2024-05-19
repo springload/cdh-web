@@ -19,10 +19,6 @@
 
   @include md {
     --title-top-space: 64px;
-
-    grid-template-areas:
-      't t t t t . i i i i i i'
-      '. d d d d d i i i i i i';
   }
   @include lg {
     --title-top-space: 80px;
@@ -88,12 +84,8 @@
   grid-area: i;
   @include break-grid;
 
-  // object-fit: cover;
-  // height: 312px;
-
   @include sm {
     @include undo-break-grid;
-    // height: 498px;
   }
   @include md {
     @include break-grid-right;
