@@ -1,14 +1,26 @@
 {% extends 'base.html' %}
 {% load wagtailcore_tags %}
 
-{% block bodyclass %}richtextpage{% endblock %}
+{% block body_class %}template-standard{% endblock %}
 
 {% block main %}
-{# ensure content is always wrapped in a div for formatting reasons #}
-<h1>{{ page.title }}</h1>
-<div>
-    {% for block in page.body %}
-        {% include_block block %}
-    {% endfor %}
-</div>
+    {% include 'includes/breadcrumbs.html' %}
+    {% include 'includes/standard_hero.html' %}
+
+    <div class="page-layout page-layout--with-sidenav content-width grid-standard">
+
+        <div class="page-layout__main-content">
+            <div class="streamfields-wrapper">
+                {% for block in page.body %}
+                    {% include_block block %}
+                {% endfor %}
+            </div>
+        </div>
+
+        {# TODO conditionally render if page has siblings (and any other pre-requisites) #}
+        <div class="page-layout__sidenav">
+            {% include 'includes/sidenav.html' %}
+        </div>
+    </div>
+
 {% endblock %}

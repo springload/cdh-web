@@ -1,0 +1,78 @@
+.breadcrumbs {
+  font-size: px2rem(14);
+  line-height: 1.62;
+  margin-block: 20px 12px;
+  grid-column: 1 / -1;
+
+  @include sm {
+    margin-block: 40px 24px;
+  }
+  @include md {
+    grid-column: 2 / -1;
+    margin-block: 48px 16px;
+  }
+  @include lg {
+    grid-column: 3 / -1;
+  }
+}
+
+.breadcrumbs__list {
+  list-style-type: none;
+  margin: 0;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.breadcrumbs__item {
+  display: none;
+  align-items: center;
+  gap: px2rem(9); // space before '/'
+
+  @include sm {
+    display: flex;
+  }
+}
+
+// The link to the parent page always shows.
+// This is the only crumb that shows on mobile.
+// On mobile, the "back" chevron icon shows next to it.
+.breadcrumbs__item--parent {
+  display: flex;
+  align-items: baseline;
+}
+
+.breadcrumbs__item--current-page {
+  display: none;
+
+  @include sm {
+    display: flex;
+  }
+}
+
+// .breadcrumbs__link {
+// }
+
+.breadcrumbs__link--parent {
+  display: flex;
+  gap: px2rem(8);
+}
+
+// mobile-only back icon:
+.breadcrumbs__back-icon {
+  width: px2rem(15);
+  aspect-ratio: 11 / 16;
+
+  @include sm {
+    display: none;
+  }
+}
+
+.breadcrumbs__separator {
+  display: none;
+  margin-right: px2rem(9); // space after '/'
+
+  @include sm {
+    display: inline-block;
+  }
+}

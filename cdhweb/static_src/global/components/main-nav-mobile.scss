@@ -1,3 +1,11 @@
+// This is the header element that wraps both tme mobile and desktop <nav>s.
+.header {
+  border-bottom: 1px solid var(--color-brand-100);
+  .template-home & {
+    border: none;
+  }
+}
+
 .main-nav-mobile {
   @include lg {
     display: none;

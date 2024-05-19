@@ -1,0 +1,108 @@
+/*
+  This component has a 3d blx like the homepage hero. The difference is that
+  this version aligns the *box* to the grid, rather than the content.
+  It was too fiddly to make a mixin that supported both.
+  
+  TODO: This should be made into a mixin or something when we do other such boxes,
+  e.g. the feature streamfield block and the newsletter signup streamfield block.
+  Might be tricky as they seem to have different border sizing rules to the sidenav.
+*/
+
+.sidenav {
+  --box-3d-side-size: 18px;
+  --box-border-width: 6px;
+  --pad-x: 14px;
+
+  position: relative;
+
+  padding-inline: calc(var(--pad-x) + var(--box-border-width));
+  padding-block: calc(24px + var(--box-border-width)) var(--box-border-width);
+
+  // stop it going off the edge of the page, or looking too asymmetrical, on small screens:
+  width: calc(100% - var(--box-3d-side-size));
+
+  @include sm {
+    --box-border-width: 8px;
+  }
+  @include xl {
+    width: 100%;
+    max-width: px2rem(230);
+    position: sticky;
+    top: 0;
+  }
+
+  // TODO if making a 3d-box mixin, move all of the below into it and add fallbacks to the vars.
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  // white box with border
+  &::before {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-white);
+    border: var(--box-border-width) solid var(--color-brand-100);
+  }
+
+  // fancy 3d-lookin' box sides (just a rectangle with the top-right and bottom-left corners removed)
+  &::after {
+    z-index: -1; // behind white content box
+    width: calc(100% + var(--box-3d-side-size));
+    height: calc(100% + var(--box-3d-side-size));
+    background-color: var(--color-brand-100);
+
+    clip-path: polygon(
+      calc(100% - var(--box-3d-side-size)) 0,
+      100% var(--box-3d-side-size),
+      100% 100%,
+      var(--box-3d-side-size) 100%,
+      0 calc(100% - var(--box-3d-side-size)),
+      0 0
+    );
+  }
+
+  // Sidenav content styles
+  :where(h2) {
+    font-size: px2rem(18);
+    border-bottom: 1px solid var(--color-brand-100);
+    padding-block-end: 18px;
+    margin: 0;
+    font-weight: bold;
+    line-height: 1.125;
+    isolation: isolate;
+  }
+  :where(ul) {
+    list-style-type: none;
+    padding: 0;
+  }
+  :where(a) {
+    // for left-hand decoration of current item
+    position: relative;
+
+    display: block;
+    padding-block: 12px;
+    width: fit-content;
+    font-size: px2rem(16);
+    text-decoration-line: none;
+    font-weight: 400;
+
+    &[aria-current='page'] {
+      font-weight: 900;
+
+      &::before {
+        content: '';
+        position: absolute;
+        width: var(--box-border-width);
+        background-color: var(--color-black);
+        height: 100%;
+        left: calc(-1 * var(--pad-x) - var(--box-border-width));
+        top: 0;
+      }
+    }
+  }
+}

@@ -24,11 +24,11 @@
 @import './global/elements/page.scss';
 
 // Page templates
-@import './global/pages/home.scss';
 
 // Layout
 @import './global/layout/content-width.scss';
 @import './global/layout/grid.scss';
+@import './global/layout/page-layout.scss';
 @import './global/layout/streamfields.scss';
 
 // Styles for long-form prose, inside a 'rich-text' wrapper.
@@ -50,12 +50,16 @@
 @import './global/components/main-nav-desktop.scss';
 @import './global/components/skip-link.scss';
 @import './global/components/home-hero.scss';
-@import './global/components/download.scss';
+@import './global/components/home-hero.scss';
+@import './global/components/standard-hero.scss';
+@import './global/components/breadcrumbs.scss';
+@import './global/components/sidenav.scss';
 @import './global/components/accordion.scss';
 @import './global/components/cta.scss';
 @import './global/components/note.scss';
 @import './global/components/pull-quote.scss';
 @import './global/components/block-quote.scss';
+@import './global/components/download.scss';
 @import './global/components/search-form.scss';
 @import './global/components/footer.scss';
 

@@ -4,14 +4,18 @@
 {# TODO fix weird title tag #}
 {% block title %}<title>{% firstof page.seo_title page.title %}</title>{% endblock %}
 
-{% block bodyclass %}{% endblock %}
+{% block body_class %}template-home{% endblock %}
 
 {% block main %}
     {% include 'includes/home_hero.html' %}
     
-    <div class="home__main-content content-width grid-standard streamfields-wrapper">
-        {% if page.body %}
-            {% include_block page.body %}
-        {% endif %}
+    <div class="page-layout page-layout--without-sidenav content-width grid-standard">
+        <div class="page-layout__main-content">
+            <div class="streamfields-wrapper">
+                {% if page.body %}
+                {% include_block page.body %}
+                {% endif %}
+            </div>
+        </div>
     </div>
 {% endblock %}
