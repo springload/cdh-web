@@ -1,0 +1,28 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+<div class="standard-hero content-width grid-standard">
+    
+    <h1 class="standard-hero__title">{{ self.title}}</h1>
+    <div class="standard-hero__description rich-text">
+        {% if self.description %}
+            {{ self.description|richtext }}
+        {% endif %}
+    </div>
+
+    {% comment %}
+    {# BED TODO image field #}
+    {% image self.hero_image width-TODO as img_sm %}
+    {% image self.hero_image width-TODO as img_lg %}
+    <img src="{{ img_sm.url }}" 
+        class="standard-hero__img"
+        alt="{{ img_sm.alt }}"
+        srcset="{{ img_sm.url }} {{ img_sm.width|unlocalize }}w,
+                {{ img_sm.url }} {{ img_sm.width|unlocalize }}w"
+        sizes="(min-width: 500px) {{ img_sm.width|unlocalize }}px, 100vw"
+    />
+    {% endcomment %}
+
+    {# TODO: dummy img. replace with the above. trial 16:9 ratio #}
+    <img src="https://placehold.co/800x440" class="standard-hero__img" alt="TODO" />
+    
+</div>

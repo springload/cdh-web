@@ -34,6 +34,9 @@
       display: flex;
       align-items: flex-start;
       gap: 8px;
+
+      // for the file size/format. overridden by link-style mixin for the underlined bit of the link.
+      font-weight: 400;
     }
   }
 

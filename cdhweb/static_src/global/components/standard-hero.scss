@@ -1,0 +1,97 @@
+// has `.grid-standard`
+.standard-hero {
+  --title-top-space: 40px;
+
+  margin-block-end: 56px;
+
+  // t = title
+  // d = description
+  // i = image
+
+  // Layout if there is _no_ image:
+  grid-template-areas:
+    't t t t t t t t t t . .'
+    '. d d d d d d d d d . .';
+
+  @include sm {
+    margin-block-end: 120px;
+  }
+
+  @include md {
+    --title-top-space: 64px;
+  }
+  @include lg {
+    --title-top-space: 80px;
+
+    grid-template-areas:
+      '. t t t t t t t t t t .'
+      '. . d d d d d d d d d .';
+  }
+  @include xl {
+    --title-top-space: 104px;
+  }
+  @include xxl {
+    --title-top-space: 160px;
+    grid-template-areas:
+      '. t t t t t t t t t . .'
+      '. . d d d d d d d d . .';
+  }
+
+  // Different layout if the hero has an image:
+  &:has(img) {
+    grid-template-areas:
+      'i i i i i i i i i i i i'
+      't t t t t t t t t t t t'
+      'd d d d d d d d d d d d';
+
+    @include md {
+      grid-template-areas:
+        't t t t t . i i i i i i'
+        '. d d d d d i i i i i i';
+    }
+    @include lg {
+      grid-template-areas:
+        '. t t t t t i i i i i i'
+        '. . d d d d i i i i i i';
+    }
+  }
+}
+
+.standard-hero__title {
+  grid-area: t;
+  margin: var(--title-top-space) 0 0;
+}
+
+.standard-hero__description {
+  grid-area: d;
+  font-size: px2rem(22);
+  line-height: 1.5;
+  margin: 16px 0 0;
+
+  @include md {
+    font-size: px2rem(20);
+    margin-block-start: 24px;
+  }
+  @include lg {
+    margin-block-start: 56px;
+  }
+  @include xl {
+    font-size: px2rem(24);
+  }
+}
+
+.standard-hero__img {
+  grid-area: i;
+  @include break-grid;
+
+  @include sm {
+    @include undo-break-grid;
+  }
+  @include md {
+    @include break-grid-right;
+  }
+
+  @include xxxl {
+    @include undo-break-grid;
+  }
+}
