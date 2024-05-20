@@ -125,7 +125,7 @@ class BodyContentBlock(StreamBlock):
     # PARAGRAPH_FEATURES because in some places you shouldn't be allowed to make
     # an h2 or it would conflict with LinkableSections. In those cases, define
     # RichTextField(features=PARAGRAPH_FEATURES) to get everything except h2.
-    paragraph = RichTextBlock(features=["h2"] + PARAGRAPH_FEATURES)
+    paragraph = RichTextBlock(features=["h2"] + PARAGRAPH_FEATURES, template="text-content.html")
     image = CaptionedImageBlock()
     svg_image = SVGImageBlock()
     embed = EmbedBlock(help_text=EMBED_HELP)
@@ -133,7 +133,7 @@ class BodyContentBlock(StreamBlock):
     #: approach; enable all supported wagtail features.
     #: Should NOT be used when creating new pages.
     migrated = RichTextBlock(
-        features=PARAGRAPH_FEATURES + ["image", "embed"], icon="warning"
+        features=PARAGRAPH_FEATURES + ["image", "embed"], icon="warning", template="text-content.html"
     )
     code = CodeBlock(label="Code")
     # cta = CTABlock()
