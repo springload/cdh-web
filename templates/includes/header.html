@@ -9,7 +9,7 @@
 {% secondary_navigation as secondary_nav %}
 
 <header class="header">
-    <nav class="main-nav-mobile" data-component="main-nav-mobile" aria-label="Main">
+    <nav class="main-nav-mobile" data-component="main-nav-mobile" aria-label="Main" data-search-url="{% url 'search' %}">
         {# the following gets swapped out when react component mounts #}
         <div class="mobile-menu__header">
             <a href="/" aria-label="The Center for Digital Humanities at Princeton" class="mobile-menu__logo-link">

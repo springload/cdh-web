@@ -6,15 +6,18 @@ import {
 } from '../../data-types';
 import Svg from '../svg/svg';
 import cx from 'classnames';
+import SearchForm from '../SearchForm/SearchForm';
 
 type DesktopMenuDataType = {
   primaryNavData: MainNavDataPrimarySimplified;
   secondaryNavData: MainNavDataSecondarySimplified;
+  searchUrl: string;
 };
 
 const MainNavMobile = ({
   primaryNavData,
   secondaryNavData,
+  searchUrl,
 }: DesktopMenuDataType): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   return (
@@ -68,7 +71,8 @@ const MainNavMobile = ({
             )}
 
             <div className="mobile-menu__secondary-content">
-              <div>TODO search</div>
+              <h2>Search</h2>
+              <SearchForm searchUrl={searchUrl} />
 
               {secondaryNavData.items.length > 0 && (
                 <ul className="mobile-menu__secondary-nav-list">
