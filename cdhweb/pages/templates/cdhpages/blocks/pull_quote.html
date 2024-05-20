@@ -2,9 +2,9 @@
 
 <figure class="pull-quote">
     <blockquote>
-        <div class="pull-quote__quote rich-text">{{ self.quote|richtext }}</div>
+        <div class="pull-quote__quote">{{ self.quote|richtext }}</div>
     </blockquote>
     {% if self.attribution %}
-        <figcaption class="pull-quote__citation rich-text">{{ self.attribution|richtext }}</figcaption>
+        <figcaption class="pull-quote__citation">{{ self.attribution|richtext }}</figcaption>
     {% endif %}
 </figure>

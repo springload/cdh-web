@@ -1,56 +1,100 @@
-// Styles for body copy, aka "rich text".
-// Wrap body copy elements in a div/section with the class "rich-text".
-// Works best if the direct children are the typographic elements
-// (headings, p etc). This ensures that the .rich-text container doesn't
-// have extra space at the start/end.
-// :where() selector is used to keep specificity low.
-:where(.rich-text) {
-  --space-between-els: 1lh; // relative so it scales to bigger/smaller text
-  --space-between-sections: #{px2rem(40)};
+// By default, every prose element has a bottom margin.
+// `li` is excluded because list item spacing is handled later on.
+// Same with headings because they have their own, more specific spacing values.
+// Ignore header and footer, they have their own styles.
+:where(main) {
+  --space-default: 1rem;
 
-  @include xl {
-    --space-between-sections: #{px2rem(64)};
+  // Space for headings.
+  // Note the space is actually applied as a bottom margin to the element *before*
+  // the heading, but are based on the level of that heading.
+  // So in the case of `p + h2`, the p gets a big margin-bottom.
+  --space-h2-lg: #{px2rem(56)};
+  --space-h3-lg: #{px2rem(40)};
+  --space-h4-lg: #{px2rem(24)};
+  // Note, h5 and h6 are styled the same as h4 currently.
+  // TODO, maybe reassess once real content is in.
+  --space-h5-lg: #{px2rem(24)};
+  --space-h6-lg: #{px2rem(24)};
+
+  --space-h2-sm: calc(var(--space-h2-lg) / 4);
+  --space-h3-sm: calc(var(--space-h3-lg) / 4);
+  --space-h4-sm: calc(var(--space-h4-lg) / 4);
+  --space-h5-sm: calc(var(--space-h5-lg) / 4);
+  --space-h6-sm: calc(var(--space-h6-lg) / 4);
+
+  --space-list-items: #{px2rem(8)};
+
+  @include md {
+    --space-l2-lg: #{px2rem(104)};
   }
 
-  > * {
-    margin-bottom: var(--space-between-els, 1em);
+  :is(p, ul, ol) {
+    margin-bottom: var(--space-default);
+  }
+  // Headings have a little more bottom spacing than other prose elements
+  h2 {
+    margin-bottom: var(--space-l2-sm);
+  }
+  h3 {
+    margin-bottom: var(--space-l3-sm);
+  }
+  h4 {
+    margin-bottom: var(--space-l4-sm);
+  }
+  h5 {
+    margin-bottom: var(--space-l5-sm);
+  }
+  h6 {
+    margin-bottom: var(--space-l6-sm);
   }
 
-  // When we encounter a heading, that can be considered a new "section" of
-  // the content so should have a nice big space above...
-  // Note: h1s are assumed to be outside of the `rich-text` area, as they're
-  // typically in a hero banner rather than coming from a WYSIWYG with other text.
-  :is(h2, h3, h4, h5, h6) {
-    margin-top: var(--space-between-sections);
+  *:has(+ h2) {
+    margin-bottom: var(--space-l2-lg);
   }
-  // ...unless a heading appears immediately after another heading, in which case we need to reduce the spacing.
-  h2 + h3,
-  h3 + h4,
-  h4 + h5,
-  h5 + h6 {
-    margin-top: var(--space-between-els, 1em);
+  *:has(+ h3) {
+    margin-bottom: var(--space-l3-lg);
   }
-
-  // Remove any orphan vertical space at the start/end of the rich-text block.
-  // NOTE: this assumes items are direct children of .rich-text container.
-  > * {
-    &:first-child {
-      margin-top: 0;
-    }
-    &:last-child {
-      margin-bottom: 0;
-    }
+  *:has(+ h4) {
+    margin-bottom: var(--space-l4-lg);
+  }
+  *:has(+ h5) {
+    margin-bottom: var(--space-l5-lg);
+  }
+  *:has(+ h6) {
+    margin-bottom: var(--space-l6-lg);
   }
 
-  ul,
-  ol {
-    // Undo padding:0 from the css reset, which kills list indentation.
-    padding: revert;
+  // Headings followed immediately by a heading of a level down
+  // should have only a small gap below.
+  :where(h2):has(+ h3) {
+    margin-bottom: var(--space-l2-sm);
+  }
+  :where(h3):has(+ h4) {
+    margin-bottom: var(--space-l3-sm);
+  }
+  :where(h4):has(+ h5) {
+    margin-bottom: var(--space-l4-sm);
+  }
+  :where(h5):has(+ h6) {
+    margin-bottom: var(--space-l5-sm);
   }
 
-  // Collapsing margins should ensure we don't get extra space between this and preceding element.
-  // i.e. no `:not(:first...)` required.
-  li {
-    margin-top: 0.5em;
+  // List item spacing.
+  :where(li):has(+ li) {
+    margin-bottom: var(--space-list-items);
+  }
+
+  // Nested list spacing.
+  // This is the only place we need to use margin-top :'(
+  :where(li) :is(ul, ol) {
+    margin-top: var(--space-list-items);
+  }
+
+  // Remove the bottom margin on the last prose element
+  // (i.e. if it has no next sibling).
+  // TODO: Could there be an argument to apply this to ALL elements (*) with no next sibling?
+  :is(p, ul, ol, h1, h2, h3, h4, h5, h6):not(:has(+ *)) {
+    margin-bottom: 0;
   }
 }

@@ -28,6 +28,7 @@
   display: none;
   align-items: center;
   gap: px2rem(9); // space before '/'
+  margin: 0;
 
   @include sm {
     display: flex;

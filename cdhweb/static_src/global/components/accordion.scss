@@ -1,5 +1,6 @@
 .sk-accordion {
   :where(details) {
+    margin: 0;
     border-block-start: 1px solid var(--color-grey-100);
 
     &:last-child {

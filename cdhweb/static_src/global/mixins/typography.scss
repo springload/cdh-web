@@ -26,26 +26,23 @@
   }
 }
 
-// TODO styles for h3 and onwards
 @mixin h3 {
-  font-size: px2rem(22);
-  line-height: 1.4;
+  font-size: px2rem(24);
+  line-height: 1.125;
   font-weight: bold;
 
-  @include xl {
-    font-size: px2rem(24);
-    line-height: 1.45;
+  @include sm {
+    font-size: px2rem(28);
   }
 }
 
 @mixin h4 {
-  font-size: px2rem(18);
-  line-height: 1.33;
+  font-size: px2rem(20);
+  line-height: 1.125;
   font-weight: bold;
 
   @include xl {
-    font-size: px2rem(20);
-    line-height: 1.4;
+    font-size: px2rem(24);
   }
 }
 
