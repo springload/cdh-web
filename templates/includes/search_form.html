@@ -6,7 +6,7 @@
 {% endcomment %}
 <form class="search-form {{ extra_classes }}" action="{% url 'search' %}">
   <label class="sr-only" for="search-input_{{ uniqueID }}">Search</label>
-  <div class="search-form__input-btn-group">
+  <div class="text-input-and-button-group">
     <input type="text" id="search-input_{{ uniqueID }}" name="q" />
     <input type="submit" value="Search" />
   </div>

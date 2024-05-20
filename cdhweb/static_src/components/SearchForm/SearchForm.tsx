@@ -16,7 +16,7 @@ const SearchForm = ({ searchUrl, extraClasses }: Props): JSX.Element => {
       <label className="sr-only" htmlFor={`search-input_${uniqueId}`}>
         Search
       </label>
-      <div className="search-form__input-btn-group">
+      <div className="text-input-and-button-group">
         <input type="text" id={`search-input_${uniqueId}`} name="q" />
         <input type="submit" value="Search" />
       </div>
