@@ -26,7 +26,7 @@
   --space-list-items: #{px2rem(8)};
 
   @include md {
-    --space-l2-lg: #{px2rem(104)};
+    --space-h2-lg: #{px2rem(104)};
   }
 
   :is(p, ul, ol) {
@@ -34,50 +34,50 @@
   }
   // Headings have a little more bottom spacing than other prose elements
   h2 {
-    margin-bottom: var(--space-l2-sm);
+    margin-bottom: var(--space-h2-sm);
   }
   h3 {
-    margin-bottom: var(--space-l3-sm);
+    margin-bottom: var(--space-h3-sm);
   }
   h4 {
-    margin-bottom: var(--space-l4-sm);
+    margin-bottom: var(--space-h4-sm);
   }
   h5 {
-    margin-bottom: var(--space-l5-sm);
+    margin-bottom: var(--space-h5-sm);
   }
   h6 {
-    margin-bottom: var(--space-l6-sm);
+    margin-bottom: var(--space-h6-sm);
   }
 
   *:has(+ h2) {
-    margin-bottom: var(--space-l2-lg);
+    margin-bottom: var(--space-h2-lg);
   }
   *:has(+ h3) {
-    margin-bottom: var(--space-l3-lg);
+    margin-bottom: var(--space-h3-lg);
   }
   *:has(+ h4) {
-    margin-bottom: var(--space-l4-lg);
+    margin-bottom: var(--space-h4-lg);
   }
   *:has(+ h5) {
-    margin-bottom: var(--space-l5-lg);
+    margin-bottom: var(--space-h5-lg);
   }
   *:has(+ h6) {
-    margin-bottom: var(--space-l6-lg);
+    margin-bottom: var(--space-h6-lg);
   }
 
   // Headings followed immediately by a heading of a level down
   // should have only a small gap below.
   :where(h2):has(+ h3) {
-    margin-bottom: var(--space-l2-sm);
+    margin-bottom: var(--space-h2-sm);
   }
   :where(h3):has(+ h4) {
-    margin-bottom: var(--space-l3-sm);
+    margin-bottom: var(--space-h3-sm);
   }
   :where(h4):has(+ h5) {
-    margin-bottom: var(--space-l4-sm);
+    margin-bottom: var(--space-h4-sm);
   }
   :where(h5):has(+ h6) {
-    margin-bottom: var(--space-l5-sm);
+    margin-bottom: var(--space-h5-sm);
   }
 
   // List item spacing.
