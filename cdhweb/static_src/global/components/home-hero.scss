@@ -129,16 +129,14 @@
   grid-area: i;
   @include break-grid;
 
-  @include xl {
-    @include undo-break-grid;
+  object-fit: cover;
+  height: 312px;
+
+  @include sm {
+    height: 498px;
   }
 
-  :where(img) {
-    object-fit: cover;
-    height: 312px;
-
-    @include sm {
-      height: 498px;
-    }
+  @include xl {
+    @include undo-break-grid;
   }
 }
