@@ -5,17 +5,23 @@
 :where(main) {
   --space-default: 1rem;
 
-  --space-l2-lg: #{px2rem(56)};
-  --space-l3-lg: #{px2rem(40)};
-  --space-l4-lg: #{px2rem(24)};
-  --space-l5-lg: #{px2rem(40)};
-  --space-l6-lg: #{px2rem(40)};
+  // Space for headings.
+  // Note the space is actually applied as a bottom margin to the element *before*
+  // the heading, but are based on the level of that heading.
+  // So in the case of `p + h2`, the p gets a big margin-bottom.
+  --space-h2-lg: #{px2rem(56)};
+  --space-h3-lg: #{px2rem(40)};
+  --space-h4-lg: #{px2rem(24)};
+  // Note, h5 and h6 are styled the same as h4 currently.
+  // TODO, maybe reassess once real content is in.
+  --space-h5-lg: #{px2rem(24)};
+  --space-h6-lg: #{px2rem(24)};
 
-  --space-l2-sm: calc(var(--space-l2-lg) / 4);
-  --space-l3-sm: calc(var(--space-l3-lg) / 4);
-  --space-l4-sm: calc(var(--space-l4-lg) / 4);
-  --space-l5-sm: calc(var(--space-l5-lg) / 4);
-  --space-l6-sm: calc(var(--space-l6-lg) / 4);
+  --space-h2-sm: calc(var(--space-h2-lg) / 4);
+  --space-h3-sm: calc(var(--space-h3-lg) / 4);
+  --space-h4-sm: calc(var(--space-h4-lg) / 4);
+  --space-h5-sm: calc(var(--space-h5-lg) / 4);
+  --space-h6-sm: calc(var(--space-h6-lg) / 4);
 
   --space-list-items: #{px2rem(8)};
 
