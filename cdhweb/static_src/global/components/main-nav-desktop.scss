@@ -186,7 +186,7 @@
   @include xl {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 48;
+    gap: 48px;
   }
 }
 
@@ -204,4 +204,8 @@
       margin-block-start: 0;
     }
   }
+}
+
+.main-nav-desktop__search-form {
+  grid-column: 1 / -1;
 }

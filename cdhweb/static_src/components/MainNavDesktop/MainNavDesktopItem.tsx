@@ -2,6 +2,7 @@ import { MouseEvent, useId } from 'react';
 import Svg from '../svg/svg';
 import cx from 'classnames';
 import { MainNavItemPrimary, NavItem } from '../../data-types';
+import SearchForm from '../SearchForm/SearchForm';
 
 type DesktopMenuItemProps = {
   item: MainNavItemPrimary;
@@ -142,7 +143,10 @@ const DesktopMenuItem = ({
                   {!item.isSearch ? (
                     <SubmenuColumns items={item.l2_items} />
                   ) : (
-                    <p>TODO search</p>
+                    <SearchForm
+                      searchUrl={item.link_url}
+                      extraClasses="main-nav-desktop__search-form"
+                    />
                   )}
                 </div>
               </div>

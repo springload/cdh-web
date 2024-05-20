@@ -147,6 +147,12 @@
 
 .mobile-menu__secondary-content {
   padding-block: 32px 48px;
+
+  :where(h2) {
+    font-size: px2rem(17);
+    margin-block-end: 20px;
+    font-weight: 900;
+  }
 }
 
 .mobile-menu__secondary-nav-list {
@@ -158,6 +164,7 @@
   flex-direction: column;
   gap: 8px;
   font-size: px2rem(14);
+  margin-block-start: 32px;
 }
 
 .mobile-menu__cta {

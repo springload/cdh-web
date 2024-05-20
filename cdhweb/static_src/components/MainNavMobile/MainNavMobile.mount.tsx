@@ -31,11 +31,14 @@ const initComponent: InitComponent = (componentEl) => {
   const secondaryNavDataSimplified: MainNavDataSecondarySimplified =
     secondaryNavData.secondary_nav_data.secondary_nav;
 
+  const searchUrl = componentEl.getAttribute('data-search-url');
+
   const root = createRoot(componentEl);
   root.render(
     <MainNavMobile
       primaryNavData={primaryNavDataSimplified}
       secondaryNavData={secondaryNavDataSimplified}
+      searchUrl={searchUrl || '/search'}
     />,
   );
 
