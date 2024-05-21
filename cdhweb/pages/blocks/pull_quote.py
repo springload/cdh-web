@@ -9,7 +9,7 @@ class PullQuote(blocks.StructBlock):
         group = "Body copy components"
 
     quote = blocks.RichTextBlock(
-        features=["bold"],
+        features=["bold", "italic"],
         required=True,
         help_text=(
             'Pull a small section of content out as an "aside" to give it emphasis.'

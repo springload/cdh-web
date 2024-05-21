@@ -14,7 +14,7 @@ class Note(blocks.StructBlock):
     )
 
     message = blocks.RichTextBlock(
-        features=["bold", "link", "ul", "ol"],
+        features=["bold", "italic", "link", "ul", "ol"],
         help_text="Note message up to 750 chars",
         required=True,
         max_length=750,

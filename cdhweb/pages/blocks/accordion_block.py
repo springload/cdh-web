@@ -28,11 +28,12 @@ class AccordionBlock(blocks.StructBlock):
                     blocks.RichTextBlock(
                         features=[
                             "bold",
+                            "italic",
                             "link",
                             "ol",
                             "ul",
                             "document-link",
-                            "image",
+                            "h3",
                             "h4",
                         ]
                     ),
