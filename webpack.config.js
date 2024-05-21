@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const cssnano = require('cssnano');
 const autoprefixer = require('autoprefixer');
 const SVGSpritemapPlugin = require('svg-spritemap-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const outputPath = 'static/dist';
 
@@ -16,6 +17,9 @@ module.exports = (env, options) => {
     new MiniCssExtractPlugin({
       filename: 'styles.css',
       chunkFilename: '[name]-[id].css',
+    }),
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, outputPath)],
     }),
   ];
 
@@ -45,9 +49,9 @@ module.exports = (env, options) => {
     output: {
       //  NOTE: this is a little different from usual Springload setup due to different directory structure of this site.
       path: path.resolve(__dirname, outputPath),
-      publicPath: '/static/dist/', // For some reason this adds an extra `/dist/` layer in the output, but only for font files. TODO resolve.
+      publicPath: '/static/dist/',
       filename: '[name].js', // No filename hashing, Django takes care of this
-      chunkFilename: '[id]-[chunkhash].js',
+      chunkFilename: '[name]-[chunkhash].js',
       clean: true,
     },
     devServer: {
