@@ -1,0 +1,22 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+
+{% image self.image width-400 as img_base %}
+
+
+
+<figure class="sk-image">
+    <img src="{{ img_base.url }}"
+        alt="{{ self.alt_text|default:img_base.alt }}"
+        loading="lazy" 
+        />
+    {% if self.credit or self.caption %}
+        <figcaption class="sk-image__caption">
+            {% if self.credit %}
+                <p class="sk-image__caption-p"><strong>{{ self.credit|richtext }}</strong></p>
+            {% endif %}
+            {% if self.caption %}
+                <p class="sk-image__caption-p">{{ self.caption|richtext }}</p>
+            {% endif %}
+        </figcaption>
+    {% endif %}
+</figure>
