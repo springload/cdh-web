@@ -24,6 +24,7 @@
 @import './global/elements/page.scss';
 
 // Page templates
+@import './global/pages/search.scss';
 
 // Layout
 @import './global/layout/content-width.scss';
@@ -60,6 +61,7 @@
 @import './global/components/block-quote.scss';
 @import './global/components/download.scss';
 @import './global/components/search-form.scss';
+@import './global/components/pagination.scss';
 @import './global/components/footer.scss';
 
 // Utility classes. This should go last.
