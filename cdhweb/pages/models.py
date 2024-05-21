@@ -37,6 +37,7 @@ from .blocks.block_quote import BlockQuote
 from .blocks.download_block import DownloadBlock
 from .blocks.note import Note
 from .blocks.pull_quote import PullQuote
+from .blocks.rich_text import RichTextBlock as RichText
 from .mixin import HomePageHeroMixin
 
 #: common features for paragraph text
@@ -62,6 +63,7 @@ briefly communicate the intended message of the image in this context."""
 
 
 STANDARD_BLOCKS = [
+    ("rich_text", RichText()),
     ("download_block", DownloadBlock()),
     ("cta_block", CTABlock()),
     ("accordion_block", AccordionBlock()),
@@ -125,7 +127,9 @@ class BodyContentBlock(StreamBlock):
     # PARAGRAPH_FEATURES because in some places you shouldn't be allowed to make
     # an h2 or it would conflict with LinkableSections. In those cases, define
     # RichTextField(features=PARAGRAPH_FEATURES) to get everything except h2.
-    paragraph = RichTextBlock(features=["h2"] + PARAGRAPH_FEATURES, template="text-content.html")
+    paragraph = RichTextBlock(
+        features=["h2"] + PARAGRAPH_FEATURES, template="text-content.html"
+    )
     image = CaptionedImageBlock()
     svg_image = SVGImageBlock()
     embed = EmbedBlock(help_text=EMBED_HELP)
@@ -133,7 +137,9 @@ class BodyContentBlock(StreamBlock):
     #: approach; enable all supported wagtail features.
     #: Should NOT be used when creating new pages.
     migrated = RichTextBlock(
-        features=PARAGRAPH_FEATURES + ["image", "embed"], icon="warning", template="text-content.html"
+        features=PARAGRAPH_FEATURES + ["image", "embed"],
+        icon="warning",
+        template="text-content.html",
     )
     code = CodeBlock(label="Code")
     # cta = CTABlock()
