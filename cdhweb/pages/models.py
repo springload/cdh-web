@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
-from springkit.blocks import CTABlock, FeatureBlock, ImageBlock, VideoBlock
+from springkit.blocks import CTABlock, FeatureBlock, VideoBlock
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
     FieldPanel,
@@ -35,8 +35,10 @@ from cdhweb.pages import snippets  # needed for import order
 from .blocks.accordion_block import AccordionBlock
 from .blocks.block_quote import BlockQuote
 from .blocks.download_block import DownloadBlock
+from .blocks.image_block import ImageBlock
 from .blocks.note import Note
 from .blocks.pull_quote import PullQuote
+from .blocks.rich_text import RichTextBlock as RichText
 from .mixin import HomePageHeroMixin
 
 #: common features for paragraph text
@@ -62,6 +64,7 @@ briefly communicate the intended message of the image in this context."""
 
 
 STANDARD_BLOCKS = [
+    ("rich_text", RichText()),
     ("download_block", DownloadBlock()),
     ("cta_block", CTABlock()),
     ("accordion_block", AccordionBlock()),
@@ -69,6 +72,7 @@ STANDARD_BLOCKS = [
     ("video_block", VideoBlock()),
     ("pull_quote", PullQuote()),
     ("note", Note()),
+    ("image", ImageBlock()),
 ]
 
 
@@ -125,7 +129,9 @@ class BodyContentBlock(StreamBlock):
     # PARAGRAPH_FEATURES because in some places you shouldn't be allowed to make
     # an h2 or it would conflict with LinkableSections. In those cases, define
     # RichTextField(features=PARAGRAPH_FEATURES) to get everything except h2.
-    paragraph = RichTextBlock(features=["h2"] + PARAGRAPH_FEATURES, template="text-content.html")
+    paragraph = RichTextBlock(
+        features=["h2"] + PARAGRAPH_FEATURES, template="text-content.html"
+    )
     image = CaptionedImageBlock()
     svg_image = SVGImageBlock()
     embed = EmbedBlock(help_text=EMBED_HELP)
@@ -133,7 +139,9 @@ class BodyContentBlock(StreamBlock):
     #: approach; enable all supported wagtail features.
     #: Should NOT be used when creating new pages.
     migrated = RichTextBlock(
-        features=PARAGRAPH_FEATURES + ["image", "embed"], icon="warning", template="text-content.html"
+        features=PARAGRAPH_FEATURES + ["image", "embed"],
+        icon="warning",
+        template="text-content.html",
     )
     code = CodeBlock(label="Code")
     # cta = CTABlock()
