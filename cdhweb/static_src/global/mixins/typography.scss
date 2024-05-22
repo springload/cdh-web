@@ -58,6 +58,7 @@
   font-weight: bold;
 
   &:hover {
+    --color-link-underline: var(--color-brand-120);
     color: var(--color-link-text-hover);
   }
 }

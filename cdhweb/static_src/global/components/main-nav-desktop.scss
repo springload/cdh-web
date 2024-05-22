@@ -26,6 +26,11 @@
     :where(.main-nav-desktop__cta) {
       border-color: var(--color-brand-120);
     }
+    :where(.main-nav-desktop__secondary a) {
+      &:hover {
+        text-decoration-color: var(--color-white);
+      }
+    }
   }
 }
 
@@ -43,6 +48,7 @@
   grid-area: l;
 
   // Overlap hero/breadcrumb area slightly
+  z-index: 1;
   position: relative;
   transform: translateY(var(--logo-overlap));
 
@@ -111,12 +117,19 @@
   align-items: center;
   border-bottom: 8px solid transparent;
 
-  :hover {
-    color: var(--color-brand-120);
+  &:hover {
+    border-color: var(--color-brand-10);
+
+    &.main-nav-desktop__item--open {
+      border-color: var(--color-brand-40);
+    }
   }
 
   &[aria-expanded='true'] {
     border-bottom-color: var(--color-white);
+    &.main-nav-desktop__item--open {
+      border-bottom-color: var(--color-brand-120);
+    }
   }
 
   // TODO current section, something similar to above
@@ -134,7 +147,6 @@
 
 .main-nav-desktop__sub-menu {
   position: absolute;
-  z-index: -1; //behind hanging logo
   left: 0;
   width: 100%;
   padding-block: 128px 96px;

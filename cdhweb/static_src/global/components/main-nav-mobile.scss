@@ -1,6 +1,11 @@
 // This is the header element that wraps both tme mobile and desktop <nav>s.
 .header {
   border-bottom: 1px solid var(--color-brand-100);
+
+  // Ensure nav dropdown covers anything in `<main>`
+  z-index: 1;
+  position: relative;
+
   .template-home & {
     border: none;
   }

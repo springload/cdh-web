@@ -42,6 +42,10 @@
     :where(svg) {
       flex-shrink: 0;
     }
+
+    &:hover {
+      color: var(--color-black);
+    }
   }
 }
 

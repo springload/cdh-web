@@ -15,9 +15,8 @@
     padding-block-start: 128px;
 
     :where(a) {
-      text-decoration-thickness: 4px;
       &:hover {
-        color: var(--color-brand-120);
+        text-decoration-color: var(--color-white);
       }
     }
   }
@@ -118,6 +117,10 @@
       'h h h h h h h h h h h h'
       'c c c c a a a a u u u u'
       'p p p p . . . . . . . .';
+  }
+
+  :where(a) {
+    text-decoration-thickness: 4px;
   }
 }
 
