@@ -5,7 +5,8 @@ cdhweb.dbml
 *.sql
 
 # Media ignores
-static
+static/dist
+myapp/static
 media
 static/CACHE
 sitemedia/fonts
