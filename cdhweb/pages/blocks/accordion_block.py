@@ -13,6 +13,7 @@ class AccordionBlock(blocks.StructBlock):
         template = "cdhpages/blocks/accordion_block.html"
         label = "Accordion"
         icon = "cogs"
+        group = "Body copy components"
 
     accordion_items = blocks.ListBlock(
         blocks.StructBlock(

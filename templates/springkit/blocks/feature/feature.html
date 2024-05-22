@@ -1,0 +1,11 @@
+{% load wagtailcore_tags %}
+<div>
+  {% include_block self.image %}
+  {% include_block self.heading %}
+  <div>
+    {{ self.feature_text|richtext }}
+  </div>
+  {% if self.cta_buttons %}
+    {% include_block self.cta_buttons %}
+  {% endif %}
+</div>

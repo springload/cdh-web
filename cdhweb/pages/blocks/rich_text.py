@@ -9,6 +9,7 @@ class RichTextBlock(blocks.RichTextBlock):
     class Meta:
         icon = "pilcrow"
         template = "cdhpages/blocks/rich_text.html"
+        group = "Body copy components"
 
     def __init__(self, *args, **kwargs):
         kwargs["features"] = [
