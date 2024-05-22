@@ -1,0 +1,35 @@
+{% load wagtailcore_tags %}
+
+{# Note: This is actually a wagtail typed table, not a standard wagtail table #}
+<section class="block theme theme--{{ self.theme }}">
+    <div class="content-width">
+
+        {# tabindex is because scrollable elements must be focusable (a11y). allows keyboard users to scroll. #}
+        <div class="table-scroll-wrapper" tabindex="0">
+            <table class="table">
+                {% if value.caption %}
+                <caption class="sr-only"> {{ value.caption }} </caption>
+                {% endif %}
+                <thead class="table__thead">
+                    <tr>
+                        {% for col in value.table.columns %}
+                        <th class="table__th" scope="col">{{ col.heading }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="table__tbody">
+                    {% for row in value.table.rows %}
+                    <tr>
+                        {% for block in row %}
+                        <td class="table__td rich-text">{% include_block block %}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if value.notes %}
+                <caption class="sr-only"> {{ value.notes }} </caption>
+                {% endif %}
+    </div>
+</section>

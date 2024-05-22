@@ -40,6 +40,7 @@ from .blocks.image_block import ImageBlock
 from .blocks.note import Note
 from .blocks.pull_quote import PullQuote
 from .blocks.rich_text import RichTextBlock as RichText
+from .blocks.table_block import TableBlock
 from .mixin import HomePageHeroMixin
 
 #: common features for paragraph text
@@ -75,6 +76,7 @@ STANDARD_BLOCKS = [
     ("note", Note()),
     ("image", ImageBlock()),
     ("feature", FeatureBlock()),
+    ("table", TableBlock()),
 ]
 
 

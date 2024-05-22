@@ -191,6 +191,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.redirects",
     # required to avoid https://github.com/wagtail/wagtail/issues/1824
     "wagtail.contrib.search_promotions",
+    "wagtail.contrib.typed_table_block",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
