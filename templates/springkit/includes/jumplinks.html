@@ -1,0 +1,19 @@
+{% if jumplinks %}
+<div class="sk-jumplinks">
+  <h2 class="sk-jumplinks__heading">
+    <span class="sk-jumplinks__heading-text sk-jumplinks__heading-text--en" lang="en-NZ">
+      On this page
+    </span>
+  </h2>
+  <ul class="sk-jumplinks__list">
+    {% for link in jumplinks %}
+      <li class="sk-jumplinks__item">
+        <a href="#{{ link.target }}" class="sk-jumplinks__link">
+          {% include 'springkit/includes/svg.html' with sprite="global" svg="arrow-right" classes="jumplinks__icon" %}
+          <span>{{ link.text }}</span>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

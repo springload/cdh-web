@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags springkit_tags %}
 
 {# TODO fix weird title tag #}
 {% block title %}<title>{% firstof page.seo_title page.title %}</title>{% endblock %}
@@ -8,6 +8,12 @@
 
 {% block main %}
     {% include 'includes/home_hero.html' %}
+
+{% block content %}
+  {% if page.show_jumplinks %}
+    {% jumplinks page.body %}
+  {% endif %}
+  {% endblock %}
     
     <div class="page-layout page-layout--without-sidenav content-width grid-standard">
         <div class="page-layout__main-content">

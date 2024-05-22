@@ -7,7 +7,8 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
-from springkit.blocks import CTABlock, VideoBlock
+from springkit.blocks import CTABlock, JumplinkableH2Block, VideoBlock
+from springkit.models.mixins import JumplinksMixin
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
     FieldPanel,
@@ -37,9 +38,11 @@ from .blocks.block_quote import BlockQuote
 from .blocks.download_block import DownloadBlock
 from .blocks.feature_block import FeatureBlock
 from .blocks.image_block import ImageBlock
+from .blocks.newsletter import NewsletterBlock
 from .blocks.note import Note
 from .blocks.pull_quote import PullQuote
 from .blocks.rich_text import RichTextBlock as RichText
+from .blocks.table_block import TableBlock
 from .mixin import HomePageHeroMixin
 
 #: common features for paragraph text
@@ -75,6 +78,9 @@ STANDARD_BLOCKS = [
     ("note", Note()),
     ("image", ImageBlock()),
     ("feature", FeatureBlock()),
+    ("table", TableBlock()),
+    ("newsletter", NewsletterBlock()),
+    ("heading", JumplinkableH2Block()),
 ]
 
 
@@ -236,7 +242,7 @@ class LinkPage(AbstractLinkPage):
     search_fields = Page.search_fields
 
 
-class BasePage(Page):
+class BasePage(Page, JumplinksMixin):
     """Abstract Page class from which all Wagtail page types are derived."""
 
     #: main page text
@@ -245,6 +251,8 @@ class BasePage(Page):
     attachments = StreamField(AttachmentBlock, blank=True, use_json_field=True)
     # index body content to make it searchable
     search_fields = Page.search_fields + [index.SearchField("body")]
+
+    settings_panels = Page.settings_panels + JumplinksMixin.settings_panels
 
     class Meta:
         abstract = True
