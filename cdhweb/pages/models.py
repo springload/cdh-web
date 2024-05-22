@@ -37,6 +37,7 @@ from .blocks.block_quote import BlockQuote
 from .blocks.download_block import DownloadBlock
 from .blocks.feature_block import FeatureBlock
 from .blocks.image_block import ImageBlock
+from .blocks.newsletter import NewsletterBlock
 from .blocks.note import Note
 from .blocks.pull_quote import PullQuote
 from .blocks.rich_text import RichTextBlock as RichText
@@ -77,6 +78,7 @@ STANDARD_BLOCKS = [
     ("image", ImageBlock()),
     ("feature", FeatureBlock()),
     ("table", TableBlock()),
+    ("newsletter", NewsletterBlock()),
 ]
 
 

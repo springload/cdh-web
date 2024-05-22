@@ -5,6 +5,12 @@ from .image_block import ImageBlock
 
 
 class FeatureBlock(blocks.StructBlock):
+    class Meta:
+        template = "cdhpages/blocks/feature_block.html"
+        label = "Feature"
+        icon = "pick"
+        group = "Body copy components"
+
     heading = blocks.CharBlock(
         required=True,
         max_length=80,
@@ -26,9 +32,3 @@ class FeatureBlock(blocks.StructBlock):
         max_num=2,
         required=False,
     )
-
-    class Meta:
-        template = "cdhpages/blocks/feature_block.html"
-        label = "Feature"
-        icon = "pick"
-        group = "Body copy components"
