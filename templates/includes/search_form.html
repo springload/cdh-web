@@ -7,7 +7,7 @@
 <form class="search-form {{ extra_classes }}" action="{% url 'search' %}">
   <label class="sr-only" for="search-input_{{ uniqueID }}">Search</label>
   <div class="text-input-and-button-group">
-    <input type="text" id="search-input_{{ uniqueID }}" name="q" />
+    <input type="text" id="search-input_{{ uniqueID }}" name="q" {% if form.q.value %}value="{{ form.q.value }}"{% endif %} />
     <input type="submit" value="Search" />
   </div>
   <fieldset class="search-form__filters">

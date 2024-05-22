@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static humanize cdh_tags wagtailcore_tags %}
+{# Site search page #}
+
+{% block bodyclass %}search{% endblock bodyclass %}
+
+{% block main %}
+    <div class="search-page grid-standard content-width">
+        <h1>
+            {% if form.q.value %}
+                Search results
+            {% else %}
+                Search
+            {% endif %}
+        </h1>
+
+        {% include 'includes/search_form.html' with uniqueID="search-page" extra_classes="search-page__form" %}
+
+        <div class="search-page__results">
+            {% if page_obj %}
+                <h2 class="search-page__results-heading">Results</h2>
+                <p class="search-page__results-summary">
+                    <strong>{{ page_obj.start_index }}</strong>
+                    <span class="sr-only">to</span> 
+                    <span aria-hidden="true">–</span> 
+                    <strong>{{ page_obj.end_index }}</strong>
+                    of 
+                    <strong>{{ page_obj.paginator.count }}</strong>
+                    result{{ page_obj.paginator.count|pluralize}} for 
+                    ‘<strong>{{ form.q.value }}</strong>’
+                </p>
+
+                <ol class="search-page__results-list" start="{{ page_obj.start_index }}">
+                    {% for page in page_obj %}
+                        {% include "includes/search_result.html" %}
+                    {% endfor %}
+                </ol>
+            {% elif form.q.value %}
+                <p>No results found.</p>
+            {% endif %}
+        </div>
+
+
+        {% if page_obj.has_previous or page_obj.has_next %}    
+            {% if page_obj and form.q.value %}
+                {% include "includes/pagination.html" %}
+            {% endif %}
+        {% endif %}
+
+    </div>
+{% endblock %}

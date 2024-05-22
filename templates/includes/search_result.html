@@ -1,0 +1,33 @@
+{% load humanize wagtailcore_tags cdh_tags %}
+{# Single search result on site search page #}
+
+{% spaceless %}
+{% autoescape off %}
+<li class="{{ page.get_url|url_to_icon }}">
+    
+    {# Show relevant icon. Falls back to "doc" icon #}
+    {% comment %}
+        TODO: would prefer to do this conditional:
+        {% if page.get_url|url_to_icon in 'doc, cal, folder, email' %}
+        ...but it doesn't work :shrug:
+    {% endcomment %}
+    {% if page.get_url|url_to_icon == 'cal' or page.get_url|url_to_icon == 'email' or page.get_url|url_to_icon == 'folder' or page.get_url|url_to_icon == 'email' %}
+        {% include 'includes/svg.html' with sprite="two-tone" svg=page.get_url|url_to_icon %}
+    {% else %}
+        {% include 'includes/svg.html' with sprite="two-tone" svg="doc" %}
+    {% endif %} 
+    <div>
+        <h3>
+            <a href="{% pageurl page %}">{{ page.title }}</a>
+        </h3>
+        {% firstof page.specific.get_description page.specific.body|striptags as description %}
+        {% if description %}
+            <p class="search-page__result-description">{{ description|truncatewords:25 }}</p>
+        {% endif %}
+        <p class="search-page__result-last-updated">
+            Last updated: <time datetime="{{ page.last_published_at| date:'Y-m-d' }}">{{ page.last_published_at|naturalday }}</time>
+        </p>
+    </div>
+</li>
+{% endautoescape %}
+{% endspaceless %}

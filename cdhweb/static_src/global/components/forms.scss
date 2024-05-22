@@ -15,16 +15,22 @@
     max-inline-size: px2rem(500);
     padding-inline: 20px;
     border: 1px solid var(--color-grey-110);
+    border-right: 0;
     border-radius: var(--radius) 0 0 var(--radius);
     font-size: px2rem(16);
   }
   :where(input[type='submit']) {
-    border: 0;
+    cursor: pointer;
+    border: 1px solid var(--btn-color, transparent);
     padding-inline: 24px;
-    background-color: var(--color-grey-100);
+    background-color: var(--btn-bg, var(--color-grey-100));
+    color: var(--btn-color, var(--color-white));
     border-radius: 0 var(--radius) var(--radius) 0;
-    color: var(--color-white);
     font-size: px2rem(15);
     font-weight: bold;
+
+    &:hover {
+      background-color: var(--btn-bg-hover, var(--color-black));
+    }
   }
 }
