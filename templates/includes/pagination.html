@@ -3,7 +3,7 @@
 <nav class="pagination" aria-label="Search pagination">
   {% if page_obj.has_previous %}
     <a rel="prev" href="?{% url_replace 'page' page_obj.previous_page_number %}" class="pagination__next-prev">
-      {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-left" classes="pagination__icon pagination__icon--prev" %}
+      {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-left" classes="pagination__next-prev-icon pagination__next-prev-icon--prev" %}
       Previous
     </a>
   {% endif %}
@@ -20,7 +20,7 @@
   {% if page_obj.has_next %}
     <a rel="next" href="?{% url_replace 'page' page_obj.next_page_number %}" class="pagination__next-prev">
       Next
-      {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-right" classes="pagination__icon pagination__icon--prev" %}
+      {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-right" classes="pagination__next-prev-icon pagination__next-prev-icon--prev" %}
     </a>
   {% endif %}
 </nav>

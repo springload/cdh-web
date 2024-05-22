@@ -27,15 +27,15 @@
   gap: 5px;
 }
 
-.pagination__icon {
+.pagination__next-prev-icon {
   width: 12px;
   flex-shrink: 0;
 }
 
-.pagination__icon--prev {
+.pagination__next-prev-icon--prev {
   aspect-ratio: 11 / 16;
 }
 
-.pagination__icon--next {
+.pagination__next-prev-icon--next {
   aspect-ratio: 17 / 24;
 }
