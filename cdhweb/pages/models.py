@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
-from springkit.blocks import CTABlock, FeatureBlock, VideoBlock
+from springkit.blocks import CTABlock, VideoBlock
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
     FieldPanel,
@@ -35,6 +35,7 @@ from cdhweb.pages import snippets  # needed for import order
 from .blocks.accordion_block import AccordionBlock
 from .blocks.block_quote import BlockQuote
 from .blocks.download_block import DownloadBlock
+from .blocks.feature_block import FeatureBlock
 from .blocks.image_block import ImageBlock
 from .blocks.note import Note
 from .blocks.pull_quote import PullQuote
@@ -73,6 +74,7 @@ STANDARD_BLOCKS = [
     ("pull_quote", PullQuote()),
     ("note", Note()),
     ("image", ImageBlock()),
+    ("feature", FeatureBlock()),
 ]
 
 
