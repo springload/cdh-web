@@ -9,6 +9,7 @@
         alt="{{ self.alt_text|default:img_base.alt }}"
         loading="lazy" 
         />
+    {{ self.size }}
     {% if self.credit or self.caption %}
         <figcaption class="sk-image__caption">
             {% if self.credit %}

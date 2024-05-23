@@ -1,7 +1,6 @@
 from springkit.blocks.cta import CTAButtonsBlock
 from wagtail import blocks
-
-from .image_block import ImageBlock
+from wagtail.images.blocks import ImageChooserBlock
 
 
 class FeatureBlock(blocks.StructBlock):
@@ -26,7 +25,16 @@ class FeatureBlock(blocks.StructBlock):
             "ul",
         ],
     )
-    image = ImageBlock()
+    image = ImageChooserBlock(
+        label="Image",
+        required=True,
+    )
+
+    alt_text = blocks.CharBlock(
+        help_text="Alternative text in case the image can't be displayed.",
+        required=False,
+        max_length=80,
+    )
     cta_buttons = CTAButtonsBlock(
         min_num=0,
         max_num=2,
