@@ -1,4 +1,14 @@
 {% load wagtailcore_tags %}
+{% if self.heading %}
+<div>{{ self.heading.value }}
+  {{self.heading.0}}
+  {{self.heading}}
+</div>
+{% endif %}
+
+{% if self.description %}
+<div>{{ self.description }}</div>
+{% endif %}
 
 <div data-component="accordion" class="sk-accordion">
   {% for item in self.accordion_items %}
