@@ -1,6 +1,21 @@
 .streamfields-wrapper {
-  //   TODO adjust this when we add full-bleed bg components
   & > * + * {
-    margin-block-start: var(--streamfield-space);
+    // Default big space above each streamfield
+    margin-block-start: var(--streamfield-space-lg);
+
+    // Cases where there should be a small space above:
+    &:where(:is(.block-image, .block-table, .block-note)) {
+      margin-block-start: var(--streamfield-space-sm);
+    }
+    &:where(.block-heading + .block-rich_text) {
+      margin-block-start: var(--streamfield-space-sm);
+    }
+  }
+
+  // Outdented components:
+  :where(.block-heading) {
+    @include lg {
+      margin-left: calc(-1 * var(--content-outdent));
+    }
   }
 }
