@@ -34,7 +34,6 @@ from wagtailmenus.panels import linkpage_tab
 from cdhweb.pages import snippets  # needed for import order
 
 from .blocks.accordion_block import AccordionBlock
-from .blocks.block_quote import BlockQuote
 from .blocks.download_block import DownloadBlock
 from .blocks.feature_block import FeatureBlock
 from .blocks.image_block import ImageBlock
@@ -72,7 +71,6 @@ STANDARD_BLOCKS = [
     ("download_block", DownloadBlock()),
     ("cta_block", CTABlock()),
     ("accordion_block", AccordionBlock()),
-    ("block_quote", BlockQuote()),
     ("video_block", VideoBlock()),
     ("pull_quote", PullQuote()),
     ("note", Note()),
