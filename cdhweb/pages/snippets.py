@@ -233,7 +233,7 @@ class Footer(ClusterableModel):
 
     panels = [
         InlinePanel("contact_links", label="Contact Links", min_num=1),
-        InlinePanel("social_media_links", label="Social Media Links", max_num=4),
+        InlinePanel("social_media_links", label="Social Media Links"),
         FieldPanel("address"),
         InlinePanel("useful_links", label="Useful links", min_num=1),
         InlinePanel("imprint_links", label="Imprint links", max_num=4),
