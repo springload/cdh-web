@@ -5,12 +5,16 @@
 {% endif %}
 
 {% if self.description %}
-<div>{{ self.description }}</div>
+  {{ self.description }}
 {% endif %}
 
 <div data-component="accordion" class="sk-accordion">
   {% for item in self.accordion_items %}
-    <h2 class="sr-only">{{ item.heading }}</h2>
+    {% if self.heading %}
+      <h3 class="sr-only">{{ item.heading }}</h3>
+    {% else %}
+      <h2 class="sr-only">{{ item.heading }}</h2>
+    {% endif %}
     <details>
       <summary aria-label="Toggle section: {{ item.heading }}">
         {{ item.heading }}

@@ -43,7 +43,8 @@ class AccordionBlock(blocks.StructBlock):
                             "document-link",
                             "h3",
                             "h4",
-                        ]
+                        ],
+                        help_text="Only use H3 if you have not set an overall heading for the accordion block."
                     ),
                 ),
             ]
