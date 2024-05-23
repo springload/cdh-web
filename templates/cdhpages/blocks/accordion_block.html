@@ -1,10 +1,6 @@
 {% load wagtailcore_tags %}
-{% if self.heading %}
-<div>{{ self.heading.value }}
-  {{self.heading.0}}
-  {{self.heading}}
-</div>
-{% endif %}
+
+{% include 'springkit/blocks/heading/jumplinkable_heading.html' %}
 
 {% if self.description %}
 <div>{{ self.description }}</div>
