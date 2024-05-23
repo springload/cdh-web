@@ -29,7 +29,7 @@
     --space-h2-lg: #{px2rem(104)};
   }
 
-  :is(p, ul, ol) {
+  :is(p, ul, ol, blockquote) {
     margin-bottom: var(--space-default);
   }
   // Headings have a little more bottom spacing than other prose elements
@@ -63,6 +63,10 @@
   }
   *:has(+ h6) {
     margin-bottom: var(--space-h6-lg);
+  }
+
+  :where(blockquote) {
+    @include outdented-line-block;
   }
 
   // Headings followed immediately by a heading of a level down
