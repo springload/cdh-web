@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 
+from springkit.blocks import JumplinkableH2Block
 from wagtail import blocks
 
 
@@ -14,6 +15,12 @@ class AccordionBlock(blocks.StructBlock):
         label = "Accordion"
         icon = "cogs"
         group = "Body copy components"
+
+    heading = JumplinkableH2Block(required=False)
+
+    description = blocks.RichTextBlock(
+        features=["bold", "italic", "link", "document-link"], required=False
+    )
 
     accordion_items = blocks.ListBlock(
         blocks.StructBlock(

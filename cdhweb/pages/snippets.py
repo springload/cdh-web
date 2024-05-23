@@ -300,10 +300,12 @@ class ContactLinksItem(models.Model):
 
 class SocialMediaLinks(models.Model):
     class SocialChoices(models.TextChoices):
-        FACEBOOK = "facebook", "Facebook"
-        INSTAGRAM = "instagram", "Instagram"
+        BLUESKY = "bluesky", "Bluesky"
         TWITTER = "twitter", "Twitter"
-        LINKEDIN = "github", "Github"
+        LINKEDIN = "linkedIn", "LinkedIn"
+        INSTAGRAM = "instagram", "Instagram"
+        FACEBOOK = "facebook", "Facebook"
+        GITHUB = "github", "Github"
 
     social_media_link = ParentalKey(
         "Footer", related_name="social_media_links", on_delete=models.CASCADE

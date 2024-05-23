@@ -1,5 +1,13 @@
 {% load wagtailcore_tags %}
 
+{% if self.heading %}
+{% include 'springkit/blocks/heading/jumplinkable_heading.html' %}
+{% endif %}
+
+{% if self.description %}
+<div>{{ self.description }}</div>
+{% endif %}
+
 <div data-component="accordion" class="sk-accordion">
   {% for item in self.accordion_items %}
     <h2 class="sr-only">{{ item.heading }}</h2>
