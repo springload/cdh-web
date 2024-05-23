@@ -10,8 +10,9 @@
   --standard-gap: 16px;
   --page-gutter: 16px;
   --content-max-width: #{px2rem(1770)};
-  --streamfield-space: 56px;
-  --content-outdent: 0px;
+  --streamfield-space-sm: 24px;
+  --streamfield-space-lg: 56px;
+  --content-outdent: 0px; // px unit present so calc()s don't break
 
   @include sm {
     --standard-gap: 24px;
@@ -19,12 +20,12 @@
   }
   @include md {
     --page-gutter: 80px;
-    --streamfield-space: 80px;
+    --streamfield-space-lg: 80px;
     --content-outdent: 72px;
   }
   @include lg {
     --standard-gap: 32px;
-    --streamfield-space: 104px;
+    --streamfield-space-lg: 104px;
   }
   @include xl {
     --standard-gap: 48px;
