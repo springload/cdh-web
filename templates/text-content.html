@@ -1,6 +1,7 @@
 {% load wagtailcore_tags %}
 
-{# This wrapper element is required to avoid big streamfield-spacing of typographic elements #}
-<div>
+{# Wrapper for migrated content. #}
+{# `div` is required to avoid big streamfield-spacing between typographic elements #}
+<div class="migrated-content">
     {{ value|richtext }}
 </div>

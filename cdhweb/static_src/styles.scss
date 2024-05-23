@@ -63,5 +63,9 @@
 @import './global/components/pagination.scss';
 @import './global/components/footer.scss';
 
+// TODO delete migrated content styles once all migrated content is moved from
+// the "migrated" streamfield block and re-created using new (2024) components.
+@import './global/migrated-content.scss';
+
 // Utility classes. This should go last.
 @import './global/utilities';
