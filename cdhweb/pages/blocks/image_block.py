@@ -1,8 +1,9 @@
+from django.db import models
 from wagtail import blocks
 from wagtail.images.blocks import ImageChooserBlock
 
 
-class ImageBlock(blocks.StructBlock):
+class UnsizedImageBlock(blocks.StructBlock):
     class Meta:
         template = "cdhpages/blocks/image_block.html"
         label = "Image"
@@ -37,7 +38,23 @@ class ImageBlock(blocks.StructBlock):
     )
 
     alt_text = blocks.CharBlock(
-        help_text="Alternative text in case the image can't be displayed.",
+        help_text="Describe the image for screen readers",
         required=False,
         max_length=80,
+    )
+
+
+class ImageBlock(UnsizedImageBlock):
+    """ImageBlock - with size option"""
+
+    class ImageSizeOption(models.TextChoices):
+        SMALL = "small", "small"
+        MEDIUM = "medium", "medium"
+        LARGE = "large", "large"
+
+    size = blocks.ChoiceBlock(
+        choices=ImageSizeOption.choices,
+        default=ImageSizeOption.MEDIUM,
+        required=True,
+        label="Image Size",
     )

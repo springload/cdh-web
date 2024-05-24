@@ -1,7 +1,9 @@
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags wagtailimages_tags %}
+{% image self.image width-400 as img_base %}
 <div>
     <h2>{{ self.heading }}</h2>
-  {% include_block self.image %}
+    <img src="{{ img_base.url }}"/>
+    <div>{{ self.alt_text|default:img_base.alt }}</div>
   <div>
     {{ self.feature_text|richtext }}
   </div>
