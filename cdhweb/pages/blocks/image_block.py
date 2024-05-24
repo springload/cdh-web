@@ -38,7 +38,7 @@ class UnsizedImageBlock(blocks.StructBlock):
     )
 
     alt_text = blocks.CharBlock(
-        help_text="Alternative text in case the image can't be displayed.",
+        help_text="Describe the image for screen readers",
         required=False,
         max_length=80,
     )
