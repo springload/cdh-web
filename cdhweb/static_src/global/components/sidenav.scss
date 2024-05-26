@@ -1,69 +1,22 @@
-/*
-  This component has a 3d box like the homepage hero. The difference is that
-  this version aligns the *box* to the grid, rather than the content.
-  It was too fiddly to make a mixin that supported both.
-  
-  TODO: This should be made into a mixin or something when we do other such boxes,
-  e.g. the feature streamfield block and the newsletter signup streamfield block.
-  Might be tricky as they seem to have different border sizing rules to the sidenav.
-*/
-
 .sidenav {
-  --box-3d-side-size: 18px;
-  --box-border-width: 6px;
+  --three-dee-side-size: 18px;
+  --three-dee-border-width: 6px;
   --pad-x: 14px;
 
   position: relative;
 
-  padding-inline: calc(var(--pad-x) + var(--box-border-width));
-  padding-block: calc(24px + var(--box-border-width)) var(--box-border-width);
+  padding-inline: var(--pad-x);
+  padding-block: 24px 0;
 
-  // stop it going off the edge of the page, or looking too asymmetrical, on small screens:
-  width: calc(100% - var(--box-3d-side-size));
+  @include three-dee-box;
 
   @include sm {
-    --box-border-width: 8px;
+    --three-dee-border-width: 8px;
   }
   @include xl {
-    width: 100%;
     max-width: px2rem(230);
     position: sticky;
     top: 0;
-  }
-
-  // TODO if making a 3d-box mixin, move all of the below into it and add fallbacks to the vars.
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  // white box with border
-  &::before {
-    width: 100%;
-    height: 100%;
-    background-color: var(--color-white);
-    border: var(--box-border-width) solid var(--color-brand-100);
-  }
-
-  // fancy 3d-lookin' box sides (just a rectangle with the top-right and bottom-left corners removed)
-  &::after {
-    z-index: -1; // behind white content box
-    width: calc(100% + var(--box-3d-side-size));
-    height: calc(100% + var(--box-3d-side-size));
-    background-color: var(--color-brand-100);
-
-    clip-path: polygon(
-      calc(100% - var(--box-3d-side-size)) 0,
-      100% var(--box-3d-side-size),
-      100% 100%,
-      var(--box-3d-side-size) 100%,
-      0 calc(100% - var(--box-3d-side-size)),
-      0 0
-    );
   }
 
   // Sidenav content styles
@@ -99,10 +52,10 @@
     &::before {
       content: '';
       position: absolute;
-      width: var(--box-border-width);
+      width: var(--three-dee-border-width);
       background-color: var(--sidenav-decorator-color);
       height: 100%;
-      left: calc(-1 * var(--pad-x) - var(--box-border-width));
+      left: calc(-1 * var(--pad-x) - var(--three-dee-border-width));
       top: 0;
     }
 

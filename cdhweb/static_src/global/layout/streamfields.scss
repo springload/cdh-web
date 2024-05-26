@@ -1,4 +1,12 @@
 .streamfields-wrapper {
+  // The flex column layout is to disable collapsing margins.
+  // Usually collapsing margins is fine, but the 3d boxes have absolute-
+  // positioned box overhang. Unfortunately, adding this amount as an extra
+  // margin-bottom on the element that has the 3d box doesn't do anything,
+  // because "collapsing margins" assumes we didn't want that extra space.
+  display: flex;
+  flex-direction: column;
+
   & > * + * {
     // Default big space above each streamfield
     margin-block-start: var(--streamfield-space-lg);
