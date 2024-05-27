@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
-from springkit.blocks import CTABlock, JumplinkableH2Block, VideoBlock
+from springkit.blocks import CTABlock, JumplinkableH2Block
 from springkit.models.mixins import JumplinksMixin
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
@@ -34,6 +34,7 @@ from wagtailmenus.panels import linkpage_tab
 from cdhweb.pages import snippets  # needed for import order
 
 from .blocks.accordion_block import AccordionBlock
+from .blocks.cdh_hosted_video import HostedVideo
 from .blocks.download_block import DownloadBlock
 from .blocks.feature_block import FeatureBlock
 from .blocks.image_block import ImageBlock
@@ -42,6 +43,7 @@ from .blocks.note import Note
 from .blocks.pull_quote import PullQuote
 from .blocks.rich_text import RichTextBlock as RichText
 from .blocks.table_block import TableBlock
+from .blocks.video_block import Video
 from .mixin import HomePageHeroMixin
 
 #: common features for paragraph text
@@ -65,13 +67,15 @@ PARAGRAPH_FEATURES = [
 ALT_TEXT_HELP = """Alternative text for visually impaired users to
 briefly communicate the intended message of the image in this context."""
 
+EMBED_HELP = """This should be used for videos from Princeton's Media Central. Copy the "oEmbed URL" from the "Share" menu"""
 
 STANDARD_BLOCKS = [
     ("rich_text", RichText()),
     ("download_block", DownloadBlock()),
     ("cta_block", CTABlock()),
     ("accordion_block", AccordionBlock()),
-    ("video_block", VideoBlock()),
+    ("video_block", Video()),
+    ("hosted_video_block", HostedVideo()),
     ("pull_quote", PullQuote()),
     ("note", Note()),
     ("image", ImageBlock()),
