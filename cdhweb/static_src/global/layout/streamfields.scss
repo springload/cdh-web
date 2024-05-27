@@ -21,7 +21,7 @@
   }
 
   // Outdented components:
-  :where(.block-heading, .block-accordion_block > h2) {
+  :where(.block-heading, .block-accordion_block > h2, .block-video_block > h2) {
     @include lg {
       margin-left: calc(-1 * var(--content-outdent));
     }

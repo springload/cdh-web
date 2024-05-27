@@ -1,0 +1,70 @@
+.sk-video__iframe {
+  aspect-ratio: 16/9;
+  width: 100%;
+  display: block;
+}
+
+.sk-video__transcript {
+  --transcript-side-pad: #{px2rem(20)};
+
+  margin-block-start: 16px;
+  border: 1px solid var(--color-brand-100);
+  background: var(--color-brand-5);
+  font-size: px2rem(16);
+
+  // This site uses two-tone icons with a built-in shadow.
+  // That means we can't simply flip the chevron – it needs to
+  // use a distinctly different icon when expanded vs collapsed.
+  .sk-video__transcript-icon--chevron-up {
+    display: none;
+  }
+
+  &:where([open]) {
+    .sk-video__transcript-icon--chevron-up {
+      display: block;
+    }
+    .sk-video__transcript-icon--chevron-down {
+      display: none;
+    }
+  }
+}
+
+.sk-video__transcript-icon {
+  width: 20px;
+}
+
+.sk-video__transcript-icon--chevron-up {
+  aspect-ratio: 25/16;
+}
+.sk-video__transcript-icon--chevron-down {
+  aspect-ratio: 24/16; // yes the viewboxes are different
+}
+
+.sk-video__transcript-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: px2rem(16) var(--transcript-side-pad);
+  display: flex;
+  align-items: center;
+  gap: px2rem(6);
+  line-height: 1.25;
+  font-weight: 500;
+  @include link-style;
+
+  &::marker,
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  :where(svg) {
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    color: var(--color-black);
+  }
+}
+
+.sk-video__transcript-content {
+  padding: px2rem(16) var(--transcript-side-pad);
+}
