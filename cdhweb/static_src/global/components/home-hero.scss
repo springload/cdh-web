@@ -79,7 +79,6 @@
 // This usage is different to the others because the *text content* is what
 // aligns to the grid, and the 3d box is absolute-positioned around it as a separate element.
 .hero-home__box {
-  --box-3d-side-size: 18px;
   position: absolute;
 
   @include three-dee-box;
