@@ -10,6 +10,7 @@
   --standard-gap: 16px;
   --page-gutter: 16px;
   --content-max-width: #{px2rem(1770)};
+  --reading-max-width: #{px2rem(865)};
   --streamfield-space-sm: 24px;
   --streamfield-space-lg: 56px;
   --content-outdent: 0px; // px unit present so calc()s don't break
@@ -20,6 +21,7 @@
   }
   @include md {
     --page-gutter: 80px;
+    --streamfield-space-sm: 40px;
     --streamfield-space-lg: 80px;
     --content-outdent: 72px;
   }
