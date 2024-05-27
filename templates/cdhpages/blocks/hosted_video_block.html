@@ -1,0 +1,24 @@
+{% load wagtailcore_tags %}
+
+{% if self.heading %}
+{% include_block self.heading %}
+{% endif %}
+
+{{ self.video_url }}
+{{ self.accessibility_description }}
+
+{% if self.transcript %}
+<div class="sk-video-transcript">
+    <details class="sk-video-transcript__details">
+        <summary class="sk-video-transcript__summary">
+            {% include 'springkit/includes/svg.html' with sprite="two-tone" svg="chevron-down" classes="sk-video-transcript__icon" %}
+            <span class="sk-video-transcript__summary-text">
+                Video transcript
+            </span>
+        </summary>
+        <div class="sk-video-transcript__content">
+            {{ self.transcript }}
+        </div>
+    </details>
+</div>
+{% endif %}

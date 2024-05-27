@@ -1,5 +1,9 @@
 {% load wagtailcore_tags %}
 
+{% if self.heading %}
+{% include_block self.heading %}
+{% endif %}
+
 {% if video_embed_url %}
     <iframe
         class="sk-video-iframe"
