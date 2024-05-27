@@ -65,7 +65,7 @@
     margin-bottom: var(--space-h6-lg);
   }
 
-  :where(blockquote) {
+  :where(.block-rich_text blockquote) {
     @include outdented-line-block;
   }
 
