@@ -8,7 +8,6 @@
   --bg-box-y-pad: 24px;
   --space-below-box: 56px;
 
-  // TODO might need fine-tuning later. Tricky to get this value in figma.
   --image-overlap: -30px;
 
   // Needs a big bottom space due to absolute-positioned 3d box shape.
@@ -76,9 +75,13 @@
   }
 }
 
-// fancy 3d-lookin' background box
+// Fancy 3d-lookin' background box.
+// This usage is different to the others because the *text content* is what
+// aligns to the grid, and the 3d box is absolute-positioned around it as a separate element.
 .hero-home__box {
-  --box-3d-side-size: 18px;
+  position: absolute;
+
+  @include three-dee-box;
 
   position: absolute;
   top: 0;
@@ -90,38 +93,12 @@
   );
 
   @include md {
-    --box-3d-side-size: 56px;
+    --three-dee-side-size: 56px;
   }
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-  }
-
-  // white box with border
-  &::before {
-    width: 100%;
-    height: 100%;
-    background-color: var(--color-white);
-    border: var(--bg-box-border-width) solid var(--color-brand-100);
-  }
-
-  // fancy 3d-lookin' box sides (just a rectangle with the top-right and bottom-left corners removed)
-  &::after {
-    z-index: -1; // behind white content box
-    width: calc(100% + var(--box-3d-side-size));
-    height: calc(100% + var(--box-3d-side-size));
-    background-color: var(--color-brand-100);
-
-    clip-path: polygon(
-      calc(100% - var(--box-3d-side-size)) 0,
-      100% var(--box-3d-side-size),
-      100% 100%,
-      var(--box-3d-side-size) 100%,
-      0 calc(100% - var(--box-3d-side-size)),
-      0 0
-    );
+  @include xl {
+    // Same as declaration above. Needed to stop mixin setting it to something else.
+    width: calc(100% + var(--bg-box-x-pad) * 2);
   }
 }
 
