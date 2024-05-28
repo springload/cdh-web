@@ -44,7 +44,7 @@ from .blocks.pull_quote import PullQuote
 from .blocks.rich_text import RichTextBlock as RichText
 from .blocks.table_block import TableBlock
 from .blocks.video_block import Video
-from .mixin import HomePageHeroMixin
+from .mixin import HomePageHeroMixin, StandardHeroMixin
 
 #: common features for paragraph text
 PARAGRAPH_FEATURES = [
@@ -260,25 +260,30 @@ class BasePage(Page, JumplinksMixin):
         abstract = True
 
 
-class ContentPage(BasePage, PagePreviewDescriptionMixin):
+class ContentPage(BasePage, StandardHeroMixin):
     """Basic content page model."""
 
-    content_panels = Page.content_panels + [
-        FieldPanel("description"),
-        FieldPanel("body"),
-        FieldPanel("attachments"),
-    ]
+    # subpage_types = [""] #TODO
 
-    # index description in addition to body content
-    search_fields = BasePage.search_fields + [index.SearchField("description")]
+    # block to hold migrated content and can be removed after all content has been migrated
+    migrated = RichTextBlock(
+        features=PARAGRAPH_FEATURES + ["image", "embed"],
+        icon="warning",
+        template="text-content.html",
+    )
 
-    parent_page_types = [
-        "HomePage",
-        "LandingPage",
-        "ContentPage",
-        "events.EventsLinkPage",
-    ]
-    subpage_types = ["ContentPage"]
+    body = StreamField(
+        STANDARD_BLOCKS + [("migrated", migrated)],
+        blank=True,
+        help_text="Put content for the body of the page here. Start with using the + button.",
+        verbose_name="Page content",
+        use_json_field=True,
+    )
+
+    content_panels = StandardHeroMixin.content_panels + [FieldPanel("body")]
+
+    class Meta:
+        verbose_name = "Content Page"
 
 
 class LandingPage(BasePage):
@@ -357,6 +362,24 @@ class HomePage(BasePage, HomePageHeroMixin):
             }
         )
         return context
+
+
+# class StandardContentPage(BasePage, StandardHeroMixin):
+
+#     body = StreamField(
+#         STANDARD_BLOCKS,
+#         blank=True,
+#         help_text="Put content for the body of the page here. Start with using the + button.",
+#         verbose_name="Page content",
+#         use_json_field=True,
+#     )
+
+#     # subpage_types = [""] #TODO
+
+#     content_panels = StandardHeroMixin.content_panels + [FieldPanel("body")]
+
+#     class Meta:
+#         verbose_name = "Standard Content Page"
 
 
 @register_snippet

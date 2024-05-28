@@ -4,13 +4,16 @@
     
     <h1 class="standard-hero__title">{{ self.title}}</h1>
     <div class="standard-hero__description">
-        {% if self.description %}
-            {{ self.description|richtext }}
+        {% if self.summary %}
+            {{ self.summary }}
         {% endif %}
     </div>
 
-    {% comment %}
-    {# BED TODO image field #}
+    {% image self.hero_image width-400 as img_base %}
+    <img src="{{ img_base.url }}"/>
+
+    {% comment %}   
+    
     {% image self.hero_image width-TODO as img_sm %}
     {% image self.hero_image width-TODO as img_lg %}
     <img src="{{ img_sm.url }}" 

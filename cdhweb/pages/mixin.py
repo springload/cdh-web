@@ -40,3 +40,41 @@ class HomePageHeroMixin(models.Model):
 
     class Meta:
         abstract = True
+
+
+class StandardHeroMixin(models.Model):
+    summary = models.TextField(
+        max_length=200,
+        blank=True,
+        null=True,
+        verbose_name="Page Summary",
+        help_text="""Short introduction to the page, aim for max two clear sentences (max. 200 chars). 
+        Used to orient the user and help them identify relevancy of the page to meet their needs. """,
+    )
+
+    hero_image = models.ForeignKey(
+        "wagtailimages.Image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Optional image to support intent of the page.",
+    )
+
+    content_panels = [
+        MultiFieldPanel(
+            [
+                TitleFieldPanel(
+                    "title",
+                    help_text="""Main heading for the page. Ideally up to five words long (max.100 chars).""",
+                    widget=LengthOverrideWidget(max_length=100),
+                ),
+                FieldPanel("summary"),
+                FieldPanel("hero_image"),
+            ],
+            "Standard Hero",
+        )
+    ]
+
+    class Meta:
+        abstract = True
