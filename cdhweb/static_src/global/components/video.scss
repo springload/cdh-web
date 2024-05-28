@@ -1,7 +1,9 @@
-.sk-video__iframe {
+.sk-video__iframe,
+.block-hosted_video_block iframe {
   aspect-ratio: 16/9;
   width: 100%;
   display: block;
+  height: unset; // undo hosted video inline style
 }
 
 .sk-video__transcript {
