@@ -8,5 +8,18 @@
         {% include_block self.cta_buttons %}
       {% endif %}
     </div>
-    <img src="{{ img_base.url }}" alt="{{ self.alt_text|default:img_base.alt }}" class="feature__img" />
+
+    {% image self.image width-750 format-webp as img_base %}
+    {% image self.image width-1200 format-webp as img_sm %}
+    {% image self.image width-1400 format-webp as img_md %}
+
+    <picture class="feature__img">
+      <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
+      <source srcset="{{ img_md.url }}" media="(min-width: 768px)">
+      <img 
+        src="{{ img_base.url }}" 
+        alt="{{ self.alt_text|default:img_base.alt }}"
+        loading="lazy"
+    />
+  </picture>
 </div>

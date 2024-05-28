@@ -46,12 +46,18 @@
 
 .feature__img {
   order: -1; // on top when stacked
-  object-fit: cover;
-  max-height: 350px;
 
   @include xl {
     order: unset;
-    height: 100%;
-    max-height: unset;
+  }
+
+  :where(img) {
+    object-fit: cover;
+    max-height: 350px;
+
+    @include xl {
+      height: 100%;
+      max-height: unset;
+    }
   }
 }
