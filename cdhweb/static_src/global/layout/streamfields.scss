@@ -31,14 +31,20 @@
         .block-cta_block,
         .block-note,
         .block-pull_quote,
-        .block-video_block
+        .block-video_block,
+        .block-hosted_video_block
       ) {
       max-inline-size: var(--reading-max-width);
     }
   }
 
   // Outdented components:
-  :where(.block-heading, .block-accordion_block > h2, .block-video_block > h2) {
+  :where(
+      .block-heading,
+      .block-accordion_block > h2,
+      .block-video_block > h2,
+      .block-hosted_video_block > h2
+    ) {
     @include lg {
       margin-left: calc(-1 * var(--content-outdent));
     }
