@@ -1,5 +1,6 @@
 from django.db import models
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, TitleFieldPanel
+from wagtail.search import index
 
 from .utils import LengthOverrideWidget
 
@@ -74,6 +75,11 @@ class StandardHeroMixin(models.Model):
             ],
             "Standard Hero",
         )
+    ]
+
+    search_fields = [
+        index.SearchField("title"),
+        index.SearchField("summary"),
     ]
 
     class Meta:
