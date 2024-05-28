@@ -364,24 +364,6 @@ class HomePage(BasePage, HomePageHeroMixin):
         return context
 
 
-# class StandardContentPage(BasePage, StandardHeroMixin):
-
-#     body = StreamField(
-#         STANDARD_BLOCKS,
-#         blank=True,
-#         help_text="Put content for the body of the page here. Start with using the + button.",
-#         verbose_name="Page content",
-#         use_json_field=True,
-#     )
-
-#     # subpage_types = [""] #TODO
-
-#     content_panels = StandardHeroMixin.content_panels + [FieldPanel("body")]
-
-#     class Meta:
-#         verbose_name = "Standard Content Page"
-
-
 @register_snippet
 class PageIntro(models.Model):
     """Snippet for optional page intro text on for pages generated from
