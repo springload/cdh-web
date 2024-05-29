@@ -1,5 +1,6 @@
 from django.db import models
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, TitleFieldPanel
+from wagtail.fields import RichTextField
 from wagtail.search import index
 
 from .utils import LengthOverrideWidget
@@ -44,10 +45,11 @@ class HomePageHeroMixin(models.Model):
 
 
 class StandardHeroMixin(models.Model):
-    description = models.TextField(
+    description = RichTextField(
         max_length=200,
         blank=True,
         null=True,
+        features=["bold", "italic"],
         verbose_name="Page Summary",
         help_text="""Short introduction to the page, aim for max two clear sentences (max. 200 chars). 
         Used to orient the user and help them identify relevancy of the page to meet their needs. """,
