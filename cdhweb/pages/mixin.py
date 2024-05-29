@@ -1,5 +1,7 @@
 from django.db import models
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, TitleFieldPanel
+from wagtail.fields import RichTextField
+from wagtail.search import index
 
 from .utils import LengthOverrideWidget
 
@@ -36,6 +38,50 @@ class HomePageHeroMixin(models.Model):
             ],
             "HomePage Hero",
         )
+    ]
+
+    class Meta:
+        abstract = True
+
+
+class StandardHeroMixin(models.Model):
+    description = RichTextField(
+        max_length=200,
+        blank=True,
+        null=True,
+        features=["bold", "italic"],
+        verbose_name="Page Summary",
+        help_text="""Short introduction to the page, aim for max two clear sentences (max. 200 chars). 
+        Used to orient the user and help them identify relevancy of the page to meet their needs. """,
+    )
+
+    hero_image = models.ForeignKey(
+        "wagtailimages.Image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Optional image to support intent of the page.",
+    )
+
+    content_panels = [
+        MultiFieldPanel(
+            [
+                TitleFieldPanel(
+                    "title",
+                    help_text="""Main heading for the page. Ideally up to five words long (max.100 chars).""",
+                    widget=LengthOverrideWidget(max_length=100),
+                ),
+                FieldPanel("description"),
+                FieldPanel("hero_image"),
+            ],
+            "Standard Hero",
+        )
+    ]
+
+    search_fields = [
+        index.SearchField("title"),
+        index.SearchField("description"),
     ]
 
     class Meta:
