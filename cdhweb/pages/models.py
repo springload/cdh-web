@@ -38,6 +38,7 @@ from .blocks.cdh_hosted_video import HostedVideo
 from .blocks.download_block import DownloadBlock
 from .blocks.feature_block import FeatureBlock
 from .blocks.image_block import ImageBlock
+from .blocks.migrated import MigratedBlock
 from .blocks.newsletter import NewsletterBlock
 from .blocks.note import Note
 from .blocks.pull_quote import PullQuote
@@ -70,12 +71,12 @@ briefly communicate the intended message of the image in this context."""
 EMBED_HELP = """This should be used for videos from Princeton's Media Central. Copy the "oEmbed URL" from the "Share" menu"""
 
 STANDARD_BLOCKS = [
-    ("rich_text", RichText()),
+    ("paragraph", RichText()),
     ("download_block", DownloadBlock()),
     ("cta_block", CTABlock()),
     ("accordion_block", AccordionBlock()),
     ("video_block", Video()),
-    ("hosted_video_block", HostedVideo()),
+    ("embed", HostedVideo()),
     ("pull_quote", PullQuote()),
     ("note", Note()),
     ("image", ImageBlock()),
@@ -263,27 +264,25 @@ class BasePage(Page, JumplinksMixin):
 class ContentPage(BasePage, StandardHeroMixin):
     """Basic content page model."""
 
-    # subpage_types = [""] #TODO
-
-    # block to hold migrated content and can be removed after all content has been migrated
-    migrated = RichTextBlock(
-        features=PARAGRAPH_FEATURES + ["image", "embed"],
-        icon="warning",
-        template="text-content.html",
-    )
-
     body = StreamField(
-        STANDARD_BLOCKS + [("migrated", migrated)],
+        STANDARD_BLOCKS + [("migrated", MigratedBlock())],
         blank=True,
         help_text="Put content for the body of the page here. Start with using the + button.",
         verbose_name="Page content",
         use_json_field=True,
     )
 
-    content_panels = StandardHeroMixin.content_panels + [FieldPanel("body")]
+    content_panels = StandardHeroMixin.content_panels + [
+        FieldPanel("body"),
+    ]
 
-    class Meta:
-        verbose_name = "Content Page"
+    # index description in addition to body content
+    search_fields = StandardHeroMixin.search_fields
+
+    parent_page_types = [
+        "HomePage",
+    ]
+    # subpage_types = ["ContentPage"] #TODO
 
 
 class LandingPage(BasePage):

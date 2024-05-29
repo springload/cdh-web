@@ -44,7 +44,7 @@ class HomePageHeroMixin(models.Model):
 
 
 class StandardHeroMixin(models.Model):
-    summary = models.TextField(
+    description = models.TextField(
         max_length=200,
         blank=True,
         null=True,
@@ -70,7 +70,7 @@ class StandardHeroMixin(models.Model):
                     help_text="""Main heading for the page. Ideally up to five words long (max.100 chars).""",
                     widget=LengthOverrideWidget(max_length=100),
                 ),
-                FieldPanel("summary"),
+                FieldPanel("description"),
                 FieldPanel("hero_image"),
             ],
             "Standard Hero",
