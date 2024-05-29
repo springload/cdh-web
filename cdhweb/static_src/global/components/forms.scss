@@ -12,19 +12,19 @@
   :where(:is(input[type='text'], input[type='email'])) {
     flex-grow: 1;
     inline-size: 100%;
-    max-inline-size: px2rem(500);
     padding-inline: 20px;
-    border: 1px solid var(--color-grey-110);
+    border: 1px solid var(--form-control-border-color, var(--color-grey-110));
     border-right: 0;
     border-radius: var(--radius) 0 0 var(--radius);
     font-size: px2rem(16);
   }
   :where(input[type='submit']) {
     cursor: pointer;
-    border: 1px solid var(--btn-color, transparent);
     padding-inline: 24px;
     background-color: var(--btn-bg, var(--color-grey-100));
     color: var(--btn-color, var(--color-white));
+    border: 1px solid var(--form-control-border-color, transparent);
+    border-left: 0;
     border-radius: 0 var(--radius) var(--radius) 0;
     font-size: px2rem(15);
     font-weight: bold;

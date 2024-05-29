@@ -1,0 +1,45 @@
+/*
+Newsletter streamfield block.
+Note: this uses the same `includes/newsletter_form.html` rendered by in <footer>.
+We don't have a streamfield-specific template for it, therefore we're styling this one 
+the streamfield version based on its wagtail-generated class name `.block-newsletter`.
+*/
+
+.block-newsletter {
+  --form-control-border-color: var(--color-grey-80);
+  --btn-color: var(--color-black);
+  --btn-bg: var(--color-brand-100);
+  --btn-bg-hover: var(--color-brand-80);
+  --three-dee-box-border-color: var(--color-grey-110);
+  --three-dee-box-content-bg: var(--color-grey-100);
+
+  position: relative;
+  color: var(--color-white);
+  padding: 16px;
+
+  @include three-dee-box;
+
+  @include xl {
+    padding: 24px;
+    --three-dee-side-size: 56px;
+  }
+
+  :where(h2) {
+    font-weight: bold;
+    font-size: px2rem(18);
+    margin-block-end: 14px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    @include sm {
+      font-size: px2rem(22);
+    }
+
+    :where(svg) {
+      flex-shrink: 0;
+      width: 24px;
+      aspect-ratio: 1;
+    }
+  }
+}

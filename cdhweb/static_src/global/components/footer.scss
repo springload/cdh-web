@@ -189,8 +189,11 @@
 .footer__newsletter {
   margin-block-start: 24px;
 
+  @include md {
+    margin-block-start: 24px;
+  }
+
   :where(h2) {
-    font-weight: bold;
     font-size: px2rem(15);
     margin-block-end: 14px;
 
@@ -198,10 +201,10 @@
       font-size: px2rem(17);
       margin-block-end: 20px;
     }
-  }
 
-  @include md {
-    margin-block-start: 24px;
+    :where(svg) {
+      display: none;
+    }
   }
 }
 
