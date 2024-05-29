@@ -8,12 +8,11 @@
     {% include 'includes/standard_hero.html' %}
 
     <div class="page-layout page-layout--with-sidenav content-width grid-standard">
-
         <div class="page-layout__main-content">
             <div class="streamfields-wrapper">
-                {% for block in page.body %}
-                    {% include_block block %}
-                {% endfor %}
+                {% if page.body %}
+                    {% include_block page.body %}
+                {% endif %}
             </div>
         </div>
 
