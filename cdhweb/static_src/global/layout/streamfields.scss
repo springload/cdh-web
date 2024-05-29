@@ -12,13 +12,17 @@
     margin-block-start: var(--streamfield-space-lg);
 
     // Cases where there should be a small space above:
-    &:where(:is(.block-image, .block-table, .block-note, .block-rich_text)) {
+    &:where(
+        :is(
+            .block-image,
+            .block-table,
+            .block-note,
+            .block-rich_text,
+            .block-heading + *
+          )
+      ) {
       margin-block-start: var(--streamfield-space-sm);
     }
-
-    // &:where(.block-heading + .block-rich_text) {
-    //   margin-block-start: var(--streamfield-space-sm);
-    // }
   }
 
   & > * {
