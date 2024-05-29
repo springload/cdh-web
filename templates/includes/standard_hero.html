@@ -1,4 +1,4 @@
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags l10n %}
 
 <div class="standard-hero content-width grid-standard">
     
@@ -9,23 +9,26 @@
         {% endif %}
     </div>
 
-    {% image self.hero_image width-400 as img_base %}
-    <img src="{{ img_base.url }}"/>
+    {% if self.hero_image %}
+        {% comment %}    
+            All are cropped to a 16:9 ratio. This differs from design, as discussed.
+            If changing this by image rendition, update aspect-ratio in the CSS instead
+            of via inline style.
+        {% endcomment %}
 
-    {% comment %}   
-    
-    {% image self.hero_image width-TODO as img_sm %}
-    {% image self.hero_image width-TODO as img_lg %}
-    <img src="{{ img_sm.url }}" 
-        class="standard-hero__img"
-        alt="{{ img_sm.alt }}"
-        srcset="{{ img_sm.url }} {{ img_sm.width|unlocalize }}w,
-                {{ img_sm.url }} {{ img_sm.width|unlocalize }}w"
-        sizes="(min-width: 500px) {{ img_sm.width|unlocalize }}px, 100vw"
-    />
-    {% endcomment %}
+        {% image self.hero_image fill-1000x563 format-webp as img_base %}
+        {% image self.hero_image fill-1250x703 format-webp as img_sm %}
+        {% image self.hero_image fill-1650x928 format-webp as img_xl %}
 
-    {# TODO: dummy img. replace with the above. trial 16:9 ratio #}
-    <img src="https://placehold.co/800x440" class="standard-hero__img" alt="TODO" />
+        <picture class="standard-hero__img">
+            <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
+            <source srcset="{{ img_xl.url }}" media="(min-width: 1200px)">
+            <img
+                src="{{ img_base.url }}" 
+                alt="{{ self.alt_text|default:img_base.alt }}"
+                style="aspect-ratio: {{ img_base.width|unlocalize }} / {{ img_base.height|unlocalize }}"
+            />
+        </picture>
+    {% endif %}
     
 </div>
