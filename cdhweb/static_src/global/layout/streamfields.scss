@@ -17,7 +17,7 @@
             .block-image,
             .block-table,
             .block-note,
-            .block-rich_text,
+            .block-paragraph,
             .block-heading + *
           )
       ) {
@@ -30,7 +30,7 @@
     &:where(
         .block-accordion_block,
         .block-table,
-        .block-rich_text,
+        .block-paragraph,
         .block-download_block,
         .block-cta_block,
         .block-note,
