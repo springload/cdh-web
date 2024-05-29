@@ -149,11 +149,11 @@ class BodyContentBlock(StreamBlock):
     #: used to hold content migrated from mezzanine via a "kitchen-sink"
     #: approach; enable all supported wagtail features.
     #: Should NOT be used when creating new pages.
-    migrated = RichTextBlock(
-        features=PARAGRAPH_FEATURES + ["image", "embed"],
-        icon="warning",
-        template="text-content.html",
-    )
+    # migrated = RichTextBlock(
+    #     features=PARAGRAPH_FEATURES + ["image", "embed"],
+    #     icon="warning",
+    #     template="text-content.html",
+    # )
     code = CodeBlock(label="Code")
     # cta = CTABlock()
 

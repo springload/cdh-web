@@ -1,16 +1,18 @@
 from wagtail import blocks
 
 
-class MigratedBlock(blocks.StructBlock):
-    class Meta:
-        group = "Deprecated"
-        icon = "warning"
-
+class MigratedBlock(blocks.RichTextBlock):
     #: used to hold content migrated from mezzanine via a "kitchen-sink"
     #: approach; enable all supported wagtail features.
     #: Should NOT be used when creating new pages.
-    migrated = blocks.RichTextBlock(
-        features=[
+
+    class Meta:
+        icon = "warning"
+        template = "text-content.html"
+        group = "Deprecated"
+
+    def __init__(self, *args, **kwargs):
+        kwargs["features"] = [
             "h3",
             "h4",
             "bold",
@@ -26,7 +28,5 @@ class MigratedBlock(blocks.StructBlock):
             "code",
             "image",
             "embed",
-        ],
-        icon="warning",
-        template="text-content.html",
-    )
+        ]
+        super().__init__(*args, **kwargs)
