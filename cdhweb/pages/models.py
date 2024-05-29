@@ -282,7 +282,7 @@ class ContentPage(BasePage, StandardHeroMixin):
     parent_page_types = [
         "HomePage",
     ]
-    # subpage_types = ["ContentPage"] #TODO
+    subpage_types = ["ContentPage"] #TODO
 
 
 class LandingPage(BasePage):
