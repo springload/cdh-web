@@ -1,7 +1,7 @@
 from wagtail import blocks
 
 
-class MigratedBlock(blocks.StructBlock):
+class MigratedBlock(blocks.RichTextBlock):
     class Meta:
         group = "Deprecated"
         icon = "warning"
