@@ -12,11 +12,11 @@
     margin-block-start: var(--streamfield-space-lg);
 
     // Cases where there should be a small space above:
-    &:where(:is(.block-image, .block-table, .block-note, .block-rich_text)) {
+    &:where(:is(.block-image, .block-table, .block-note, .block-paragraph)) {
       margin-block-start: var(--streamfield-space-sm);
     }
 
-    // &:where(.block-heading + .block-rich_text) {
+    // &:where(.block-heading + .block-paragraph) {
     //   margin-block-start: var(--streamfield-space-sm);
     // }
   }
@@ -26,7 +26,7 @@
     &:where(
         .block-accordion_block,
         .block-table,
-        .block-rich_text,
+        .block-paragraph,
         .block-download_block,
         .block-cta_block,
         .block-note,
