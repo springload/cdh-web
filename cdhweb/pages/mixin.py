@@ -79,7 +79,7 @@ class StandardHeroMixin(models.Model):
 
     search_fields = [
         index.SearchField("title"),
-        index.SearchField("summary"),
+        index.SearchField("description"),
     ]
 
     class Meta:
