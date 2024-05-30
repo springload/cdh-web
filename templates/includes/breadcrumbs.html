@@ -18,7 +18,11 @@
                         {% if forloop.revcounter == 1 %}
                             {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-left" classes="breadcrumbs__back-icon" %}
                         {% endif %}
-                        {{ page.title }}
+                        {% if forloop.counter == 1 %}
+                            Home
+                        {% else %}
+                            {{ page.title }}
+                        {% endif %}
                     </a>
                     <span class="breadcrumbs__separator" aria-hidden="true"> / </span>
                 </li>
