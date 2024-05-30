@@ -36,7 +36,7 @@
         .block-note,
         .block-pull_quote,
         .block-video_block,
-        .block-hosted_video_block
+        .block-embed
       ) {
       max-inline-size: var(--reading-max-width);
     }
@@ -47,7 +47,7 @@
       .block-heading,
       .block-accordion_block > h2,
       .block-video_block > h2,
-      .block-hosted_video_block > h2
+      .block-embed > h2
     ) {
     @include lg {
       margin-left: calc(-1 * var(--content-outdent));
