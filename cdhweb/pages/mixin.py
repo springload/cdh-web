@@ -1,6 +1,13 @@
 from django.db import models
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel, TitleFieldPanel
+from django.utils.functional import cached_property
+from wagtail.admin.panels import (
+    FieldPanel,
+    FieldRowPanel,
+    MultiFieldPanel,
+    TitleFieldPanel,
+)
 from wagtail.fields import RichTextField
+from wagtail.models import Page
 from wagtail.search import index
 
 from .utils import LengthOverrideWidget
@@ -82,6 +89,48 @@ class StandardHeroMixin(models.Model):
     search_fields = [
         index.SearchField("title"),
         index.SearchField("description"),
+    ]
+
+    class Meta:
+        abstract = True
+
+
+class SidebarNavigationMixin(models.Model):
+    disable_sidebar = models.BooleanField(
+        default=False,
+        help_text="Hide the sidebar menu showing siblings of this page.",
+    )
+
+    @cached_property
+    def sidebar_navigation(self):
+        """
+        Display a Sidebar menu of Page siblings at L2 or deeper unless disabled.
+        This assumes all siblings inherit nav properties inherited from PromoteMixin
+        """
+
+        if self.disable_sidebar or self.depth <= 3:
+            return None  # only show sidebar for pages greater than level 3 (Homepage is level 1)
+
+        siblings = Page.objects.sibling_of(self).live().in_menu().public().specific()
+
+        if not siblings.exclude(pk=self.pk).exists():
+            return None  # no siblings so don't create side bar
+
+        return [
+            {
+                "title": page.title,
+                "url": page.get_url(),
+                "active": True if page.pk == self.pk else False,
+            }
+            for page in siblings
+        ]
+
+    settings_panels = [
+        FieldRowPanel(
+            [
+                FieldPanel("disable_sidebar"),
+            ]
+        )
     ]
 
     class Meta:

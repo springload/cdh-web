@@ -1,23 +1,20 @@
 <nav class="sidenav" aria-label="Side">
     <h2>Also in this section</h2>
+    {% for page in self.sidebar_navigation %}
     <ul>
-        {# TODO one of these for each sidenav item #}
+        {% if page.active %}
         <li>
-            <a href="TODO">
-                Example page title
+            <a href="{{ BASE_URL }}{{ page.url }}" aria-current="page">
+                {{ page.title }}
             </a>
         </li>
-        
+        {% else %}
         <li>
-            <a href="TODO">
-                Example page title
+            <a href="{{ BASE_URL }}{{ page.url }}">
+                {{ page.title }}
             </a>
         </li>
-        {# TODO add extra class anf attribute to current item #}
-        <li>
-            <a href="TODO" aria-current="page">
-                Example current page
-            </a>
-        </li>
+        {% endif %}
     </ul>
+    {% endfor %}
 </nav>
