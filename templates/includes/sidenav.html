@@ -4,13 +4,13 @@
     <ul>
         {% if page.active %}
         <li>
-            <a href="{{ BASE_URL }}{{ page.url }}" aria-current="page">
+            <a href="{{ page.url }}" aria-current="page">
                 {{ page.title }}
             </a>
         </li>
         {% else %}
         <li>
-            <a href="{{ BASE_URL }}{{ page.url }}">
+            <a href="{{ page.url }}">
                 {{ page.title }}
             </a>
         </li>
