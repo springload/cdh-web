@@ -5,7 +5,7 @@
 .sk-jumplinks__heading {
   margin-block-end: 24px;
 
-  @include lg {
+  @include md {
     margin-left: calc(-1 * var(--content-outdent));
   }
 }
