@@ -4,7 +4,7 @@
 {% block body_class %}template-standard{% endblock %}
 
 {% block main %}
-    {% include 'includes/breadcrumbs.html' %}
+    {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
     {% include 'includes/standard_hero.html' %}
 
     {% block content %}

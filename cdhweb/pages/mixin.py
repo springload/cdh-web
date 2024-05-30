@@ -91,6 +91,11 @@ class StandardHeroMixin(models.Model):
         index.SearchField("description"),
     ]
 
+    @cached_property
+    def breadcrumbs(self):
+        ancestors = self.get_ancestors().live().public().specific()
+        return ancestors[1:]  # removing root
+
     class Meta:
         abstract = True
 
