@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
+from django.utils.functional import cached_property
 from springkit.blocks import CTABlock, JumplinkableH2Block
 from springkit.models.mixins import JumplinksMixin
 from taggit.managers import TaggableManager
@@ -45,7 +46,7 @@ from .blocks.pull_quote import PullQuote
 from .blocks.rich_text import RichTextBlock as RichText
 from .blocks.table_block import TableBlock
 from .blocks.video_block import Video
-from .mixin import HomePageHeroMixin, StandardHeroMixin
+from .mixin import HomePageHeroMixin, SidebarNavigationMixin, StandardHeroMixin
 
 #: common features for paragraph text
 PARAGRAPH_FEATURES = [
@@ -245,7 +246,7 @@ class LinkPage(AbstractLinkPage):
     search_fields = Page.search_fields
 
 
-class BasePage(Page, JumplinksMixin):
+class BasePage(Page):
     """Abstract Page class from which all Wagtail page types are derived."""
 
     #: main page text
@@ -255,13 +256,13 @@ class BasePage(Page, JumplinksMixin):
     # index body content to make it searchable
     search_fields = Page.search_fields + [index.SearchField("body")]
 
-    settings_panels = Page.settings_panels + JumplinksMixin.settings_panels
+    settings_panels = Page.settings_panels
 
     class Meta:
         abstract = True
 
 
-class ContentPage(BasePage, StandardHeroMixin):
+class ContentPage(Page, StandardHeroMixin, JumplinksMixin, SidebarNavigationMixin):
     """Basic content page model."""
 
     body = StreamField(
@@ -276,13 +277,15 @@ class ContentPage(BasePage, StandardHeroMixin):
         FieldPanel("body"),
     ]
 
-    # index description in addition to body content
-    search_fields = StandardHeroMixin.search_fields
+    
+    search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
+    settings_panels = (
+        Page.settings_panels
+        + JumplinksMixin.settings_panels
+        + SidebarNavigationMixin.settings_panels
+    )
 
-    parent_page_types = [
-        "HomePage",
-    ]
-    subpage_types = ["ContentPage"] #TODO
+    subpage_types = ["ContentPage"]  # TODO
 
 
 class LandingPage(BasePage):
@@ -309,7 +312,7 @@ class LandingPage(BasePage):
     subpage_types = ["ContentPage"]
 
 
-class HomePage(BasePage, HomePageHeroMixin):
+class HomePage(Page, HomePageHeroMixin):
     """A home page that aggregates and displays featured content."""
 
     body = StreamField(
@@ -320,10 +323,12 @@ class HomePage(BasePage, HomePageHeroMixin):
         use_json_field=True,
     )
 
-    parent_page_types = [Page]  # only root
-    subpage_types = ["LandingPage", "ContentPage", "LinkPage"]
+    max_count = 1
+
+    subpage_types = ["LandingPage", "ContentPage", "LinkPage"]  # TODO
 
     content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]
+    settings_panels = Page.settings_panels
 
     class Meta:
         verbose_name = "Homepage"

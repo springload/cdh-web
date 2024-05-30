@@ -1,11 +1,17 @@
 {% extends 'base.html' %}
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags springkit_tags %}
 
 {% block body_class %}template-standard{% endblock %}
 
 {% block main %}
     {% include 'includes/breadcrumbs.html' %}
     {% include 'includes/standard_hero.html' %}
+
+    {% block content %}
+        {% if page.show_jumplinks %}
+            {% jumplinks page.body %}
+        {% endif %}
+    {% endblock %}
 
     <div class="page-layout page-layout--with-sidenav content-width grid-standard">
         <div class="page-layout__main-content">
@@ -16,10 +22,11 @@
             </div>
         </div>
 
-        {# TODO conditionally render if page has siblings (and any other pre-requisites) #}
+        {% if page.sidebar_navigation %}
         <div class="page-layout__sidenav">
             {% include 'includes/sidenav.html' %}
         </div>
+        {% endif %}
     </div>
 
 {% endblock %}
