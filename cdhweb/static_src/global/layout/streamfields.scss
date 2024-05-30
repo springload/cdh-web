@@ -49,7 +49,7 @@
       .block-video_block > h2,
       .block-embed > h2
     ) {
-    @include lg {
+    @include md {
       margin-left: calc(-1 * var(--content-outdent));
     }
   }
