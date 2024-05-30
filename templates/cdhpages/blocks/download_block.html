@@ -13,7 +13,7 @@
     {% for file in file_links %}
       <li>
         <a href="{{ file.file.url }}" download>
-          {% include 'includes/svg.html' with sprite="two-tone" svg="download" %}
+          {% include 'includes/svg.html' with sprite="two-tone" svg="arrow-down" %}
           <span>
             <strong class="download__file-title">
               {{ file.title }}

@@ -7,14 +7,12 @@
     {% include 'includes/breadcrumbs.html' %}
     {% include 'includes/standard_hero.html' %}
 
-    {% block content %}
-        {% if page.show_jumplinks %}
-            {% jumplinks page.body %}
-        {% endif %}
-    {% endblock %}
-
     <div class="page-layout page-layout--with-sidenav content-width grid-standard">
         <div class="page-layout__main-content">
+            {% if page.show_jumplinks %}
+                {% jumplinks page.body %}
+            {% endif %}
+            
             <div class="streamfields-wrapper">
                 {% if page.body %}
                     {% include_block page.body %}

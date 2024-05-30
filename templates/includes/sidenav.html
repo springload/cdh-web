@@ -1,20 +1,20 @@
 <nav class="sidenav" aria-label="Side">
     <h2>Also in this section</h2>
-    {% for page in self.sidebar_navigation %}
     <ul>
-        {% if page.active %}
-        <li>
-            <a href="{{ page.url }}" aria-current="page">
-                {{ page.title }}
-            </a>
-        </li>
-        {% else %}
-        <li>
-            <a href="{{ page.url }}">
-                {{ page.title }}
-            </a>
-        </li>
-        {% endif %}
+        {% for page in self.sidebar_navigation %}
+            {% if page.active %}
+            <li>
+                <a href="{{ page.url }}" aria-current="page">
+                    {{ page.title }}
+                </a>
+            </li>
+            {% else %}
+            <li>
+                <a href="{{ page.url }}">
+                    {{ page.title }}
+                </a>
+            </li>
+            {% endif %}
+        {% endfor %}
     </ul>
-    {% endfor %}
 </nav>

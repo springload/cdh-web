@@ -1,0 +1,28 @@
+.sk-jumplinks {
+  margin-bottom: var(--streamfield-space-lg);
+}
+
+.sk-jumplinks__heading {
+  @include h3;
+  margin-left: calc(-1 * var(--content-outdent));
+  margin-bottom: px2rem(16);
+}
+
+.sk-jumplinks__list {
+  padding: 0;
+  list-style-type: none;
+}
+
+.sk-jumplinks__link {
+  text-decoration-line: none;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: bold;
+}
+
+.sk-jumplinks__icon {
+  width: 16px;
+  aspect-ratio: 18 / 25;
+  flex-shrink: 0;
+}
