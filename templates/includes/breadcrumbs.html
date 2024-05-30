@@ -4,7 +4,7 @@
     <nav aria-label="Breadcrumb" class="breadcrumbs">
         <ol class="breadcrumbs__list">
             {# Note, this loop excludes the current page. So we manually append that to the end. #}
-            {# for page in breadcrumbs #}
+            {% for page in breadcrumbs %}
                 <li class="breadcrumbs__item 
                     {% if forloop.revcounter == 1 %}
                         breadcrumbs__item--parent
@@ -18,14 +18,14 @@
                         {% if forloop.revcounter == 1 %}
                             {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-left" classes="breadcrumbs__back-icon" %}
                         {% endif %}
-                        TODO page title 
+                        {{ page.title }}
                     </a>
                     <span class="breadcrumbs__separator" aria-hidden="true"> / </span>
                 </li>
-            {# endfor #}
+            {% endfor %}
             
             <li class="breadcrumbs__item breadcrumbs__item--current-page">
-                TODO current page
+                {{ current_page }}
             </li>
         </ol>
     </nav>
