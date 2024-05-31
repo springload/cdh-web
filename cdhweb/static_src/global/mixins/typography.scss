@@ -21,7 +21,7 @@
   line-height: 1.125;
   font-weight: 900;
 
-  @include sm {
+  @include xl {
     font-size: px2rem(36);
   }
 }
@@ -29,9 +29,9 @@
 @mixin h3 {
   font-size: px2rem(24);
   line-height: 1.125;
-  font-weight: bold;
+  font-weight: 900;
 
-  @include sm {
+  @include xl {
     font-size: px2rem(28);
   }
 }
@@ -39,11 +39,26 @@
 @mixin h4 {
   font-size: px2rem(20);
   line-height: 1.125;
+  font-weight: 900;
+
+  @include xl {
+    font-size: px2rem(24);
+  }
+}
+
+@mixin h5 {
+  font-size: px2rem(20);
+  line-height: 1.125;
   font-weight: bold;
 
   @include xl {
     font-size: px2rem(24);
   }
+}
+
+@mixin h6 {
+  // Same as h5 for now.
+  @include h5;
 }
 
 // This is a mixin because sometimes we need to make things look like a link which aren't

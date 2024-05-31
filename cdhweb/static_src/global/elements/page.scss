@@ -1,3 +1,7 @@
+@view-transition {
+  navigation: auto;
+}
+
 html {
   @media screen and (prefers-reduced-motion: reduce), (update: slow) {
     * {
@@ -14,7 +18,7 @@ body {
   font-size: px2rem(20);
   line-height: var(--base-line-height);
 
-  @include sm {
+  @include xl {
     font-size: px2rem(22);
   }
 }
