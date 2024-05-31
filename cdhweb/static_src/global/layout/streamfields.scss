@@ -8,20 +8,28 @@
   flex-direction: column;
 
   & > * + * {
-    // Default big space above each streamfield
+    // Default `lg` space above each streamfield
     margin-block-start: var(--streamfield-space-lg);
 
-    // Cases where there should be a small space above:
+    // Cases where there should be a `sm` space above:
     &:where(
         :is(
             .block-image,
             .block-table,
             .block-note,
             .block-paragraph,
-            .block-heading + *
+            .block-pull_quote,
+            .block-accordion_block:not(:has(> h2)),
+            .block-embed:not(:has(> h2)),
+            .block-video_block:not(:has(> h2))
           )
       ) {
       margin-block-start: var(--streamfield-space-sm);
+    }
+
+    // Cases where there should be a `xs` space above:
+    &:where(:is(.block-heading + *)) {
+      margin-block-start: var(--streamfield-space-xs);
     }
   }
 
