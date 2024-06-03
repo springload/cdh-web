@@ -11,6 +11,12 @@
 <header class="header">
     {% site_alerts %}    
 
+    {% if ENVIRONMENT != 'production' and ENVIRONMENT != 'dev' %}
+        <div style="background-color: yellow; text-align: center; padding: 10px;">
+            This is a test site.
+        </div>
+    {% endif %}
+
     <nav class="main-nav-mobile" data-component="main-nav-mobile" aria-label="Main" data-search-url="{% url 'search' %}">
         {# the following gets swapped out when react component mounts #}
         <div class="mobile-menu__header">

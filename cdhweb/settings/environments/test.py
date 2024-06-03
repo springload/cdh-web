@@ -24,3 +24,5 @@ ALLOWED_HOSTS = ["*"]
 
 # override software version to avoid creating visual diffs in display
 SW_VERSION = "CI Build"
+
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'test')
