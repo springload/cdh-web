@@ -4,4 +4,4 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-ENVIRONMENT = os.getenv('ENVIRONMENT', 'dev')
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')

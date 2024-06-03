@@ -51,3 +51,8 @@ def favicon_path():
         icon_version = "favicon-test.ico"
 
     return "".join([settings.STATIC_URL, base_path, icon_version])
+
+def environment(request):
+    return {
+        'ENVIRONMENT': settings.ENVIRONMENT
+    }
