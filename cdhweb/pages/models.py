@@ -263,23 +263,15 @@ class BasePage(Page):
         FieldPanel("body"),
     ]
 
-    search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
+    search_fields = Page.search_fields + [index.SearchField("body")]
     settings_panels = Page.settings_panels
 
     class Meta:
         abstract = True
 
 
-class ContentPage(Page, StandardHeroMixin, JumplinksMixin, SidebarNavigationMixin):
+class ContentPage(BasePage, StandardHeroMixin, JumplinksMixin, SidebarNavigationMixin):
     """Basic content page model."""
-
-    body = StreamField(
-        STANDARD_BLOCKS + [("migrated", MigratedBlock())],
-        blank=True,
-        help_text="Put content for the body of the page here. Start with using the + button.",
-        verbose_name="Page content",
-        use_json_field=True,
-    )
 
     content_panels = StandardHeroMixin.content_panels + [
         FieldPanel("body"),
@@ -287,7 +279,7 @@ class ContentPage(Page, StandardHeroMixin, JumplinksMixin, SidebarNavigationMixi
 
     search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
     settings_panels = (
-        Page.settings_panels
+        BasePage.settings_panels
         + JumplinksMixin.settings_panels
         + SidebarNavigationMixin.settings_panels
     )
@@ -319,29 +311,17 @@ class LandingPage(BasePage):
     subpage_types = ["ContentPage"]
 
 
-class BaseLandingPage(Page, StandardHeroMixin):
+class BaseLandingPage(BasePage, StandardHeroMixin):
     """Page type that aggregates and displays multiple ContentPages."""
-
-    body = StreamField(
-        STANDARD_BLOCKS + [("migrated", MigratedBlock())],
-        blank=True,
-        help_text="Put content for the body of the page here. Start with using the + button.",
-        verbose_name="Page content",
-        use_json_field=True,
-    )
 
     content_panels = StandardHeroMixin.content_panels + [
         FieldPanel("body"),
     ]
 
     search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
-    settings_panels = Page.settings_panels
 
     class Meta:
         abstract = True
-
-    # parent_page_types = ["HomePage"] #TODO
-    # subpage_types = ["ContentPage"]
 
 
 class HomePage(Page, HomePageHeroMixin):
