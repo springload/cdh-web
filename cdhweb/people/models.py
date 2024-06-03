@@ -22,7 +22,9 @@ from cdhweb.pages.models import (
     LandingPage,
     LinkPage,
     RelatedLink,
+    BaseLandingPage
 )
+from cdhweb.pages.mixin import SidebarNavigationMixin
 
 
 class Title(models.Model):
@@ -460,6 +462,7 @@ def cleanup_profile(sender, **kwargs):
 
 class Profile(BasePage):
     """Profile page for a Person, managed via wagtail."""
+    template = "people/person_page.html"
 
     person = models.OneToOneField(
         Person,
@@ -467,6 +470,7 @@ class Profile(BasePage):
         null=True,
         on_delete=models.SET_NULL,
     )
+
     image = models.ForeignKey(
         "wagtailimages.image",
         null=True,
@@ -484,7 +488,7 @@ class Profile(BasePage):
         FieldPanel("attachments"),
     ]
 
-    parent_page_types = ["people.PeopleLandingPage"]
+    parent_page_types = ["people.PeopleLandingPageArchived", "people.PeopleLandingPage"]
     subpage_types = []
 
     # index fields
@@ -515,7 +519,7 @@ class Profile(BasePage):
             raise ValidationError("Profile page must be for existing person.")
 
 
-class PeopleLandingPage(LandingPage):
+class PeopleLandingPageArchived(LandingPage):
     """LandingPage subtype for People that holds Profiles."""
 
     # NOTE this page can't be created in the page editor; it is only ever made
@@ -526,6 +530,14 @@ class PeopleLandingPage(LandingPage):
     subpage_types = [Profile, LinkPage]
     # use the regular landing page template
     template = LandingPage.template
+
+class PeopleLandingPage(BaseLandingPage, SidebarNavigationMixin):
+    subpage_types = [ Profile ]
+
+    settings_panels = (
+        BaseLandingPage.settings_panels
+        + SidebarNavigationMixin.settings_panels
+    )
 
 
 class Position(DateRange):

@@ -93,7 +93,10 @@ class StandardHeroMixin(models.Model):
 
     @cached_property
     def breadcrumbs(self):
+        print("breeeeeeead")
         ancestors = self.get_ancestors().live().public().specific()
+        print("********")
+        print(ancestors)
         return ancestors[1:]  # removing root
 
     class Meta:

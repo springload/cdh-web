@@ -12,17 +12,17 @@ from wagtail.test.utils.form_data import rich_text
 
 from cdhweb.blog.models import Author, BlogPost
 from cdhweb.pages.models import LinkPage, PageIntro
-from cdhweb.people.models import PeopleLandingPage, Person, Profile
+from cdhweb.people.models import PeopleLandingPageArchived, Person, Profile
 
 
-class TestPeopleLandingPage(WagtailPageTestCase):
+class TestPeopleLandingPageArchived(WagtailPageTestCase):
     def test_parent_pages(self):
         """no allowed parent page type; must be created manually"""
-        self.assertAllowedParentPageTypes(PeopleLandingPage, [])
+        self.assertAllowedParentPageTypes(PeopleLandingPageArchived, [])
 
     def test_child_pages(self):
         """only profile pages and link pages can be children"""
-        self.assertAllowedSubpageTypes(PeopleLandingPage, [Profile, LinkPage])
+        self.assertAllowedSubpageTypes(PeopleLandingPageArchived, [Profile, LinkPage])
 
 
 class TestProfile:
@@ -114,7 +114,7 @@ class TestProfile:
 class TestProfilePage(WagtailPageTestCase):
     def test_parent_pages(self):
         """only allowed parent is people landing page"""
-        self.assertAllowedParentPageTypes(Profile, [PeopleLandingPage])
+        self.assertAllowedParentPageTypes(Profile, [PeopleLandingPageArchived])
 
     def test_child_pages(self):
         """no allowed children"""
