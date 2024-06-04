@@ -6,7 +6,7 @@
 {% if page.image %}
     {% image page.image fill-790x632 as profile_img %}
     <img src="{{ profile_img.url }}" alt="{{ page.title }}"/>
-{% else %}
+{% elif person.image %}
     {% image person.image fill-790x632 as profile_img %}
     <img src="{{ profile_img.url }}" alt="{{ page.title }}"/>
 {% endif %}
