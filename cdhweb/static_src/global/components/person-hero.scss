@@ -68,8 +68,11 @@ Person hero. Similar to standard hero. Key differences:
 
 .person-hero__intro {
   grid-area: h;
-  margin: var(--title-top-space) 0 0;
   font-weight: bold;
+
+  :where(h1) {
+    margin-block-start: var(--title-top-space);
+  }
 }
 
 .person-hero__job {

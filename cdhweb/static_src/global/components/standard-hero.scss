@@ -63,7 +63,7 @@
 
 .standard-hero__title {
   grid-area: t;
-  margin: var(--title-top-space) 0 0;
+  margin-block-start: var(--title-top-space);
 }
 
 .standard-hero__description {
