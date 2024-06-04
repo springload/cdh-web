@@ -9,7 +9,14 @@ from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
-from cdhweb.pages.models import BasePage, DateRange, LandingPage, LinkPage, RelatedLink
+from cdhweb.pages.models import (
+    BaseLandingPage,
+    BasePage,
+    DateRange,
+    LandingPage,
+    LinkPage,
+    RelatedLink,
+)
 from cdhweb.people.models import Person
 
 
@@ -126,7 +133,10 @@ class Project(BasePage, ClusterableModel):
     # TODO attachments (#245)
 
     # can only be created underneath project landing page
-    parent_page_types = ["projects.ProjectsLandingPage"]
+    parent_page_types = [
+        "projects.ProjectsLandingPageArchived",
+        "projects.ProjectsLandingPage",
+    ]
     # no allowed subpages
     subpage_types = []
 
@@ -320,7 +330,7 @@ class ProjectRelatedLink(RelatedLink):
         return "%s – %s (%s)" % (self.project, self.type, self.display_url)
 
 
-class ProjectsLandingPage(LandingPage):
+class ProjectsLandingPageArchived(LandingPage):
     """Container page that defines where Project pages can be created."""
 
     # NOTE this page can't be created in the page editor; it is only ever made
@@ -331,3 +341,7 @@ class ProjectsLandingPage(LandingPage):
     subpage_types = [Project, LinkPage]
     # use the regular landing page template
     template = LandingPage.template
+
+
+class ProjectsLandingPage(BaseLandingPage):
+    subpage_types = [Project]

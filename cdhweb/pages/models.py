@@ -287,30 +287,6 @@ class ContentPage(BasePage, StandardHeroMixin, JumplinksMixin, SidebarNavigation
     subpage_types = ["ContentPage"]  # TODO
 
 
-class LandingPage(BasePage):
-    """Page type that aggregates and displays multiple ContentPages."""
-
-    #: short sentence overlaid on the header image
-    tagline = models.CharField(max_length=255)
-    #: image that will be used for the header
-    header_image = models.ForeignKey(
-        "wagtailimages.image",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-    )  # no reverse relationship
-
-    content_panels = Page.content_panels + [
-        FieldPanel("tagline"),
-        FieldPanel("header_image"),
-        FieldPanel("body"),
-    ]
-
-    parent_page_types = ["HomePage"]
-    subpage_types = ["ContentPage"]
-
-
 class BaseLandingPage(BasePage, StandardHeroMixin):
     """Page type that aggregates and displays multiple ContentPages."""
 
@@ -322,6 +298,24 @@ class BaseLandingPage(BasePage, StandardHeroMixin):
 
     class Meta:
         abstract = True
+
+
+class LandingPage(BaseLandingPage, SidebarNavigationMixin):
+    """Page type that aggregates and displays multiple ContentPages."""
+
+    settings_panels = (
+        BaseLandingPage.settings_panels + SidebarNavigationMixin.settings_panels
+    )
+
+    parent_page_types = ["HomePage"]
+    subpage_types = [
+        "ContentPage",
+        "people.PeopleLandingPage",
+        "projects.ProjectsLandingPage",
+    ]
+
+    class Meta:
+        verbose_name = "Section Landing Page"
 
 
 class HomePage(Page, HomePageHeroMixin):
@@ -337,7 +331,12 @@ class HomePage(Page, HomePageHeroMixin):
 
     max_count = 1
 
-    subpage_types = ["ContentPage", "LinkPage", "people.PeopleLandingPage"]  # TODO
+    subpage_types = [
+        "ContentPage",
+        "LinkPage",
+        "people.PeopleLandingPage",
+        "projects.ProjectsLandingPage",
+    ]  # TODO
 
     content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]
     settings_panels = Page.settings_panels

@@ -11,7 +11,7 @@ from cdhweb.projects.models import (
     GrantType,
     Membership,
     Project,
-    ProjectsLandingPage,
+    ProjectsLandingPageArchived,
     Role,
 )
 
@@ -34,7 +34,7 @@ def add_project_member(project, role, start_date=None, end_date=None, **person_o
 
 def make_projects_landing_page(homepage):
     """create a test projects landing page underneath the homepage"""
-    plp = ProjectsLandingPage(
+    plp = ProjectsLandingPageArchived(
         title="projects", slug="projects", tagline="let's do some stuff"
     )
     homepage.add_child(instance=plp)

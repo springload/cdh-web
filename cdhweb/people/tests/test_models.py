@@ -19,7 +19,7 @@ from cdhweb.projects.models import (
     GrantType,
     Membership,
     Project,
-    ProjectsLandingPage,
+    ProjectsLandingPageArchived,
     Role,
 )
 
@@ -242,7 +242,7 @@ class TestPersonQuerySet(TestCase):
         home = HomePage(title="home", slug="")
         root.add_child(instance=home)
         root.save()
-        link = ProjectsLandingPage(
+        link = ProjectsLandingPageArchived(
             title="projects", slug="projects", tagline="let's collaborate"
         )
         home.add_child(instance=link)
