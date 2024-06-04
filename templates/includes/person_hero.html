@@ -1,0 +1,26 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+<div>
+<h2>{{ page.title }}</h2>
+{{ person.current_title }}
+{% if page.image %}
+    {% image page.image fill-790x632 as profile_img %}
+    <img src="{{ profile_img.url }}" alt="{{ page.title }}"/>
+{% elif person.image %}
+    {% image person.image fill-790x632 as profile_img %}
+    <img src="{{ profile_img.url }}" alt="{{ page.title }}"/>
+{% endif %}
+{{ page.education|richtext }}
+{% if person.email %}
+<a href="mailto:{{ page.person.email }}">{{ person.email }}</a>
+{% endif %}
+{% if person.phone_number %}
+    <p>{{ person.phone_number }}</p>
+{% endif %}
+{% if person.office_location %}
+    <p>{{ person.office_location }}</p>
+{% endif %}
+{% for link in page.person.related_links.all %}
+        <li><a href="{{ link.url }}">{{ link.type.name }}</a></li>
+    {% endfor %}
+</div>

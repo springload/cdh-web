@@ -249,22 +249,6 @@ class LinkPage(AbstractLinkPage):
 class BasePage(Page):
     """Abstract Page class from which all Wagtail page types are derived."""
 
-    #: main page text
-    body = StreamField(BodyContentBlock, blank=True, use_json_field=True)
-    #: relationship to uploaded documents and external links
-    attachments = StreamField(AttachmentBlock, blank=True, use_json_field=True)
-    # index body content to make it searchable
-    search_fields = Page.search_fields + [index.SearchField("body")]
-
-    settings_panels = Page.settings_panels
-
-    class Meta:
-        abstract = True
-
-
-class ContentPage(Page, StandardHeroMixin, JumplinksMixin, SidebarNavigationMixin):
-    """Basic content page model."""
-
     body = StreamField(
         STANDARD_BLOCKS + [("migrated", MigratedBlock())],
         blank=True,
@@ -273,14 +257,29 @@ class ContentPage(Page, StandardHeroMixin, JumplinksMixin, SidebarNavigationMixi
         use_json_field=True,
     )
 
+    attachments = StreamField(AttachmentBlock, blank=True, use_json_field=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel("body"),
+    ]
+
+    search_fields = Page.search_fields + [index.SearchField("body")]
+    settings_panels = Page.settings_panels
+
+    class Meta:
+        abstract = True
+
+
+class ContentPage(BasePage, StandardHeroMixin, JumplinksMixin, SidebarNavigationMixin):
+    """Basic content page model."""
+
     content_panels = StandardHeroMixin.content_panels + [
         FieldPanel("body"),
     ]
 
-    
     search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
     settings_panels = (
-        Page.settings_panels
+        BasePage.settings_panels
         + JumplinksMixin.settings_panels
         + SidebarNavigationMixin.settings_panels
     )
@@ -312,6 +311,19 @@ class LandingPage(BasePage):
     subpage_types = ["ContentPage"]
 
 
+class BaseLandingPage(BasePage, StandardHeroMixin):
+    """Page type that aggregates and displays multiple ContentPages."""
+
+    content_panels = StandardHeroMixin.content_panels + [
+        FieldPanel("body"),
+    ]
+
+    search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
+
+    class Meta:
+        abstract = True
+
+
 class HomePage(Page, HomePageHeroMixin):
     """A home page that aggregates and displays featured content."""
 
@@ -325,7 +337,7 @@ class HomePage(Page, HomePageHeroMixin):
 
     max_count = 1
 
-    subpage_types = ["LandingPage", "ContentPage", "LinkPage"]  # TODO
+    subpage_types = ["ContentPage", "LinkPage", "people.PeopleLandingPage"]  # TODO
 
     content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]
     settings_panels = Page.settings_panels

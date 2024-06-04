@@ -6,7 +6,13 @@ from django.test import TestCase
 from wagtail.models import Page, Site
 
 from cdhweb.pages.models import HomePage
-from cdhweb.people.models import PeopleLandingPage, Person, Position, Profile, Title
+from cdhweb.people.models import (
+    PeopleLandingPageArchived,
+    Person,
+    Position,
+    Profile,
+    Title,
+)
 
 
 class TestProfile(TestCase):
@@ -17,7 +23,7 @@ class TestProfile(TestCase):
         home = HomePage(title="home", slug="")
         root.add_child(instance=home)
         root.save()
-        lp = PeopleLandingPage(title="people", slug="people", tagline="people")
+        lp = PeopleLandingPageArchived(title="people", slug="people", tagline="people")
         home.add_child(instance=lp)
         home.save()
         site = Site.objects.first()
