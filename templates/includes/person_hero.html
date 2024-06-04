@@ -6,6 +6,9 @@
 {% if page.image %}
     {% image page.image fill-790x632 as profile_img %}
     <img src="{{ profile_img.url }}" alt="{{ page.title }}"/>
+{% else %}
+    {% image person.image fill-790x632 as profile_img %}
+    <img src="{{ profile_img.url }}" alt="{{ page.title }}"/>
 {% endif %}
 {{ page.education|richtext }}
 {% if person.email %}

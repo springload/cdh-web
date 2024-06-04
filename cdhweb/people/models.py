@@ -312,7 +312,7 @@ class Person(ClusterableModel):
     image = models.ForeignKey(
         "wagtailimages.image",
         null=True,
-        blank=True,
+        blank=False,
         on_delete=models.SET_NULL,
         related_name="+",
     )  # no reverse relationship
