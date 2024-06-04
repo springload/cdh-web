@@ -7,6 +7,7 @@ from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.functional import cached_property
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
@@ -15,16 +16,16 @@ from wagtail.fields import RichTextField
 from wagtail.models import Page
 from wagtail.search import index
 
+from cdhweb.pages.mixin import SidebarNavigationMixin
 from cdhweb.pages.models import (
     PARAGRAPH_FEATURES,
+    BaseLandingPage,
     BasePage,
     DateRange,
     LandingPage,
     LinkPage,
     RelatedLink,
-    BaseLandingPage
 )
-from cdhweb.pages.mixin import SidebarNavigationMixin
 
 
 class Title(models.Model):
@@ -462,6 +463,7 @@ def cleanup_profile(sender, **kwargs):
 
 class Profile(BasePage):
     """Profile page for a Person, managed via wagtail."""
+
     template = "people/person_page.html"
 
     person = models.OneToOneField(
@@ -493,6 +495,11 @@ class Profile(BasePage):
 
     # index fields
     search_fields = BasePage.search_fields + [index.SearchField("education")]
+
+    @cached_property
+    def breadcrumbs(self):
+        ancestors = self.get_ancestors().live().public().specific()
+        return ancestors[1:]  # removing root
 
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""
@@ -531,12 +538,12 @@ class PeopleLandingPageArchived(LandingPage):
     # use the regular landing page template
     template = LandingPage.template
 
+
 class PeopleLandingPage(BaseLandingPage, SidebarNavigationMixin):
-    subpage_types = [ Profile ]
+    subpage_types = [Profile]
 
     settings_panels = (
-        BaseLandingPage.settings_panels
-        + SidebarNavigationMixin.settings_panels
+        BaseLandingPage.settings_panels + SidebarNavigationMixin.settings_panels
     )
 
 
