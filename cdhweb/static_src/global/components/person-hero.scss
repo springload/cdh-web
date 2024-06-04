@@ -83,7 +83,7 @@ Person hero. Similar to standard hero. Key differences:
 }
 
 .person-hero__education {
-  margin: 16px 0 0;
+  margin-block-start: 16px;
   font-size: px2rem(15);
 }
 
@@ -91,7 +91,7 @@ Person hero. Similar to standard hero. Key differences:
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin: 16px 0 0;
+  margin-block-start: 16px;
 }
 
 .person-hero__tag {
