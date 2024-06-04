@@ -299,6 +299,7 @@ class BaseLandingPage(BasePage, StandardHeroMixin):
     class Meta:
         abstract = True
 
+
 class LandingPage(BaseLandingPage, SidebarNavigationMixin):
     """Page type that aggregates and displays multiple ContentPages."""
 
@@ -307,7 +308,11 @@ class LandingPage(BaseLandingPage, SidebarNavigationMixin):
     )
 
     parent_page_types = ["HomePage"]
-    subpage_types = ["ContentPage", "people.PeopleLandingPage"]
+    subpage_types = [
+        "ContentPage",
+        "people.PeopleLandingPage",
+        "projects.ProjectsLandingPage",
+    ]
 
     class Meta:
         verbose_name = "Section Landing Page"
@@ -326,7 +331,12 @@ class HomePage(Page, HomePageHeroMixin):
 
     max_count = 1
 
-    subpage_types = ["ContentPage", "LinkPage", "people.PeopleLandingPage"]  # TODO
+    subpage_types = [
+        "ContentPage",
+        "LinkPage",
+        "people.PeopleLandingPage",
+        "projects.ProjectsLandingPage",
+    ]  # TODO
 
     content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]
     settings_panels = Page.settings_panels
