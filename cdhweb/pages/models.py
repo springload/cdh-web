@@ -336,6 +336,7 @@ class HomePage(Page, HomePageHeroMixin):
         "LinkPage",
         "people.PeopleLandingPage",
         "projects.ProjectsLandingPage",
+        "LandingPage"
     ]  # TODO
 
     content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]
