@@ -9,7 +9,6 @@ and some meta info that can appear below the description.
 
   margin-block-end: 56px;
 
-  // b = "built by CDH" tag
   // t = title
   // d = description + meta deets + project link
   // i = image
@@ -120,6 +119,11 @@ and some meta info that can appear below the description.
     }
     @include lg {
       margin-block-start: 56px;
+    }
+
+    :where(svg) {
+      width: px2rem(16);
+      aspect-ratio: 1;
     }
   }
 }
