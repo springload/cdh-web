@@ -336,7 +336,7 @@ class HomePage(Page, HomePageHeroMixin):
         "LinkPage",
         "people.PeopleLandingPage",
         "projects.ProjectsLandingPage",
-        "LandingPage"
+        "LandingPage",
     ]  # TODO
 
     content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]
@@ -360,10 +360,6 @@ class HomePage(Page, HomePageHeroMixin):
         if not updates.exists():
             updates = BlogPost.objects.live().recent()[:3]
         context["updates"] = updates
-
-        # add up to 4 randomly selected highlighted, published projects
-        projects = list(Project.objects.live().highlighted().order_by("?"))
-        context["projects"] = projects[:4]
 
         # add up to 3 upcoming, published events
         context["events"] = Event.objects.live().upcoming()[:3]

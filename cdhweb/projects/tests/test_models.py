@@ -17,14 +17,6 @@ class TestRole:
 
 
 class TestProjectQuerySet:
-    def test_highlighted(self, derrida):
-        """should query highlighted projects"""
-        # derrida isn't highlighted
-        assert not Project.objects.highlighted().exists()
-        # highlight it, should be returned
-        derrida.highlight = True
-        derrida.save()
-        assert Project.objects.highlighted().exists()
 
     def test_current(self, derrida):
         """should query projects with current grant"""
