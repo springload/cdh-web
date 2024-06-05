@@ -9,6 +9,7 @@ from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
+from cdhweb.pages.mixin import StandardHeroMixin
 from cdhweb.pages.models import (
     BaseLandingPage,
     BasePage,
@@ -21,10 +22,6 @@ from cdhweb.people.models import Person
 
 
 class ProjectQuerySet(PageQuerySet):
-    def highlighted(self):
-        """return projects that are marked as highlighted"""
-        return self.filter(highlight=True)
-
     def _current_grant_query(self):
         """QuerySet filter to find projects with a current grant,
         based on start date before current date and end date after current
@@ -90,18 +87,11 @@ class ProjectTag(TaggedItemBase):
     )
 
 
-class Project(BasePage, ClusterableModel):
+class Project(BasePage, ClusterableModel, StandardHeroMixin):
     """Page type for a CDH sponsored project or working group."""
 
-    short_description = models.CharField(
-        max_length=255,
-        blank=True,
-        help_text="Brief tagline for display on project card in browse view",
-    )
-    highlight = models.BooleanField(
-        default=False,
-        help_text="Include in randomized project display on the home page.",
-    )
+    template = "projects/project_page.html"
+
     cdh_built = models.BooleanField(
         "CDH Built",
         default=False,
@@ -112,22 +102,7 @@ class Project(BasePage, ClusterableModel):
         default=False,
         help_text="Project is a long-term collaborative group associated with the CDH.",
     )
-    image = models.ForeignKey(
-        "wagtailimages.image",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-        help_text="Image for display on project detail page (optional)",
-    )
-    thumbnail = models.ForeignKey(
-        "wagtailimages.image",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-        help_text="Image for display on project card (optional)",
-    )
+
     members = models.ManyToManyField(Person, through="Membership")
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
     # TODO attachments (#245)
@@ -141,17 +116,14 @@ class Project(BasePage, ClusterableModel):
     subpage_types = []
 
     # admin edit configuration
-    content_panels = Page.content_panels + [
+    content_panels = StandardHeroMixin.content_panels + [
         FieldRowPanel(
             (
-                FieldPanel("highlight"),
                 FieldPanel("cdh_built"),
                 FieldPanel("working_group"),
             ),
             "Settings",
         ),
-        FieldRowPanel((FieldPanel("thumbnail"), FieldPanel("image")), "Images"),
-        FieldPanel("short_description"),
         FieldPanel("body"),
         InlinePanel("related_links", label="Links"),
         InlinePanel(
@@ -179,8 +151,8 @@ class Project(BasePage, ClusterableModel):
     objects = ProjectManager()
 
     # search fields
-    search_fields = BasePage.search_fields + [
-        index.SearchField("short_description"),
+    search_fields = StandardHeroMixin.search_fields + [
+        index.SearchField("body"),
         index.RelatedFields(
             "members",
             [

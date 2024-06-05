@@ -8,7 +8,7 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
     model = Project
     menu_label = "Projects"
     menu_icon = "site"
-    list_display = ("admin_thumb", "title", "live", "cdh_built", "highlight")
+    list_display = ("admin_thumb", "title", "live", "cdh_built")
     list_display_add_buttons = "title"
     list_filter = ("grants__grant_type",)
     list_export = (
@@ -16,12 +16,12 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
         "working_group",
         "cdh_built",
         "tags",
-        "short_description",
+        "description",
         "body",
         "website_url",
         "last_published_at",
     )
-    search_fields = ("title", "short_description", "body")
+    search_fields = ("title", "description", "body")
     export_filename = "cdhweb-projects"
     exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"

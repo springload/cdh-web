@@ -65,35 +65,6 @@ class TestHomePage:
         response = client.get(homepage.relative_url(site))
         assertTemplateNotUsed(response, "projects/snippets/project_card.html")
 
-    def test_highlighted_projects(self, client, site, homepage, projects):
-        """homepage should display highlighted projects as cards"""
-        response = client.get(homepage.relative_url(site))
-
-        # should be no projects in context, since none highlighted
-        assert len(response.context["projects"]) == 0
-
-        # highlight some projects; only those should be displayed
-        derrida = projects["derrida"]
-        pliny = projects["pliny"]
-        derrida.highlight = True
-        pliny.highlight = True
-        derrida.save()
-        pliny.save()
-        response = client.get(homepage.relative_url(site))
-        assert len(response.context["projects"]) == 2
-        assert derrida in response.context["projects"]
-        assert pliny in response.context["projects"]
-
-        # should display title, short description, and link
-        assertContains(response, derrida.short_description)
-        assertContains(response, derrida.title)
-        assertContains(response, derrida.get_url())
-
-        # unpublished projects shouldn't be displayed
-        derrida.unpublish()
-        response = client.get(homepage.relative_url(site))
-        assert derrida not in response.context["projects"]
-
     def test_empty_events(self, client, site, homepage):
         """homepage should display message when no events are available"""
         response = client.get(homepage.relative_url(site))
