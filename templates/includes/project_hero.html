@@ -1,21 +1,29 @@
 {% load wagtailcore_tags wagtailimages_tags l10n %}
 
-<div class="standard-hero content-width grid-standard">
+<div class="project-hero content-width grid-standard">
     
-    <h1 class="standard-hero__title">{{ self.title}}</h1>
-    <div class="standard-hero__description">
+    <div class="project-hero__title">
+        <h1>{{ self.title}}</h1>
+        {% if page.cdh_built %}<div class="tag tag--dark">Built by CDH</div>{% endif %}
+    </div>
+    <div class="project-hero__description">
         {% if self.description %}
             {{ self.description | richtext }}
         {% endif %}
-        {% if page.website_url %}
-            {{ page.website_url }}
-        {% endif %}
-        {% if page.cdh_built %}<div class="cdh-built">Built by CDH</div>{% endif %}
+
         {% if self.tags %}
-            {% for tag in self.tags.all %}
-                <div> {{ tag }}</div>    
-            {% endfor %}
-            
+            <div class="tag-list">
+                {% for tag in self.tags.all %}
+                    <div class="tag">{{ tag }}</div>    
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if page.website_url %}
+            <a href="{{ page.website_url }}" class="sk-btn sk-btn--secondary">
+                <span>View project website</span>
+                {% include 'includes/svg.html' with sprite="two-tone" svg="external" %}
+            </a>
         {% endif %}
     </div>
 
@@ -30,7 +38,7 @@
         {% image self.hero_image fill-1250x703 format-webp as img_sm %}
         {% image self.hero_image fill-1650x928 format-webp as img_xl %}
 
-        <picture class="standard-hero__img">
+        <picture class="project-hero__img">
             <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
             <source srcset="{{ img_xl.url }}" media="(min-width: 1200px)">
             <img

@@ -1,0 +1,81 @@
+/*
+Project page has a similar layout to the standard page with sidenav,
+except the sidenav is replaced by a meta-details box, which sits to
+the right of the content (when unstacked).
+*/
+
+// has `.grid-standard`
+.project-page {
+  // m = main content
+  // s = side content (meta deets)
+
+  grid-template-areas:
+    's s s s s s s s s s s s'
+    'm m m m m m m m m m m m';
+
+  @include lg {
+    grid-template-areas: 'm m m m m m m m s s s s';
+  }
+
+  @include xl {
+    grid-template-areas: '. . m m m m m m m s s s';
+  }
+}
+
+.project-page__main-content {
+  grid-area: m;
+}
+
+.project-page__side-content {
+  grid-area: s;
+
+  position: relative;
+  @include three-dee-box;
+
+  padding: 20px 32px;
+  font-size: px2rem(16);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+
+  @include sm {
+    padding-inline: 48px;
+  }
+  @include md {
+    padding-inline: 24px;
+  }
+
+  :where(h2) {
+    font-size: px2rem(16);
+    font-weight: 900;
+    line-height: 1.125;
+    margin-block-end: 16px;
+  }
+  :where(h3) {
+    font-size: px2rem(13);
+    font-weight: bold;
+    line-height: 1.125;
+    margin-block-end: 4px;
+  }
+  :where(ul) {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  :where(li) {
+    margin: 0;
+  }
+}
+
+.project-page__side-content-block {
+  flex: 1 1 px2rem(185);
+}
+
+.project-page__side-content-item {
+  & + .project-page__side-content-item {
+    margin-block-start: 24px;
+  }
+}
