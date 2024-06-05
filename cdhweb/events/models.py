@@ -8,6 +8,7 @@ from django.db import models
 from django.db.models.fields.related import RelatedField
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
@@ -15,10 +16,12 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.fields import RichTextField
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
+from cdhweb.pages.blocks.image_block import UnsizedImageBlock
 from cdhweb.pages.mixin import StandardHeroMixinNoImage
 from cdhweb.pages.models import BaseLandingPage, BasePage, ContentPage, LinkPage
 from cdhweb.people.models import Person
@@ -135,12 +138,15 @@ class Speaker(models.Model):
 class Event(BasePage, ClusterableModel):
     """Page type for an event, such as a workshop, lecture, or conference."""
 
+    template = "events/event_page.html"
+
     sponsor = models.CharField(max_length=80, null=True, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     location = models.ForeignKey(
         Location, null=True, blank=True, on_delete=models.SET_NULL
     )
+
     type = models.ForeignKey(EventType, null=True, on_delete=models.SET_NULL)
     attendance = models.PositiveIntegerField(
         null=True,
@@ -161,13 +167,32 @@ class Event(BasePage, ClusterableModel):
         related_name="+",
         help_text="Image for display on event detail page (optional)",
     )
-    thumbnail = models.ForeignKey(
-        "wagtailimages.image",
-        null=True,
+    caption = RichTextField(
+        features=[
+            "italic",
+            "bold",
+            "link",
+        ],
+        help_text="A short caption for the image.",
         blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-        help_text="Image for display on event card (optional)",
+        max_length=180,
+    )
+
+    credit = RichTextField(
+        features=[
+            "italic",
+            "bold",
+            "link",
+        ],
+        help_text="A credit line or attribution for the image.",
+        blank=True,
+        max_length=80,
+    )
+
+    alt_text = models.CharField(
+        help_text="Describe the image for screen readers",
+        blank=True,
+        max_length=80,
     )
     people = models.ManyToManyField(Person, through=Speaker, related_name="events")
     tags = ClusterTaggableManager(through=EventTag, blank=True)
@@ -181,15 +206,31 @@ class Event(BasePage, ClusterableModel):
     # admin edit configuration
     content_panels = Page.content_panels + [
         FieldPanel("type"),
-        FieldRowPanel((FieldPanel("start_time"), FieldPanel("end_time")), "Details"),
-        FieldPanel("location"),
+        MultiFieldPanel(
+            [
+                FieldRowPanel(
+                    (
+                        FieldPanel("start_time"),
+                        FieldPanel("end_time"),
+                        FieldPanel("location"),
+                    ),
+                    "Details",
+                ),
+                InlinePanel("speakers", [AutocompletePanel("person")], label="Speaker"),
+                MultiFieldPanel(
+                    [
+                        FieldPanel("image"),
+                        FieldPanel("caption"),
+                        FieldPanel("credit"),
+                        FieldPanel("alt_text"),
+                    ],
+                    heading="Hero Image",
+                ),
+            ],
+            heading="Event Hero",
+        ),
         FieldPanel("join_url"),
         FieldRowPanel((FieldPanel("sponsor"), FieldPanel("attendance")), "Tracking"),
-        FieldRowPanel((FieldPanel("thumbnail"), FieldPanel("image")), "Images"),
-        MultiFieldPanel(
-            (InlinePanel("speakers", [AutocompletePanel("person")], label="Speaker"),),
-            heading="Speakers",
-        ),
         FieldPanel("body"),
         FieldPanel("attachments"),
     ]
@@ -224,6 +265,11 @@ class Event(BasePage, ClusterableModel):
 
     def __str__(self):
         return " - ".join([self.title, self.start_time.strftime("%b %d, %Y")])
+
+    @cached_property
+    def breadcrumbs(self):
+        ancestors = self.get_ancestors().live().public().specific()
+        return ancestors[1:]  # removing root
 
     @property
     def speaker_list(self):

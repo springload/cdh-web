@@ -1,0 +1,35 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+
+<div class="standard-hero content-width grid-standard">
+    
+    <h1 class="standard-hero__title">{{ self.title}}</h1>
+    <div class="standard-hero__description">
+       {{ self.start_time }}
+       {{ self.end_time }}
+       {{ self.location }}
+       {% if page.speakers %}
+            {% for speaker in page.speakers.all %}
+                <div>{{ speaker.person }}</div>
+            {% endfor %}
+        {% endif %}
+        {% if self.tags %}
+            {% for tag in self.tags.all %}
+                <div> {{ tag }}</div>    
+            {% endfor %}
+            
+        {% endif %}
+    </div>
+
+    {% if self.image %}
+        {% image page.image width-735 as event_img %}
+        <img src="{{ event_img.url }}" alt="{{ self.alt_text }}" property="schema:image"/>
+        {% if self.caption %}
+            <p>{{ self.caption|richtext }}</p>
+        {% endif %}
+        {% if self.credit %}
+        <div>{{ self.credit|richtext }}</div>
+        {% endif %}
+
+    {% endif %}
+    
+</div>
