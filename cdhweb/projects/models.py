@@ -92,6 +92,13 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
 
     template = "projects/project_page.html"
 
+    project_website = models.URLField(
+        verbose_name="Project Website",
+        null=True,
+        blank=True,
+        help_text="Project website URL.",
+    )
+
     cdh_built = models.BooleanField(
         "CDH Built",
         default=False,
@@ -125,6 +132,7 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
             "Settings",
         ),
         FieldPanel("body"),
+        FieldPanel("project_website"),
         InlinePanel("related_links", label="Links"),
         InlinePanel(
             "grants",
@@ -169,7 +177,9 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
     def website_url(self):
         """URL for this Project's website, if set"""
         website = self.related_links.filter(type__name="Website").first()
-        if website:
+        if self.project_website:
+            return self.project_website
+        elif website:
             return website.url
 
     def latest_grant(self):
