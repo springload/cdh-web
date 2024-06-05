@@ -312,6 +312,7 @@ class LandingPage(BaseLandingPage, SidebarNavigationMixin):
         "ContentPage",
         "people.PeopleLandingPage",
         "projects.ProjectsLandingPage",
+        "events.EventsLandingPage",
     ]
 
     class Meta:
@@ -337,6 +338,7 @@ class HomePage(Page, HomePageHeroMixin):
         "people.PeopleLandingPage",
         "projects.ProjectsLandingPage",
         "LandingPage",
+        "events.EventsLandingPage",
     ]  # TODO
 
     content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]

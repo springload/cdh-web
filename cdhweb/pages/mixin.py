@@ -51,7 +51,7 @@ class HomePageHeroMixin(models.Model):
         abstract = True
 
 
-class StandardHeroMixin(models.Model):
+class StandardHeroMixinNoImage(models.Model):
     description = RichTextField(
         max_length=200,
         blank=True,
@@ -62,6 +62,35 @@ class StandardHeroMixin(models.Model):
         Used to orient the user and help them identify relevancy of the page to meet their needs. """,
     )
 
+    content_panels = [
+        MultiFieldPanel(
+            [
+                TitleFieldPanel(
+                    "title",
+                    help_text="""Main heading for the page. Ideally up to five words long (max.100 chars).""",
+                    widget=LengthOverrideWidget(max_length=100),
+                ),
+                FieldPanel("description"),
+            ],
+            "Standard Hero",
+        )
+    ]
+
+    search_fields = [
+        index.SearchField("title"),
+        index.SearchField("description"),
+    ]
+
+    @cached_property
+    def breadcrumbs(self):
+        ancestors = self.get_ancestors().live().public().specific()
+        return ancestors[1:]  # removing root
+
+    class Meta:
+        abstract = True
+
+
+class StandardHeroMixin(StandardHeroMixinNoImage):
     hero_image = models.ForeignKey(
         "wagtailimages.Image",
         null=True,
@@ -85,16 +114,6 @@ class StandardHeroMixin(models.Model):
             "Standard Hero",
         )
     ]
-
-    search_fields = [
-        index.SearchField("title"),
-        index.SearchField("description"),
-    ]
-
-    @cached_property
-    def breadcrumbs(self):
-        ancestors = self.get_ancestors().live().public().specific()
-        return ancestors[1:]  # removing root
 
     class Meta:
         abstract = True

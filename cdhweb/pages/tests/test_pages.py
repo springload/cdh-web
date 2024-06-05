@@ -2,7 +2,7 @@ from wagtail.models import Page
 from wagtail.test.utils import WagtailPageTestCase
 from wagtail.test.utils.form_data import nested_form_data, rich_text, streamfield
 
-from cdhweb.events.models import EventsLinkPage
+from cdhweb.events.models import EventsLinkPageArchived
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage, LinkPage
 
 
@@ -92,7 +92,7 @@ class TestContentPage(WagtailPageTestCase):
     def test_parent_pages(self):
         """allowed parents for contentpage should be home, landing, content"""
         self.assertAllowedParentPageTypes(
-            ContentPage, [HomePage, LandingPage, ContentPage, EventsLinkPage]
+            ContentPage, [HomePage, LandingPage, ContentPage, EventsLinkPageArchived]
         )
 
     def test_subpages(self):
