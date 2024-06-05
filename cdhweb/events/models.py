@@ -19,7 +19,8 @@ from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
-from cdhweb.pages.models import BasePage, ContentPage, LinkPage
+from cdhweb.pages.mixin import StandardHeroMixinNoImage
+from cdhweb.pages.models import BaseLandingPage, BasePage, ContentPage, LinkPage
 from cdhweb.people.models import Person
 
 
@@ -173,7 +174,7 @@ class Event(BasePage, ClusterableModel):
     # TODO attachments (#245)
 
     # can only be created underneath special link page
-    parent_page_types = ["events.EventsLinkPage"]
+    parent_page_types = ["events.EventsLinkPageArchived", "events.EventsLandingPage"]
     # no allowed subpages
     subpage_types = []
 
@@ -333,11 +334,24 @@ class Event(BasePage, ClusterableModel):
         return event
 
 
-class EventsLinkPage(LinkPage):
+class EventsLinkPageArchived(LinkPage):
     """Container page that defines where Event pages can be created."""
 
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []
+    # allow content pages to be added under events for special event series
+    subpage_types = [Event, LinkPage, ContentPage]
+
+
+class EventsLandingPage(Page, StandardHeroMixinNoImage):
+    """Container page that defines where Event pages can be created."""
+
+    content_panels = StandardHeroMixinNoImage.content_panels
+
+    search_fields = StandardHeroMixinNoImage.search_fields
+
+    settings_panels = Page.settings_panels
+
     # allow content pages to be added under events for special event series
     subpage_types = [Event, LinkPage, ContentPage]

@@ -7,7 +7,7 @@ from django.utils.html import strip_tags
 from django.utils.timezone import get_default_timezone
 from wagtail.test.utils import WagtailPageTestCase
 
-from cdhweb.events.models import Event, EventsLinkPage, Speaker
+from cdhweb.events.models import Event, EventsLinkPageArchived, Speaker
 from cdhweb.pages.models import ContentPage, LinkPage
 from cdhweb.people.models import Person
 
@@ -158,14 +158,16 @@ class TestEventPage(WagtailPageTestCase):
 
     def test_parent_pages(self):
         """event can only be created under projects link page"""
-        self.assertAllowedParentPageTypes(Event, [EventsLinkPage])
+        self.assertAllowedParentPageTypes(Event, [EventsLinkPageArchived])
 
 
-class TestEventsLinkpage(WagtailPageTestCase):
+class TestEventsLinkPageArchived(WagtailPageTestCase):
     def test_subpages(self):
         """events link page only allowed child is event page"""
-        self.assertAllowedSubpageTypes(EventsLinkPage, [Event, ContentPage, LinkPage])
+        self.assertAllowedSubpageTypes(
+            EventsLinkPageArchived, [Event, ContentPage, LinkPage]
+        )
 
     def test_parent_pages(self):
         """events link page should not be creatable in admin"""
-        self.assertAllowedParentPageTypes(EventsLinkPage, [])
+        self.assertAllowedParentPageTypes(EventsLinkPageArchived, [])
