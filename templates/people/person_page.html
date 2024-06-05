@@ -6,7 +6,7 @@
 {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
 {% include 'includes/person_hero.html' with page=page person=page.person %}
 
-<div class="page-layout page-layout--with-sidenav content-width grid-standard">
+<div class="content-width grid-standard page-layout page-layout--without-sidenav">
     <div class="page-layout__main-content">
         <div class="streamfields-wrapper">
             {% if page.body %}
@@ -14,12 +14,6 @@
             {% endif %}
         </div>
     </div>
-
-    {% if page.sidebar_navigation %}
-    <div class="page-layout__sidenav">
-        {% include 'includes/sidenav.html' %}
-    </div>
-    {% endif %}
 </div>
 
 {% endblock %}

@@ -7,10 +7,12 @@
     {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
     {% include 'includes/standard_hero.html' %}
 
-    {# fixed tile block to go here #}
-
-    <div class="page-layout page-layout--with-sidenav content-width grid-standard">
+    {# TODO projects landing probably won't use standard `page-layout` actually #}
+    <div class="content-width grid-standard page-layout page-layout--without-sidenav">
         <div class="page-layout__main-content">
+
+            {# fixed tile block to go here #}
+
             <div class="streamfields-wrapper">
                 {% if page.body %}
                     {% include_block page.body %}

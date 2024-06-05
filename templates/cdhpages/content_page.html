@@ -7,7 +7,13 @@
     {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
     {% include 'includes/standard_hero.html' %}
 
-    <div class="page-layout page-layout--with-sidenav content-width grid-standard">
+    <div class="content-width grid-standard page-layout
+        {% if page.sidebar_navigation %}
+            page-layout--with-sidenav
+        {% else %}
+            page-layout--without-sidenav
+        {% endif %} 
+    ">
         <div class="page-layout__main-content">
             {% if page.show_jumplinks %}
                 {% jumplinks page.body %}
@@ -21,9 +27,9 @@
         </div>
 
         {% if page.sidebar_navigation %}
-        <div class="page-layout__sidenav">
-            {% include 'includes/sidenav.html' %}
-        </div>
+            <div class="page-layout__sidenav">
+                {% include 'includes/sidenav.html' %}
+            </div>
         {% endif %}
     </div>
 
