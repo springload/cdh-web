@@ -234,7 +234,20 @@ class Event(BasePage, ClusterableModel):
         FieldPanel("body"),
         FieldPanel("attachments"),
     ]
-    promote_panels = Page.promote_panels + [FieldPanel("tags")]
+
+    promote_panels = (
+        [
+            MultiFieldPanel(
+                [
+                    FieldPanel("short_title"),
+                    FieldPanel("feed_image"),
+                ],
+                "Share Page",
+            ),
+        ]
+        + BasePage.promote_panels
+        + [FieldPanel("tags")]
+    )
 
     # custom manager/queryset logic
     objects = EventManager()
@@ -275,6 +288,10 @@ class Event(BasePage, ClusterableModel):
     def speaker_list(self):
         """Comma-separated list of speaker names."""
         return ", ".join(str(speaker.person) for speaker in self.speakers.all())
+
+    @property
+    def page_type(self):
+        return "event"
 
     def clean(self):
         """Validate that a type was specified for this event."""

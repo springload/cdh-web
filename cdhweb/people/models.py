@@ -493,6 +493,16 @@ class Profile(BasePage):
     parent_page_types = ["people.PeopleLandingPageArchived", "people.PeopleLandingPage"]
     subpage_types = []
 
+    promote_panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("short_title"),
+                FieldPanel("feed_image"),
+            ],
+            "Share Page",
+        ),
+    ] + BasePage.promote_panels
+
     # index fields
     search_fields = BasePage.search_fields + [index.SearchField("education")]
 
@@ -500,6 +510,10 @@ class Profile(BasePage):
     def breadcrumbs(self):
         ancestors = self.get_ancestors().live().public().specific()
         return ancestors[1:]  # removing root
+
+    @property
+    def page_type(self):
+        return "profile"
 
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""

@@ -1,0 +1,102 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+{% if tile.block.name == 'internal_page_tile' %}
+    {% with tile.value.page as internal_page %}
+
+        {% if internal_page.specific.page_type == 'content' %}    
+            <h2>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</h2>
+            <h2>{{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}</h2>
+            {% if internal_page.specific.feed_image %}
+                {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
+                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+            {% elif internal_page.specific.hero_image %}
+                {% image internal_page.specific.hero_image fill-600x348 format-webp as image %}
+                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+            {% else %}
+                {# placeholder image #}
+            {% endif %}
+            <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
+        {% endif %}
+
+        {% if internal_page.specific.page_type == 'profile' %} 
+            {% if internal_page.specific.feed_image %}
+                {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
+                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+            {% elif internal_page.specific.image %}
+                {% image internal_page.specific.image fill-600x348 format-webp as image %}
+                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+            {% else %}
+                {# placeholder image #}
+            {% endif %}
+            <div>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</div>
+            </div>{{ internal_page.specific.person.current_title }}</div>
+            <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
+        {% endif %}
+
+        {% if internal_page.specific.page_type == 'project' %} 
+            {% if internal_page.specific.feed_image %}
+                {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
+                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+            {% elif internal_page.specific.hero_image %}
+                {% image internal_page.specific.hero_image fill-600x348 format-webp as image %}
+                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+            {% else %}
+                {# placeholder image #}
+            {% endif %}
+            <div>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</div>
+            <div>{{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}</div>
+            {% if internal_page.specific.cdh_built %}<div class="cdh-built">Built by CDH</div>{% endif %}
+            <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
+        {% endif %}
+
+        {% if internal_page.specific.page_type == 'event' %} 
+            {% if internal_page.specific.feed_image %}
+                {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
+                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+            {% elif internal_page.specific.image %}
+                {% image internal_page.specific.image fill-600x348 format-webp as image %}
+                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+            {% else %}
+                {# placeholder image #}
+            {% endif %}
+            <div>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</div>
+            <div>{{ internal_page.specific.start_time }}</div>
+            <div>{{ internal_page.specific.end_time }}</div>
+            {% if internal_page.specific.speakers %}
+                {% for speaker in internal_page.specific.speakers.all %}
+                    <div>{{ speaker.person }}</div>
+                {% endfor %}
+            {% endif %}
+            {{ internal_page.specific.type }}
+            <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
+        {% endif %}
+
+        {% comment %}
+        {% if internal_page.specific.page_type == 'blog' %} 
+            {% if internal_page.specific.feed_image %}
+                {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
+                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+            {% elif internal_page.specific.image %}
+                {% image internal_page.specific.image fill-600x348 format-webp as image %}
+                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+            {% else %}
+                {# placeholder image #}
+            {% endif %}
+            <div>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</div>
+            <div>{{ internal_page.specific.first_published_at_date }}</div>
+            <div>{{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}</div>
+            {{ internal_page.specific.type }}
+            <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
+        {% endif %}
+        {% endcomment %}
+
+    {% endwith %}
+
+{% else %}
+    {{ tile.value.title }}
+    {% if tile.value.image %}
+        {% image tile.value.image fill-600x348 format-webp as image %}
+        <img src="{{ image.url }}" alt="{{ image.title }}"/>
+    {% endif %}
+    {{ tile.value.summary }}
+    <a href="{{ tile.value.external_link }}">{{ tile.value.external_link }}</a>
+{% endif %}

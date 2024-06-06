@@ -4,7 +4,7 @@ from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.models import TaggedItemBase
-from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
@@ -153,7 +153,20 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         ),
         FieldPanel("attachments"),
     ]
-    promote_panels = Page.promote_panels + [FieldPanel("tags")]
+    promote_panels = (
+        [
+            MultiFieldPanel(
+                [
+                    FieldPanel("short_title"),
+                    FieldPanel("short_description"),
+                    FieldPanel("feed_image"),
+                ],
+                "Share Page",
+            ),
+        ]
+        + BasePage.promote_panels
+        + [FieldPanel("tags")]
+    )
 
     # custom manager/queryset logic
     objects = ProjectManager()
@@ -181,6 +194,10 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
             return self.project_website
         elif website:
             return website.url
+
+    @property
+    def page_type(self):
+        return "project"
 
     def latest_grant(self):
         """Most recent :class:`Grant` for this Project"""

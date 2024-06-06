@@ -1,0 +1,36 @@
+<h2>Standard tile block</h2>
+{% load wagtailcore_tags %}
+
+{% if self.heading %}
+{% include 'springkit/blocks/heading/jumplinkable_heading.html' %}
+{% endif %}
+
+<div>
+{% if self.description %}
+  {{ self.description }}
+{% endif %}
+</div>
+<div>
+{% if self.see_more_link.page %}
+<a href="{{ BASE_URL }}{{ self.see_more_link.url }}" class="standard-tiles__link">
+    <span>{{ self.see_more_link.title }}</span>
+</a>
+{% endif %}
+</div>
+
+<ul class="standard-tiles__list">
+    {% for tile in tiles %}
+    {% include 'cdhpages/blocks/tile.html' %}
+    {% comment %}
+        {% if tile.link.link_type == 'page' %}
+            {% for block in tile.link.link %} 
+                {% with block.value as selected_page %}
+                    {% include 'core/blocks/tile.html' with cms_page=selected_page.specific tile=tile %}
+                {% endwith %}
+            {% endfor %}
+        {% else %}
+            {% include 'core/blocks/tile.html' with cms_page=tile %}
+        {% endif %}
+        {% endcomment %}
+    {% endfor %}
+</ul>
