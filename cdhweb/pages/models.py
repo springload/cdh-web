@@ -298,7 +298,6 @@ class BasePage(Page):
 
     @property
     def page_type(self):
-        print(type(self).__name__)
         return type(self).__name__
 
     class Meta:
