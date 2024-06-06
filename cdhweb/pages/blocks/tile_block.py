@@ -65,7 +65,6 @@ class StandardTileBlock(blocks.StructBlock):
 
         tiles = value.get("tiles")
         context["tiles"] = tiles
-        print(context)
         return context
 
     class Meta:

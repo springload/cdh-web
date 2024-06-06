@@ -2,7 +2,7 @@
 {% if tile.block.name == 'internal_page_tile' %}
     {% with tile.value.page as internal_page %}
 
-        {% if internal_page.specific.page_type == 'content' %}    
+        {% if internal_page.specific.page_type == 'ContentPage' %}    
             <h2>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</h2>
             <h2>{{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}</h2>
             {% if internal_page.specific.feed_image %}
@@ -17,7 +17,7 @@
             <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
         {% endif %}
 
-        {% if internal_page.specific.page_type == 'profile' %} 
+        {% if internal_page.specific.page_type == 'Profile' %} 
             {% if internal_page.specific.feed_image %}
                 {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
                 <img src="{{ image.url }}" alt="{{ image.title }}"/>
@@ -32,7 +32,7 @@
             <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
         {% endif %}
 
-        {% if internal_page.specific.page_type == 'project' %} 
+        {% if internal_page.specific.page_type == 'Project' %} 
             {% if internal_page.specific.feed_image %}
                 {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
                 <img src="{{ image.url }}" alt="{{ image.title }}"/>
@@ -48,7 +48,7 @@
             <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
         {% endif %}
 
-        {% if internal_page.specific.page_type == 'event' %} 
+        {% if internal_page.specific.page_type == 'Event' %} 
             {% if internal_page.specific.feed_image %}
                 {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
                 <img src="{{ image.url }}" alt="{{ image.title }}"/>
@@ -71,7 +71,7 @@
         {% endif %}
 
         {% comment %}
-        {% if internal_page.specific.page_type == 'blog' %} 
+        {% if internal_page.specific.page_type == 'BlogPost' %} 
             {% if internal_page.specific.feed_image %}
                 {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
                 <img src="{{ image.url }}" alt="{{ image.title }}"/>

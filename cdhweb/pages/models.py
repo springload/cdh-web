@@ -296,6 +296,11 @@ class BasePage(Page):
     settings_panels = Page.settings_panels
     promote_panels = Page.promote_panels
 
+    @property
+    def page_type(self):
+        print(type(self).__name__)
+        return type(self).__name__
+
     class Meta:
         abstract = True
 
@@ -325,10 +330,6 @@ class ContentPage(BasePage, StandardHeroMixin, JumplinksMixin, SidebarNavigation
     ] + BasePage.promote_panels
 
     subpage_types = ["ContentPage"]  # TODO
-
-    @property
-    def page_type(self):
-        return "content"
 
 
 class BaseLandingPage(BasePage, StandardHeroMixin):

@@ -195,10 +195,6 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         elif website:
             return website.url
 
-    @property
-    def page_type(self):
-        return "project"
-
     def latest_grant(self):
         """Most recent :class:`Grant` for this Project"""
         if self.grants.count():

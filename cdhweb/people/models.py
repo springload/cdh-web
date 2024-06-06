@@ -511,10 +511,6 @@ class Profile(BasePage):
         ancestors = self.get_ancestors().live().public().specific()
         return ancestors[1:]  # removing root
 
-    @property
-    def page_type(self):
-        return "profile"
-
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""
         context = super().get_context(request)

@@ -289,10 +289,6 @@ class Event(BasePage, ClusterableModel):
         """Comma-separated list of speaker names."""
         return ", ".join(str(speaker.person) for speaker in self.speakers.all())
 
-    @property
-    def page_type(self):
-        return "event"
-
     def clean(self):
         """Validate that a type was specified for this event."""
         # NOTE we can't cascade deletes to wagtail pages without corrupting the
