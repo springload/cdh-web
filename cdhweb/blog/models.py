@@ -122,10 +122,6 @@ class BlogPost(BasePage, ClusterableModel, PagePreviewDescriptionMixin):
         """Comma-separated list of author names."""
         return ", ".join(str(author.person) for author in self.authors.all())
 
-    @property
-    def page_type(self):
-        return "blog"
-
     def __str__(self):
         # string is used for logging actions on drafts,
         # needs to handle cases where first published date is not set
