@@ -45,6 +45,7 @@ from .blocks.note import Note
 from .blocks.pull_quote import PullQuote
 from .blocks.rich_text import RichTextBlock as RichText
 from .blocks.table_block import TableBlock
+from .blocks.tile_block import StandardTileBlock
 from .blocks.video_block import Video
 from .mixin import HomePageHeroMixin, SidebarNavigationMixin, StandardHeroMixin
 
@@ -85,6 +86,7 @@ STANDARD_BLOCKS = [
     ("table", TableBlock()),
     ("newsletter", NewsletterBlock()),
     ("heading", JumplinkableH2Block()),
+    ("tile_block", StandardTileBlock()),
 ]
 
 
@@ -259,12 +261,44 @@ class BasePage(Page):
 
     attachments = StreamField(AttachmentBlock, blank=True, use_json_field=True)
 
+    short_title = models.CharField(
+        verbose_name="Short title",
+        max_length=80,
+        blank=True,
+        default="",
+        help_text=("Displayed on tiles, breadcrumbs etc., not on page itself. "),
+    )
+
+    short_description = models.TextField(
+        verbose_name="Short description",
+        max_length=130,
+        null=False,
+        blank=True,
+        help_text=(
+            "A short description of the content for promotional or navigation "
+            "purposes. Displayed on tiles, not on page itself."
+        ),
+    )
+
+    feed_image = models.ForeignKey(
+        "wagtailimages.image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
     content_panels = Page.content_panels + [
         FieldPanel("body"),
     ]
 
     search_fields = Page.search_fields + [index.SearchField("body")]
     settings_panels = Page.settings_panels
+    promote_panels = Page.promote_panels
+
+    @property
+    def page_type(self):
+        return type(self).__name__
 
     class Meta:
         abstract = True
@@ -283,6 +317,16 @@ class ContentPage(BasePage, StandardHeroMixin, JumplinksMixin, SidebarNavigation
         + JumplinksMixin.settings_panels
         + SidebarNavigationMixin.settings_panels
     )
+    promote_panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("short_title"),
+                FieldPanel("short_description"),
+                FieldPanel("feed_image"),
+            ],
+            "Share Page",
+        ),
+    ] + BasePage.promote_panels
 
     subpage_types = ["ContentPage"]  # TODO
 

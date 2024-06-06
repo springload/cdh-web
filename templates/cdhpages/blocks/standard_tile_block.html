@@ -1,0 +1,25 @@
+<h2>Standard tile block</h2>
+{% load wagtailcore_tags %}
+
+{% if self.heading %}
+{% include 'springkit/blocks/heading/jumplinkable_heading.html' %}
+{% endif %}
+
+<div>
+{% if self.description %}
+  {{ self.description }}
+{% endif %}
+</div>
+<div>
+{% if self.see_more_link.page %}
+<a href="{{ self.see_more_link.url }}" class="standard-tiles__link">
+    <span>{{ self.see_more_link.title }}</span>
+</a>
+{% endif %}
+</div>
+
+<ul class="standard-tiles__list">
+    {% for tile in tiles %}
+    {% include 'cdhpages/blocks/tile.html' %}
+    {% endfor %}
+</ul>

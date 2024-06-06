@@ -234,7 +234,20 @@ class Event(BasePage, ClusterableModel):
         FieldPanel("body"),
         FieldPanel("attachments"),
     ]
-    promote_panels = Page.promote_panels + [FieldPanel("tags")]
+
+    promote_panels = (
+        [
+            MultiFieldPanel(
+                [
+                    FieldPanel("short_title"),
+                    FieldPanel("feed_image"),
+                ],
+                "Share Page",
+            ),
+        ]
+        + BasePage.promote_panels
+        + [FieldPanel("tags")]
+    )
 
     # custom manager/queryset logic
     objects = EventManager()
