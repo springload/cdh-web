@@ -21,7 +21,11 @@
                         {% if forloop.counter == 1 %}
                             Home
                         {% else %}
-                            {{ page.title }}
+                            {% if page.short_title %}
+                                {{ page.short_title }}
+                            {% else %}
+                                {{ page.title }}
+                            {% endif %}
                         {% endif %}
                     </a>
                     <span class="breadcrumbs__separator" aria-hidden="true"> / </span>
@@ -29,7 +33,11 @@
             {% endfor %}
             
             <li class="breadcrumbs__item breadcrumbs__item--current-page">
-                {{ current_page }}
+                {% if current_page.short_title %}
+                    {{ current_page.short_title }}
+                {% else %}
+                    {{ current_page.title }}
+                {% endif %}
             </li>
         </ol>
     </nav>

@@ -9,20 +9,20 @@ from cdhweb.pages.blocks.link import InternalPageLinkBlock
 class TileExternalLink(blocks.StructBlock):
     title = blocks.CharBlock(
         max_length=100,
-        help_text="Title for this tile. If cms page has been chosen for link then you can leave this field blank and the title will default to the short title from the CMS Page.",
+        help_text="Title for this tile.",
         label="Tile Title",
         required=True,
     )
 
     image = ImageChooserBlock(
-        help_text="If cms page has been chosen for link then you can leave this field blank and the image will default to the feed image from the CMS Page.",
+        help_text="Image for this tile.",
         label="Tile Image",
         required=False,
     )
 
     summary = blocks.CharBlock(
         max_length=200,
-        help_text="If cms page has been chosen for link then you can leave this field blank and the summary will default to the summary from the CMS Page.",
+        help_text="Summary for this tile.",
         label="Tile Summary",
         required=False,
     )
