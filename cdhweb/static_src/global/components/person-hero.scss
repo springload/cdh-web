@@ -55,7 +55,7 @@ Person hero. Similar to standard hero. Key differences:
 
     @include md {
       grid-template-areas:
-        'h h h h h . i i i i i i'
+        'h h h h h h i i i i i i'
         '. c c c c c i i i i i i';
     }
     @include lg {
