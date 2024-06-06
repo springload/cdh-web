@@ -33,13 +33,6 @@ class TileExternalLink(blocks.StructBlock):
 class TileInternalPage(blocks.StructBlock):
     page = blocks.PageChooserBlock(required=True)
 
-    # def get_context(self, value, parent_context=None):
-    #     context = super().get_context(value, parent_context=parent_context)
-    #     page_instance = value.get('page').specific
-    #     context['page'].page_type = type(page_instance).__name__
-    #     print(context)
-    #     return context
-
 
 class StandardTileBlock(blocks.StructBlock):
     """
