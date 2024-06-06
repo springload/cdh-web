@@ -21,16 +21,5 @@
 <ul class="standard-tiles__list">
     {% for tile in tiles %}
     {% include 'cdhpages/blocks/tile.html' %}
-    {% comment %}
-        {% if tile.link.link_type == 'page' %}
-            {% for block in tile.link.link %} 
-                {% with block.value as selected_page %}
-                    {% include 'core/blocks/tile.html' with cms_page=selected_page.specific tile=tile %}
-                {% endwith %}
-            {% endfor %}
-        {% else %}
-            {% include 'core/blocks/tile.html' with cms_page=tile %}
-        {% endif %}
-        {% endcomment %}
     {% endfor %}
 </ul>
