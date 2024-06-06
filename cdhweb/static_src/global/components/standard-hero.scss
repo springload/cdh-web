@@ -50,7 +50,7 @@
 
     @include md {
       grid-template-areas:
-        't t t t t . i i i i i i'
+        't t t t t t i i i i i i'
         '. d d d d d i i i i i i';
     }
     @include lg {
