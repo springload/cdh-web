@@ -50,7 +50,9 @@
     }
   }
 
-  // Outdented components:
+  // Outdented components.
+  // Tile block title is excluded because it needs to be wrapped in another
+  // container to allow the "see all" link to display in line with it.
   :where(
       .block-heading,
       .block-accordion_block > h2,

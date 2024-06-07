@@ -1,0 +1,122 @@
+// Wrapper for component title and 'see more' link, both of
+// which are optional. Only renders if content is present.
+.tiles__title-wrapper {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  justify-content: space-between;
+  margin-block-end: var(--space-h2-sm);
+
+  :where(h2) {
+    margin-bottom: 0;
+
+    @include md {
+      margin-inline-start: calc(-1 * var(--content-outdent));
+    }
+  }
+
+  :where(a) {
+    font-size: px2rem(14);
+  }
+}
+
+.tiles__intro {
+  margin-block-end: 40px;
+
+  @include sm {
+    margin-block-end: 64px;
+  }
+}
+
+.tiles__list {
+  display: grid;
+  row-gap: 40px;
+
+  @include sm {
+    grid-template-columns: repeat(auto-fit, minmax(px2rem(265), 1fr));
+    column-gap: 32px;
+  }
+}
+
+.tile {
+  display: grid;
+  position: relative; // for whole-tile click pseudo element
+  grid-template-rows: auto 1fr;
+}
+
+.tile__text {
+  grid-row: 2;
+  grid-column: 1;
+  border: 8px solid var(--color-brand-100);
+  border-top: none;
+  padding: 24px 12px;
+
+  // Default. Some text elements get different treatment.
+  font-size: px2rem(16);
+  line-height: 1.5;
+
+  :where(h2, h3) {
+    font-size: px2rem(24);
+    font-weight: 900;
+    margin-block-end: 12px;
+  }
+}
+
+.tile__event-date {
+  font-size: px2rem(16);
+}
+
+.tile__event-speakers {
+  font-size: px2rem(18);
+}
+
+.tile__link {
+  text-decoration-line: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+}
+
+// A single tag that displays in front of the image, overlapping the top of the tile.
+.tile__tag {
+  // same cell as img-wrapper
+  grid-row: 1;
+  grid-column: 1;
+
+  align-self: start;
+  justify-self: center;
+  transform: translateY(-50%);
+}
+
+.tile__img-wrapper {
+  --stripe-width: 3px;
+  --stripe-gap: 18px;
+
+  grid-row: 1;
+  grid-column: 1;
+  border: 1px solid var(--color-brand-100);
+
+  // Ratio matches the crop in template
+  aspect-ratio: 900 / 493;
+
+  // Fallback is a stripy bg, if no image set
+  background-size: auto auto;
+  background-color: var(--color-white);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent var(--stripe-gap),
+    var(--color-brand-100) var(--stripe-gap),
+    var(--color-brand-100) calc(var(--stripe-gap) + var(--stripe-width))
+  );
+
+  :where(img) {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+}
