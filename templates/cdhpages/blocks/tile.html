@@ -75,10 +75,12 @@
             {% if tile.block.name == 'internal_page_tile' %}
                 {% if internal_page.specific.feed_image %}
                     {% image internal_page.specific.feed_image fill-900x493 format-webp as image %}
-                    {# BED TODO alt text working? #}
                     <img src="{{ image.url }}" alt="{{ image.alt }}" />
                 {% elif internal_page.specific.hero_image %}
                     {% image internal_page.specific.hero_image fill-900x493 format-webp as image %}
+                    <img src="{{ image.url }}" alt="{{ image.alt }}" />
+                {% elif internal_page.specific.image %}
+                    {% image internal_page.specific.image fill-900x493 format-webp as image %}
                     <img src="{{ image.url }}" alt="{{ image.alt }}" />
                 {% endif %}
             {% else %}
