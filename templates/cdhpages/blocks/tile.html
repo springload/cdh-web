@@ -1,102 +1,103 @@
 {% load wagtailcore_tags wagtailimages_tags l10n %}
-{% if tile.block.name == 'internal_page_tile' %}
-    {% with tile.value.page as internal_page %}
+    
+{% with tile.value.page as internal_page %}
 
-        {% if internal_page.specific.page_type == 'ContentPage' %}    
-            <h2>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</h2>
-            <h2>{{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}</h2>
-            {% if internal_page.specific.feed_image %}
-                {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
-                <img src="{{ image.url }}" alt="{{ image.title }}"/>
-            {% elif internal_page.specific.hero_image %}
-                {% image internal_page.specific.hero_image fill-600x348 format-webp as image %}
-                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+    <div 
+        class="tile" 
+        href="{% if tile.block.name == 'internal_page_tile' %}{{ internal_page.url }}{% else %}{{ tile.value.external_link }}{% endif %}"
+    >
+        <div class="tile__text">
+            <a 
+                class="tile__link"
+                href="{% if tile.block.name == 'internal_page_tile' %}{{ internal_page.url }}{% else %}{{ tile.value.external_link }}{% endif %}"
+            >
+                <{% if has_component_title %}h3{% else %}h2{% endif %}>
+                    {% if tile.block.name == 'internal_page_tile' %}
+                        {{ internal_page.specific.short_title|default:internal_page.specific.title }}
+                    {% else %}
+                        {# External tile title #}
+                        {{ tile.value.title }}
+                    {% endif %}
+                </{% if has_component_title %}h3{% else %}h2{% endif %}>
+            </a>
+
+            {# Internal page deets #}
+            {% if tile.block.name == 'internal_page_tile' %}
+
+                {{ internal_page.specific.description|richtext }}
+
+                {# Extra event-specific deets #}
+                {% if internal_page.specific.page_type == 'Event' %}
+                    
+                    {# Complex logic to show different formats depending on if the event spans multiple days (or months!) #}
+                    {% with start_day=internal_page.specific.start_time|date:"j" %}
+                    {% with start_month=internal_page.specific.start_time|date:"M" %}
+                    {% with end_day=internal_page.specific.end_time|date:"j" %}
+                    {% with end_month=internal_page.specific.end_time|date:"M" %}
+                        <div class="tile__event-date">
+                            {% if start_day == end_day and start_month == end_month %}
+                                {{ start_day }} {{ start_month }} {{ internal_page.specific.start_time|time:"g:iA" }}–{{ internal_page.specific.end_time|time:"g:iA" }}
+                            {% elif start_month == end_month %}
+                                {{ start_day }}–{{ end_day }} {{ start_month }}
+                            {% else %}
+                                {{ start_day }} {{ start_month }}–{{ end_day }} {{ end_month }}
+                            {% endif %}
+                        </div>
+                    {% endwith %}
+                    {% endwith %}
+                    {% endwith %}
+                    {% endwith %}
+
+                    {% if internal_page.specific.speakers %}
+                        {% for speaker in internal_page.specific.speakers.all %}
+                        <div class="tile__event-speaker">{{ speaker.person }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+
             {% else %}
-                {# placeholder image #}
-            {% endif %}
-            <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
+                {# External tile summary #}
+                <p>{{ tile.value.summary }}</p>
+            {% endif  %}
+        </div>
+
+        {% if internal_page.specific.cdh_built or internal_page.specific.page_type == 'Event' %}
+            <div class="tile__tag">
+                {% if internal_page.specific.cdh_built %}
+                    <div class="tag tag--dark">Built by CDH</div>
+                {% elif internal_page.specific.page_type == 'Event' %}
+                    <div class="tag tag--dark">{{ internal_page.specific.type }}</div>
+                {% endif %}
+            </div>
         {% endif %}
 
-        {% if internal_page.specific.page_type == 'Profile' %} 
-            {% if internal_page.specific.feed_image %}
-                {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
-                <img src="{{ image.url }}" alt="{{ image.title }}"/>
-            {% elif internal_page.specific.image %}
-                {% image internal_page.specific.image fill-600x348 format-webp as image %}
-                <img src="{{ image.url }}" alt="{{ image.title }}"/>
+        <div class="tile__img-wrapper">
+            {% if tile.block.name == 'internal_page_tile' %}
+                {% if internal_page.specific.feed_image %}
+                    {% image internal_page.specific.feed_image fill-900x493 format-webp as image %}
+                    <img src="{{ image.url }}" alt="{{ image.alt }}" />
+                {% elif internal_page.specific.hero_image %}
+                    {% image internal_page.specific.hero_image fill-900x493 format-webp as image %}
+                    <img src="{{ image.url }}" alt="{{ image.alt }}" />
+                {% elif internal_page.specific.image %}
+                    {% image internal_page.specific.image fill-900x493 format-webp as image %}
+                    <img src="{{ image.url }}" alt="{{ image.alt }}" />
+                {% endif %}
             {% else %}
-                {# placeholder image #}
+                {% if tile.value.image %}
+                    {% image tile.value.image fill-900x493 format-webp as image %}
+                    <img src="{{ image.url }}" alt="{{ image.alt }}" />
+                {% endif %}
             {% endif %}
-            <div>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</div>
-            </div>{{ internal_page.specific.person.current_title }}</div>
-            <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
-        {% endif %}
+        </div>
+    </div>
 
-        {% if internal_page.specific.page_type == 'Project' %} 
-            {% if internal_page.specific.feed_image %}
-                {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
-                <img src="{{ image.url }}" alt="{{ image.title }}"/>
-            {% elif internal_page.specific.hero_image %}
-                {% image internal_page.specific.hero_image fill-600x348 format-webp as image %}
-                <img src="{{ image.url }}" alt="{{ image.title }}"/>
-            {% else %}
-                {# placeholder image #}
-            {% endif %}
-            <div>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</div>
-            <div>{{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}</div>
-            {% if internal_page.specific.cdh_built %}<div class="cdh-built">Built by CDH</div>{% endif %}
-            <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
-        {% endif %}
+{% endwith %}
 
-        {% if internal_page.specific.page_type == 'Event' %} 
-            {% if internal_page.specific.feed_image %}
-                {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
-                <img src="{{ image.url }}" alt="{{ image.title }}"/>
-            {% elif internal_page.specific.image %}
-                {% image internal_page.specific.image fill-600x348 format-webp as image %}
-                <img src="{{ image.url }}" alt="{{ image.title }}"/>
-            {% else %}
-                {# placeholder image #}
-            {% endif %}
-            <div>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</div>
-            <div>{{ internal_page.specific.start_time }}</div>
-            <div>{{ internal_page.specific.end_time }}</div>
-            {% if internal_page.specific.speakers %}
-                {% for speaker in internal_page.specific.speakers.all %}
-                    <div>{{ speaker.person }}</div>
-                {% endfor %}
-            {% endif %}
-            {{ internal_page.specific.type }}
-            <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
-        {% endif %}
-
-        {% comment %}
-        {% if internal_page.specific.page_type == 'BlogPost' %} 
-            {% if internal_page.specific.feed_image %}
-                {% image internal_page.specific.feed_image fill-600x348 format-webp as image %}
-                <img src="{{ image.url }}" alt="{{ image.title }}"/>
-            {% elif internal_page.specific.image %}
-                {% image internal_page.specific.image fill-600x348 format-webp as image %}
-                <img src="{{ image.url }}" alt="{{ image.title }}"/>
-            {% else %}
-                {# placeholder image #}
-            {% endif %}
-            <div>{{ internal_page.specific.short_title|default:internal_page.specific.title }}</div>
-            <div>{{ internal_page.specific.first_published_at_date }}</div>
-            <div>{{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}</div>
-            {{ internal_page.specific.type }}
-            <a href="{{ internal_page.url }}">{{ internal_page.url }}</a>
-        {% endif %}
-        {% endcomment %}
-
-    {% endwith %}
-
-{% else %}
-    {{ tile.value.title }}
-    {% if tile.value.image %}
-        {% image tile.value.image fill-600x348 format-webp as image %}
-        <img src="{{ image.url }}" alt="{{ image.title }}"/>
+{% comment %}
+    {# TODO, do something with this maybe? Once blog/news exists #}
+    {% if internal_page.specific.page_type == 'BlogPost' %} 
+        <div>{{ internal_page.specific.first_published_at_date }}</div>
+        {{ internal_page.specific.type }}
     {% endif %}
-    {{ tile.value.summary }}
-    <a href="{{ tile.value.external_link }}">{{ tile.value.external_link }}</a>
-{% endif %}
+{% endcomment %}
