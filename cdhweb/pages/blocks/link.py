@@ -17,13 +17,14 @@ class InternalPageLinkBlock(blocks.StructBlock):
     """
 
     page = blocks.PageChooserBlock(
-        help_text="Choose a page to link to", label="Wagtail Page"
+        help_text="Choose a page to link to", label="Wagtail Page", required=False
     )
 
     title = blocks.CharBlock(
         max_length=80,
         help_text="Set title for this link",
         label="Link title",
+        required=False,
     )
 
     class Meta:
