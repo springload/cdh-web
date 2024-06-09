@@ -29,7 +29,7 @@
                 {# Extra event-specific deets #}
                 {% if internal_page.specific.page_type == 'Event' %}
                     
-                    {# Complex logic to show differenty formats depending on if the event spans multiple days (or months!) #}
+                    {# Complex logic to show different formats depending on if the event spans multiple days (or months!) #}
                     {% with start_day=internal_page.specific.start_time|date:"j" %}
                     {% with start_month=internal_page.specific.start_time|date:"M" %}
                     {% with end_day=internal_page.specific.end_time|date:"j" %}
