@@ -1,18 +1,16 @@
 {% load wagtailcore_tags wagtailimages_tags l10n %}
-    
-{% with tile.value.page as internal_page %}
 
     <div 
         class="tile" 
-        href="{% if tile.block.name == 'internal_page_tile' %}{{ internal_page.url }}{% else %}{{ tile.value.external_link }}{% endif %}"
+        href="{% if tile_type == 'internal_page_tile' %}{{ internal_page.url }}{% else %}{{ tile.value.external_link }}{% endif %}"
     >
         <div class="tile__text">
             <a 
                 class="tile__link"
-                href="{% if tile.block.name == 'internal_page_tile' %}{{ internal_page.url }}{% else %}{{ tile.value.external_link }}{% endif %}"
+                href="{% if tile_type == 'internal_page_tile' %}{{ internal_page.url }}{% else %}{{ tile.value.external_link }}{% endif %}"
             >
                 <{% if has_component_title %}h3{% else %}h2{% endif %}>
-                    {% if tile.block.name == 'internal_page_tile' %}
+                    {% if tile_type == 'internal_page_tile' %}
                         {{ internal_page.specific.short_title|default:internal_page.specific.title }}
                     {% else %}
                         {# External tile title #}
@@ -22,7 +20,7 @@
             </a>
 
             {# Internal page deets #}
-            {% if tile.block.name == 'internal_page_tile' %}
+            {% if tile_type == 'internal_page_tile' %}
 
                 {{ internal_page.specific.description|richtext }}
 
@@ -72,7 +70,7 @@
         {% endif %}
 
         <div class="tile__img-wrapper">
-            {% if tile.block.name == 'internal_page_tile' %}
+            {% if tile_type == 'internal_page_tile' %}
                 {% if internal_page.specific.feed_image %}
                     {% image internal_page.specific.feed_image fill-900x493 format-webp as image %}
                     <img src="{{ image.url }}" alt="{{ image.alt }}" />
@@ -91,8 +89,6 @@
             {% endif %}
         </div>
     </div>
-
-{% endwith %}
 
 {% comment %}
     {# TODO, do something with this maybe? Once blog/news exists #}
