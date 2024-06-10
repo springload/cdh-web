@@ -529,8 +529,6 @@ class Profile(BasePage):
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""
         context = super().get_context(request)
-        print("*******")
-        print(self.person.events.all())
         # get 3 most recent published posts with this person as author;
         # get 3 most recent events with this person as a speaker;
         # get 3 most recent projects with this person as a member;
