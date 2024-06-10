@@ -10,7 +10,7 @@
 
 <div data-component="accordion" class="sk-accordion">
   {% for item in self.accordion_items %}
-    {% if self.heading %}
+    {% if self.heading.heading %}
       <h3 class="sr-only">{{ item.heading }}</h3>
     {% else %}
       <h2 class="sr-only">{{ item.heading }}</h2>
