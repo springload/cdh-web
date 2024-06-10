@@ -3,7 +3,7 @@
 {% if self.heading or self.see_more_link.page %}
   <div class="tiles__title-wrapper">
     {% if self.heading %}
-      {% include 'springkit/blocks/heading/jumplinkable_heading.html' %}
+        {% include_block self.heading %}
     {% endif %}
 
     {% if self.see_more_link.page %}

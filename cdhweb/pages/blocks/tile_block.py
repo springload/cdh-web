@@ -1,5 +1,6 @@
 from django.db import models
-from springkit.blocks import JumplinkableH2Block
+from springkit.blocks.headings import HeadingBlock
+from springkit.blocks.jumplinks import JumplinkMixin
 from wagtail import blocks
 from wagtail.images.blocks import ImageChooserBlock
 
@@ -34,14 +35,12 @@ class TileInternalPage(blocks.StructBlock):
     page = blocks.PageChooserBlock(required=True)
 
 
-class StandardTileBlock(blocks.StructBlock):
+class StandardTileBlock(JumplinkMixin):
     """
     CMS controlled Standard Tile block
     """
 
-    heading = JumplinkableH2Block(
-        required=False, help_text="Heading for this tile block"
-    )
+    heading = HeadingBlock(required=False, help_text="Heading for this tile block")
 
     description = blocks.CharBlock(
         help_text="Description for this tile block",
