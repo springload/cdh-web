@@ -3,7 +3,7 @@
 {% if self.heading or self.see_more_link.page %}
   <div class="tiles__title-wrapper">
     {% if self.heading %}
-      {% include 'springkit/blocks/heading/jumplinkable_heading.html' %}
+        {% include_block self.heading %}
     {% endif %}
 
     {% if self.see_more_link.page %}
@@ -21,8 +21,7 @@
 {% endif %}
 
 <div class="tiles__list">
-    {% for tile in tiles %}
-      {# BED TODO fix `if self.heading`, which seems to be broken site wide (or at least here and in the accordion block) #}
-      {% include 'cdhpages/blocks/tile.html' with has_component_title=self.heading %}
+    {% for tile in tiles %}  
+      {% include 'cdhpages/blocks/tile.html' with has_component_title=self.heading.heading %}
     {% endfor %}
 </div>

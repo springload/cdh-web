@@ -1,7 +1,7 @@
 {% load wagtailcore_tags %}
 
 {% if self.heading %}
-{% include 'springkit/blocks/heading/jumplinkable_heading.html' %}
+  {% include_block self.heading %}
 {% endif %}
 
 {% if self.description %}

@@ -1,10 +1,11 @@
 from collections.abc import Iterable
 
-from springkit.blocks import JumplinkableH2Block
+from springkit.blocks.headings import HeadingBlock
+from springkit.blocks.jumplinks import JumplinkMixin
 from wagtail import blocks
 
 
-class AccordionBlock(blocks.StructBlock):
+class AccordionBlock(JumplinkMixin):
     """
     A list of accordion items
 
@@ -16,7 +17,7 @@ class AccordionBlock(blocks.StructBlock):
         icon = "cogs"
         group = "Body copy components"
 
-    heading = JumplinkableH2Block(required=False)
+    heading = HeadingBlock(required=False)
 
     description = blocks.RichTextBlock(
         features=["bold", "italic", "link", "document-link"], required=False
@@ -44,7 +45,7 @@ class AccordionBlock(blocks.StructBlock):
                             "h3",
                             "h4",
                         ],
-                        help_text="Only use H3 if you have not set an overall heading for the accordion block."
+                        help_text="Only use H3 if you have not set an overall heading for the accordion block.",
                     ),
                 ),
             ]

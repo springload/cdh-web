@@ -1,9 +1,10 @@
-from springkit.blocks import JumplinkableH2Block
+from springkit.blocks.headings import HeadingBlock
+from springkit.blocks.jumplinks import JumplinkMixin
 from wagtail.blocks import CharBlock, RichTextBlock
 from wagtail.embeds.blocks import EmbedBlock
 
 
-class HostedVideo(JumplinkableH2Block):
+class HostedVideo(JumplinkMixin):
     class Meta:
         template = "cdhpages/blocks/hosted_video_block.html"
         label = "CDH Hosted Video"
@@ -11,6 +12,8 @@ class HostedVideo(JumplinkableH2Block):
         group = "Images and media"
 
     EMBED_HELP = """This should be used for videos from Princeton's Media Central. Copy the "oEmbed URL" from the "Share" menu"""
+
+    heading = HeadingBlock(required=False)
 
     video_url = EmbedBlock(help_text=EMBED_HELP)
 
