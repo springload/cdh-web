@@ -21,8 +21,7 @@
 {% endif %}
 
 <div class="tiles__list">
-    {% for tile in tiles %}
-      {# BED TODO fix `if self.heading`, which seems to be broken site wide (or at least here and in the accordion block) #}
-      {% include 'cdhpages/blocks/tile.html' with has_component_title=self.heading %}
+    {% for tile in tiles %}  
+      {% include 'cdhpages/blocks/tile.html' with has_component_title=self.heading.heading %}
     {% endfor %}
 </div>
