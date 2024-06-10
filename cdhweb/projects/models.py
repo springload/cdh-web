@@ -73,6 +73,13 @@ class ProjectQuerySet(PageQuerySet):
             "-last_start", "title"
         )
 
+    def recent(self):
+        """Order projects by date published."""
+        # NOTE we can't use ordering on the model to do this by default, so we
+        # have to make sure to call this method instead. See:
+        # https://docs.wagtail.io/en/stable/topics/pages.html#page-queryset-ordering
+        return self.order_by("-first_published_at")
+
 
 # custom manager for wagtail pages, see:
 # https://docs.wagtail.io/en/stable/topics/pages.html#custom-page-managers
@@ -110,7 +117,9 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         help_text="Project is a long-term collaborative group associated with the CDH.",
     )
 
-    members = models.ManyToManyField(Person, through="Membership")
+    members = models.ManyToManyField(
+        Person, through="Membership", related_name="members"
+    )
     tags = ClusterTaggableManager(through=ProjectTag, blank=True)
     # TODO attachments (#245)
 

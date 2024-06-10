@@ -8,9 +8,11 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
+from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
+from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
 from wagtail.fields import RichTextField
 from wagtail.models import Page
@@ -257,6 +259,14 @@ class PersonQuerySet(models.QuerySet):
         ).order_by("min_title", "min_start", "last_name")
 
 
+class PersonTag(TaggedItemBase):
+    """Tags for Profile Pages"""
+
+    content_object = ParentalKey(
+        "people.Profile", on_delete=models.CASCADE, related_name="tagged_items"
+    )
+
+
 class Person(ClusterableModel):
     # in cdhweb 2.x this was a proxy model for User;
     # in 3.x it is a distinct model with 1-1 optional relationship to User
@@ -481,6 +491,7 @@ class Profile(BasePage):
         related_name="+",
     )  # no reverse relationship
     education = RichTextField(features=PARAGRAPH_FEATURES, blank=True)
+    tags = ClusterTaggableManager(through=PersonTag, blank=True)
 
     # admin edit configuration
     content_panels = Page.content_panels + [
@@ -493,15 +504,19 @@ class Profile(BasePage):
     parent_page_types = ["people.PeopleLandingPageArchived", "people.PeopleLandingPage"]
     subpage_types = []
 
-    promote_panels = [
-        MultiFieldPanel(
-            [
-                FieldPanel("short_title"),
-                FieldPanel("feed_image"),
-            ],
-            "Share Page",
-        ),
-    ] + BasePage.promote_panels
+    promote_panels = (
+        [
+            MultiFieldPanel(
+                [
+                    FieldPanel("short_title"),
+                    FieldPanel("feed_image"),
+                ],
+                "Share Page",
+            ),
+        ]
+        + BasePage.promote_panels
+        + [FieldPanel("tags")]
+    )
 
     # index fields
     search_fields = BasePage.search_fields + [index.SearchField("education")]
@@ -514,12 +529,18 @@ class Profile(BasePage):
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""
         context = super().get_context(request)
+        print("*******")
+        print(self.person.events.all())
         # get 3 most recent published posts with this person as author;
+        # get 3 most recent events with this person as a speaker;
+        # get 3 most recent projects with this person as a member;
         # add to context and set open graph metadata
         context.update(
             {
                 "opengraph_type": "profile",
                 "recent_posts": self.person.posts.live().recent()[:3],
+                "recent_events": self.person.events.live().recent()[:3],
+                "recent_projects": self.person.members.live().recent()[:3],
             }
         )
         return context

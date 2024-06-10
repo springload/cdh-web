@@ -22,6 +22,6 @@
 
 <div class="tiles__list">
     {% for tile in tiles %}  
-      {% include 'cdhpages/blocks/tile.html' with has_component_title=self.heading.heading %}
+      {% include 'cdhpages/blocks/tile.html' with internal_page=tile.value.page tile_type=tile.block.name has_component_title=self.heading.heading %}
     {% endfor %}
 </div>

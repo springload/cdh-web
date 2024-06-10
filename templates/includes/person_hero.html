@@ -6,10 +6,13 @@
         <h1>{{ self.title}}</h1>
         <p class="person-hero__job">{{ person.current_title }}</p>
         <div class="person-hero__education">{{ page.education|richtext }}</div>
+        {% if self.tags %}
         <div class="tag-list">
-            <div class="tag">TODO tag 1</div>
-            <div class="tag">TODO tag 2 etc</div>
+            {% for tag in self.tags.all %}
+                <div class="tag">{{ tag }}</div>    
+            {% endfor %}
         </div>
+        {% endif %}
     </div>
     <div class="person-hero__contact">
         <ul class="person-hero__contact-links">
