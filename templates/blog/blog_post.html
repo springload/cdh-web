@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block main %}
+    {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
+    {% include 'includes/blog_hero.html' %}
+
+    <div class="content-width grid-standard page-layout page-layout--without-sidenav">
+        <div class="page-layout__main-content">
+            <div class="streamfields-wrapper">
+                {% if page.body %}
+                    {% include_block page.body %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -89,30 +89,10 @@ class BlogDetailView(BlogPostMixinView, DetailView, LastModifiedMixin):
 
     context_object_name = "page"
 
-    def get_context_data(self, *args, **kwargs):
-        """Add next/previous post to context."""
-        context = super(BlogDetailView, self).get_context_data(*args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
 
-        # NOTE mezzanine Displayable previously handled this; we need to do it
-        # manually for Wagtail. See:
-        # http://mezzanine.jupo.org/docs/_modules/mezzanine/core/models.html#Displayable.get_next_by_publish_date
-        next = self.model.objects.filter(
-            live=True, first_published_at__gt=self.object.first_published_at
-        ).order_by("first_published_at")
-        if next.exists():
-            next = next[0]
-        else:
-            next = None
-        prev = self.model.objects.filter(
-            live=True, first_published_at__lt=self.object.first_published_at
-        ).order_by("-first_published_at")
-        if prev.exists():
-            prev = prev[0]
-        else:
-            prev = None
-
-        context.update({"opengraph_type": "article", "next": next, "previous": prev})
-        return context
+        return self.object.serve(request, *args, **kwargs)
 
 
 class RssBlogPostFeed(Feed):

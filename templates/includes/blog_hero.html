@@ -1,0 +1,77 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+
+<div class="blog-hero content-width grid-standard">
+    
+    <div class="blog-hero__text">
+        <h1>{{ page.title }}</h1>
+    
+        <p class="blog-hero__date">
+            {{ page.article_date|date:"j F Y" }}
+        </p>
+
+        {% if page.authors %}
+            <div>
+                <h2 class="sr-only"></h2>
+                <ul>
+                    {% for author in page.authors.all %}
+                        <li>{{ author.person }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if page.tags %}
+            <div class="tag-list">
+                {% for tag in page.tags.all %}
+                    <div class="tag">{{ tag }}</div>    
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="blog-hero__description">
+            {% if page.description %}
+                {{ page.description | richtext }}
+            {% endif %}
+    </div>
+
+    {% if page.image %}
+        <figure class="event-hero__img">
+            {% comment %}    
+                All are cropped to a 16:9 ratio. This differs from design, as discussed.
+                If changing this by image rendition, update aspect-ratio in the CSS instead
+                of via inline style.
+            {% endcomment %}
+
+            {% image page.image fill-1000x563 format-webp as img_base %}
+            {% image page.image fill-1250x703 format-webp as img_sm %}
+            {% image page.image fill-1650x928 format-webp as img_xl %}
+
+            <picture>
+                <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
+                <source srcset="{{ img_xl.url }}" media="(min-width: 1200px)">
+                <img
+                    src="{{ img_base.url }}" 
+                    alt="{{ page.alt_text|default:img_base.alt }}"
+                    style="aspect-ratio: {{ img_base.width|unlocalize }} / {{ img_base.height|unlocalize }}"
+                />
+            </picture>
+            
+            {% if page.caption or page.credit %}
+                <figcaption class="sk-image__text-content">
+                    {% if page.credit %}
+                        <div class="sk-image__credit">
+                            {{ page.credit|richtext }}
+                        </div>
+                    {% endif %}
+                    {% if page.caption %}
+                        <div class="sk-image__caption">
+                            {{ page.caption|richtext }}
+                        </div>
+                    {% endif %}
+                </figcaption>
+            {% endif %}
+        </figure>
+            
+    {% endif %}
+    
+</div>
