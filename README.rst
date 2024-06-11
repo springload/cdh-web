@@ -97,7 +97,7 @@ First, make sure you're using the correct node version:
 
   nvm use
 
-If it tells you to install a new version, do so. Then run `nvm use` again.
+If it tells you to install a new version, do so. Then run ``nvm use`` again.
 
 Install dependencies:
 
