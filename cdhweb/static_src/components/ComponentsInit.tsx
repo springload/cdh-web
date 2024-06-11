@@ -6,25 +6,14 @@ import MainNavDesktop from './MainNavDesktop/MainNavDesktop.mount';
  *
  * There are two options for types of components: async or sync.
  *
- *  - Async means it's a lazy-loaded component (loaded on demand).
- *    The import would look like,
- *
- *      import('./MyComponent/MyComponent');
- *
- *    That component should have a default export to mount the
- *    component.
- *
+ *  - `Async` means it's a lazy-loaded component (loaded on demand).
  *    If the component isn't on every page, then it should
  *    probably be Async so that users can avoid downloading it
  *    until necessary. See also
  *    https://webpack.js.org/guides/code-splitting/
  *
- *  - Sync means it's NOT lazy loaded and it's always included
- *    in the main JavaScript bundle. You would import the file
- *    using a syntax like
- *
- *      import { MyComponent } from './MyComponent/MyComponent';
- *
+ *  - `Sync` means it's NOT lazy loaded and it's always included
+ *    in the main JavaScript bundle.
  *    If the component loads on every page, especially if it's near
  *    the top (like a primary nav), then it should probably be Sync.
  *    Sync components are included in the top-level JS bundle.
