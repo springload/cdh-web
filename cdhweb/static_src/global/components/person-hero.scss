@@ -31,19 +31,21 @@ Person hero. Similar to standard hero. Key differences:
   }
   @include lg {
     --title-top-space: 80px;
-
     grid-template-areas:
       '. h h h h h h h h h h .'
-      '. .  c c c c c c c c .';
+      '. . c c c c c c c c c .';
   }
   @include xl {
     --title-top-space: 104px;
+    grid-template-areas:
+      '. h h h h h h h h . . .'
+      '. . c c c c c c c . . .';
   }
   @include xxl {
     --title-top-space: 160px;
     grid-template-areas:
-      '. h h h h h h h h h . .'
-      '. . c c c c c c c c . .';
+      '. h h h h h h h h . . .'
+      '. . c c c c c c c . . .';
   }
 
   // Different layout if the hero has an image:
