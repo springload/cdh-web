@@ -315,6 +315,16 @@ WAGTAILEMBEDS_FINDERS = [
     {"class": "cdhweb.pages.embed_finders.GlitchHubEmbedFinder"},
 ]
 
+WAGTAILIMAGES_WEBP_QUALITY = 80
+
+WAGTAILIMAGES_FORMAT_CONVERSIONS = {
+    "avif": "avif",
+    "gif": "gif",
+    "bmp": "webp",
+    "jpeg": "webp",
+    "png": "webp",
+    "webp": "webp",
+}
 
 # List of allowed tags in the rich text editor (tinyMCE). We need to add the
 # HTML5 <figcaption>, as it's not included by default.

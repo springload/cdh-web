@@ -1,20 +1,20 @@
 {% load wagtailcore_tags wagtailimages_tags l10n %}
 
 {% if self.size == 'small' %}
-    {% image self.image width-500 format-webp as img_base %}
-    {% image self.image width-700 format-webp as img_sm %}
-    {% image self.image width-750 format-webp as img_md %}
-    {% image self.image width-1000 format-webp as img_xl %}
+    {% image self.image width-500 as img_base %}
+    {% image self.image width-700 as img_sm %}
+    {% image self.image width-750 as img_md %}
+    {% image self.image width-1000 as img_xl %}
 {% elif self.size == 'medium' %}
-    {% image self.image width-750 format-webp as img_base %}
-    {% image self.image width-1200 format-webp as img_md %}
-    {% image self.image width-1700 format-webp as img_xxl %}
+    {% image self.image width-750 as img_base %}
+    {% image self.image width-1200 as img_md %}
+    {% image self.image width-1700 as img_xxl %}
 {% else %}
-    {% image self.image width-1000 format-webp as img_base %}
-    {% image self.image width-1500 format-webp as img_sm %}
-    {% image self.image width-1700 format-webp as img_md %}
-    {% image self.image width-2000 format-webp as img_xl %}
-    {% image self.image width-2300 format-webp as img_xxxl %}
+    {% image self.image width-1000 as img_base %}
+    {% image self.image width-1500 as img_sm %}
+    {% image self.image width-1700 as img_md %}
+    {% image self.image width-2000 as img_xl %}
+    {% image self.image width-2300 as img_xxxl %}
 {% endif %}
 
 <figure class="sk-image sk-image--{{ self.size }}">    

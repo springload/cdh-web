@@ -72,18 +72,18 @@
         <div class="tile__img-wrapper">
             {% if tile_type == 'internal_page_tile' %}
                 {% if internal_page.specific.feed_image %}
-                    {% image internal_page.specific.feed_image fill-900x493 format-webp as image %}
+                    {% image internal_page.specific.feed_image fill-900x493 as image %}
                     <img src="{{ image.url }}" alt="{{ image.alt }}" />
                 {% elif internal_page.specific.hero_image %}
-                    {% image internal_page.specific.hero_image fill-900x493 format-webp as image %}
+                    {% image internal_page.specific.hero_image fill-900x493 as image %}
                     <img src="{{ image.url }}" alt="{{ image.alt }}" />
                 {% elif internal_page.specific.image %}
-                    {% image internal_page.specific.image fill-900x493 format-webp as image %}
+                    {% image internal_page.specific.image fill-900x493 as image %}
                     <img src="{{ image.url }}" alt="{{ image.alt }}" />
                 {% endif %}
             {% else %}
                 {% if tile.value.image %}
-                    {% image tile.value.image fill-900x493 format-webp as image %}
+                    {% image tile.value.image fill-900x493 as image %}
                     <img src="{{ image.url }}" alt="{{ image.alt }}" />
                 {% endif %}
             {% endif %}
