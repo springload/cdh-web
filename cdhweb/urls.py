@@ -78,8 +78,6 @@ urlpatterns = [
     # wagtail paths
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-    # let wagtail handle everything else
-    path("", include(wagtail_urls)),
 ]
 
 if settings.DEBUG:
@@ -90,6 +88,13 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += staticfiles_urlpatterns()
 
+    # Serve 404 and 500 page templates(seeing as errors are masked with debug)
+    urlpatterns.extend(
+        [
+            path("404/", TemplateView.as_view(template_name="404.html")),
+            path("500/", TemplateView.as_view(template_name="500.html")),
+        ]
+    )
     try:
         import debug_toolbar
 
@@ -97,3 +102,8 @@ if settings.DEBUG:
         urlpatterns.insert(0, path("__debug__/", include(debug_toolbar.urls)))
     except ImportError:
         pass
+
+urlpatterns.append(
+    # let wagtail handle everything else
+    path("", include(wagtail_urls)),
+)
