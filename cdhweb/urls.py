@@ -60,11 +60,6 @@ urlpatterns = [
     ),
     # CAS login urls
     path("accounts/", include("pucas.cas_urls")),
-    # - all blog urls are now under updates/
-    # re_path(
-    #     r"^blog(?P<blog_url>.*)$",
-    #     RedirectView.as_view(url="/updates%(blog_url)s", permanent=True),
-    # ),
     # sitemaps
     path(
         "sitemap.xml", sitemap_views.index, {"sitemaps": sitemaps}, name="sitemap-index"
