@@ -88,6 +88,25 @@ Docker (Springload)
 - Copy cdhweb/settings/local_settings.py.docker-sample to cdhweb/settings/local_settings.py
 - Run `docker-compose up`
 
+Frontend (Springload)
+~~~~~~~~~~~~~~~~~~~~~
+
+The frontend uses webpack and npm.
+
+First, make sure you're using the correct node version:
+
+  nvm use
+
+If it tells you to install a new version, do so. Then run `nvm use` again.
+
+Install dependencies:
+
+  npm install
+
+Then to run the site in development mode locally:
+
+  npm start
+
 Setup pre-commit hooks
 ~~~~~~~~~~~~~~~~~~~~~~
 
