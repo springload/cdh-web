@@ -70,11 +70,10 @@ ENV DJANGO_SETTINGS_MODULE cdhweb.settings
 
 ADD --chmod=755 https://github.com/mrako/wait-for/releases/download/v1.0.0/wait-for /usr/local/bin/
 
-# TODO: Frontend: Remove npm install once deps are built without compressor
 RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt \
     apt-get update -y && apt-get install --no-install-recommends -y \
-    netcat npm
+    netcat
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip3 install -r /app/requirements/dev.txt \

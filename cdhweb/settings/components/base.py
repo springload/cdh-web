@@ -1,6 +1,7 @@
 """
 Django settings for cdhweb.
 """
+
 from pathlib import Path
 
 #########
@@ -33,7 +34,7 @@ STATIC_ROOT = BASE_DIR / STATIC_URL.strip("/")
 # Additional locations of static files
 # Always use forward slashes, even on Windows.
 # Don't forget to use absolute paths, not relative paths.
-STATICFILES_DIRS = ()
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -115,27 +116,9 @@ DATABASES = {
 # Increase file upload size to roughly 50 MB
 FILEBROWSER_MAX_UPLOAD_SIZE = 50000000
 
-# Use local node-sass installed via npm
-COMPRESS_PRECOMPILERS = (("text/x-scss", "node_modules/.bin/sass {infile} {outfile}"),)
-
-# Use local postcss-cli and autoprefixer installed via npm
-COMPRESS_AUTOPREFIXER_BINARY = "node_modules/postcss-cli/bin/postcss"
-
-COMPRESS_CSS_FILTERS = (
-    "compressor.filters.css_default.CssAbsoluteFilter",
-    # NOTE: requires COMPRESS_ENABLED = True when DEBUG is True
-    "django_compressor_autoprefixer.AutoprefixerFilter",
-)
-
-# use content hashing to ensure same url on both servers
-COMPRESS_CSS_HASHING_METHOD = "content"
-
-
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    # other finders..
-    "compressor.finders.CompressorFinder",
 )
 
 # Package/module name to import the root urlpatterns from for the project.
@@ -207,7 +190,6 @@ INSTALLED_APPS = [
     "modelcluster",
     "taggit",
     "adminsortable2",
-    "compressor",
     "fullurl",
     "django_cas_ng",
     "wagtailcodeblock",
