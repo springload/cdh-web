@@ -132,8 +132,8 @@ def _get_secondary_nav_cta_button():
     secondary_nav = SecondaryNavigation.objects.prefetch_related("cta_button")
 
     if secondary_nav.exists():
-        cta_button = secondary_nav.first().cta_button.all()
-    return cta_button
+        return secondary_nav.first().cta_button.all()
+    return []
 
 
 @register.simple_tag()
