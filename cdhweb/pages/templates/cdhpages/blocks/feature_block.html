@@ -9,9 +9,9 @@
       {% endif %}
     </div>
 
-    {% image self.image width-750 format-webp as img_base %}
-    {% image self.image width-1200 format-webp as img_sm %}
-    {% image self.image width-1400 format-webp as img_md %}
+    {% image self.image width-750 as img_base %}
+    {% image self.image width-1200 as img_sm %}
+    {% image self.image width-1400 as img_md %}
 
     <picture class="feature__img">
       <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">

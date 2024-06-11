@@ -34,9 +34,9 @@
             of via inline style.
         {% endcomment %}
 
-        {% image self.hero_image fill-1000x563 format-webp as img_base %}
-        {% image self.hero_image fill-1250x703 format-webp as img_sm %}
-        {% image self.hero_image fill-1650x928 format-webp as img_xl %}
+        {% image self.hero_image fill-1000x563 as img_base %}
+        {% image self.hero_image fill-1250x703 as img_sm %}
+        {% image self.hero_image fill-1650x928 as img_xl %}
 
         <picture class="project-hero__img">
             <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">

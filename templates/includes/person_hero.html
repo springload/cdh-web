@@ -55,9 +55,9 @@
             If changing this by image rendition, update aspect-ratio in the CSS instead
             of via inline style.
         {% endcomment %}
-        {% image page.image fill-1000x750 format-webp as img_base %}
-        {% image page.image fill-1250x938 format-webp as img_sm %}
-        {% image page.image fill-1650x1238 format-webp as img_xl %}
+        {% image page.image fill-1000x750 as img_base %}
+        {% image page.image fill-1250x938 as img_sm %}
+        {% image page.image fill-1650x1238 as img_xl %}
 
         <picture class="person-hero__img">
             <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
