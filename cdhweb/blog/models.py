@@ -1,10 +1,11 @@
+from datetime import date
+
 from django.db import models
 from django.db.models.fields.related import RelatedField
 from django.urls import reverse
 from django.utils.dateformat import format
 from django.utils.functional import cached_property
 from django.utils.text import Truncator
-from django.utils.timezone import localdate
 from django.utils.translation import gettext_lazy as _
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
@@ -72,12 +73,6 @@ class BlogPost(BasePage, ClusterableModel):
         help_text="Short introduction to the page, aim for max two clear sentences (max. 200 chars).",
     )
 
-    article_date = models.DateTimeField(
-        verbose_name="Published date",
-        default=localdate,
-        help_text=("Published date for blog post"),
-    )
-
     image = models.ForeignKey(
         "wagtailimages.image",
         null=True,
@@ -119,6 +114,13 @@ class BlogPost(BasePage, ClusterableModel):
     )
     people = models.ManyToManyField(Person, through="blog.Author", related_name="posts")
 
+    category = models.CharField(
+        verbose_name="Category",
+        help_text="Category tag to display on tile",
+        blank=True,
+        max_length=20,
+    )
+
     # can only be created underneath special link page
     parent_page_types = ["blog.BlogLinkPageArchived", "blog.BlogLandingPage"]
     # no allowed subpages
@@ -127,7 +129,6 @@ class BlogPost(BasePage, ClusterableModel):
     # admin edit configuration
     content_panels = Page.content_panels + [
         FieldPanel("description"),
-        FieldPanel("article_date"),
         MultiFieldPanel(
             [
                 FieldPanel("image"),
@@ -141,6 +142,7 @@ class BlogPost(BasePage, ClusterableModel):
             [InlinePanel("authors", [AutocompletePanel("person")], label="Author")],
             heading="Authors",
         ),
+        FieldPanel("category"),
         FieldPanel("body"),
         FieldPanel("attachments"),
     ]

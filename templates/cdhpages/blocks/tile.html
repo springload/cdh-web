@@ -22,7 +22,12 @@
             {# Internal page deets #}
             {% if tile_type == 'internal_page_tile' %}
 
-                {% if internal_page.specific.page_type != 'Profile' and internal_page.specific.page_type != 'Event' %}
+                {% if internal_page.specific.page_type == 'BlogPost' %}
+                    <p>{{ internal_page.specific.category }} </p>
+                    <p>{{ internal_page.specific.first_published_at|date:"j F Y" }}</p>
+                    {{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}
+
+                {% elif internal_page.specific.page_type != 'Profile' and internal_page.specific.page_type != 'Event' %}
                     {{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}
 
                 {# Extra event-specific deets #}
@@ -55,9 +60,7 @@
 
                 {% elif internal_page.specific.page_type == 'Profile' %}
                     </p>{{ internal_page.specific.person.current_title }}</p>
-                    
-                {% elif internal_page.specific.page_type == 'BlogPost' %}
-                        <p>{{ internal_page.specific.article_date|date:"j F Y" }}</p>
+
                 {% endif %}
 
             {% else %}
