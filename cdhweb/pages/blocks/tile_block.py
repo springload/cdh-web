@@ -50,6 +50,12 @@ class StandardTileBlock(JumplinkMixin):
 
     see_more_link = InternalPageLinkBlock(help_text="'See more' link", required=False)
 
+    featured = blocks.BooleanBlock(
+        default=False,
+        help_text="Check this checkbox to create a visually distinct tile block that stands out from regular tiles on the page.",
+        required=False,
+    )
+
     tiles = blocks.StreamBlock(
         [
             ("internal_page_tile", TileInternalPage()),
@@ -64,8 +70,11 @@ class StandardTileBlock(JumplinkMixin):
 
         tiles = value.get("tiles")
         context["tiles"] = tiles
+        print(tiles)
         return context
 
     class Meta:
         template = "cdhpages/blocks/standard_tile_block.html"
         label = "Standard Tile Block"
+        icon = "copy"
+        group = "Body copy components"
