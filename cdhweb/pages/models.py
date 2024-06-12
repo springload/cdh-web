@@ -364,7 +364,7 @@ class LandingPage(BaseLandingPage, SidebarNavigationMixin):
         verbose_name = "Section Landing Page"
 
 
-class HomePage(Page, HomePageHeroMixin):
+class HomePage(HomePageHeroMixin, Page):
     """A home page that aggregates and displays featured content."""
 
     body = StreamField(

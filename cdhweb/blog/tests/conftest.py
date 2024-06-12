@@ -4,7 +4,7 @@ from datetime import timezone as tz
 import pytest
 from django.utils import timezone
 
-from cdhweb.blog.models import Author, BlogLinkPageArchivedArchived, BlogPost
+from cdhweb.blog.models import Author, BlogLinkPageArchived, BlogPost
 from cdhweb.pages.tests.conftest import to_streamfield_safe
 
 EST = zoneinfo.ZoneInfo("America/New_York")

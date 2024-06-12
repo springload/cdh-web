@@ -174,16 +174,6 @@ class BlogPost(BasePage, ClusterableModel):
     # custom manager/queryset logic
     objects = BlogPostManager()
 
-    # @property
-    # def short_title(self):
-    #     """Shorter title with ellipsis."""
-    #     return Truncator(self.title).chars(65)
-
-    # @property
-    # def short_description(self):
-    #     """Shorter description with ellipsis."""
-    #     return Truncator(self.get_description()).chars(250)
-
     @cached_property
     def breadcrumbs(self):
         ancestors = self.get_ancestors().live().public().specific()
@@ -193,16 +183,6 @@ class BlogPost(BasePage, ClusterableModel):
     def author_list(self):
         """Comma-separated list of author names."""
         return ", ".join(str(author.person) for author in self.authors.all())
-
-    # def __str__(self):
-    #     # string is used for logging actions on drafts,
-    #     # needs to handle cases where first published date is not set
-    #     if self.first_published_at:
-    #         pubdate = format(self.first_published_at, "F j, Y")
-    #     else:
-    #         pubdate = "draft"
-
-    #     return '"%s" (%s)' % (self.short_title, pubdate)
 
     def get_url_parts(self, *args, **kwargs):
         """Custom blog post URLs of the form /updates/2014/03/01/my-post."""
@@ -245,7 +225,7 @@ class BlogLinkPageArchived(LinkPage):
     subpage_types = [BlogPost]
 
 
-class BlogLandingPage(Page, StandardHeroMixinNoImage):
+class BlogLandingPage(StandardHeroMixinNoImage, Page):
     """Container page that defines where Event pages can be created."""
 
     content_panels = StandardHeroMixinNoImage.content_panels
