@@ -4,7 +4,7 @@ from datetime import timezone as tz
 import pytest
 from django.utils import timezone
 
-from cdhweb.blog.models import Author, BlogLinkPage, BlogPost
+from cdhweb.blog.models import Author, BlogLinkPageArchived, BlogPost
 from cdhweb.pages.tests.conftest import to_streamfield_safe
 
 EST = zoneinfo.ZoneInfo("America/New_York")
@@ -12,7 +12,7 @@ EST = zoneinfo.ZoneInfo("America/New_York")
 
 def make_blog_link_page(homepage):
     """Create a test blog link page underneath the homepage."""
-    link = BlogLinkPage(title="updates", link_url="updates")
+    link = BlogLinkPageArchived(title="updates", link_url="updates")
     homepage.add_child(instance=link)
     homepage.save()
     return link

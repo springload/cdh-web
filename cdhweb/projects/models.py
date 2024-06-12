@@ -344,7 +344,7 @@ class ProjectsLandingPageArchived(LandingPage):
     template = LandingPage.template
 
 
-class ProjectsLandingPage(Page, StandardHeroMixin):
+class ProjectsLandingPage(StandardHeroMixin, Page):
     content_panels = StandardHeroMixin.content_panels
 
     search_fields = StandardHeroMixin.search_fields

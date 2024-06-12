@@ -1,7 +1,7 @@
 import pytest
 from wagtail.test.utils import WagtailPageTestCase
 
-from cdhweb.blog.models import BlogLinkPage, BlogPost
+from cdhweb.blog.models import BlogLinkPageArchived, BlogPost
 
 
 class TestBlogPost:
@@ -70,14 +70,14 @@ class TestBlogPostPage(WagtailPageTestCase):
 
     def test_parent_page_types(self):
         """blog posts always go under the blog link page"""
-        self.assertAllowedParentPageTypes(BlogPost, [BlogLinkPage])
+        self.assertAllowedParentPageTypes(BlogPost, [BlogLinkPageArchived])
 
 
-class TestBlogLinkPage(WagtailPageTestCase):
+class TestBlogLinkPageArchived(WagtailPageTestCase):
     def test_subpage_types(self):
         """only allowed child of blog link page is blogpost"""
-        self.assertAllowedSubpageTypes(BlogLinkPage, [BlogPost])
+        self.assertAllowedSubpageTypes(BlogLinkPageArchived, [BlogPost])
 
     def test_parent_page_types(self):
         """blog link page can't be created in admin"""
-        self.assertAllowedParentPageTypes(BlogLinkPage, [])
+        self.assertAllowedParentPageTypes(BlogLinkPageArchived, [])

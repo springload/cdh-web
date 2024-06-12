@@ -48,7 +48,7 @@ urlpatterns = [
     path("_500/", lambda _: 1 / 0),  # for testing 500 error page
     # main apps
     path("people/", include("cdhweb.people.urls", namespace="people")),
-    path("updates/", include("cdhweb.blog.urls", namespace="blog")),
+    path("blog/", include("cdhweb.blog.urls", namespace="blog")),
     path("events/", include("cdhweb.events.urls", namespace="event")),
     path("projects/", include("cdhweb.projects.urls", namespace="projects")),
     # search
@@ -60,11 +60,6 @@ urlpatterns = [
     ),
     # CAS login urls
     path("accounts/", include("pucas.cas_urls")),
-    # - all blog urls are now under updates/
-    re_path(
-        r"^blog(?P<blog_url>.*)$",
-        RedirectView.as_view(url="/updates%(blog_url)s", permanent=True),
-    ),
     # sitemaps
     path(
         "sitemap.xml", sitemap_views.index, {"sitemaps": sitemaps}, name="sitemap-index"

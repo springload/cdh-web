@@ -357,13 +357,14 @@ class LandingPage(BaseLandingPage, SidebarNavigationMixin):
         "people.PeopleLandingPage",
         "projects.ProjectsLandingPage",
         "events.EventsLandingPage",
+        "blog.BlogLandingPage",
     ]
 
     class Meta:
         verbose_name = "Section Landing Page"
 
 
-class HomePage(Page, HomePageHeroMixin):
+class HomePage(HomePageHeroMixin, Page):
     """A home page that aggregates and displays featured content."""
 
     body = StreamField(
@@ -383,6 +384,7 @@ class HomePage(Page, HomePageHeroMixin):
         "projects.ProjectsLandingPage",
         "LandingPage",
         "events.EventsLandingPage",
+        "blog.BlogLandingPage",
     ]  # TODO
 
     content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]

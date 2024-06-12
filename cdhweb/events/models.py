@@ -403,7 +403,7 @@ class EventsLinkPageArchived(LinkPage):
     subpage_types = [Event, LinkPage, ContentPage]
 
 
-class EventsLandingPage(Page, StandardHeroMixinNoImage):
+class EventsLandingPage(StandardHeroMixinNoImage, Page):
     """Container page that defines where Event pages can be created."""
 
     content_panels = StandardHeroMixinNoImage.content_panels
