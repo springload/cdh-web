@@ -48,7 +48,7 @@
             </div>
         {% endif %}
 
-        {% if self.tags %}
+        {% if self.tags.all %}
             <div class="tag-list">
                 {% for tag in self.tags.all %}
                     <div class="tag">{{ tag }}</div>    
