@@ -45,12 +45,10 @@
             {% endcomment %}
 
             {% image page.image fill-1000x563 format-webp as img_base %}
-            {% image page.image fill-1250x703 format-webp as img_sm %}
-            {% image page.image fill-1650x928 format-webp as img_xl %}
+            {% image page.image fill-1650x928 format-webp as img_sm %}
 
             <picture>
                 <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
-                <source srcset="{{ img_xl.url }}" media="(min-width: 1200px)">
                 <img
                     src="{{ img_base.url }}" 
                     alt="{{ page.alt_text|default:img_base.alt }}"
