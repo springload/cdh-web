@@ -70,7 +70,7 @@ class StandardTileBlock(JumplinkMixin):
 
         tiles = value.get("tiles")
         context["tiles"] = tiles
-        print(tiles)
+
         return context
 
     class Meta:
