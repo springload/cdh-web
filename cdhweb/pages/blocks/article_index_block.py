@@ -29,17 +29,24 @@ class ArticleTileBlock(JumplinkMixin):
 
     max_articles = blocks.ChoiceBlock(
         choices=[
+            (2, "2"),
             (3, "3"),
+            (4, "4"),
+            (5, "5"),
             (6, "6"),
-            (9, "9"),
         ],
         default=3,
         icon="placeholder",
         help_text="Define the maximum number of tiles to show in this group.",
     )
 
-    see_more_link = InternalPageLinkBlock(help_text="'See more' link", required=False)
-
+    see_more_link = blocks.CharBlock(
+        max_length=80,
+        help_text="Set text for the link which takes you to the landing page",
+        label="Link title",
+        default='See All',
+        required=False,
+    )
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
 
@@ -48,7 +55,7 @@ class ArticleTileBlock(JumplinkMixin):
             .get_children()
             .live()
             .public()
-            .order_by("-blogpost")  # Sort by date descending
+            .order_by("-blogpost__first_published_at")  # Sort by date descending
             .specific()
         )
 

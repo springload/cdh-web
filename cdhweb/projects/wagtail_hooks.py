@@ -23,7 +23,6 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
     )
     search_fields = ("title", "description", "body")
     export_filename = "cdhweb-projects"
-    exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"
     thumb_col_header_text = "thumbnail"
     ordering = ("title",)

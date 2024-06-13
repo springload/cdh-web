@@ -6,9 +6,9 @@
         {% include_block self.heading %}
     {% endif %}
 
-    {% if self.see_more_link.page %}
-      <a href="{{ self.see_more_link.url }}">
-          {{ self.see_more_link.title }}
+    {% if self.see_more_link %}
+      <a href="{{ self.landing_page.url }}">
+          {{ self.see_more_link }}
       </a>
     {% endif %}
   </div>

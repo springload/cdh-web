@@ -43,7 +43,6 @@ class EventAdmin(ThumbnailMixin, ModelAdmin):
         "location__name",
         "location__address",
     )
-    exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"
     thumb_col_header_text = "thumbnail"
     ordering = ("-start_time",)
