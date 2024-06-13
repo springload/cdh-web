@@ -33,7 +33,6 @@ class BlogPostAdmin(ThumbnailMixin, ModelAdmin):
         "authors__person__last_name",
         "body",
     )
-    exclude_from_explorer = True
     thumb_image_field_name = "featured_image"
     thumb_col_header_text = "image"
     ordering = ("-first_published_at",)

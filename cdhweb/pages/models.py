@@ -35,8 +35,10 @@ from wagtailmenus.panels import linkpage_tab
 from cdhweb.pages import snippets  # needed for import order
 
 from .blocks.accordion_block import AccordionBlock
+from .blocks.article_index_block import ArticleTileBlock
 from .blocks.cdh_hosted_video import HostedVideo
 from .blocks.download_block import DownloadBlock
+from .blocks.event_index_block import EventTileBlock
 from .blocks.feature_block import FeatureBlock
 from .blocks.image_block import ImageBlock
 from .blocks.migrated import MigratedBlock
@@ -87,6 +89,8 @@ STANDARD_BLOCKS = [
     ("newsletter", NewsletterBlock()),
     ("heading", JumplinkableH2Block()),
     ("tile_block", StandardTileBlock()),
+    ("article_tile_block", ArticleTileBlock()),
+    ("event_tile_block", EventTileBlock()),
 ]
 
 
