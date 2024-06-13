@@ -5,6 +5,7 @@ from cdhweb.events import views
 app_name = "events"
 urlpatterns = [
     path("", views.UpcomingEventsView.as_view(), name="upcoming"),
+    path("<year>-<semester>/", views.EventsLandingPageView.as_view(), name="events_by_semester"),
     re_path(
         r"^(?P<semester>(fall|spring|summer))-(?P<year>\d{4})/$",
         views.EventSemesterArchiveView.as_view(),

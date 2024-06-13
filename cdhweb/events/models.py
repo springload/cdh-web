@@ -395,6 +395,7 @@ class Event(BasePage, ClusterableModel):
 
 class EventsLinkPageArchived(LinkPage):
     """Container page that defines where Event pages can be created."""
+    Page.is_creatable = False
 
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
@@ -404,7 +405,7 @@ class EventsLinkPageArchived(LinkPage):
 
 
 class EventsLandingPage(StandardHeroMixinNoImage, Page):
-    """Container page that defines where Event pages can be created."""
+    """Container page that defines where Event pages can be created.""" 
 
     content_panels = StandardHeroMixinNoImage.content_panels
 
@@ -413,4 +414,26 @@ class EventsLandingPage(StandardHeroMixinNoImage, Page):
     settings_panels = Page.settings_panels
 
     # allow content pages to be added under events for special event series
-    subpage_types = [Event, LinkPage, ContentPage]
+    subpage_types = [Event]
+    def get_upcoming_events_for_semester(self, semester, year):
+        current_datetime = timezone.now()
+        # Assuming you have a field named 'semester' and 'year' in your Event model
+        print(semester, year)
+        return self.get_children().live().filter(
+            event__start_time__gte=current_datetime,
+        ).order_by("event__start_time")
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        current_datetime = timezone.now()
+
+        child_pages = self.get_children().live()
+
+        # Fetch upcoming events among the child pages
+        upcoming_events = child_pages.filter(
+            event__start_time__gte=current_datetime
+        ).order_by('event__start_time')
+
+        context['upcoming_events'] = upcoming_events
+
+        return context
