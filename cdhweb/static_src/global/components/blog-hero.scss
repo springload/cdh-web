@@ -1,0 +1,149 @@
+/* 
+Blog hero. Similar to standard hero. Key differences:
+- image ratio (TODO – maybe?)
+- image goes inline at `lg`, not `md` (so the break-grid rules differ too)
+- image has a caption (like project hero)
+- text content – more of it
+*/
+
+// has `.grid-standard`
+.blog-hero {
+  --title-top-space: 40px;
+
+  margin-block-end: 56px;
+
+  // t = heading/intro (h1 title ad meta info)
+  // d = description
+  // i = img + credit
+
+  // Layout if there is _no_ image:
+  grid-template-areas:
+    't t t t t t t t t t t t'
+    'd d d d d d d d d d d d';
+
+  @include sm {
+    margin-block-end: 120px;
+  }
+
+  @include md {
+    --title-top-space: 32px;
+    grid-template-areas:
+      't t t t t t t t t t t t'
+      '. d d d d d d d d d d d';
+  }
+  @include lg {
+    --title-top-space: 64px;
+
+    grid-template-areas:
+      '. t t t t t t t t t t .'
+      '. . d d d d d d d d d .';
+  }
+  @include xl {
+    --title-top-space: 104px;
+  }
+  @include xxl {
+    --title-top-space: 160px;
+    grid-template-areas:
+      '. t t t t t t t t t . .'
+      '. . d d d d d d d d . .';
+  }
+
+  // Different layout if the hero has an image:
+  &:has(img) {
+    grid-template-areas:
+      'i i i i i i i i i i i i'
+      't t t t t t t t t t t t'
+      'd d d d d d d d d d d d';
+
+    @include lg {
+      grid-template-areas:
+        '. t t t t t i i i i i i'
+        '. . d d d d i i i i i i';
+    }
+  }
+}
+
+.blog-hero__text {
+  grid-area: t;
+  line-height: 1.125;
+
+  :where(h1) {
+    margin-block-start: var(--title-top-space);
+  }
+
+  :where(ul) {
+    margin-block-start: 16px;
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    @include lg {
+      font-size: px2rem(20);
+    }
+  }
+  :where(li) {
+    margin: 0;
+  }
+  :where(.tag-list) {
+    margin-block-start: 24px;
+
+    @include xl {
+      margin-block-start: 40px;
+    }
+  }
+}
+
+.blog-hero__date {
+  font-weight: bold;
+  margin: 16px 0 0;
+  font-size: px2rem(16);
+
+  @include xl {
+    font-size: px2rem(18);
+  }
+}
+
+.blog-hero__authors {
+  font-size: px2rem(16);
+
+  @include lg {
+    font-size: px2rem(18);
+  }
+  @include xl {
+    font-size: px2rem(20);
+  }
+}
+
+.blog-hero__description {
+  grid-area: d;
+  margin-block-start: 32px;
+  font-size: px2rem(20);
+
+  @include lg {
+    margin-block-start: 40px;
+  }
+  @include xl {
+    margin-block-start: 48px;
+    font-size: px2rem(24);
+  }
+}
+
+.blog-hero__img {
+  grid-area: i;
+
+  :where(img) {
+    @include break-grid;
+
+    @include sm {
+      @include undo-break-grid;
+    }
+    @include lg {
+      @include break-grid-right;
+    }
+    @include xxxl {
+      @include undo-break-grid;
+    }
+  }
+}
