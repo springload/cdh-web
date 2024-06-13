@@ -108,7 +108,7 @@ Blog hero. Similar to standard hero. Key differences:
 .blog-hero__authors {
   font-size: px2rem(16);
 
-  @include xl {
+  @include lg {
     font-size: px2rem(18);
   }
   @include xl {
