@@ -1,5 +1,6 @@
-.sk-video__iframe,
-.block-embed iframe {
+// Apply to both the video block (.sk-video__iframe) and the
+// hosted video block (which we can't access the DOM for)
+.block--video :where(iframe) {
   aspect-ratio: 16/9;
   width: 100%;
   display: block;

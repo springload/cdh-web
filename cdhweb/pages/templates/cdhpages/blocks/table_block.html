@@ -2,30 +2,32 @@
 
 {# Note: This is actually a wagtail typed table, not a standard wagtail table #}
 
-{# tabindex is because scrollable elements must be focusable (a11y). allows keyboard users to scroll. #}
-<div class="table-scroll-wrapper" tabindex="0">
-    <table class="table">
-        {% if value.caption %}
-            <caption class="table__caption">{{ value.caption }}</caption>
-        {% endif %}
-        <thead class="table__thead">
-            <tr>
-                {% for col in value.table.columns %}
-                <th class="table__th" scope="col">{{ col.heading }}</th>
+<div class="block block--table">
+    {# tabindex is because scrollable elements must be focusable (a11y). allows keyboard users to scroll. #}
+    <div class="table-scroll-wrapper" tabindex="0">
+        <table class="table">
+            {% if value.caption %}
+                <caption class="table__caption">{{ value.caption }}</caption>
+            {% endif %}
+            <thead class="table__thead">
+                <tr>
+                    {% for col in value.table.columns %}
+                    <th class="table__th" scope="col">{{ col.heading }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody class="table__tbody">
+                {% for row in value.table.rows %}
+                <tr>
+                    {% for block in row %}
+                    <td class="table__td">{% include_block block %}</td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-        </thead>
-        <tbody class="table__tbody">
-            {% for row in value.table.rows %}
-            <tr>
-                {% for block in row %}
-                <td class="table__td">{% include_block block %}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>        
-    </table>
+            </tbody>        
+        </table>
+    </div>
+    {% if value.notes %}
+        <div class="table__notes">{{ value.notes }}</div>
+    {% endif %}
 </div>
-{% if value.notes %}
-    <div class="table__notes">{{ value.notes }}</div>
-{% endif %}

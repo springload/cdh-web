@@ -7,28 +7,27 @@
   display: flex;
   flex-direction: column;
 
-  & > * + * {
+  & > :where(.block + .block) {
     // Default `lg` space above each streamfield
     margin-block-start: var(--streamfield-space-lg);
 
     // Cases where there should be a `sm` space above:
     &:where(
         :is(
-            .block-image,
-            .block-table,
-            .block-note,
-            .block-paragraph,
-            .block-pull_quote,
-            .block-accordion_block:not(:has(> h2)),
-            .block-embed:not(:has(> h2)),
-            .block-video_block:not(:has(> h2))
+            .block--image,
+            .block--table,
+            .block--note,
+            .block--paragraph,
+            .block--pull-quote,
+            .block--accordion:not(:has(> h2)),
+            .block--video:not(:has(> h2))
           )
       ) {
       margin-block-start: var(--streamfield-space-sm);
     }
 
     // Cases where there should be a `xs` space above:
-    &:where(:is(.block-heading + *)) {
+    &:where(:is(.block--heading + *)) {
       margin-block-start: var(--streamfield-space-xs);
     }
   }
@@ -36,15 +35,14 @@
   & > * {
     // Cap width of some (most?) streamfield block types
     &:where(
-        .block-accordion_block,
-        .block-table,
-        .block-paragraph,
-        .block-download_block,
-        .block-cta_block,
-        .block-note,
-        .block-pull_quote,
-        .block-video_block,
-        .block-embed
+        .block--accordion,
+        .block--table,
+        .block--paragraph,
+        .block--download,
+        .block--cta,
+        .block--note,
+        .block--pull-quote,
+        .block--video
       ) {
       max-inline-size: var(--reading-max-width);
     }
@@ -53,12 +51,7 @@
   // Outdented components.
   // Tile block title is excluded because it needs to be wrapped in another
   // container to allow the "see all" link to display in line with it.
-  :where(
-      .block-heading,
-      .block-accordion_block > h2,
-      .block-video_block > h2,
-      .block-embed > h2
-    ) {
+  :where(.block--heading, .block--accordion > h2, .block--video > h2) {
     @include md {
       margin-left: calc(-1 * var(--content-outdent));
     }

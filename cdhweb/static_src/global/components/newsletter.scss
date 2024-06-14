@@ -1,11 +1,11 @@
 /*
 Newsletter streamfield block.
 Note: this uses the same `includes/newsletter_form.html` rendered by in <footer>.
-We don't have a streamfield-specific template for it, therefore we're styling this one 
-the streamfield version based on its wagtail-generated class name `.block-newsletter`.
+We don't have a streamfield-specific template for it, but we conditionally add a 
+`.block--newsletter` wrapper when it's used in a streamfield context.
 */
 
-.block-newsletter {
+.block--newsletter {
   --form-control-border-color: var(--color-grey-80);
   --btn-color: var(--color-black);
   --btn-bg: var(--color-brand-100);
