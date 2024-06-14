@@ -9,9 +9,9 @@
 <div class="content-width grid-standard page-layout page-layout--without-sidenav">
     <div class="page-layout__main-content">
         <div class="streamfields-wrapper">
-            {% if page.body %}
-                {% include_block page.body %}
-            {% endif %}
+            {% for block in page.body %}
+                {% include_block block %}
+            {% endfor %}
 
             {% if recent_projects %}
                 <div class="block-tile_block">

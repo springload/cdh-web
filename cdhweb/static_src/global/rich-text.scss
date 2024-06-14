@@ -59,7 +59,7 @@
     margin-bottom: var(--space-h6-lg);
   }
 
-  :where(.block-paragraph blockquote) {
+  :where(.block--paragraph blockquote) {
     @include outdented-line-block;
   }
 

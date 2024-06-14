@@ -16,9 +16,9 @@
     ">
         <div class="page-layout__main-content">
             <div class="streamfields-wrapper">
-                {% if page.body %}
-                    {% include_block page.body %}
-                {% endif %}
+                {% for block in page.body %}
+                    {% include_block block %}
+                {% endfor %}
             </div>
         </div>
 
