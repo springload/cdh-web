@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
 
-  & > * + * {
+  & > :where(.block + .block) {
     // Default `lg` space above each streamfield
     margin-block-start: var(--streamfield-space-lg);
 
