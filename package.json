@@ -49,6 +49,7 @@
     "test:types": "tsc --noEmit",
     "test:audit": "npx audit-ci@^6 --config ./audit-ci.jsonc",
     "build": "webpack --mode=production",
+    "build:qa": "npm run build",
     "start": "webpack --mode=development --watch"
   },
   "nodemonConfig": {
