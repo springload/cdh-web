@@ -23,7 +23,6 @@
             {% if tile_type == 'internal_page_tile' %}
 
                 {% if internal_page.specific.page_type == 'BlogPost' %}
-                    <p>{{ internal_page.specific.category }} </p>
                     <p>{{ internal_page.specific.first_published_at|date:"j F Y" }}</p>
                     {{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}
 
@@ -69,12 +68,14 @@
             {% endif  %}
         </div>
 
-        {% if internal_page.specific.cdh_built or internal_page.specific.page_type == 'Event' %}
+        {% if internal_page.specific.cdh_built or internal_page.specific.page_type == 'Event' or internal_page.specific.page_type == 'BlogPost' %}
             <div class="tile__tag">
                 {% if internal_page.specific.cdh_built %}
                     <div class="tag tag--dark">Built by CDH</div>
-                {% elif internal_page.specific.page_type == 'Event' %}
+                {% elif internal_page.specific.page_type == 'Event' and internal_page.specific.type %}
                     <div class="tag tag--dark">{{ internal_page.specific.type }}</div>
+                {% elif internal_page.specific.category  %}
+                    <div class="tag tag--dark">{{ internal_page.specific.category }}</div>
                 {% endif %}
             </div>
         {% endif %}
