@@ -1,31 +1,8 @@
 # syntax=docker/dockerfile:1.4
 
-## Frontend TODO once Springload approach added
-# # frontend assets
-# FROM node:20-alpine as frontend
-
-# RUN apk add --update git
-
-# WORKDIR /app
-
-# # Install packages
-# COPY package.json package-lock.json /app/
-# RUN --mount=type=cache,target=/root/.npm NPM_CACHE_FOLDER=/root/.npm \
-#     npm ci
-
-# # Copy config/build files
-# COPY webpack.config.js webpack.fix-django-paths.js tsconfig.json /app/
-# COPY core/static_src /app/core/static_src
-# COPY core/templates_src /app/core/templates_src
-
-# RUN npm run build
-
-# CMD ["npm", "run build"]
-
-
 ## -----
 # Base backend
-# On Debian, as their prod is Ubuntu
+# On Debian, as prod is Ubuntu
 FROM --platform=linux/x86_64 python:3.11-slim-bullseye as base
 
 ENV PROJECT cdh-web
@@ -70,11 +47,10 @@ ENV DJANGO_SETTINGS_MODULE cdhweb.settings
 
 ADD --chmod=755 https://github.com/mrako/wait-for/releases/download/v1.0.0/wait-for /usr/local/bin/
 
-# TODO: Frontend: Remove npm install once deps are built without compressor
 RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt \
     apt-get update -y && apt-get install --no-install-recommends -y \
-    netcat npm
+    netcat
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip3 install -r /app/requirements/dev.txt \

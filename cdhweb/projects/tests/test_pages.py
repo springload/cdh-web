@@ -5,9 +5,9 @@ from cdhweb.people.models import Person
 from cdhweb.projects.models import (
     Grant,
     GrantType,
-    PeopleLandingPageArchivedArchived,
     Project,
     ProjectRelatedLink,
+    ProjectsLandingPageArchived,
 )
 
 
@@ -94,18 +94,18 @@ class TestProject:
 class TestProjectPage(WagtailPageTestCase):
     def test_parent_pages(self):
         """project can only be created under projects link page"""
-        self.assertAllowedParentPageTypes(Project, [PeopleLandingPageArchivedArchived])
+        self.assertAllowedParentPageTypes(Project, [ProjectsLandingPageArchived])
 
     def test_subpages(self):
         """project page can't have children"""
         self.assertAllowedSubpageTypes(Project, [])
 
 
-class TestPeopleLandingPageArchived(WagtailPageTestCase):
+class TestProjectsLandingPageArchived(WagtailPageTestCase):
     def test_parentpage_types(self):
         """projects link page should not be creatable in admin"""
-        self.assertAllowedParentPageTypes(PeopleLandingPageArchived, [])
+        self.assertAllowedParentPageTypes(ProjectsLandingPageArchived, [])
 
     def test_subpage_types(self):
         """projects link page only allowed child is project page"""
-        self.assertAllowedSubpageTypes(PeopleLandingPageArchived, [Project, LinkPage])
+        self.assertAllowedSubpageTypes(ProjectsLandingPageArchived, [Project, LinkPage])

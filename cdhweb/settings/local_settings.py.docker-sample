@@ -39,12 +39,6 @@ PUCAS_LDAP.update(
     }
 )
 
-# optional configuration for compress autoprefixer
-# COMPRESS_AUTOPREFIXER_BINARY = '/usr/local/bin/postcss'
-# COMPRESS_AUTOPREFIXER_ARGS = '--use autoprefixer' (default)
-
-COMPRESS_ENABLED = False
-
 # sample logging config
 LOGGING = {
     "version": 1,

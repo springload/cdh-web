@@ -22,8 +22,6 @@ django-appconf==1.0.4
 django-apptemplates==1.5
 django-cas-ng==4.1.1
 django-cogwheels==0.3
-django-compressor==2.4.1
-django-compressor-autoprefixer==0.1.0
 django-contrib-comments==2.0.0
 django-dbml @ git+git://github.com/thatbudakguy/django-dbml@334ead74c8c4fa4ae997adeccaa5f3d5367f17b2
 django-debug-toolbar==3.2

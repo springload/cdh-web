@@ -33,30 +33,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # We need node to install the JS dependencies used to build static assets.
-      # Because some unit tests use Django's test client to visit pages, we need
-      # to have JS and styles ready to be loaded on those pages or there will be
-      # errors.
-      # Uses the node version specified in package.json
-      - name: Setup node
-        uses: actions/setup-node@v4
-
-      # Basing the cache on the hash of the lockfile means that the cache should
-      # only ever be invalidated when we update package-lock.json, which happens
-      # as part of a release. For more info, see:
-      # https://docs.github.com/en/free-pro-team@latest/actions/guides/caching-dependencies-to-speed-up-workflows
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            npm-${{ hashFiles('package-lock.json') }}
-            npm-
-
-      - name: Install JS dependencies
-        run: npm ci
-
       # Python version to use is stored in the .python-version file, which is the
       # convention for pyenv (https://github.com/pyenv/pyenv)
       # setup-python automatically picks up version from .python-version
@@ -79,9 +55,6 @@ jobs:
 
       - name: Setup local_settings.py
         run: python -c "import uuid; print('SECRET_KEY = \'%s\'' % uuid.uuid4())" >> cdhweb/settings/local_settings.py
-
-      - name: Build static assets
-        run: python manage.py compress
 
       - name: Run pytest
         run: pytest --cov=./ --cov-config=.coveragerc --cov-report=xml
