@@ -1,0 +1,51 @@
+{% comment %} 
+  BED TODO 
+  loop over alerts, display all of the below markup for each one.
+
+  Make the following work:
+  - alert_type – should be one of: `informational`, `warning` or `emergency`
+  - `alert.id` must be unique and must persist between page loads/sessions. 
+    it's used both for a11y and for keeping track of which alerts have been dismissed already
+  - See other TODOs in this file
+{% endcomment %} 
+
+<div role="note"
+  class="u-hidden alert-banner alert-banner--{{ alert.alert_type }}"
+  data-component="alert-banner"
+  data-alert-id="alert_{{ alert.id }}"
+  {% if alert.title %}aria-labelledby="alert-heading-{{ alert.id|slugify }}"{% endif %} 
+  >
+  <div class="alert-banner__grid content-width grid-standard">
+    <div class="alert-banner__decoration">
+      {% if alert.alert_type == 'warning' or alert.alert_type == 'emergency' %}
+        {% include 'includes/svg.html' with sprite="two-tone" svg="warning" %}
+      {% else %}
+        {% include 'includes/svg.html' with sprite="two-tone" svg="info" %}
+      {% endif %}
+    </div>
+    <div class="alert-banner__content
+      {% if alert.dismissable %}
+        alert-banner__content--dismissable
+      {% endif %}
+    ">
+      <div class="alert-banner__text">
+        <h2 id="alert-heading-{{ alert.id|slugify }}" class="alert-banner__heading">
+          {# TODO the following title prefix should be "Note:", "Warning:" or "Emergency:", depending on alert.type #}
+          Note: 
+          {# alert.title field is optional, but title prefix (above) appears regardless #}
+          {{ alert.title }}
+        </h2>
+        {# BED TODO place richtext here, delete this placeholder `<p>` wrapper #}
+        <p>
+          Here is the alert content. Here is the alert content. Here is the alert content. 
+          Here is the alert content. Here is the alert content. Here is the alert content.
+        </p>
+      </div>
+      {% if alert.dismissable %}
+        <button role="button" class="alert-banner__dismiss-btn" aria-label="Dismiss alert">
+          {% include 'includes/svg.html' with sprite="two-tone" svg="x" %}
+        </button>
+      {% endif %}
+    </div>
+  </div>    
+</div>

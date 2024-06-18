@@ -1,5 +1,6 @@
 import MainNavMobile from './MainNavMobile/MainNavMobile.mount';
 import MainNavDesktop from './MainNavDesktop/MainNavDesktop.mount';
+import AlertBanner from './AlertBanner/AlertBanner.mount';
 
 /**
  * This is where the page is hydrated with types of components.
@@ -54,6 +55,9 @@ async function ComponentInit(
 
     case 'main-nav-desktop':
       return mountSyncComponent(MainNavDesktop);
+
+    case 'alert-banner':
+      return mountSyncComponent(AlertBanner);
 
     case 'accordion':
       return mountAsyncComponent(
