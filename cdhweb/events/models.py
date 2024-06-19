@@ -396,7 +396,7 @@ class Event(BasePage, ClusterableModel):
 class EventsLinkPageArchived(LinkPage):
     """Container page that defines where Event pages can be created."""
 
-    Page.is_creatable = False
+    is_creatable = False
 
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.

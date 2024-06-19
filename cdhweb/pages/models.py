@@ -251,7 +251,7 @@ class LinkPage(AbstractLinkPage):
     )
     search_fields = Page.search_fields
 
-    Page.is_creatable = False
+    is_creatable = False
 
 
 class BasePage(Page):
