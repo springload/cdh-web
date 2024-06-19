@@ -7,11 +7,6 @@ from django.views.generic.base import TemplateView
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView
 from django.views.generic.detail import DetailView
 
-
-class AboutUs(TemplateView):
-    template_name = "aboutus.html"
-
-
 from cdhweb.events.models import Event, EventsLandingPage
 from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
 
