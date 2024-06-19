@@ -8,8 +8,9 @@ from django.views.generic.dates import (
     YearArchiveView,
 )
 from django.views.generic.detail import DetailView
+from django.views.generic.base import TemplateView
 
-from cdhweb.blog.models import BlogPost
+from cdhweb.blog.models import BlogPost, BlogLandingPage
 from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
 
 
@@ -45,6 +46,36 @@ class BlogIndexView(BlogPostArchiveMixin, ArchiveIndexView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context.update({"page_title": "Latest Updates"})
+        return context
+    
+class BlogLandingPageView(TemplateView, EventSemesterDates):
+    model = BlogLandingPage
+    template_name = "blog/blog_landing_page.html"
+    context_object_name = "blog_landing_page"
+
+    def get_object(self):
+        return BlogLandingPage.objects.first()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        month = self.kwargs.get("month")
+        year = self.kwargs.get("year")
+        print(year)
+        print(month)
+
+        # if month and year:
+        #     blogs = self.get_object().get_upcoming_events_for_semester(
+        #         semester, int(year)
+        #     )
+        #     context["events"] = upcoming_events
+        # else:
+        #     # if semester and year are not supplied then supply the upcoming events
+        #     upcoming_events = self.get_object().get_upcoming_events()
+        #     context["events"] = upcoming_events
+
+        # context["date_list"] = self.get_semester_date_list()
+        # context["self"] = self.get_object()
+
         return context
 
 
