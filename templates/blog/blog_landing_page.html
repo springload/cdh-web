@@ -4,9 +4,32 @@
 {% block body_class %}template-blog-landing{% endblock %}
 
 {% block main %}
-    {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
+    {% include 'includes/breadcrumbs.html' with breadcrumbs=self.breadcrumbs current_page=self %}
     {% include 'includes/standard_hero.html' %}
 
-    {# fixed tile block to go here #}
+
+    <div class="archive-nav">
+        <a class="toggle">{{ page_title }} <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
+        <ul class="submenu">
+          {# include latest blogposts page link #}
+          {% url 'blog:list' slug=self.slug as latest_url %}
+          <li {% if request.path == latest_url %}class="current"{% endif %}><a href="{{ latest_url }}">Recent</a></li>
+          {% for archive_date in date_list %}
+          {% ifchanged %}<li>{{ archive_date.year }}</li>{% endifchanged %}
+              {% url 'blog:by-month' year=archive_date.year month=archive_date|date:"m" slug=self.slug as blog_url %}
+              <li {% if blog_url == request.path  %}class="current"{% endif %}>
+                  <a href="{{ blog_url }}">{{ archive_date|date:"F" }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      {% for post in posts %}
+        {% include 'cdhpages/blocks/tile.html' with internal_page=post tile_type='internal_page_tile' %}
+    {% endfor %}
+
+    {% if is_paginated %}
+    <h2>pagination</h2>
+        {% include "includes/pagination.html" %}    
+    {% endif %}
 
 {% endblock %}

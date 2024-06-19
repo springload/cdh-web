@@ -7,8 +7,11 @@ from django.views.generic.dates import (
     MonthArchiveView,
     YearArchiveView,
 )
+from django.core.paginator import Paginator
+
 from django.views.generic.detail import DetailView
 from django.views.generic.base import TemplateView
+from django.views.generic import ListView
 
 from cdhweb.blog.models import BlogPost, BlogLandingPage
 from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
@@ -48,33 +51,43 @@ class BlogIndexView(BlogPostArchiveMixin, ArchiveIndexView):
         context.update({"page_title": "Latest Updates"})
         return context
     
-class BlogLandingPageView(TemplateView, EventSemesterDates):
+class BlogLandingPageView(TemplateView):
     model = BlogLandingPage
     template_name = "blog/blog_landing_page.html"
-    context_object_name = "blog_landing_page"
+    context_object_name = "posts"
+    paginate_by = 3
+    make_object_list = True
 
     def get_object(self):
-        return BlogLandingPage.objects.first()
+        slug = self.kwargs.get('slug')
+        return BlogLandingPage.objects.get(slug=slug)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         month = self.kwargs.get("month")
         year = self.kwargs.get("year")
-        print(year)
-        print(month)
 
-        # if month and year:
-        #     blogs = self.get_object().get_upcoming_events_for_semester(
-        #         semester, int(year)
-        #     )
-        #     context["events"] = upcoming_events
-        # else:
-        #     # if semester and year are not supplied then supply the upcoming events
-        #     upcoming_events = self.get_object().get_upcoming_events()
-        #     context["events"] = upcoming_events
+        if month and year:
+            posts = self.get_object().get_posts_for_year_and_month(
+                int(month), int(year)
+            )
+        elif year:
+            posts = self.get_object().get_posts_for_year(
+                int(year)
+            )
+        else:
+            # if month and year are not supplied then supply all posts from newest to oldest
+            posts = self.get_object().get_latest_posts()
 
-        # context["date_list"] = self.get_semester_date_list()
-        # context["self"] = self.get_object()
+        context["posts"] = posts
+
+
+        paginator = Paginator(posts, per_page=3)
+        page_obj = paginator.get_page(request.GET.get("page"))
+        context["page_obj"] = page_obj
+
+        context["date_list"] = self.get_object().get_list_of_dates()
+        context["self"] = self.get_object()
 
         return context
 
