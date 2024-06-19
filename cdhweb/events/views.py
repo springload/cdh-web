@@ -103,7 +103,6 @@ class UpcomingEventsView(EventMixinView, EventSemesterDates, LastModifiedListMix
     # events in get_context_data instaed
     def get_context_data(self, *args, **kwargs):
         context = super(UpcomingEventsView, self).get_context_data(*args, **kwargs)
-        print("upcoming view")
 
         # Fetch child pages of the EventsLandingPage
         child_pages = EventsLandingPage.get_children().live()
@@ -115,7 +114,6 @@ class UpcomingEventsView(EventMixinView, EventSemesterDates, LastModifiedListMix
         ).order_by("event__start_time")
 
         context["upcoming_events"] = upcoming_events
-        print(upcoming_events)
         event_qs = context["events"]
         context.update(
             {

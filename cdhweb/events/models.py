@@ -448,3 +448,7 @@ class EventsLandingPage(StandardHeroMixinNoImage, Page):
         return child_pages.filter(event__start_time__gte=current_datetime).order_by(
             "event__start_time"
         )
+    
+    def save(self, *args, **kwargs):
+        self.slug = 'events'
+        super().save(*args, **kwargs)
