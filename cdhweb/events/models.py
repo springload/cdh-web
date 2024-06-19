@@ -87,7 +87,7 @@ class EventQuerySet(PageQuerySet):
         day even if the start time is past."""
         now = timezone.now()
         # construct a datetime based on now but with zero hour/minute/second
-        today = datetime(
+        today = datetime.datetime(
             now.year, now.month, now.day, tzinfo=timezone.get_default_timezone()
         )
         return self.filter(end_time__gte=today).order_by_start()
@@ -97,7 +97,7 @@ class EventQuerySet(PageQuerySet):
         with end date in the past."""
         now = timezone.now()
         # construct a datetime based on now but with zero hour/minute/second
-        today = datetime(
+        today = datetime.datetime(
             now.year, now.month, now.day, tzinfo=timezone.get_default_timezone()
         )
         return self.filter(end_time__lt=today).order_by("-start_time")
