@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
+import datetime
 
 import icalendar
 from django.core.exceptions import ValidationError
@@ -298,24 +298,24 @@ class Event(BasePage, ClusterableModel):
         if not self.type:
             raise ValidationError("Event must specify a type.")
 
-    def get_url_parts(self, *args, **kwargs):
-        """Custom event page URLs of the form /events/2014/03/my-event."""
-        url_parts = super().get_url_parts(*args, **kwargs)
-        # NOTE evidently this can sometimes be None; unclear why – perhaps it
-        # gets called in a context where the request is unavailable? Only
-        # happens in QA, not locally.
-        if url_parts:
-            site_id, root_url, _ = url_parts
-            page_path = reverse(
-                "events:detail",
-                kwargs={
-                    "year": self.start_time.year,
-                    # force two-digit month
-                    "month": "%02d" % self.start_time.month,
-                    "slug": self.slug,
-                },
-            )
-            return site_id, root_url, page_path
+    # def get_url_parts(self, *args, **kwargs):
+    #     """Custom event page URLs of the form /events/2014/03/my-event."""
+    #     url_parts = super().get_url_parts(*args, **kwargs)
+    #     # NOTE evidently this can sometimes be None; unclear why – perhaps it
+    #     # gets called in a context where the request is unavailable? Only
+    #     # happens in QA, not locally.
+    #     if url_parts:
+    #         site_id, root_url, _ = url_parts
+    #         page_path = reverse(
+    #             "events:detail",
+    #             kwargs={
+    #                 "year": self.start_time.year,
+    #                 # force two-digit month
+    #                 "month": "%02d" % self.start_time.month,
+    #                 "slug": self.slug,
+    #             },
+    #         )
+    #         return site_id, root_url, page_path
 
     def get_ical_url(self):
         """URL to download this event as a .ics (iCal) file."""
@@ -396,6 +396,8 @@ class Event(BasePage, ClusterableModel):
 class EventsLinkPageArchived(LinkPage):
     """Container page that defines where Event pages can be created."""
 
+    is_creatable = False
+
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []
@@ -413,4 +415,40 @@ class EventsLandingPage(StandardHeroMixinNoImage, Page):
     settings_panels = Page.settings_panels
 
     # allow content pages to be added under events for special event series
-    subpage_types = [Event, LinkPage, ContentPage]
+    subpage_types = [Event]
+
+    def get_upcoming_events_for_semester(self, semester, year):
+        # Adjust the semester and year to datetime ranges
+        if semester == "spring":
+            start_date = datetime.date(year, 1, 1)
+            end_date = datetime.date(year, 5, 31)
+        elif semester == "summer":
+            start_date = datetime.date(year, 6, 1)
+            end_date = datetime.date(year, 8, 31)
+        elif semester == "fall":
+            start_date = datetime.date(year, 9, 1)
+            end_date = datetime.date(year, 12, 31)
+        else:
+            raise ValueError("Invalid semester")
+
+        # Filter events based on start_time within the semester range
+        return (
+            self.get_children()
+            .live()
+            .filter(event__start_time__gte=start_date, event__start_time__lte=end_date)
+            .order_by("event__start_time")
+        )
+
+    def get_upcoming_events(self):
+        current_datetime = timezone.now()
+
+        child_pages = self.get_children().live()
+
+        # Fetch upcoming events among the child pages
+        return child_pages.filter(event__start_time__gte=current_datetime).order_by(
+            "event__start_time"
+        )
+    
+    def save(self, *args, **kwargs):
+        self.slug = 'events'
+        super().save(*args, **kwargs)

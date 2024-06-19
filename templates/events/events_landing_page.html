@@ -4,9 +4,26 @@
 {% block body_class %}template-events-landing{% endblock %}
 
 {% block main %}
-    {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
+    {% include 'includes/breadcrumbs.html' with breadcrumbs=self.breadcrumbs current_page=self %}
     {% include 'includes/standard_hero.html' %}
 
-    {# fixed tile block to go here #}
+<div class="archive-nav">
+    <a class="toggle">
+        <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
+    <ul class="submenu">
+    {# include upcoming events page link #}
+    {% url 'events:upcoming' as upcoming_url %}
+    <li {% if request.path == upcoming_url %}class="current"{% endif %}><a href="{{ upcoming_url }}">Upcoming</a></li>
+    {% for semester, year in date_list reversed %}
+        {% url 'events:by-semester' semester=semester|slugify year=year as event_url %}
+        <li {% if event_url == request.path  %}class="current"{% endif %}>
+            <a href="{{ event_url }}">{{ semester }} {{ year }}</a></li>
+    {% endfor %}
+</ul>
+</div>
+
+    {% for event in events %}
+        {% include 'cdhpages/blocks/tile.html' with internal_page=event tile_type='internal_page_tile' %}
+    {% endfor %}
 
 {% endblock %}

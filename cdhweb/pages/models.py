@@ -251,6 +251,8 @@ class LinkPage(AbstractLinkPage):
     )
     search_fields = Page.search_fields
 
+    is_creatable = False
+
 
 class BasePage(Page):
     """Abstract Page class from which all Wagtail page types are derived."""
@@ -355,13 +357,14 @@ class LandingPage(BaseLandingPage, SidebarNavigationMixin):
         BaseLandingPage.settings_panels + SidebarNavigationMixin.settings_panels
     )
 
-    parent_page_types = ["HomePage"]
+    parent_page_types = ["HomePage", "LandingPage"]
     subpage_types = [
         "ContentPage",
         "people.PeopleLandingPage",
         "projects.ProjectsLandingPage",
         "events.EventsLandingPage",
         "blog.BlogLandingPage",
+        "LandingPage",
     ]
 
     class Meta:

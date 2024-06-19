@@ -14,7 +14,7 @@ class EventListSitemap(Sitemap):
         factory = RequestFactory()
 
         urls = [
-            (reverse("event:upcoming"), views.UpcomingEventsView()),
+            (reverse("event:upcoming"), views.EventsLandingPageView()),
         ]
         # get list of actual semesters with events
         for season, year in views.EventSemesterDates().get_semester_date_list():
@@ -24,7 +24,7 @@ class EventListSitemap(Sitemap):
                 "event:by-semester", kwargs={"semester": season.lower(), "year": year}
             )
             request = factory.get(url)
-            view = views.EventSemesterArchiveView()
+            view = views.EventsLandingPageView()
             view.setup(request)
             urls.append((url, view))
         return urls
