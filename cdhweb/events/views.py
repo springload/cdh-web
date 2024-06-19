@@ -3,8 +3,14 @@ import datetime
 import icalendar
 from django.http import Http404, HttpResponse
 from django.utils import timezone
+from django.views.generic.base import TemplateView
 from django.views.generic.dates import ArchiveIndexView, YearArchiveView
 from django.views.generic.detail import DetailView
+
+
+class AboutUs(TemplateView):
+    template_name = "aboutus.html"
+
 
 from cdhweb.events.models import Event, EventsLandingPage
 from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
@@ -51,9 +57,38 @@ class EventSemesterDates:
         return date_list
 
 
-class UpcomingEventsView(
-    EventMixinView, EventSemesterDates, LastModifiedListMixin
-):
+class EventsLandingPageView(TemplateView, EventSemesterDates):
+    model = EventsLandingPage
+    template_name = "events/events_landing_page.html"
+    context_object_name = "events_landing_page"
+
+    def get_object(self):
+        return EventsLandingPage.objects.first()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        semester = self.kwargs.get("semester")
+        year = self.kwargs.get("year")
+
+        # context['self']
+
+        if semester and year:
+            upcoming_events = self.get_object().get_upcoming_events_for_semester(
+                semester, int(year)
+            )
+            context["events"] = upcoming_events
+        else:
+            # if semester and year are not supplied then supply the upcoming events
+            upcoming_events = self.get_object().get_upcoming_events()
+            context["events"] = upcoming_events
+
+        context["date_list"] = self.get_semester_date_list()
+        context["self"] = self.get_object()
+
+        return context
+
+
+class UpcomingEventsView(EventMixinView, EventSemesterDates, LastModifiedListMixin):
     """Upcoming events view.  Displays future published events and
     6 most recent past events."""
 
@@ -68,6 +103,7 @@ class UpcomingEventsView(
     # events in get_context_data instaed
     def get_context_data(self, *args, **kwargs):
         context = super(UpcomingEventsView, self).get_context_data(*args, **kwargs)
+        print("upcoming view")
 
         # Fetch child pages of the EventsLandingPage
         child_pages = EventsLandingPage.get_children().live()
@@ -76,9 +112,9 @@ class UpcomingEventsView(
         current_datetime = timezone.now()
         upcoming_events = child_pages.filter(
             event__start_time__gte=current_datetime
-        ).order_by('event__start_time')
+        ).order_by("event__start_time")
 
-        context['upcoming_events'] = upcoming_events
+        context["upcoming_events"] = upcoming_events
         print(upcoming_events)
         event_qs = context["events"]
         context.update(
@@ -205,24 +241,6 @@ class EventIcalView(EventDetailView):
         response = HttpResponse(cal.to_ical(), content_type="text/calendar")
         response["Content-Disposition"] = 'attachment; filename="%s.ics"' % event.slug
         return response
-    
-class EventsLandingPageView(DetailView):
-    model = EventsLandingPage
-    template_name = "cdhpages/events/events_landing_page.html"
-    context_object_name = "events_landing_page"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        semester = self.kwargs.get("semester")
-        year = self.kwargs.get("year")
-        
-        # Assuming you have a method to filter events by semester and year
-        upcoming_events = self.object.get_upcoming_events_for_semester(semester, year)
-        print("*****")
-        print(upcoming_events)
-        
-        context["upcoming_events"] = upcoming_events
-        return context
 
 
 # ical calendar for all upcoming events
