@@ -18,7 +18,7 @@ from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
 from cdhweb.pages.mixin import StandardHeroMixinNoImage
-from cdhweb.pages.models import BasePage, LinkPage, PagePreviewDescriptionMixin
+from cdhweb.pages.models import BasePage, ContentPage, LinkPage
 from cdhweb.people.models import Person
 
 
@@ -236,10 +236,9 @@ class BlogLandingPage(StandardHeroMixinNoImage, Page):
 
     settings_panels = Page.settings_panels
 
-    subpage_types = [BlogPost]
+    subpage_types = [BlogPost, ContentPage]
 
     def get_posts_for_year_and_month(self, month, year):
-
         # get blogs by year and month
         return (
             self.get_children()
@@ -247,10 +246,8 @@ class BlogLandingPage(StandardHeroMixinNoImage, Page):
             .filter(first_published_at__year=year, first_published_at__month=month)
             .order_by("-first_published_at")
         )
-    
 
     def get_posts_for_year(self, year):
-
         # get blogs by year
         return (
             self.get_children()
@@ -260,16 +257,13 @@ class BlogLandingPage(StandardHeroMixinNoImage, Page):
         )
 
     def get_latest_posts(self):
-
         child_pages = self.get_children().live()
 
         # Fetch upcoming events among the child pages
-        return child_pages.order_by(
-            "-first_published_at"
-        )
-    
+        return child_pages.order_by("-first_published_at")
+
     def get_list_of_dates(self):
         # get list of dates to sort by
-            
+
         child_pages = self.get_children().live()
-        return child_pages.dates('first_published_at', 'month', order="DESC")
+        return child_pages.dates("first_published_at", "month", order="DESC")

@@ -1,69 +1,24 @@
-from datetime import datetime
-
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
-from django.views.generic.dates import (
-    ArchiveIndexView,
-    MonthArchiveView,
-    YearArchiveView,
-)
-from django.core.paginator import Paginator
-
-from django.views.generic.detail import DetailView
-from django.views.generic.base import TemplateView
 from django.views.generic import ListView
+from django.views.generic.detail import DetailView
 
-from cdhweb.blog.models import BlogPost, BlogLandingPage
-from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
-
-
-class BlogPostMixinView(object):
-    """Mixin that sets model to BlogPost and orders/filters queryset."""
-
-    model = BlogPost
-    lastmodified_attr = "last_published_at"
-
-    def get_queryset(self):
-        """Return published posts with most recent first."""
-        return BlogPost.objects.live().recent()
+from cdhweb.blog.models import BlogLandingPage, BlogPost
+from cdhweb.pages.views import LastModifiedMixin
 
 
-class BlogPostArchiveMixin(BlogPostMixinView, LastModifiedListMixin):
-    """Mixin with common settings for blogpost archive views"""
-
-    date_field = "first_published_at"
-    context_object_name = "posts"
-    make_object_list = True
-    paginate_by = 12
-    template_name = "blog/blogpost_archive.html"
-
-
-class BlogIndexView(BlogPostArchiveMixin, ArchiveIndexView):
-    """Main blog post list view"""
-
-    date_list_period = "month"
-
-    def get_queryset(self):
-        return super().get_queryset().prefetch_related("page_ptr")
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context.update({"page_title": "Latest Updates"})
-        return context
-    
-class BlogLandingPageView(TemplateView):
+class BlogLandingPageView(ListView):
     model = BlogLandingPage
     template_name = "blog/blog_landing_page.html"
     context_object_name = "posts"
-    paginate_by = 3
+    paginate_by = 15
     make_object_list = True
 
     def get_object(self):
-        slug = self.kwargs.get('slug')
+        slug = self.kwargs.get("slug")
         return BlogLandingPage.objects.get(slug=slug)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_queryset(self, **kwargs):
         month = self.kwargs.get("month")
         year = self.kwargs.get("year")
 
@@ -72,71 +27,18 @@ class BlogLandingPageView(TemplateView):
                 int(month), int(year)
             )
         elif year:
-            posts = self.get_object().get_posts_for_year(
-                int(year)
-            )
+            posts = self.get_object().get_posts_for_year(int(year))
         else:
             # if month and year are not supplied then supply all posts from newest to oldest
             posts = self.get_object().get_latest_posts()
 
-        context["posts"] = posts
+        return posts
 
-
-        paginator = Paginator(posts, per_page=3)
-        page_obj = paginator.get_page(request.GET.get("page"))
-        context["page_obj"] = page_obj
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         context["date_list"] = self.get_object().get_list_of_dates()
         context["self"] = self.get_object()
-
         return context
-
-
-class BlogYearArchiveView(BlogPostArchiveMixin, YearArchiveView):
-    """Blog post archive by year"""
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(BlogYearArchiveView, self).get_context_data(*args, **kwargs)
-        context.update(
-            {
-                "date_list": BlogPost.objects.dates(
-                    self.date_field, "month", order="DESC"
-                ),
-                "page_title": "%s Updates" % self.kwargs["year"],
-            }
-        )
-        return context
-
-
-class BlogMonthArchiveView(BlogPostArchiveMixin, MonthArchiveView):
-    """Blog post archive by month"""
-
-    month_format = "%m"
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(BlogMonthArchiveView, self).get_context_data(*args, **kwargs)
-        # current requested month/year for display
-        date = datetime.strptime("%(year)s %(month)s" % self.kwargs, "%Y %m")
-        context.update(
-            {
-                "date_list": BlogPost.objects.dates(
-                    self.date_field, "month", order="DESC"
-                ),
-                "page_title": "%s Updates" % date.strftime("%B %Y"),
-            }
-        )
-        return context
-
-
-class BlogDetailView(BlogPostMixinView, DetailView, LastModifiedMixin):
-    """Blog post detail view"""
-
-    context_object_name = "page"
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        return self.object.serve(request, *args, **kwargs)
 
 
 class RssBlogPostFeed(Feed):
