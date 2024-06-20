@@ -21,6 +21,7 @@
 
 // Elements
 @import './global/elements/typography';
+@import './global/elements/forms';
 @import './global/elements/page.scss';
 
 // Layout
@@ -73,6 +74,7 @@
 @import './global/components/newsletter.scss';
 @import './global/components/search-form.scss';
 @import './global/components/pagination.scss';
+@import './global/components/simple-filter-bar.scss';
 @import './global/components/footer.scss';
 
 // TODO delete migrated content styles once all migrated content is moved from

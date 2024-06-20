@@ -7,28 +7,45 @@
     {% include 'includes/breadcrumbs.html' with breadcrumbs=self.breadcrumbs current_page=self %}
     {% include 'includes/standard_hero.html' %}
 
+    <div class="content-width grid-standard page-layout page-layout--without-sidenav-wider">
+        <div class="page-layout__main-content">
 
-    <div class="archive-nav">
-        <a class="toggle">{{ page_title }} <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
-        <ul class="submenu">
-          {# include latest blogposts page link #}
-          {% url 'blog:list' slug=self.slug as latest_url %}
-          <li {% if request.path == latest_url %}class="current"{% endif %}><a href="{{ latest_url }}">Recent</a></li>
-          {% for archive_date in date_list %}
-          {% ifchanged %}<li>{{ archive_date.year }}</li>{% endifchanged %}
-              {% url 'blog:by-month' year=archive_date.year month=archive_date|date:"m" slug=self.slug as blog_url %}
-              <li {% if blog_url == request.path  %}class="current"{% endif %}>
-                  <a href="{{ blog_url }}">{{ archive_date|date:"F" }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
+          <div class="simple-filter-bar" class="u-no-js-hide">
+            <label for="blog-date-filter">
+              Show
+              <span class="sr-only">(Note: page will reload)</span>
+            </label>
+            <select id="blog-date-filter" data-component="select-navigator">
+              {% url 'blog:list' slug=self.slug as latest_url %}
+              <option data-href="{{ latest_url }}" {% if request.path == latest_url %}selected{% endif %}>Recent</option>
+              
+              {# Group months by year #}
+              {% for archive_date in date_list %}
+                {% ifchanged %}
+                  <optgroup label="{{ archive_date.year }}">
+                {% endifchanged %}
+              
+                {% url 'blog:by-month' year=archive_date.year month=archive_date|date:"m" slug=self.slug as blog_url %}
+                <option data-href="{{ blog_url }}" {% if blog_url == request.path  %}selected{% endif %}>{{ archive_date|date:"F" }}</option>
+                
+                {% ifchanged %}
+                  </optgroup>
+                {% endifchanged %}
+              {% endfor %}
+            </select>
+          </div>
 
-      {% for post in posts %}
-        {% include 'cdhpages/blocks/tile.html' with internal_page=post tile_type='internal_page_tile' %}
-    {% endfor %}
+          <div class="tiles__list">
+            {% for post in posts %}
+              {% include 'cdhpages/blocks/tile.html' with internal_page=post tile_type='internal_page_tile' %}
+            {% endfor %}
+          </div>
 
-    {% if is_paginated %}
-        {% include "includes/pagination.html" %}    
-    {% endif %}
+          {% if is_paginated %}
+            {% include "includes/pagination.html" %}    
+          {% endif %}
+        </div>
+      
+    </div>
 
 {% endblock %}
