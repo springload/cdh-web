@@ -18,7 +18,7 @@ from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
 from cdhweb.pages.mixin import StandardHeroMixinNoImage
-from cdhweb.pages.models import BasePage, LinkPage, PagePreviewDescriptionMixin
+from cdhweb.pages.models import BasePage, ContentPage, LinkPage
 from cdhweb.people.models import Person
 
 
@@ -186,25 +186,6 @@ class BlogPost(BasePage, ClusterableModel):
         """Comma-separated list of author names."""
         return ", ".join(str(author.person) for author in self.authors.all())
 
-    def get_url_parts(self, *args, **kwargs):
-        """Custom blog post URLs of the form /updates/2014/03/01/my-post."""
-        url_parts = super().get_url_parts(*args, **kwargs)
-        # NOTE evidently these can sometimes be None; unclear why – perhaps it
-        # gets called in a context where the request is unavailable. Seems to
-        # happen immediately on page creation; the creation still succeeds.
-        if url_parts and self.first_published_at:
-            site_id, root_url, _ = url_parts
-            page_path = reverse(
-                "blog:detail",
-                kwargs={
-                    "year": self.first_published_at.year,
-                    # force two-digit month and day
-                    "month": "%02d" % self.first_published_at.month,
-                    "day": "%02d" % self.first_published_at.day,
-                    "slug": self.slug,
-                },
-            )
-            return site_id, root_url, page_path
 
     def get_sitemap_urls(self, request):
         """Override sitemap listings to add priority for featured posts."""
@@ -236,4 +217,34 @@ class BlogLandingPage(StandardHeroMixinNoImage, Page):
 
     settings_panels = Page.settings_panels
 
-    subpage_types = [BlogPost]
+    subpage_types = [BlogPost, ContentPage]
+
+    def get_posts_for_year_and_month(self, month, year):
+        # get blogs by year and month
+        return (
+            self.get_children()
+            .live()
+            .filter(first_published_at__year=year, first_published_at__month=month)
+            .order_by("-first_published_at")
+        )
+
+    def get_posts_for_year(self, year):
+        # get blogs by year
+        return (
+            self.get_children()
+            .live()
+            .filter(first_published_at__year=year)
+            .order_by("-first_published_at")
+        )
+
+    def get_latest_posts(self):
+        child_pages = self.get_children().live()
+
+        # Fetch all posts ordered by most recently published
+        return child_pages.order_by("-first_published_at")
+
+    def get_list_of_dates(self):
+        # get list of dates to sort by
+
+        child_pages = self.get_children().live()
+        return child_pages.dates("first_published_at", "month", order="DESC")
