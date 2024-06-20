@@ -259,7 +259,7 @@ class BlogLandingPage(StandardHeroMixinNoImage, Page):
     def get_latest_posts(self):
         child_pages = self.get_children().live()
 
-        # Fetch upcoming events among the child pages
+        # Fetch all posts ordered by most recently published
         return child_pages.order_by("-first_published_at")
 
     def get_list_of_dates(self):
