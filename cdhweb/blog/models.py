@@ -1,7 +1,9 @@
 from datetime import date
 
+from django.core.paginator import Paginator
 from django.db import models
 from django.db.models.fields.related import RelatedField
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.dateformat import format
 from django.utils.functional import cached_property
@@ -12,6 +14,7 @@ from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.contrib.routable_page.models import RoutablePageMixin, path, re_path
 from wagtail.fields import RichTextField
 from wagtail.models import Orderable, Page, PageManager, PageQuerySet
 from wagtail.search import index
@@ -186,7 +189,6 @@ class BlogPost(BasePage, ClusterableModel):
         """Comma-separated list of author names."""
         return ", ".join(str(author.person) for author in self.authors.all())
 
-
     def get_sitemap_urls(self, request):
         """Override sitemap listings to add priority for featured posts."""
         # output is a list of dict; there should only ever be one element. see:
@@ -208,8 +210,11 @@ class BlogLinkPageArchived(LinkPage):
     subpage_types = [BlogPost]
 
 
-class BlogLandingPage(StandardHeroMixinNoImage, Page):
+class BlogLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
     """Container page that defines where Event pages can be created."""
+
+    page_size = 15
+    template_name = "blog/blog_landing_page.html"
 
     content_panels = StandardHeroMixinNoImage.content_panels
 
@@ -219,26 +224,60 @@ class BlogLandingPage(StandardHeroMixinNoImage, Page):
 
     subpage_types = [BlogPost, ContentPage]
 
-    def get_posts_for_year_and_month(self, month, year):
-        # get blogs by year and month
-        return (
-            self.get_children()
-            .live()
-            .filter(first_published_at__year=year, first_published_at__month=month)
-            .order_by("-first_published_at")
+    def get_context(self, request, year=None, month=None):
+        context = super().get_context(request)
+
+        if year:
+            posts = self.get_posts_for_year_and_month(year=year, month=month)
+        else:
+            posts = self.get_latest_posts()
+
+        page_number = request.GET.get("page") or 1
+        paginator = Paginator(posts, self.page_size)
+        page = paginator.page(page_number)
+        context.update(
+            {
+                "paginator": paginator,
+                "is_paginated": page.has_other_pages(),
+                "page_obj": page,  # Used in pagination template
+                "posts": page,  # Used in page template
+            }
         )
 
-    def get_posts_for_year(self, year):
-        # get blogs by year
-        return (
+        context["date_list"] = self.get_list_of_dates()
+
+        return context
+
+    @path("<int:year>/", name="by-year")
+    @path("<int:year>/<int:month>/", name="by-month")
+    def by_date(self, request, year=None, month=None):
+        context = self.get_context(request, year=year, month=month)
+        return self.render(request, context_overrides=context)
+
+    @path("<int:year>/<int:month>/<int:day>/<slug:blog_slug>/", name="blog")
+    def blog(self, request, year=None, month=None, day=None, blog_slug=None):
+        child = get_object_or_404(
             self.get_children()
             .live()
-            .filter(first_published_at__year=year)
-            .order_by("-first_published_at")
+            .public()
+            .filter(
+                first_published_at__year=year,
+                first_published_at__month=month,
+                first_published_at__day=day,
+            ),
+            slug=blog_slug,
         )
+        return child.specific.serve(request)
+
+    def get_posts_for_year_and_month(self, year=None, month=None):
+        # get blogs by year and month
+        child_qs = self.get_latest_posts().filter(first_published_at__year=year)
+        if month:
+            child_qs = child_qs.filter(first_published_at__month=month)
+        return child_qs
 
     def get_latest_posts(self):
-        child_pages = self.get_children().live()
+        child_pages = self.get_children().live().public()
 
         # Fetch all posts ordered by most recently published
         return child_pages.order_by("-first_published_at")
