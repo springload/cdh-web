@@ -357,7 +357,6 @@ class LandingPage(BaseLandingPage, SidebarNavigationMixin):
         BaseLandingPage.settings_panels + SidebarNavigationMixin.settings_panels
     )
 
-    parent_page_types = ["HomePage", "LandingPage"]
     subpage_types = [
         "ContentPage",
         "people.PeopleLandingPage",

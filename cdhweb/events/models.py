@@ -23,7 +23,7 @@ from wagtailautocomplete.edit_handlers import AutocompletePanel
 
 from cdhweb.pages.blocks.image_block import UnsizedImageBlock
 from cdhweb.pages.mixin import StandardHeroMixinNoImage
-from cdhweb.pages.models import BaseLandingPage, BasePage, ContentPage, LinkPage
+from cdhweb.pages.models import LandingPage, BasePage, ContentPage, LinkPage
 from cdhweb.people.models import Person
 
 
@@ -415,7 +415,7 @@ class EventsLandingPage(StandardHeroMixinNoImage, Page):
     settings_panels = Page.settings_panels
 
     # allow content pages to be added under events for special event series
-    subpage_types = [Event]
+    subpage_types = [Event, ContentPage, LandingPage]
 
     def get_upcoming_events_for_semester(self, semester, year):
         # Adjust the semester and year to datetime ranges
@@ -430,11 +430,12 @@ class EventsLandingPage(StandardHeroMixinNoImage, Page):
             end_date = datetime.date(year, 12, 31)
         else:
             raise ValueError("Invalid semester")
+        
+        child_pages = self.get_children().live().type(Event)
 
         # Filter events based on start_time within the semester range
         return (
-            self.get_children()
-            .live()
+            child_pages
             .filter(event__start_time__gte=start_date, event__start_time__lte=end_date)
             .order_by("event__start_time")
         )
@@ -442,7 +443,7 @@ class EventsLandingPage(StandardHeroMixinNoImage, Page):
     def get_upcoming_events(self):
         current_datetime = timezone.now()
 
-        child_pages = self.get_children().live()
+        child_pages = self.get_children().live().type(Event)
 
         # Fetch upcoming events among the child pages
         return child_pages.filter(event__start_time__gte=current_datetime).order_by(
