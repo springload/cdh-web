@@ -81,7 +81,7 @@ if settings.DEBUG:
     # serve static files in development - automatically activates in DEBUG; see
     # https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-files-uploaded-by-a-user-during-development
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += staticfiles_urlpatterns()
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
     # Serve 404 and 500 page templates(seeing as errors are masked with debug)
     urlpatterns.extend(
