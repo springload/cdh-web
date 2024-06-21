@@ -1,45 +1,7 @@
 from django.contrib.syndication.views import Feed
-from django.shortcuts import get_object_or_404
 from django.utils.feedgenerator import Atom1Feed
-from django.views.generic import ListView
-from django.views.generic.detail import DetailView
 
-from cdhweb.blog.models import BlogLandingPage, BlogPost
-from cdhweb.pages.views import LastModifiedMixin
-
-
-class BlogLandingPageView(ListView):
-    model = BlogLandingPage
-    template_name = "blog/blog_landing_page.html"
-    context_object_name = "posts"
-    paginate_by = 15
-    make_object_list = True
-
-    def get_object(self):
-        slug = self.kwargs.get("slug")
-        return BlogLandingPage.objects.get(slug=slug)
-
-    def get_queryset(self, **kwargs):
-        month = self.kwargs.get("month")
-        year = self.kwargs.get("year")
-
-        if month and year:
-            posts = self.get_object().get_posts_for_year_and_month(
-                int(month), int(year)
-            )
-        elif year:
-            posts = self.get_object().get_posts_for_year(int(year))
-        else:
-            # if month and year are not supplied then supply all posts from newest to oldest
-            posts = self.get_object().get_latest_posts()
-
-        return posts
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["date_list"] = self.get_object().get_list_of_dates()
-        context["self"] = self.get_object()
-        return context
+from cdhweb.blog.models import BlogPost
 
 
 class RssBlogPostFeed(Feed):
