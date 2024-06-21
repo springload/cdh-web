@@ -189,6 +189,26 @@ class BlogPost(BasePage, ClusterableModel):
         """Comma-separated list of author names."""
         return ", ".join(str(author.person) for author in self.authors.all())
 
+    def get_url_parts(self, *args, **kwargs):
+        """Custom blog post URLs of the form /updates/2014/03/01/my-post."""
+        url_parts = super().get_url_parts(*args, **kwargs)
+        # NOTE evidently these can sometimes be None; unclear why – perhaps it
+        # gets called in a context where the request is unavailable. Seems to
+        # happen immediately on page creation; the creation still succeeds.
+        if url_parts and self.first_published_at:
+            site_id, root_url, _ = url_parts
+            page_path = self.get_parent().specific.reverse_subpage(
+                "dated_child",
+                kwargs={
+                    "year": self.first_published_at.year,
+                    # force two-digit month and day
+                    "month": "%02d" % self.first_published_at.month,
+                    "day": "%02d" % self.first_published_at.day,
+                    "slug": self.slug,
+                },
+            )
+            return site_id, root_url, page_path
+
     def get_sitemap_urls(self, request):
         """Override sitemap listings to add priority for featured posts."""
         # output is a list of dict; there should only ever be one element. see:
@@ -254,8 +274,8 @@ class BlogLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
         context = self.get_context(request, year=year, month=month)
         return self.render(request, context_overrides=context)
 
-    @path("<int:year>/<int:month>/<int:day>/<slug:blog_slug>/", name="blog")
-    def blog(self, request, year=None, month=None, day=None, blog_slug=None):
+    @path("<int:year>/<int:month>/<int:day>/<slug:slug>/", name="dated_child")
+    def dated_child(self, request, year=None, month=None, day=None, slug=None):
         child = get_object_or_404(
             self.get_children()
             .live()
@@ -265,7 +285,7 @@ class BlogLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
                 first_published_at__month=month,
                 first_published_at__day=day,
             ),
-            slug=blog_slug,
+            slug=slug,
         )
         return child.specific.serve(request)
 
@@ -277,7 +297,7 @@ class BlogLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
         return child_qs
 
     def get_latest_posts(self):
-        child_pages = self.get_children().live().public()
+        child_pages = self.get_children().live().public().specific()
 
         # Fetch all posts ordered by most recently published
         return child_pages.order_by("-first_published_at")
