@@ -627,7 +627,7 @@ class Migration(migrations.Migration):
                                     "featured",
                                     wagtail.blocks.BooleanBlock(
                                         default=False,
-                                        help_text="Check this checkbox to create a visually distinct tile block that stands out from regular tiles on the page.",
+                                        help_text="Creates a visually-distinct tile block that stands out from regular tiles on the page. This style only takes effect on the homepage.",
                                     ),
                                 ),
                                 (
