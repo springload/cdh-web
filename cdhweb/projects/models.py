@@ -182,6 +182,8 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
     search_fields = StandardHeroMixin.search_fields + [
         index.SearchField("body"),
         index.FilterField("cdh_built"),
+        index.FilterField("path"),
+        index.FilterField("depth"),
         # We can't actually filter on these right now, but leave them here in case we can somedays
         # See: https://docs.wagtail.org/en/v5.2.5/topics/search/indexing.html#filtering-on-index-relatedfields
         index.RelatedFields(
@@ -392,26 +394,35 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
         current_filter = clean_filters.pop("current")
 
         # Apply "always" filters
-        children = children.public().live().child_of(self)
+        children = Project.objects.child_of(self).public().live()
 
         # Assume we've engineered the remaining filter
         # options to map *directly* to Project columns
-        children = children.filter(**clean_filters)
+        # and only apply the ones with a value
+        to_apply = {k: v for k, v in clean_filters.items() if v}
+        children = children.filter(**to_apply)
 
         if query_string:
             children = children.search(query_string)
 
         if current_filter:
+            # The "current" filter uses relations to
+            # `Grant`s, which aren't able to be filtered
+            # using the Wagtail search backend, as they're
+            # too nested. To dodge this. we instead make a
+            # second queryset, matching the keys of the
+            # first, that uses the existing method on the
+            # objects Manager
             children = Project.objects.current().filter(id__in=[c.id for c in children])
 
-        return children.specific()
+        return children
 
     def get_context(self, request, year=None, month=None):
         context = super().get_context(request)
         form = ProjectFiltersForm(request.GET)
-        if form.is_valid():
-            context["results"] = self.get_child_queryset(request, form)
 
+        form.is_valid()
+        context["results"] = self.get_child_queryset(request, form)
         context["filter_form"] = form
 
         return context
