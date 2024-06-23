@@ -19,6 +19,7 @@ from cdhweb.pages.models import (
     RelatedLink,
 )
 from cdhweb.people.models import Person
+from cdhweb.projects.forms import ProjectFiltersForm
 
 
 class ProjectQuerySet(PageQuerySet):
@@ -180,6 +181,12 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
     # search fields
     search_fields = StandardHeroMixin.search_fields + [
         index.SearchField("body"),
+        index.FilterField("cdh_built"),
+        # We can't actually filter on these right now, but leave them here in case we can somedays
+        # See: https://docs.wagtail.org/en/v5.2.5/topics/search/indexing.html#filtering-on-index-relatedfields
+        index.RelatedFields(
+            "grants", [index.FilterField("start_date"), index.FilterField("end_date")]
+        ),
         index.RelatedFields(
             "members",
             [
@@ -261,7 +268,7 @@ class GrantType(models.Model):
         return self.grant_type
 
 
-class Grant(DateRange):
+class Grant(index.Indexed, DateRange):
     """A specific grant associated with a project"""
 
     project = ParentalKey(Project, on_delete=models.CASCADE, related_name="grants")
@@ -276,6 +283,11 @@ class Grant(DateRange):
             self.grant_type.grant_type,
             self.years,
         )
+
+    search_fields = [
+        index.FilterField("start_date"),
+        index.FilterField("end_date"),
+    ]
 
 
 class Role(models.Model):
@@ -352,3 +364,54 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
     settings_panels = Page.settings_panels
 
     subpage_types = [Project]
+
+    """
+    Args:
+        method/approach
+        field of study
+        role
+        current (checkbox, defaults on)
+        built by CDH
+        q (keyword)
+
+    Extras:
+        feature project
+            - exclude from listing
+            - has bigger card
+            - listed first
+    """
+
+    def get_child_queryset(self, request, filter_form):
+
+        clean_filters = filter_form.cleaned_data
+        query_string = clean_filters.pop("q", None)
+
+        # It's not currently possible to filter by
+        # RelatedFields, so because current-ness is part of
+        # Grants we need to apply this later
+        current_filter = clean_filters.pop("current")
+
+        # Apply "always" filters
+        children = children.public().live().child_of(self)
+
+        # Assume we've engineered the remaining filter
+        # options to map *directly* to Project columns
+        children = children.filter(**clean_filters)
+
+        if query_string:
+            children = children.search(query_string)
+
+        if current_filter:
+            children = Project.objects.current().filter(id__in=[c.id for c in children])
+
+        return children.specific()
+
+    def get_context(self, request, year=None, month=None):
+        context = super().get_context(request)
+        form = ProjectFiltersForm(request.GET)
+        if form.is_valid():
+            context["results"] = self.get_child_queryset(request, form)
+
+        context["filter_form"] = form
+
+        return context

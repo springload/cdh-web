@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load wagtailcore_tags springkit_tags %}  
+{% load wagtailcore_tags springkit_tags %}
 
 {% block body_class %}template-projects-landing{% endblock %}
 
@@ -7,6 +7,41 @@
     {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
     {% include 'includes/standard_hero.html' %}
 
-    {# fixed tile block to go here #}
+    <form >
+        <label for="{{ filter_form.q.id_for_label }}">{{ filter_form.q.label }}</label>
+        <input  id="{{ filter_form.q.id_for_label }}" name="{{ filter_form.q.name }}" aria-labelledby="{{ filter_form.q.id_for_label }}" {% if filter_form.q.value %}value="{{ filter_form.q.value }}"{% endif %}>
+
+        <label for="{{ filter_form.method.id_for_label }}">{{ filter_form.method.label }}</label>
+        <select id="{{ filter_form.method.id_for_label }}"  name="{{ filter_form.method.name }}" aria-labelledby="{{ filter_form.method.id_for_label }}">
+            {% for c in filter_form.method %}
+                {{ c }}
+            {% endfor %}
+        </select>
+
+        <label for="{{ filter_form.field.id_for_label }}">{{ filter_form.field.label }}</label>
+        <select id="{{ filter_form.field.id_for_label }}"  name="{{ filter_form.field.name }}" aria-labelledby="{{ filter_form.field.id_for_label }}">
+            {% for c in filter_form.field %}
+                {{ c }}
+            {% endfor %}
+        </select>
+
+        <label for="{{ filter_form.role.id_for_label }}">{{ filter_form.role.label }}</label>
+        <select id="{{ filter_form.role.id_for_label }}"  name="{{ filter_form.role.name }}" aria-labelledby="{{ filter_form.role.id_for_label }}">
+            {% for c in filter_form.role %}
+                {{ c }}
+            {% endfor %}
+        </select>
+
+        <label for="{{ filter_form.current.id_for_label }}">{{ filter_form.current.label }}</label>
+        {# TODO: This needs some extra convincing to default to true, it seems #}
+        <input  id="{{ filter_form.current.id_for_label }}" type="checkbox" name="{{ filter_form.current.name }}" aria-labelledby="{{ filter_form.current.id_for_label }}" {% if filter_form.current.value is not False %}checked{% endif %}>
+
+        <label for="{{ filter_form.cdh_built.id_for_label }}">{{ filter_form.cdh_built.label }}</label>
+        <input  id="{{ filter_form.cdh_built.id_for_label }}" type="checkbox" name="{{ filter_form.cdh_built.name }}" aria-labelledby="{{ filter_form.cdh_built.id_for_label }}" {% if filter_form.cdh_built.value %}checked{% endif %}>
+    </form>
+    {% for project in results %}
+        {# include card template #}
+        <a href="{% pageurl project %}">{{ project.title }}</a>
+    {% endfor %}
 
 {% endblock %}
