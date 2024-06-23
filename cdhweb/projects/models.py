@@ -84,14 +84,6 @@ class ProjectQuerySet(PageQuerySet):
 ProjectManager = PageManager.from_queryset(ProjectQuerySet)
 
 
-class ProjectTag(TaggedItemBase):
-    """Tags for Project pages."""
-
-    content_object = ParentalKey(
-        "projects.Project", on_delete=models.CASCADE, related_name="tagged_items"
-    )
-
-
 class Project(BasePage, ClusterableModel, StandardHeroMixin):
     """Page type for a CDH sponsored project or working group."""
 
@@ -118,7 +110,7 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
     members = models.ManyToManyField(
         Person, through="Membership", related_name="members"
     )
-    tags = ClusterTaggableManager(through=ProjectTag, blank=True)
+
     # TODO attachments (#245)
 
     # can only be created underneath project landing page
@@ -160,20 +152,16 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         ),
         FieldPanel("attachments"),
     ]
-    promote_panels = (
-        [
-            MultiFieldPanel(
-                [
-                    FieldPanel("short_title"),
-                    FieldPanel("short_description"),
-                    FieldPanel("feed_image"),
-                ],
-                "Share Page",
-            ),
-        ]
-        + BasePage.promote_panels
-        + [FieldPanel("tags")]
-    )
+    promote_panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("short_title"),
+                FieldPanel("short_description"),
+                FieldPanel("feed_image"),
+            ],
+            "Share Page",
+        ),
+    ] + BasePage.promote_panels
 
     # custom manager/queryset logic
     objects = ProjectManager()
