@@ -1,25 +1,15 @@
 from django.db import models
 from django.utils import timezone
-from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
 from cdhweb.pages.mixin import StandardHeroMixin
-from cdhweb.pages.models import (
-    BaseLandingPage,
-    BasePage,
-    DateRange,
-    LandingPage,
-    LinkPage,
-    RelatedLink,
-)
+from cdhweb.pages.models import BasePage, DateRange, LandingPage, LinkPage, RelatedLink
 from cdhweb.people.models import Person
-from cdhweb.projects.forms import ProjectFiltersForm
 
 
 class ProjectQuerySet(PageQuerySet):
@@ -111,6 +101,22 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         Person, through="Membership", related_name="members"
     )
 
+    method = models.ForeignKey(
+        "ProjectMethod",
+        on_delete=models.PROTECT,
+        related_name="projects",
+        null=True,
+        blank=True,
+    )
+
+    field = models.ForeignKey(
+        "ProjectField",
+        on_delete=models.PROTECT,
+        related_name="projects",
+        null=True,
+        blank=True,
+    )
+
     # TODO attachments (#245)
 
     # can only be created underneath project landing page
@@ -132,6 +138,7 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         ),
         FieldPanel("body"),
         FieldPanel("project_website"),
+        FieldRowPanel([FieldPanel("method"), FieldPanel("field")], "Filter fields"),
         InlinePanel("related_links", label="Links"),
         InlinePanel(
             "grants",
@@ -347,6 +354,7 @@ class ProjectsLandingPageArchived(LandingPage):
 
 
 class ProjectsLandingPage(StandardHeroMixin, Page):
+
     content_panels = StandardHeroMixin.content_panels
 
     search_fields = StandardHeroMixin.search_fields
@@ -354,22 +362,6 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
     settings_panels = Page.settings_panels
 
     subpage_types = [Project]
-
-    """
-    Args:
-        method/approach
-        field of study
-        role
-        current (checkbox, defaults on)
-        built by CDH
-        q (keyword)
-
-    Extras:
-        feature project
-            - exclude from listing
-            - has bigger card
-            - listed first
-    """
 
     def get_child_queryset(self, request, filter_form):
 
@@ -406,6 +398,8 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
         return children
 
     def get_context(self, request, year=None, month=None):
+        from cdhweb.projects.forms import ProjectFiltersForm
+
         context = super().get_context(request)
         form = ProjectFiltersForm(request.GET)
 
@@ -414,3 +408,29 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
         context["filter_form"] = form
 
         return context
+
+
+class ProjectMethod(models.Model):
+    """
+    Model for project methodologies/approaches
+
+    Used for the projects filter
+    """
+
+    method = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.method
+
+
+class ProjectField(models.Model):
+    """
+    Model for project Fields
+
+    Used for the projects filter
+    """
+
+    field = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.field

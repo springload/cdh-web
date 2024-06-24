@@ -1,26 +1,28 @@
 from django import forms
 
+from cdhweb.projects.models import ProjectField, ProjectMethod
+
 
 class ProjectFiltersForm(forms.Form):
     """
     Form for validating the project filters
     """
 
-    """
-    Args:
-        method/approach
-        field of study
-        role
-        current (checkbox, defaults on)
-        built by CDH (checkbox)
-        q (keyword)
-
-    """
     q = forms.CharField(required=False, label="Keyword")
-    # START TODO: These need to be added as models + relations
-    method = forms.ChoiceField(choices=[(None, "--Select--")])  # ??
-    field = forms.ChoiceField(choices=[(None, "--Select--")])  # ??
-    role = forms.ChoiceField(choices=[(None, "--Select--")])  # ??
+    method = forms.ModelChoiceField(
+        ProjectMethod.objects.all(),
+        empty_label="--Select--",
+        required=False,
+        blank=True,
+    )
+    field = forms.ModelChoiceField(
+        ProjectField.objects.all(),
+        empty_label="--Select--",
+        required=False,
+        blank=True,
+    )
+    # START TODO: Decide if we still need a third filter
+    role = forms.ChoiceField(choices=[(None, "--Select--")], required=False)  # ??
     # END TODO
     current = forms.BooleanField(required=False, initial=True)
     cdh_built = forms.BooleanField(required=False, label="Built by CDH")
