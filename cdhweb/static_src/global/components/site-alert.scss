@@ -1,0 +1,112 @@
+.alert-banner {
+  --alert-accent-color: var(--color-brand-100);
+  --alert-bg-color: var(--color-brand-5);
+
+  // This linear gradient has a hard stop in the middle and goes full width.
+  // This is so we get  the left-side full bleed for the decoration area.
+  // The content area has a white background which hides this trickery.
+  background-image: linear-gradient(
+    to right,
+    var(--alert-accent-color) 50%,
+    var(--alert-bg-color) 50%
+  );
+
+  line-height: 1.5;
+  border-block-end: 1px solid var(--color-brand-110);
+}
+
+.alert-banner--info,
+.alert-banner--warning {
+  --alert-accent-color: var(--color-brand-100);
+}
+.alert-banner--emergency {
+  --alert-accent-color: var(--color-red-100);
+}
+
+// has `grid-standard`
+.alert-banner__grid {
+  // background-color: var(--color-white);
+
+  // d = decoration (left color block and icon)
+  // c = content (including dismiss button)
+  grid-template-areas: 'd c c c c c c c c c c c';
+
+  @include lg {
+    grid-template-areas: 'd d c c c c c c c c c c';
+  }
+}
+
+.alert-banner__decoration {
+  --icon-accent-color: var(--icon-accent-color-dark);
+
+  grid-area: d;
+  background-color: var(--alert-accent-color);
+
+  // icon placement
+  display: grid;
+  justify-content: end;
+  padding: 6px 4px;
+
+  @include lg {
+    padding: 20px 8px;
+  }
+
+  :where(svg) {
+    width: 20px;
+    aspect-ratio: 1;
+  }
+}
+
+.alert-banner__content {
+  grid-area: c;
+  background-color: var(--alert-bg-color);
+  position: relative; // for pseudo element placement
+
+  font-size: px2rem(16);
+  padding-block: 8px;
+
+  @include lg {
+    padding-block: 16px;
+  }
+
+  // Visually add left padding to the alert content
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: calc(-1 * var(--standard-gap));
+    width: var(--standard-gap);
+    height: 100%;
+    background-color: var(--alert-bg-color);
+  }
+}
+
+.alert-banner__heading {
+  font-size: px2rem(20);
+}
+
+// Wrapper for a) text and b) dismiss button
+.alert-banner__content--dismissable {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 12px;
+}
+
+.alert-banner__text {
+  max-inline-size: px2rem(1080);
+}
+
+.alert-banner__dismiss-btn {
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+
+  padding: 4px;
+
+  :where(svg) {
+    width: px2rem(18);
+    aspect-ratio: 1;
+  }
+}

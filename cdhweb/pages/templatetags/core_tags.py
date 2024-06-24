@@ -3,7 +3,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from cdhweb.pages.snippets import Footer, PrimaryNavigation, SecondaryNavigation
+from cdhweb.pages.snippets import Footer, PrimaryNavigation, SecondaryNavigation, SiteAlert
 
 register = template.Library()
 
@@ -176,3 +176,15 @@ def secondary_navigation():
         return data
     else:
         return None
+
+
+@register.inclusion_tag("includes/site_alert.html", takes_context=True)
+def site_alerts(context):
+    now = timezone.now()
+    site_alerts = (
+        SiteAlert.objects.all()
+        .exclude(display_from__gt=now)
+        .exclude(display_until__lt=now)
+    )
+    data = {"site_alerts": site_alerts, "request": context.get("request")}
+    return data
