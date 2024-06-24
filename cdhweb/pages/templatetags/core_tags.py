@@ -186,6 +186,5 @@ def site_alerts(context):
         .exclude(display_from__gt=now)
         .exclude(display_until__lt=now)
     )
-    print(site_alerts)
     data = {"site_alerts": site_alerts, "request": context.get("request")}
     return data
