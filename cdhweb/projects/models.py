@@ -376,27 +376,26 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
         # Grants we need to apply this later
         current_filter = clean_filters.pop("current")
 
-        # Apply "always" filters
+        # Use a Project queryset so we can apply type-specific filters
         children = Project.objects.child_of(self).public().live()
 
-        # Assume we've engineered the remaining filter
-        # options to map *directly* to Project columns
-        # and only apply the ones with a value
+        # We've engineered the remaining filter options to
+        # map *directly* to Project columns and only apply
+        # the ones with a value
         to_apply = {k: v for k, v in clean_filters.items() if v}
         children = children.filter(**to_apply)
 
         if query_string:
-            children = children.search(query_string)
+            children = children.search(query_string).get_queryset()
 
         if current_filter:
             # The "current" filter uses relations to
             # `Grant`s, which aren't able to be filtered
             # using the Wagtail search backend, as they're
-            # too nested. To dodge this. we instead make a
-            # second queryset, matching the keys of the
-            # first, that uses the existing method on the
-            # objects Manager
-            children = Project.objects.current().filter(id__in=[c.id for c in children])
+            # too nested. To dodge this, we instead uses the
+            # existing method on the objects Manager, after
+            # making the results into a queryset (above)
+            children = children.current()
 
         return children
 
@@ -404,7 +403,8 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
         from cdhweb.projects.forms import ProjectFiltersForm
 
         context = super().get_context(request)
-        form = ProjectFiltersForm(request.GET)
+        form_args = request.GET.dict()
+        form = ProjectFiltersForm(form_args)
 
         form.is_valid()
         child_queryset = self.get_child_queryset(request, form)
