@@ -9,6 +9,11 @@
 
     <script type="text/javascript"> window.staticRoot = "{% static 'dist/' %}"; </script>
 
+    <script>
+      document.documentElement.classList.remove('no-js');
+      document.documentElement.classList.add('js');
+    </script>
+
     {% include "includes/favicons.html" %}
 
     {% comment %}

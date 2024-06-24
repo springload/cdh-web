@@ -62,6 +62,13 @@ async function ComponentInit(
           /* webpackChunkName: "component-accordion" */
         ),
       );
+    case 'select-navigator':
+      return mountAsyncComponent(
+        import(
+          './SelectNavigator/SelectNavigator'
+          /* webpackChunkName: "component-select-navigator" */
+        ),
+      );
   }
 
   throw Error(
