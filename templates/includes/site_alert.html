@@ -6,7 +6,7 @@
   class="u-hidden alert-banner alert-banner--{{ alert.alert_type }}"
   data-component="alert-banner"
   data-alert-id="alert_{{ alert.alert_id }}"
-  {% if alert.title %}aria-labelledby="alert-heading-{{ alert.alert_id|slugify }}"{% endif %} 
+  aria-labelledby="alert-heading-{{ alert.alert_id|slugify }}"
   >
   <div class="alert-banner__grid content-width grid-standard">
     <div class="alert-banner__decoration">
