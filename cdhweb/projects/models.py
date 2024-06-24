@@ -108,9 +108,15 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         null=True,
         blank=True,
     )
-
     field = models.ForeignKey(
         "ProjectField",
+        on_delete=models.PROTECT,
+        related_name="projects",
+        null=True,
+        blank=True,
+    )
+    role = models.ForeignKey(
+        "ProjectRole",
         on_delete=models.PROTECT,
         related_name="projects",
         null=True,
@@ -138,7 +144,10 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         ),
         FieldPanel("body"),
         FieldPanel("project_website"),
-        FieldRowPanel([FieldPanel("method"), FieldPanel("field")], "Filter fields"),
+        FieldRowPanel(
+            [FieldPanel("method"), FieldPanel("field"), FieldPanel("role")],
+            "Filter fields",
+        ),
         InlinePanel("related_links", label="Links"),
         InlinePanel(
             "grants",
@@ -179,6 +188,9 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         index.FilterField("cdh_built"),
         index.FilterField("path"),
         index.FilterField("depth"),
+        index.FilterField("method"),
+        index.FilterField("field"),
+        index.FilterField("role"),
         # We can't actually filter on these right now, but leave them here in case we can somedays
         # See: https://docs.wagtail.org/en/v5.2.5/topics/search/indexing.html#filtering-on-index-relatedfields
         index.RelatedFields(
@@ -450,3 +462,16 @@ class ProjectField(models.Model):
 
     def __str__(self):
         return self.field
+
+
+class ProjectRole(models.Model):
+    """
+    Model for project roles
+
+    Used for the projects filter
+    """
+
+    role = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.role

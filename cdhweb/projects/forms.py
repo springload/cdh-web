@@ -1,6 +1,6 @@
 from django import forms
 
-from cdhweb.projects.models import ProjectField, ProjectMethod
+from cdhweb.projects.models import ProjectField, ProjectMethod, ProjectRole
 
 
 class ProjectFiltersForm(forms.Form):
@@ -21,8 +21,11 @@ class ProjectFiltersForm(forms.Form):
         required=False,
         blank=True,
     )
-    # START TODO: Decide if we still need a third filter
-    role = forms.ChoiceField(choices=[(None, "--Select--")], required=False)  # ??
-    # END TODO
+    role = forms.ModelChoiceField(
+        ProjectRole.objects.all(),
+        empty_label="--Select--",
+        required=False,
+        blank=True,
+    )
     current = forms.BooleanField(required=False, initial=True)
     cdh_built = forms.BooleanField(required=False, label="Built by CDH")
