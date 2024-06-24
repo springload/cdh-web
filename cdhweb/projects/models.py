@@ -354,8 +354,11 @@ class ProjectsLandingPageArchived(LandingPage):
 
 
 class ProjectsLandingPage(StandardHeroMixin, Page):
+    featured_project = models.ForeignKey(
+        "Project", blank=True, null=True, on_delete=models.SET_NULL
+    )
 
-    content_panels = StandardHeroMixin.content_panels
+    content_panels = StandardHeroMixin.content_panels + [FieldPanel("featured_project")]
 
     search_fields = StandardHeroMixin.search_fields
 
@@ -404,7 +407,20 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
         form = ProjectFiltersForm(request.GET)
 
         form.is_valid()
-        context["results"] = self.get_child_queryset(request, form)
+        child_queryset = self.get_child_queryset(request, form)
+
+        # Exclude featured_project from the results, and add
+        # it to the context note this means the template
+        # should access `featured_project` *NOT*
+        # `self.featured_project`
+        if (
+            self.featured_project
+            and child_queryset.filter(id=self.featured_project_id).exists()
+        ):
+            context["featured_project"] = self.featured_project
+            child_queryset = child_queryset.exclude(pk=self.featured_project.pk)
+
+        context["results"] = child_queryset
         context["filter_form"] = form
 
         return context

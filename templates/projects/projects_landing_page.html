@@ -39,9 +39,19 @@
         <label for="{{ filter_form.cdh_built.id_for_label }}">{{ filter_form.cdh_built.label }}</label>
         <input  id="{{ filter_form.cdh_built.id_for_label }}" type="checkbox" name="{{ filter_form.cdh_built.name }}" aria-labelledby="{{ filter_form.cdh_built.id_for_label }}" {% if filter_form.cdh_built.value %}checked{% endif %}>
     </form>
-    {% for project in results %}
-        {# include card template #}
-        <a href="{% pageurl project %}">{{ project.title }}</a>
-    {% endfor %}
-
+    <div>
+    {% if featured_project %}
+        <a href="{% pageurl featured_project %}">Featured! - {{ featured_project.title }}</a>
+    {% endif %}
+    </div>
+    <div>
+        <ul>
+            {% for project in results %}
+                {# include card template #}
+                <li>
+                    <a href="{% pageurl project %}">{{ project.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}
