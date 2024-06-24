@@ -1,9 +1,13 @@
 .tiles--featured {
-  @include full-bleed-bg(var(--color-grey-5));
-  padding-block: 40px;
+  // The "featured" setting (i.e. full bleed bg) is only designed to work on the homepage.
+  // It could be used on any page without a side-nav in theory, but that's not in scope.
+  .template-home & {
+    @include full-bleed-bg(var(--color-grey-5));
+    padding-block: 40px;
 
-  @include md {
-    padding-block: 72px;
+    @include md {
+      padding-block: 72px;
+    }
   }
 }
 

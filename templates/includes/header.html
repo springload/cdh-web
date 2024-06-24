@@ -9,6 +9,8 @@
 {% secondary_navigation as secondary_nav %}
 
 <header class="header">
+    {% site_alerts %}    
+
     <nav class="main-nav-mobile" data-component="main-nav-mobile" aria-label="Main" data-search-url="{% url 'search' %}">
         {# the following gets swapped out when react component mounts #}
         <div class="mobile-menu__header">

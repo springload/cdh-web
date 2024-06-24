@@ -9,6 +9,7 @@ from wagtail.models import Orderable
 from wagtail.snippets.models import register_snippet
 
 
+
 class Level2MenuItem(Orderable, ClusterableModel):
     """
     Represents a 'second-level' menu item.
@@ -320,3 +321,56 @@ class SocialMediaLinks(models.Model):
         FieldPanel("site"),
         FieldPanel("url"),
     ]
+
+
+class AlertTypeChoices(models.TextChoices):
+    ALERT_WARNING = "warning", "Warning"
+    ALERT_INFO = "info", "Info"
+    ALERT_EMERGENCY = "emergency", "Emergency"
+
+
+@register_snippet
+class SiteAlert(models.Model):
+    title = models.CharField(max_length=80, blank=True)
+    message = RichTextField(features=["bold", "italic", "link"])
+    alert_type = models.CharField(
+        choices=AlertTypeChoices.choices, default=AlertTypeChoices.ALERT_INFO
+    )
+    display_from = models.DateTimeField(blank=True, null=True)
+    display_until = models.DateTimeField(blank=True, null=True)
+    dismissable = models.BooleanField(default=True)
+
+    panels = [
+        FieldPanel("title"),
+        FieldPanel("message"),
+        FieldPanel("alert_type"),
+        FieldPanel("display_from"),
+        FieldPanel("display_until"),
+        FieldPanel("dismissable"),
+    ]
+    def __str__(self):
+        if self.title:
+            return self.title
+        else:
+            return f"Alert {self.id}"
+
+    def clean(self):
+        """
+        Add some custom validation.
+        """
+        errors = {}
+        if self.display_from and self.display_until:
+            # Make sure the dates are in the right order
+            if self.display_from > self.display_until:
+                inverted_date_message = "Display from date is after display until date. Are the dates in the wrong order?"
+                errors["display_from"] = inverted_date_message
+                errors["display_until"] = inverted_date_message
+
+        if errors:
+            raise ValidationError(errors)
+
+        return super().clean()
+    
+    @property
+    def alert_id(self):
+        return f"alert_{self.id}"
