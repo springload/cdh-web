@@ -8,6 +8,8 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.shortcuts import get_object_or_404
+from wagtail.contrib.routable_page.models import RoutablePageMixin, path, re_path
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
@@ -568,12 +570,54 @@ class PeopleLandingPageArchived(LandingPage):
     template = LandingPage.template
 
 
-class PeopleLandingPage(BaseLandingPage, SidebarNavigationMixin):
+class PeopleLandingPage(BaseLandingPage, SidebarNavigationMixin, RoutablePageMixin):
     subpage_types = [Profile]
+
+    template_name = "people/people_landing_page.html"
 
     settings_panels = (
         BaseLandingPage.settings_panels + SidebarNavigationMixin.settings_panels
     )
+
+    def get_context(self, request):
+        context = super().get_context(request)
+
+        # if year:
+        #     posts = self.get_posts_for_year_and_month(year=year, month=month)
+        # else:
+        #     posts = self.get_latest_posts()
+
+        # page_number = request.GET.get("page") or 1
+        # paginator = Paginator(posts, self.page_size)
+        # page = paginator.page(page_number)
+        # context.update(
+        #     {
+        #         "page_obj": page,  # Used in pagination template
+        #         "posts": page,  # Used in page template
+        #     }
+        # )
+
+    @path("staff/", name="staff")
+    def get_staff(self, request):
+        staff = get_object_or_404(
+            self.get_children()
+            .live()
+            .filter(cdh_staff=True)
+            .order_by("-first_published_at")
+            .public()
+        )
+        return staff
+    
+    @path("students/", name="students")
+    def get_students(self, request):
+        students = get_object_or_404(
+            self.get_children()
+            .live()
+            .filter(cdh_staff=True)
+            .order_by("-first_published_at")
+            .public()
+        )
+        return students
 
 
 class Position(DateRange):
