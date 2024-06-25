@@ -1,7 +1,7 @@
 {% load wagtailcore_tags wagtailimages_tags l10n %}
 
     <div 
-        class="tile" 
+        class="tile {% if is_featured %}tile--featured{% endif %}" 
         href="{% if tile_type == 'internal_page_tile' %}{{ internal_page.url }}{% else %}{{ tile.value.external_link }}{% endif %}"
     >
         <div class="tile__text">

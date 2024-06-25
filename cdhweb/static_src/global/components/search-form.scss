@@ -14,11 +14,6 @@
   line-height: 1.33;
   font-weight: bold;
 
-  // TODO?: Custom checkbox style instead of accent colour. Time/desire permitting.
-  accent-color: var(--color-brand-120);
-  :where(label, input) {
-    cursor: pointer;
-  }
   :where(label) {
     padding-left: 4px; // 8px if we use bigger custom input styles
   }

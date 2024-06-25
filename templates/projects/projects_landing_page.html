@@ -7,51 +7,87 @@
     {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
     {% include 'includes/standard_hero.html' %}
 
-    <form >
-        <label for="{{ filter_form.q.id_for_label }}">{{ filter_form.q.label }}</label>
-        <input  id="{{ filter_form.q.id_for_label }}" name="{{ filter_form.q.name }}" aria-labelledby="{{ filter_form.q.id_for_label }}" {% if filter_form.q.value %}value="{{ filter_form.q.value }}"{% endif %}>
+    <div class="content-width grid-standard projects-landing">
 
-        <label for="{{ filter_form.method.id_for_label }}">{{ filter_form.method.label }}</label>
-        <select id="{{ filter_form.method.id_for_label }}"  name="{{ filter_form.method.name }}" aria-labelledby="{{ filter_form.method.id_for_label }}">
-            {% for c in filter_form.method %}
-                {{ c }}
-            {% endfor %}
-        </select>
+        <form class="projects-landing__form">
+            <h2 class="sr-only">Filter projects</h2>
+            <a href="#projects-list" class="sr-only-until-focused">Skip to results</a>
+            <div class="projects-landing__form-fields">
+                <div class="projects-landing__form-group">
+                    <label for="{{ filter_form.method.id_for_label }}">{{ filter_form.method.label }}</label>
+                    <select id="{{ filter_form.method.id_for_label }}" name="{{ filter_form.method.name }}">
+                        {% for c in filter_form.method %}
+                            {{ c }}
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <label for="{{ filter_form.field.id_for_label }}">{{ filter_form.field.label }}</label>
-        <select id="{{ filter_form.field.id_for_label }}"  name="{{ filter_form.field.name }}" aria-labelledby="{{ filter_form.field.id_for_label }}">
-            {% for c in filter_form.field %}
-                {{ c }}
-            {% endfor %}
-        </select>
+                <div class="projects-landing__form-group">
+                    <label for="{{ filter_form.field.id_for_label }}">{{ filter_form.field.label }}</label>
+                    <select id="{{ filter_form.field.id_for_label }}" name="{{ filter_form.field.name }}">
+                        {% for c in filter_form.field %}
+                            {{ c }}
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <label for="{{ filter_form.role.id_for_label }}">{{ filter_form.role.label }}</label>
-        <select id="{{ filter_form.role.id_for_label }}"  name="{{ filter_form.role.name }}" aria-labelledby="{{ filter_form.role.id_for_label }}">
-            {% for c in filter_form.role %}
-                {{ c }}
-            {% endfor %}
-        </select>
+                <div class="projects-landing__form-group">
+                    <label for="{{ filter_form.role.id_for_label }}">{{ filter_form.role.label }}</label>
+                    <select id="{{ filter_form.role.id_for_label }}" name="{{ filter_form.role.name }}">
+                        {% for c in filter_form.role %}
+                            {{ c }}
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <label for="{{ filter_form.current.id_for_label }}">{{ filter_form.current.label }}</label>
-        <input  id="{{ filter_form.current.id_for_label }}" type="checkbox" aria-labelledby="{{ filter_form.current.id_for_label }}" {% if filter_form.current.value %}checked{% endif %} onchange="document.querySelector('#{{ filter_form.current.id_for_label }}_hidden').value = this.checked">
-        <input  id="{{ filter_form.current.id_for_label }}_hidden" type="hidden" name="{{ filter_form.current.name }}" value="{{ filter_form.current.value }}">
+                <div class="projects-landing__form-group">
+                    <label for="{{ filter_form.q.id_for_label }}">{{ filter_form.q.label }}</label>
+                    <input type="text" id="{{ filter_form.q.id_for_label }}" name="{{ filter_form.q.name }}" {% if filter_form.q.value %}value="{{ filter_form.q.value }}"{% endif %}>
+                </div>
+            </div>
 
-        <label for="{{ filter_form.cdh_built.id_for_label }}">{{ filter_form.cdh_built.label }}</label>
-        <input  id="{{ filter_form.cdh_built.id_for_label }}" type="checkbox" name="{{ filter_form.cdh_built.name }}" aria-labelledby="{{ filter_form.cdh_built.id_for_label }}" {% if filter_form.cdh_built.value %}checked{% endif %}>
-    </form>
-    <div>
-    {% if featured_project %}
-        <a href="{% pageurl featured_project %}">Featured! - {{ featured_project.title }}</a>
-    {% endif %}
+            <div class="projects-landing__form-checkboxes">
+                <div>
+                    <input id="{{ filter_form.current.id_for_label }}" type="checkbox" {% if filter_form.current.value %}checked{% endif %} onchange="document.querySelector('#{{ filter_form.current.id_for_label }}_hidden').value = this.checked">
+                    <input id="{{ filter_form.current.id_for_label }}_hidden" type="hidden" name="{{ filter_form.current.name }}" value="{{ filter_form.current.value }}">
+                    <label for="{{ filter_form.current.id_for_label }}">{{ filter_form.current.label }}</label>
+                </div>
+                <div>
+                    <input id="{{ filter_form.cdh_built.id_for_label }}" type="checkbox" name="{{ filter_form.cdh_built.name }}" {% if filter_form.cdh_built.value %}checked{% endif %}>    
+                    <label for="{{ filter_form.cdh_built.id_for_label }}">{{ filter_form.cdh_built.label }}</label>
+                </div>
+            </div>
+
+            <div class="projects-landing__form-btns">
+                <div class="sk-btn-group">
+                    <button type="submit" class="sk-btn sk-btn--secondary" aria-label="Apply filters. Note: page will reload.">
+                        Submit
+                    </button>
+                    <a href="{{ request.path }}" class="sk-btn sk-btn--link-style" aria-label="Clear filters. Note: page will reload.">
+                        {% include 'includes/svg.html' with sprite="two-tone" svg="x" %}
+                        Clear filters
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <h2 class="sr-only">Projects list</h2>
+        <div class="tiles__list" tabindex="-1" id="projects-list">
+
+            {% if results %}
+                {% if featured_project %}
+                    <div class="featured-tile-wrapper">
+                        {% include 'cdhpages/blocks/tile.html' with internal_page=featured_project tile_type='internal_page_tile' is_featured=True has_component_title=True %}
+                    </div>
+                {% endif %}
+                {% for project in results %}
+                    {% include 'cdhpages/blocks/tile.html' with internal_page=project tile_type='internal_page_tile' has_component_title=True %}
+                {% endfor %}
+            {% else %}
+                <p>No projects found.</p>
+            {% endif %}
+            
+        </div>
     </div>
-    <div>
-        <ul>
-            {% for project in results %}
-                {# include card template #}
-                <li>
-                    <a href="{% pageurl project %}">{{ project.title }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+
 {% endblock %}
