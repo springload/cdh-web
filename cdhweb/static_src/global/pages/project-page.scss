@@ -49,6 +49,9 @@ the right of the content (when unstacked).
   @include md {
     padding-inline: 24px;
   }
+  @include lg {
+    align-self: start;
+  }
 
   :where(h2) {
     font-size: px2rem(16);

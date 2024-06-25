@@ -12,7 +12,7 @@
   border: 2px solid var(--btn-border-color);
   color: var(--btn-color);
   border-radius: px2rem(32);
-  padding: 14px 24px;
+  padding: 8px 24px;
   line-height: 1.5;
 
   display: flex; // may include an icon
@@ -64,4 +64,15 @@
   --btn-bg-hover: transparent;
   --btn-border-color-hover: var(--color-brand-110);
   --btn-focus-ring-color: var(--color-brand-120);
+}
+@mixin btn-link-style {
+  --btn-border-color: transparent;
+  --btn-bg: transparent;
+  --btn-bg-hover: transparent;
+  --btn-border-color-hover: transparent;
+  --btn-focus-ring-color: var(--color-brand-120);
+
+  border-radius: 0;
+  @include link-style;
+  padding-inline: 0;
 }

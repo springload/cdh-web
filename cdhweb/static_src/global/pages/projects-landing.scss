@@ -1,0 +1,94 @@
+// Has `grid-standard`.
+// Uses more cols than other pages, so doesn't use `.page-layout--*`
+.projects-landing {
+  > * {
+    grid-column: 1 / -1;
+
+    @include md {
+      grid-column: 2 / -2;
+    }
+  }
+
+  :where(.tiles__list) {
+    margin-block-start: 64px;
+  }
+}
+
+.projects-landing__form {
+  position: relative;
+  @include three-dee-box;
+  padding: 24px;
+
+  display: grid;
+  // f = fields (selects and text)
+  // c = checkboxes
+  // b = buttons/links
+  grid-template-areas:
+    'f'
+    'c'
+    'b';
+  gap: 24px;
+
+  @include md {
+    --three-dee-side-size: 56px;
+    padding: 32px;
+    grid-template-areas:
+      'f f'
+      'c c'
+      'b b';
+  }
+  @include lg {
+    grid-template-areas:
+      'f f'
+      'c b';
+  }
+}
+
+.projects-landing__form-fields {
+  grid-area: f;
+  display: grid;
+  gap: 20px;
+
+  @include sm {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 24px;
+  }
+  @include lg {
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 24px;
+  }
+
+  :where(label) {
+    font-weight: bold;
+    font-size: px2rem(17);
+    line-height: 1.33;
+  }
+}
+.projects-landing__form-checkboxes {
+  grid-area: c;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+
+  :where(label) {
+    font-weight: bold;
+    font-size: px2rem(15);
+    line-height: 1.33;
+  }
+}
+.projects-landing__form-btns {
+  grid-area: b;
+  @include sm {
+    justify-self: end;
+  }
+
+  :where(button[type='submit']) {
+    order: 1;
+  }
+}
+
+.projects-landing__form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

@@ -7,6 +7,9 @@
 .sk-btn--secondary {
   @include btn-secondary;
 }
+.sk-btn--link-style {
+  @include btn-link-style;
+}
 
 .sk-btn-group {
   display: flex;
