@@ -7,6 +7,7 @@ from cdhweb.projects.models import (
     Project,
     ProjectField,
     ProjectMethod,
+    ProjectRole,
     Role,
 )
 
@@ -80,6 +81,14 @@ class ProjectFieldAdmin(ModelAdmin):
     list_display = ["field"]
     list_editable = ["field"]
     search_fields = ["field"]
+
+
+class ProjectRoleAdmin(ModelAdmin):
+    model = ProjectRole
+    menu_icon = "arrow-right"
+    list_display = ["role"]
+    list_editable = ["role"]
+    search_fields = ["role"]
 
 
 class ProjectsGroup(ModelAdminGroup):
