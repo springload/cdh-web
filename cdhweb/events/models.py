@@ -6,6 +6,7 @@ import icalendar
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.fields.related import RelatedField
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -16,6 +17,7 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.contrib.routable_page.models import RoutablePageMixin, path
 from wagtail.fields import RichTextField
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
@@ -23,7 +25,7 @@ from wagtailautocomplete.edit_handlers import AutocompletePanel
 
 from cdhweb.pages.blocks.image_block import UnsizedImageBlock
 from cdhweb.pages.mixin import StandardHeroMixinNoImage
-from cdhweb.pages.models import BaseLandingPage, BasePage, ContentPage, LinkPage
+from cdhweb.pages.models import BasePage, ContentPage, LandingPage, LinkPage
 from cdhweb.people.models import Person
 
 
@@ -405,8 +407,10 @@ class EventsLinkPageArchived(LinkPage):
     subpage_types = [Event, LinkPage, ContentPage]
 
 
-class EventsLandingPage(StandardHeroMixinNoImage, Page):
+class EventsLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
     """Container page that defines where Event pages can be created."""
+
+    template_name = "events/events_landing_page.html"
 
     content_panels = StandardHeroMixinNoImage.content_panels
 
@@ -415,7 +419,38 @@ class EventsLandingPage(StandardHeroMixinNoImage, Page):
     settings_panels = Page.settings_panels
 
     # allow content pages to be added under events for special event series
-    subpage_types = [Event]
+    subpage_types = [Event, ContentPage, LandingPage]
+
+    def get_context(self, request, semester=None, year=None):
+        context = super().get_context(request)
+
+        if semester and year:
+            events = self.get_upcoming_events_for_semester(semester=semester, year=year)
+        else:
+            events = self.get_upcoming_events()
+
+        context["events"] = events
+        context["date_list"] = self.get_semester_date_list()
+        return context
+
+    @path("<semester>-<int:year>/", name="by-semester")
+    def by_semester(self, request, semester=None, year=None):
+        context = self.get_context(request, semester=semester, year=year)
+        return self.render(request, context_overrides=context)
+
+    @path("<int:year>/<int:month>/<slug:slug>/", name="dated_child")
+    def dated_child(self, request, year=None, month=None, slug=None):
+        child = get_object_or_404(
+            self.get_children()
+            .live()
+            .public()
+            .filter(
+                event__start_time__year=year,
+                event__start_time__month=month,
+            ),
+            slug=slug,
+        )
+        return child.specific.serve(request)
 
     def get_upcoming_events_for_semester(self, semester, year):
         # Adjust the semester and year to datetime ranges
@@ -431,24 +466,42 @@ class EventsLandingPage(StandardHeroMixinNoImage, Page):
         else:
             raise ValueError("Invalid semester")
 
+        child_pages = self.get_children().live().type(Event)
         # Filter events based on start_time within the semester range
-        return (
-            self.get_children()
-            .live()
-            .filter(event__start_time__gte=start_date, event__start_time__lte=end_date)
-            .order_by("event__start_time")
-        )
+        return child_pages.filter(
+            event__start_time__gte=start_date, event__start_time__lte=end_date
+        ).order_by("event__start_time")
 
     def get_upcoming_events(self):
         current_datetime = timezone.now()
 
-        child_pages = self.get_children().live()
+        child_pages = self.get_children().live().type(Event)
 
         # Fetch upcoming events among the child pages
         return child_pages.filter(event__start_time__gte=current_datetime).order_by(
             "event__start_time"
         )
-    
-    def save(self, *args, **kwargs):
-        self.slug = 'events'
-        super().save(*args, **kwargs)
+
+    @staticmethod
+    def get_semester(date):
+        """Return the semester a date occurs in as a string."""
+        # determine semester based on the month
+        if date.month <= 5:
+            return "Spring"
+        if date.month <= 8:
+            return "Summer"
+        return "Fall"
+
+    def get_semester_date_list(self):
+        """Get a list of semester labels (semester and year) for published
+        events. Semesters are Spring (through May), Summer (through
+        August), and Fall."""
+        date_list = []
+        dates = Event.objects.live().dates("start_time", "month", order="ASC")
+        for date in dates:
+            # add semester + year to list if not already present
+            sem_date = (self.get_semester(date), date.year)
+            if sem_date not in date_list:
+                date_list.append(sem_date)
+
+        return date_list
