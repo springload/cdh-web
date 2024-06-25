@@ -102,6 +102,7 @@ class ProjectsGroup(ModelAdminGroup):
         GrantTypeAdmin,
         ProjectMethodAdmin,
         ProjectFieldAdmin,
+        ProjectRoleAdmin,
     )
 
 
