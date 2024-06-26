@@ -1,7 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64">
-  <path fill="var(--icon-accent-color, #00edff)" d="M64 18H8v38h56V18Z" />
-  <path fill="#fff" d="M56 14H4v34h52V14Z" />
-  <path fill="var(--icon-color, #414042)" d="M58 50H2V12h56v38ZM6 46h48V16H6v30Z" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+  <g fill="var(--icon-accent-color, #00edff)">
+    <path d="M18.438 4.063h-15v15h15v-15Z" />
+    <path d="M19.063 19.688H2.813V3.438h16.25v16.25Zm-15-1.25h13.75V4.688H4.063v13.75Z" />
+  </g>
+  <path fill="#fff" d="M16.563 2.188h-15v15h15v-15Z" />
   <path fill="var(--icon-color, #414042)"
-    d="M30 36.433 2.862 17.645l2.276-3.29L30 31.567l24.862-17.212 2.276 3.29L30 36.433Z" />
+    d="M17.188 17.813H.938V1.563h16.25v16.25Zm-15-1.25h13.75V2.813H2.188v13.75Z" />
+  <path fill="var(--icon-color, #414042)"
+    d="M16.563 5.625h-15v1.25h15v-1.25ZM5.625 0h-1.25v3.75h1.25V0Zm8.151 0h-1.25v3.75h1.25V0ZM5.625 9.375h-1.25v1.25h1.25v-1.25Zm0 3.438h-1.25v1.25h1.25v-1.25Zm4.063-3.438h-1.25v1.25h1.25v-1.25Zm0 3.438h-1.25v1.25h1.25v-1.25Zm4.062-3.438H12.5v1.25h1.25v-1.25Zm0 3.438H12.5v1.25h1.25v-1.25Z" />
 </svg>
