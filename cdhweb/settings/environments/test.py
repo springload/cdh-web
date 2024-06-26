@@ -1,6 +1,6 @@
 import os
 
-from cdhweb.settings import BASE_DIR, DATABASES
+from cdhweb.settings import DATABASES
 
 # These settings correspond to the service container settings in the
 # .github/workflow .yml files.
@@ -24,5 +24,3 @@ ALLOWED_HOSTS = ["*"]
 
 # override software version to avoid creating visual diffs in display
 SW_VERSION = "CI Build"
-
-ENVIRONMENT = os.getenv('ENVIRONMENT', 'test')

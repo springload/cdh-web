@@ -9,9 +9,9 @@
 {% secondary_navigation as secondary_nav %}
 
 <header class="header">
-    {% site_alerts %}    
+    {% site_alerts %}
 
-    {% if ENVIRONMENT != 'production' and ENVIRONMENT != 'development' %}
+    {% if SHOW_TEST_WARNING %}
         <div style="background-color: yellow; text-align: center; padding: 10px;">
             This is a test site.
         </div>
@@ -67,7 +67,7 @@
                         <a href="{{ secondary_nav.cta_button.link_url }}" class="sk-btn sk-btn--secondary main-nav-desktop__cta">{{ secondary_nav.cta_button.title }}</a>
                     </li>
                 {% endif %}
-            </ul>  
+            </ul>
 
         </div>
     </nav>

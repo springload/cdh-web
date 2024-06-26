@@ -52,7 +52,6 @@ def favicon_path():
 
     return "".join([settings.STATIC_URL, base_path, icon_version])
 
-def environment(request):
-    return {
-        'ENVIRONMENT': settings.ENVIRONMENT
-    }
+
+def show_test_warning(request):
+    return {"SHOW_TEST_WARNING": getattr(settings, "SHOW_TEST_WARNING", False)}

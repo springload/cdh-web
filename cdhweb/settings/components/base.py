@@ -149,7 +149,7 @@ TEMPLATES = [
                 "cdhweb.context_processors.template_settings",
                 "cdhweb.pages.context_processors.page_intro",
                 "cdhweb.pages.context_processors.site_search",
-                "cdhweb.context_processors.environment" 
+                "cdhweb.context_processors.show_test_warning",
             ],
         },
     },
