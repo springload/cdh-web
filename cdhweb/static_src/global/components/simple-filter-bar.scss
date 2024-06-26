@@ -27,6 +27,8 @@ Layout code currently assumes there's only one label & select.
 
     @include sm {
       flex-grow: unset;
+      width: auto;
+      max-width: 100%;
     }
   }
 }
