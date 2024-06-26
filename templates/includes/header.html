@@ -9,7 +9,13 @@
 {% secondary_navigation as secondary_nav %}
 
 <header class="header">
-    {% site_alerts %}    
+    {% site_alerts %}
+
+    {% if SHOW_TEST_WARNING %}
+        <div style="background-color: yellow; text-align: center; padding: 10px;">
+            This is a test site.
+        </div>
+    {% endif %}
 
     <nav class="main-nav-mobile" data-component="main-nav-mobile" aria-label="Main" data-search-url="{% url 'search' %}">
         {# the following gets swapped out when react component mounts #}
@@ -61,7 +67,7 @@
                         <a href="{{ secondary_nav.cta_button.link_url }}" class="sk-btn sk-btn--secondary main-nav-desktop__cta">{{ secondary_nav.cta_button.title }}</a>
                     </li>
                 {% endif %}
-            </ul>  
+            </ul>
 
         </div>
     </nav>
