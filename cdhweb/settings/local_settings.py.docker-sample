@@ -66,5 +66,6 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost", "https://cdh.dev.springload.nz"]
 # disable feature detection in images
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False
 
-# Serve staticfiles directly from the Webpack build directory
+# Serve staticfiles directly from the Webpack build directory (and put the collection dir somewhere else)
+STATIC_ROOT = BASE_DIR / "collected"
 STATICFILES_DIRS = [BASE_DIR / "static"]
