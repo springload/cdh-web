@@ -47,12 +47,12 @@
             </div>
 
             <div class="projects-landing__form-checkboxes">
-                <div>
+                <input id="{{ filter_form.current.id_for_label }}_hidden" type="hidden" name="{{ filter_form.current.name }}" value="{{ filter_form.current.value }}">
+                <div class="checkbox">
                     <input id="{{ filter_form.current.id_for_label }}" type="checkbox" {% if filter_form.current.value %}checked{% endif %} onchange="document.querySelector('#{{ filter_form.current.id_for_label }}_hidden').value = this.checked">
-                    <input id="{{ filter_form.current.id_for_label }}_hidden" type="hidden" name="{{ filter_form.current.name }}" value="{{ filter_form.current.value }}">
                     <label for="{{ filter_form.current.id_for_label }}">{{ filter_form.current.label }}</label>
                 </div>
-                <div>
+                <div class="checkbox">
                     <input id="{{ filter_form.cdh_built.id_for_label }}" type="checkbox" name="{{ filter_form.cdh_built.name }}" {% if filter_form.cdh_built.value %}checked{% endif %}>    
                     <label for="{{ filter_form.cdh_built.id_for_label }}">{{ filter_form.cdh_built.label }}</label>
                 </div>
