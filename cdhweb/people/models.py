@@ -3,33 +3,30 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Case, DateField, Max, Value, When
+from django.db.models.functions import Greatest
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.shortcuts import get_object_or_404
-from wagtail.contrib.routable_page.models import RoutablePageMixin, path, re_path
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
-from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.admin.panels import (FieldPanel, FieldRowPanel, InlinePanel,
+                                  MultiFieldPanel)
+from wagtail.contrib.routable_page.models import (RoutablePageMixin, path,
+                                                  re_path)
 from wagtail.fields import RichTextField
 from wagtail.models import Page
 from wagtail.search import index
 
-from cdhweb.pages.mixin import SidebarNavigationMixin
-from cdhweb.pages.models import (
-    PARAGRAPH_FEATURES,
-    BaseLandingPage,
-    BasePage,
-    DateRange,
-    LandingPage,
-    LinkPage,
-    RelatedLink,
-)
+from cdhweb.pages.mixin import SidebarNavigationMixin, StandardHeroMixin
+from cdhweb.pages.models import (PARAGRAPH_FEATURES, BaseLandingPage, BasePage,
+                                 DateRange, LandingPage, LinkPage, RelatedLink)
 
 
 class Title(models.Model):
@@ -569,55 +566,133 @@ class PeopleLandingPageArchived(LandingPage):
     # use the regular landing page template
     template = LandingPage.template
 
+class PeopleCategoryPage(BaseLandingPage, SidebarNavigationMixin, RoutablePageMixin):
+    """Landing Page for categeory of people i.e. staff, students, affiliates, executive committee """
 
-class PeopleLandingPage(BaseLandingPage, SidebarNavigationMixin, RoutablePageMixin):
     subpage_types = [Profile]
 
-    template_name = "people/people_landing_page.html"
+    template_name = "people/people_category_page.html"
+
+    class PeopleCategories(models.TextChoices):
+        STAFF = "staff", "Staff"
+        PAST_STAFF = "past_staff", "Past Staff"
+        STUDENTS = "students", "Students"
+        ALUMNI = "alumni", "Alumni"
+        AFFILIATES = "affiliates", "Affiliates"
+        PAST_AFFILIATES = "past_affiliates", "Past Affiliates"
+        EXECUTIVE_COMMITTEE = "executive_committee", "Executive Committee"
+        SITS_WITH_EXECUTIVE_COMMITTEE = "sits_with_executive_committee", "Sits with Executive Committee"
+
+    category = models.CharField(
+        choices=PeopleCategories.choices,
+    )
+    content_panels = [ FieldPanel("category") ] + BaseLandingPage.content_panels
 
     settings_panels = (
         BaseLandingPage.settings_panels + SidebarNavigationMixin.settings_panels
     )
 
-    def get_context(self, request):
-        context = super().get_context(request)
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
 
-        # if year:
-        #     posts = self.get_posts_for_year_and_month(year=year, month=month)
-        # else:
-        #     posts = self.get_latest_posts()
+        category_mapping = {
+        self.PeopleCategories.STAFF: self.get_current_staff,
+        self.PeopleCategories.PAST_STAFF: self.get_past_staff,
+        self.PeopleCategories.STUDENTS: self.get_students,
+        self.PeopleCategories.ALUMNI: self.get_alumni,
+        self.PeopleCategories.AFFILIATES: self.get_affiliates,
+        self.PeopleCategories.PAST_AFFILIATES: self.get_past_affiliates,
+        self.PeopleCategories.EXECUTIVE_COMMITTEE: self.get_executive_committee,
+        self.PeopleCategories.SITS_WITH_EXECUTIVE_COMMITTEE: self.get_sits_with_executive_committee,
+        }
 
-        # page_number = request.GET.get("page") or 1
-        # paginator = Paginator(posts, self.page_size)
-        # page = paginator.page(page_number)
-        # context.update(
-        #     {
-        #         "page_obj": page,  # Used in pagination template
-        #         "posts": page,  # Used in page template
-        #     }
-        # )
-
-    @path("staff/", name="staff")
-    def get_staff(self, request):
-        staff = get_object_or_404(
-            self.get_children()
-            .live()
-            .filter(cdh_staff=True)
-            .order_by("-first_published_at")
-            .public()
-        )
-        return staff
+        context['people'] = category_mapping[self.category]()
+        return context
     
-    @path("students/", name="students")
-    def get_students(self, request):
-        students = get_object_or_404(
-            self.get_children()
-            .live()
-            .filter(cdh_staff=True)
-            .order_by("-first_published_at")
-            .public()
-        )
-        return students
+    def get_current_staff(self):
+        people = Person.objects.cdh_staff().not_students().current_position_nonexec().order_by_position().distinct()
+
+        return people
+    
+    def get_past_staff(self):
+        people_queryset = Person.objects.cdh_staff().not_students().order_by_position().distinct()
+
+        current = self.get_current_staff()
+        people = people_queryset.exclude(id__in=current.values("id"))
+
+        return people
+
+    
+    def get_students(self):
+        people = Person.objects.student_affiliates().grant_years().project_manager_years().current().order_by_position().distinct()
+        
+        return people
+
+    def get_alumni(self):
+        people_queryset = Person.objects.student_affiliates().grant_years().project_manager_years().distinct()
+        people_queryset = people_queryset.annotate(
+                most_recent=Greatest(
+                    Case(
+                        When(
+                            membership__end_date__isnull=False,
+                            then=Max("membership__end_date"),
+                        ),
+                        default=Value("1900-01-01", output_field=DateField()),
+                    ),
+                    Case(
+                        When(
+                            positions__end_date__isnull=False,
+                            then=Max("positions__end_date"),
+                        ),
+                        default=Value("1900-01-01", output_field=DateField()),
+                    ),
+                )
+            ).order_by("-most_recent")
+
+        current = self.get_students()
+        people = people_queryset.exclude(id__in=current.values("id"))
+
+        return people
+    
+    def get_affiliates(self):
+        people = Person.objects.affiliates().grant_years().current_grant().order_by("last_name").distinct()
+        return people
+    
+    def get_past_affiliates(self):
+        current = self.get_affiliates()
+        people_queryset = Person.objects.affiliates().grant_years().order_by("last_name").distinct()
+        people = people_queryset.exclude(id__in=current.values("id"))
+        return people
+        
+    def get_executive_committee(self):
+        people = Person.objects.executive_committee().current_position().exec_member().order_by("last_name").distinct()
+        return people
+    
+    def get_sits_with_executive_committee(self):
+        people = Person.objects.executive_committee().current_position().sits_with_exec().order_by("last_name").distinct()
+        return people
+
+
+class PeopleLandingPage(StandardHeroMixin, Page):
+    subpage_types = [PeopleCategoryPage]
+
+    template_name = "people/people_landing_page.html"
+
+    content_panels = StandardHeroMixin.content_panels
+
+    search_fields = StandardHeroMixin.search_fields
+
+    settings_panels = Page.settings_panels
+    
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+
+        tiles = self.get_children().live()
+        context['tiles'] = tiles
+
+        return context
+    
+
 
 
 class Position(DateRange):

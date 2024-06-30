@@ -1,0 +1,29 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+    <div class="tile" 
+    href="{% if person.profile_url %}{{ person.profile_url }}{% endif %}">
+    
+    <div class="tile__text">
+    <a 
+    class="tile__link"
+    href="{% if person.profile_url %}{{ person.profile_url }}{% endif %}"
+    >
+    <h3>
+        {% firstof person.profile.title person %}
+    </h3>
+</a>
+
+        <div class="tile__img-wrapper">
+            {% if person.profile.feed_image %}
+                {% image person.profile.feed_image fill-900x493 as image %}
+                <img src="{{ image.url }}" alt="{{ image.alt }}" />
+            {% elif person.profile.hero_image %}
+                {% image internal_page.specific.image fill-900x493 as image %}
+                <img src="{{ image.url }}" alt="{{ image.alt }}" />
+            {% elif person.image %}
+                {% image person.image fill-900x493 as image %}
+                <img src="{{ image.url }}" alt="{{ image.alt }}" />
+            {% endif %}
+        </div>
+    </div>
+</div>

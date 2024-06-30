@@ -1,5 +1,6 @@
 from wagtail_modeladmin.mixins import ThumbnailMixin
-from wagtail_modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
+from wagtail_modeladmin.options import (ModelAdmin, ModelAdminGroup,
+                                        modeladmin_register)
 
 from cdhweb.events.models import Event, EventType, Location
 
@@ -8,7 +9,7 @@ class EventAdmin(ThumbnailMixin, ModelAdmin):
     model = Event
     menu_icon = "date"
     list_display = (
-        "admin_thumb",
+    "admin_thumb",
         "title",
         "type",
         "speaker_list",
