@@ -1,9 +1,6 @@
 {% load wagtailcore_tags wagtailimages_tags l10n %}
 
-    <div 
-        class="tile" 
-        href="{% if tile_type == 'internal_page_tile' %}{{ internal_page.url }}{% else %}{{ tile.value.external_link }}{% endif %}"
-    >
+    <div class="tile">
         <div class="tile__text">
             <a 
                 class="tile__link"
