@@ -447,6 +447,18 @@ class Person(ClusterableModel):
         if website:
             return website.url
 
+    @property
+    def tile_title(self):
+        mship = self.membership_set.first()
+        HUM_DATASCI = "Humanities + Data Science Institute"
+        if mship.project.title == HUM_DATASCI:
+            return "%s %s" % (HUM_DATASCI, self.membership_set.first().role.title)
+        elif "Fellow" in self.latest_grant.grant_type.grant_type:
+            no_ship = self.latest_grant.grant_type.grant_type.split("ship", 1)[0]
+            return f"{self.latest_grant.years} {no_ship}"
+        else:
+            return f"{self.latest_grant.years} {self.latest_grant.grant_type.grant_type} Grant Recipient"
+
     def autocomplete_label(self):
         """label when chosen with wagtailautocomplete"""
         return str(self)
