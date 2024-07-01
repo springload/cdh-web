@@ -12,8 +12,7 @@
         <a class="tile__link" href="{% if person.profile_url %}{{ person.profile_url }}{% endif %}">
             <h2>{% firstof person.profile.title person %}</h2>
         </a>
-        {# BED TODO #}
-        <p>TODO job title</p>
+        <p>{{ person.position }}</p>
     </div>
     <div class="tile__img-wrapper">
         {% if person.profile.feed_image %}

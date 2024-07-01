@@ -16,17 +16,22 @@ from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
-from wagtail.admin.panels import (FieldPanel, FieldRowPanel, InlinePanel,
-                                  MultiFieldPanel)
-from wagtail.contrib.routable_page.models import (RoutablePageMixin, path,
-                                                  re_path)
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.contrib.routable_page.models import RoutablePageMixin, path, re_path
 from wagtail.fields import RichTextField
 from wagtail.models import Page
 from wagtail.search import index
 
 from cdhweb.pages.mixin import SidebarNavigationMixin, StandardHeroMixin
-from cdhweb.pages.models import (PARAGRAPH_FEATURES, BaseLandingPage, BasePage,
-                                 DateRange, LandingPage, LinkPage, RelatedLink)
+from cdhweb.pages.models import (
+    PARAGRAPH_FEATURES,
+    BaseLandingPage,
+    BasePage,
+    DateRange,
+    LandingPage,
+    LinkPage,
+    RelatedLink,
+)
 
 
 class Title(models.Model):
@@ -447,17 +452,64 @@ class Person(ClusterableModel):
         if website:
             return website.url
 
-    @property
-    def tile_title(self):
-        mship = self.membership_set.first()
+    def get_position_for_tile(self, category):
         HUM_DATASCI = "Humanities + Data Science Institute"
-        if mship.project.title == HUM_DATASCI:
-            return "%s %s" % (HUM_DATASCI, self.membership_set.first().role.title)
-        elif "Fellow" in self.latest_grant.grant_type.grant_type:
-            no_ship = self.latest_grant.grant_type.grant_type.split("ship", 1)[0]
-            return f"{self.latest_grant.years} {no_ship}"
+        if category in ["staff", "past_staff"]:
+            if self.positions.first():
+                latest_position = self.positions.first()
+                if latest_position.is_current:
+                    return latest_position.title
+                else:
+                    return "%s %s" % (latest_position.years, latest_position.title)
+
+        elif category in ["students", "alumni"]:
+            if self.positions.first():
+                latest_position = self.positions.first()
+                if latest_position.is_current:
+                    return latest_position.title
+                else:
+                    return "%s %s" % (latest_position.years, latest_position.title)
+
+            # if student was a project director, show as grant recipient/fellow
+            elif self.latest_grant:
+                if "Fellow" in self.latest_grant.grant_type.grant_type:
+                    no_ship = self.latest_grant.grant_type.grant_type.split("ship", 1)[
+                        0
+                    ]
+                    return f"{self.latest_grant.years} {no_ship}"
+                else:
+                    # otherwise "X grant recipient"
+                    return f"{self.latest_grant.years} {self.latest_grant.grant_type.grant_type} Grant Recipient"
+
+            elif self.membership_set:
+                # for students on projects, label based on project membership
+                roles = set(
+                    PersonQuerySet.project_roles + PersonQuerySet.affiliate_roles
+                ) - {"Project Director"}
+                for membership in self.membership_set.filter(role__title__in=roles):
+                    # NOTE: it might be better to use memberships for
+                    # project director / grant role as well, but with the new
+                    # data model it's harder to determine what type of grant they were on
+                    label = membership.role.title
+                    # if in humanities data science, use title + role
+                    if membership.project.title == HUM_DATASCI:
+                        return "%s %s" % (HUM_DATASCI, label)
+                    if membership.is_current:
+                        return label
+                    else:
+                        return "%s %s" % (membership.years, label)
+
+        elif category in ["affiliates", "past_affiliates"]:
+            mship = self.membership_set.first()
+            if mship.project.title == HUM_DATASCI:
+                return "%s %s" % (HUM_DATASCI, self.membership_set.first().role.title)
+            elif "Fellow" in self.latest_grant.grant_type.grant_type:
+                no_ship = self.latest_grant.grant_type.grant_type.split("ship", 1)[0]
+                return f"{self.latest_grant.years} {no_ship}"
+            else:
+                return f"{self.latest_grant.years} {self.latest_grant.grant_type.grant_type} Grant Recipient"
         else:
-            return f"{self.latest_grant.years} {self.latest_grant.grant_type.grant_type} Grant Recipient"
+            return self.job_title
 
     def autocomplete_label(self):
         """label when chosen with wagtailautocomplete"""
@@ -578,8 +630,9 @@ class PeopleLandingPageArchived(LandingPage):
     # use the regular landing page template
     template = LandingPage.template
 
+
 class PeopleCategoryPage(BaseLandingPage, SidebarNavigationMixin, RoutablePageMixin):
-    """Landing Page for categeory of people i.e. staff, students, affiliates, executive committee """
+    """Landing Page for categeory of people i.e. staff, students, affiliates, executive committee"""
 
     subpage_types = [Profile]
 
@@ -593,12 +646,15 @@ class PeopleCategoryPage(BaseLandingPage, SidebarNavigationMixin, RoutablePageMi
         AFFILIATES = "affiliates", "Affiliates"
         PAST_AFFILIATES = "past_affiliates", "Past Affiliates"
         EXECUTIVE_COMMITTEE = "executive_committee", "Executive Committee"
-        SITS_WITH_EXECUTIVE_COMMITTEE = "sits_with_executive_committee", "Sits with Executive Committee"
+        SITS_WITH_EXECUTIVE_COMMITTEE = (
+            "sits_with_executive_committee",
+            "Sits with Executive Committee",
+        )
 
     category = models.CharField(
         choices=PeopleCategories.choices,
     )
-    content_panels = [ FieldPanel("category") ] + BaseLandingPage.content_panels
+    content_panels = [FieldPanel("category")] + BaseLandingPage.content_panels
 
     settings_panels = (
         BaseLandingPage.settings_panels + SidebarNavigationMixin.settings_panels
@@ -608,80 +664,124 @@ class PeopleCategoryPage(BaseLandingPage, SidebarNavigationMixin, RoutablePageMi
         context = super().get_context(request, *args, **kwargs)
 
         category_mapping = {
-        self.PeopleCategories.STAFF: self.get_current_staff,
-        self.PeopleCategories.PAST_STAFF: self.get_past_staff,
-        self.PeopleCategories.STUDENTS: self.get_students,
-        self.PeopleCategories.ALUMNI: self.get_alumni,
-        self.PeopleCategories.AFFILIATES: self.get_affiliates,
-        self.PeopleCategories.PAST_AFFILIATES: self.get_past_affiliates,
-        self.PeopleCategories.EXECUTIVE_COMMITTEE: self.get_executive_committee,
-        self.PeopleCategories.SITS_WITH_EXECUTIVE_COMMITTEE: self.get_sits_with_executive_committee,
+            self.PeopleCategories.STAFF: self.get_current_staff,
+            self.PeopleCategories.PAST_STAFF: self.get_past_staff,
+            self.PeopleCategories.STUDENTS: self.get_students,
+            self.PeopleCategories.ALUMNI: self.get_alumni,
+            self.PeopleCategories.AFFILIATES: self.get_affiliates,
+            self.PeopleCategories.PAST_AFFILIATES: self.get_past_affiliates,
+            self.PeopleCategories.EXECUTIVE_COMMITTEE: self.get_executive_committee,
+            self.PeopleCategories.SITS_WITH_EXECUTIVE_COMMITTEE: self.get_sits_with_executive_committee,
         }
 
-        context['people'] = category_mapping[self.category]()
+        people = category_mapping[self.category]()
+
+        for person in people:
+            person.position = person.get_position_for_tile(self.category)
+
+        context["people"] = people
         return context
-    
+
     def get_current_staff(self):
-        people = Person.objects.cdh_staff().not_students().current_position_nonexec().order_by_position().distinct()
+        people = (
+            Person.objects.cdh_staff()
+            .not_students()
+            .current_position_nonexec()
+            .order_by_position()
+            .distinct()
+        )
 
         return people
-    
+
     def get_past_staff(self):
-        people_queryset = Person.objects.cdh_staff().not_students().order_by_position().distinct()
+        people_queryset = (
+            Person.objects.cdh_staff().not_students().order_by_position().distinct()
+        )
 
         current = self.get_current_staff()
         people = people_queryset.exclude(id__in=current.values("id"))
 
         return people
 
-    
     def get_students(self):
-        people = Person.objects.student_affiliates().grant_years().project_manager_years().current().order_by_position().distinct()
-        
+        people = (
+            Person.objects.student_affiliates()
+            .grant_years()
+            .project_manager_years()
+            .current()
+            .order_by_position()
+            .distinct()
+        )
+
         return people
 
     def get_alumni(self):
-        people_queryset = Person.objects.student_affiliates().grant_years().project_manager_years().distinct()
+        people_queryset = (
+            Person.objects.student_affiliates()
+            .grant_years()
+            .project_manager_years()
+            .distinct()
+        )
         people_queryset = people_queryset.annotate(
-                most_recent=Greatest(
-                    Case(
-                        When(
-                            membership__end_date__isnull=False,
-                            then=Max("membership__end_date"),
-                        ),
-                        default=Value("1900-01-01", output_field=DateField()),
+            most_recent=Greatest(
+                Case(
+                    When(
+                        membership__end_date__isnull=False,
+                        then=Max("membership__end_date"),
                     ),
-                    Case(
-                        When(
-                            positions__end_date__isnull=False,
-                            then=Max("positions__end_date"),
-                        ),
-                        default=Value("1900-01-01", output_field=DateField()),
+                    default=Value("1900-01-01", output_field=DateField()),
+                ),
+                Case(
+                    When(
+                        positions__end_date__isnull=False,
+                        then=Max("positions__end_date"),
                     ),
-                )
-            ).order_by("-most_recent")
+                    default=Value("1900-01-01", output_field=DateField()),
+                ),
+            )
+        ).order_by("-most_recent")
 
         current = self.get_students()
         people = people_queryset.exclude(id__in=current.values("id"))
 
         return people
-    
+
     def get_affiliates(self):
-        people = Person.objects.affiliates().grant_years().current_grant().order_by("last_name").distinct()
+        people = (
+            Person.objects.affiliates()
+            .grant_years()
+            .current_grant()
+            .order_by("last_name")
+            .distinct()
+        )
         return people
-    
+
     def get_past_affiliates(self):
         current = self.get_affiliates()
-        people_queryset = Person.objects.affiliates().grant_years().order_by("last_name").distinct()
+        people_queryset = (
+            Person.objects.affiliates().grant_years().order_by("last_name").distinct()
+        )
         people = people_queryset.exclude(id__in=current.values("id"))
         return people
-        
+
     def get_executive_committee(self):
-        people = Person.objects.executive_committee().current_position().exec_member().order_by("last_name").distinct()
+        people = (
+            Person.objects.executive_committee()
+            .current_position()
+            .exec_member()
+            .order_by("last_name")
+            .distinct()
+        )
         return people
-    
+
     def get_sits_with_executive_committee(self):
-        people = Person.objects.executive_committee().current_position().sits_with_exec().order_by("last_name").distinct()
+        people = (
+            Person.objects.executive_committee()
+            .current_position()
+            .sits_with_exec()
+            .order_by("last_name")
+            .distinct()
+        )
         return people
 
 
@@ -695,16 +795,14 @@ class PeopleLandingPage(StandardHeroMixin, Page):
     search_fields = StandardHeroMixin.search_fields
 
     settings_panels = Page.settings_panels
-    
+
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
 
         tiles = self.get_children().live()
-        context['tiles'] = tiles
+        context["tiles"] = tiles
 
         return context
-    
-
 
 
 class Position(DateRange):
