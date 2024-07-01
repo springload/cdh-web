@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load wagtailcore_tags springkit_tags %}  
+{% load wagtailcore_tags springkit_tags wagtailroutablepage_tags %}  
 
 {% block body_class %}template-events-landing{% endblock %}
 
@@ -7,23 +7,34 @@
     {% include 'includes/breadcrumbs.html' with breadcrumbs=self.breadcrumbs current_page=self %}
     {% include 'includes/standard_hero.html' %}
 
-<div class="archive-nav">
-    <a class="toggle">
-        <i class="fa fa-chevron-down" aria-hidden="true"></i></a>
-    <ul class="submenu">
-    {# include upcoming events page link #}
-    {% url 'events:upcoming' as upcoming_url %}
-    <li {% if request.path == upcoming_url %}class="current"{% endif %}><a href="{{ upcoming_url }}">Upcoming</a></li>
-    {% for semester, year in date_list reversed %}
-        {% url 'events:by-semester' semester=semester|slugify year=year as event_url %}
-        <li {% if event_url == request.path  %}class="current"{% endif %}>
-            <a href="{{ event_url }}">{{ semester }} {{ year }}</a></li>
-    {% endfor %}
-</ul>
-</div>
+    <div class="content-width grid-standard page-layout page-layout--without-sidenav-wider">
+        <div class="page-layout__main-content">
 
-    {% for event in events %}
-        {% include 'cdhpages/blocks/tile.html' with internal_page=event tile_type='internal_page_tile' %}
-    {% endfor %}
+            <div class="simple-filter-bar" class="u-no-js-hide">
+                <label for="event-filter">
+                    Show
+                    <span class="sr-only">(Note: page will reload)</span>
+                </label>
+                <select id="event-filter" data-component="select-navigator">
+                    {% pageurl self as as upcoming_url %}
+                    <option data-href="{{ upcoming_url }}" {% if request.path == upcoming_url %}selected{% endif %}>Upcoming</option>
+                    {% for semester, year in date_list reversed %}
+                        {% routablepageurl self 'by-semester' semester=semester|slugify year=year as event_url %}
+                        <option data-href="{{ event_url }}" {% if event_url == request.path  %}selected{% endif %}>{{ semester }} {{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            {% if events %}
+                <div class="tiles__list">
+                    {% for event in events %}
+                        {% include 'cdhpages/blocks/tile.html' with internal_page=event tile_type='internal_page_tile' %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No events found.</p>
+            {% endif %}
+        </div>
+    </div>
 
 {% endblock %}

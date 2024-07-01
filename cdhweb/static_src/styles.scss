@@ -32,6 +32,7 @@
 
 // Page templates
 @import './global/pages/search.scss';
+@import './global/pages/projects-landing.scss';
 @import './global/pages/project-page.scss';
 
 // Spacing between each type of typographic element.
@@ -51,6 +52,7 @@
 // All other components go here:
 @import './global/components/main-nav-mobile.scss';
 @import './global/components/main-nav-desktop.scss';
+@import './global/components/site-alert.scss';
 @import './global/components/skip-link.scss';
 @import './global/components/home-hero.scss';
 @import './global/components/standard-hero.scss';

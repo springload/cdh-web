@@ -1,5 +1,5 @@
 .main-nav-desktop {
-  --logo-overlap: 23px;
+  --logo-overlap: 24px;
 
   display: none;
 
@@ -12,7 +12,7 @@
     display: block;
   }
   @include xl {
-    --logo-overlap: 29px;
+    --logo-overlap: 28px;
   }
 
   &:has(.main-nav-desktop__item--open) {

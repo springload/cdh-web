@@ -23,33 +23,43 @@ const SearchForm = ({ searchUrl, extraClasses }: Props): JSX.Element => {
       <fieldset className="search-form__filters">
         <legend className="sr-only">Filter search results by</legend>
         <div className="search-form__radio">
-          <input
-            type="radio"
-            name="filter"
-            id={`${uniqueId}_everything`}
-            checked
-          />
-          <label htmlFor={`${uniqueId}_everything`}>Everything</label>
+          <div className="radio">
+            <input
+              type="radio"
+              name="filter"
+              id={`${uniqueId}_everything`}
+              checked
+            />
+            <label htmlFor={`${uniqueId}_everything`}>Everything</label>
+          </div>
         </div>
         <div className="search-form__radio">
-          <input type="radio" name="filter" id={`${uniqueId}_people`} />
-          <label htmlFor={`${uniqueId}_people`}>People</label>
+          <div className="radio">
+            <input type="radio" name="filter" id={`${uniqueId}_people`} />
+            <label htmlFor={`${uniqueId}_people`}>People</label>
+          </div>
         </div>
         <div className="search-form__radio">
-          <input type="radio" name="filter" id={`${uniqueId}_projects`} />
-          <label htmlFor={`${uniqueId}_projects`}>Projects</label>
+          <div className="radio">
+            <input type="radio" name="filter" id={`${uniqueId}_projects`} />
+            <label htmlFor={`${uniqueId}_projects`}>Projects</label>
+          </div>
         </div>
         <div className="search-form__radio">
-          <input type="radio" name="filter" id={`${uniqueId}_events`} />
-          <label htmlFor={`${uniqueId}_events`}>Events</label>
+          <div className="radio">
+            <input type="radio" name="filter" id={`${uniqueId}_events`} />
+            <label htmlFor={`${uniqueId}_events`}>Events</label>
+          </div>
         </div>
         <div className="search-form__radio">
-          <input
-            type="radio"
-            name="filter"
-            id={`${uniqueId}_blogs-and-news"`}
-          />
-          <label htmlFor={`${uniqueId}_blogs-and-news"`}>Blogs & news</label>
+          <div className="radio">
+            <input
+              type="radio"
+              name="filter"
+              id={`${uniqueId}_blogs-and-news"`}
+            />
+            <label htmlFor={`${uniqueId}_blogs-and-news"`}>Blogs & news</label>
+          </div>
         </div>
       </fieldset>
     </form>

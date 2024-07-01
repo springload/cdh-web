@@ -14,14 +14,31 @@
   line-height: 1.33;
   font-weight: bold;
 
-  // TODO?: Custom checkbox style instead of accent colour. Time/desire permitting.
-  accent-color: var(--color-brand-120);
-  :where(label, input) {
-    cursor: pointer;
+  // Search icons only show on the instance at the top of the search page.
+  :where(svg) {
+    display: none;
   }
-  :where(label) {
-    padding-left: 4px; // 8px if we use bigger custom input styles
+
+  // Styles specifically for the top of the search page.
+  // This is when the extra icons show, too.
+  :where(.search-page__form) & {
+    flex-direction: column;
+    gap: 8px;
+
+    @include md {
+      flex-direction: row;
+      gap: 8px 40px;
+    }
+
+    :where(svg) {
+      display: block;
+      margin-inline-start: 6px;
+      // each icon has a different aspect ratio, but this seems to work well enough.
+      width: 17px;
+      aspect-ratio: 1;
+    }
   }
+
   :where(.search-form__radio) {
     display: flex;
   }

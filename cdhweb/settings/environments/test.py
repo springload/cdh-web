@@ -1,6 +1,6 @@
 import os
 
-from cdhweb.settings import BASE_DIR, DATABASES
+from cdhweb.settings import DATABASES
 
 # These settings correspond to the service container settings in the
 # .github/workflow .yml files.

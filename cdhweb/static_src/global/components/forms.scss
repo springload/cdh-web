@@ -34,3 +34,88 @@
     }
   }
 }
+
+// Custom checkboxes and radios.
+// Shared styles here. radio/checkbox-specific styles afterwards.
+:is(.checkbox, .radio) {
+  --input-size: #{px2rem(20)};
+
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  :where(input) {
+    @include visuallyHidden;
+  }
+  :where(label) {
+    cursor: pointer;
+    padding-inline-start: calc(var(--input-size) + 8px);
+
+    // ::before = bg.
+    // Only checkboxes use `::after` (for the check mark).
+    // Radios just change the `::before`'s border width when checked.
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: var(--input-size);
+      height: var(--input-size);
+      background-color: var(--input-bg);
+    }
+  }
+
+  &:has(input:focus-visible) {
+    label::before {
+      outline: 2px solid var(--focus-ring-color);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.radio {
+  --input-bg: var(--color-white);
+  --input-border-width: 1px;
+
+  label {
+    &::before,
+    &::after {
+      border-radius: 50%;
+    }
+    &::before {
+      border: var(--input-border-width) solid var(--color-grey-100);
+    }
+  }
+
+  &:has(input:checked) {
+    --input-border-width: calc(var(--input-size) / 3);
+  }
+}
+
+.checkbox {
+  --input-bg: var(--color-grey-100);
+
+  label {
+    &::before {
+      border-radius: 4px;
+    }
+    &::after {
+      content: '';
+      opacity: 0; // only shown when :checked
+      position: absolute;
+      left: px2rem(3);
+      top: px2rem(5);
+      width: px2rem(13);
+      aspect-ratio: 14/10; // from viewbox
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 10'%3E%3Cpath fill='%23fff' d='m12.8 2.5-6.6 6.6a1.2 1.2 0 01-1.7 0l-3.3-3.3a1.2 1.2 0 010-1.7 1.2 1.2 0 011.7 0l2.5 2.6 5.7-5.8a1.2 1.2 0 011.7 0 1.2 1.2 0 010 1.6z' /%3E%3C/svg%3E%0A");
+      background-repeat: no-repeat;
+    }
+  }
+
+  // show check mark
+  &:has(input:checked) {
+    label::after {
+      opacity: 1;
+    }
+  }
+}

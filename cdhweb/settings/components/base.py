@@ -149,6 +149,7 @@ TEMPLATES = [
                 "cdhweb.context_processors.template_settings",
                 "cdhweb.pages.context_processors.page_intro",
                 "cdhweb.pages.context_processors.site_search",
+                "cdhweb.context_processors.show_test_warning",
             ],
         },
     },
@@ -172,6 +173,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.routable_page",
     # required to avoid https://github.com/wagtail/wagtail/issues/1824
     "wagtail.contrib.search_promotions",
     "wagtail.contrib.typed_table_block",

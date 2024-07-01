@@ -76,8 +76,7 @@ class StandardHeroMixinNoImage(models.Model):
         )
     ]
 
-    search_fields = [
-        index.SearchField("title"),
+    search_fields = Page.search_fields + [
         index.SearchField("description"),
     ]
 
