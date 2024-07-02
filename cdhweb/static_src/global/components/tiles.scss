@@ -178,9 +178,7 @@
   grid-row: 1;
   grid-column: 1;
   border: 1px solid var(--border-color);
-
-  // Ratio matches the crop in template
-  aspect-ratio: 900 / 493;
+  aspect-ratio: 9 / 5;
 
   // Fallback is a stripy bg, if no image set
   background-size: auto auto;

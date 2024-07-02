@@ -80,20 +80,36 @@
         <div class="tile__img-wrapper">
             {% if tile_type == 'internal_page_tile' %}
                 {% if internal_page.specific.feed_image %}
-                    {% image internal_page.specific.feed_image fill-900x493 as image %}
-                    <img src="{{ image.url }}" alt="{{ image.alt }}" />
+                    {% image internal_page.specific.feed_image original as img %}
                 {% elif internal_page.specific.hero_image %}
-                    {% image internal_page.specific.hero_image fill-900x493 as image %}
-                    <img src="{{ image.url }}" alt="{{ image.alt }}" />
+                    {% image internal_page.specific.hero_image original as img %}
                 {% elif internal_page.specific.image %}
-                    {% image internal_page.specific.image fill-900x493 as image %}
-                    <img src="{{ image.url }}" alt="{{ image.alt }}" />
+                    {% image internal_page.specific.image original as img %}
                 {% endif %}
             {% else %}
                 {% if tile.value.image %}
-                    {% image tile.value.image fill-900x493 as image %}
-                    <img src="{{ image.url }}" alt="{{ image.alt }}" />
+                    {% image tile.value.image original as img %}
                 {% endif %}
+            {% endif %}
+
+            {% if img %}
+                {# All images must have the same ratio (9:5) for this technique to work properly #}
+                {% image img.image fill-400x222 as img_sm %}
+                {% image img.image fill-500x278 as img_md %}
+                {% image img.image fill-800x444 as img_lg %}
+                {% image img.image fill-1000x556 as img_xl %}
+                {# 655 = Approx viewport size of when tiles may go to 2 cols #}
+                <img 
+                    src="{{ img_lg.url }}" 
+                    srcset="{{ img_sm.url }} 400w,
+                            {{ img_md.url }} 500w,
+                            {{ img_lg.url }} 800w,
+                            {{ img_xl.url }} 1000w"
+                    sizes="(max-width: 655px) 100vw,
+                            (max-width: 1006px) 45vw,
+                            (max-width: 1500px) 20vw,
+                            15vw"
+                    alt="{{ img.alt }}" />
             {% endif %}
         </div>
     </div>
