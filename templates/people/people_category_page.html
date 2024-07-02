@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags springkit_tags %}  
+
+{% block body_class %}template-people-category{% endblock %}
+
+{% block main %}
+    {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
+    {% include 'includes/standard_hero.html' %}
+
+    <div class="content-width grid-standard page-layout
+        {% if page.sidebar_navigation %}
+            page-layout--with-sidenav-wider
+        {% else %}
+            page-layout--without-sidenav-wider
+        {% endif %} 
+    ">
+
+        <div class="page-layout__main-content">
+            <div class="streamfields-wrapper">
+                {% if people %}
+                    <div class="tiles__list">
+                        {% for person in people %}
+                            {% include 'cdhpages/blocks/person_tile.html' %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% for block in page.body %}
+                    {% include_block block %}
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if page.sidebar_navigation %}
+            <div class="page-layout__sidenav">  
+                {% include 'includes/sidenav.html' %}
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

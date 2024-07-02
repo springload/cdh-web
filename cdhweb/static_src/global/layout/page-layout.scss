@@ -44,6 +44,8 @@
   }
 }
 .page-layout--with-sidenav-wider {
+  // Note, we must keep the extra space between the `s` and `m` because otherwise
+  // content that has the negative "outdent" (e.g. headings) can collide with the sidenav.
   @include xl {
     grid-template-areas: 's s s . m m m m m m m .';
   }
@@ -62,12 +64,8 @@
   // Vertical space between sidenav and main content when stacked:
   margin-block-start: 56px;
 
-  // Move it away from the side on narrow viewports, so 3d box has room.
-  // grid-column: 2 / -3;
-
   @include sm {
     margin-block-start: 80px;
-    // grid-column: 1 / -2;
   }
   @include md {
     margin-block-start: 104px;
