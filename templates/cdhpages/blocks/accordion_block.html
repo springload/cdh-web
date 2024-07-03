@@ -1,4 +1,4 @@
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags custom_tags %}
 
 <div class="block block--accordion">
 
@@ -12,14 +12,15 @@
 
   <div data-component="accordion" class="sk-accordion">
     {% for item in self.accordion_items %}
+      {% get_accordion_heading_display item.heading as label %}
       {% if self.heading.heading %}
-        <h3 class="sr-only">{{ item.heading }}</h3>
+        <h3 class="sr-only">{{ label |default:item.heading }}</h3>
       {% else %}
-        <h2 class="sr-only">{{ item.heading }}</h2>
+        <h2 class="sr-only">{{ label |default:item.heading }}</h2>
       {% endif %}
       <details>
         <summary aria-label="Toggle section: {{ item.heading }}">
-          {{ item.heading }}
+          {{ label |default:item.heading }}
           {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-up" classes="sk-accordion__chevron-up" %}
           {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-down" classes="sk-accordion__chevron-down" %}
         </summary>
