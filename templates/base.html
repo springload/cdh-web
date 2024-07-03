@@ -5,9 +5,12 @@
 
   <head>
     <meta charset="utf-8">
-    <title>{% block title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}{% block title_suffix %}{% endblock %}</title>
-    <meta name="description" content="{% firstof self.search_description self.intro|default:''|striptags self.body_excerpt|default:''|striptags|truncatewords:40 self.title %}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>{% block title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}{% block title_suffix %}{% endblock %}</title>
+    
+    {% include "includes/favicons.html" %}
+    {% include "snippets/head_meta.html" %}
 
     <script type="text/javascript"> window.staticRoot = "{% static 'dist/' %}"; </script>
 
@@ -16,22 +19,12 @@
       document.documentElement.classList.add('js');
     </script>
 
-    {% include "includes/favicons.html" %}
-
-    {% comment %}
-    {% include "core/includes/meta/twitter_card.html" %}
-    {% include "core/includes/meta/open_graph.html" %}
-
-    {% block og_images %}
-      {% include "core/includes/meta/open_graph_image.html" %}
-    {% endblock %}
-
-    {% endcomment %}
     {% block extra_css %}
       {# Needed for specific cases #}
     {% endblock %}
 
-    <script defer src="{% static 'dist/main.js' %}"></script><link href="{% static 'dist/styles.css' %}" rel="stylesheet"></head>
+    <script defer src="{% static 'dist/main.js' %}"></script>
+    <link href="{% static 'dist/styles.css' %}" rel="stylesheet">
 
   </head>
   <body class="{% block body_class %}{% endblock %}">

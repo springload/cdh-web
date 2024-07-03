@@ -7,7 +7,7 @@
 {% autoescape on %}
 {# html metadata #}
 {% if page.tags.exists %}<meta name="keywords" content="{{ page.tags.all|join:', ' }}"/>{% endif %}
-{% if meta_description %}<meta name="description" content="{{ meta_description|striptags }}"/>{% endif %}
+<meta name="description" content="{% firstof self.search_description self.intro|default:''|striptags self.body_excerpt|default:''|striptags|truncatewords:40 self.title %}">
 {# determine preview image: specified by page, cdh icon based on url, or default image #}
 {# open graph metadata #}
 <meta property="og:title" content="{{ meta_title }}" />
