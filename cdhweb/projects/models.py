@@ -2,11 +2,14 @@ from django.db import models
 from django.utils import timezone
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
+from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
+from cdhweb.pages.blocks.accordion_block import ProjectAccordion
 from cdhweb.pages.mixin import StandardHeroMixin
 from cdhweb.pages.models import BasePage, DateRange, LandingPage, LinkPage, RelatedLink
 from cdhweb.people.models import Person
@@ -79,6 +82,14 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
 
     template = "projects/project_page.html"
 
+    accordion = StreamField(
+        [("accordion", ProjectAccordion(label="Project Accordion"))],
+        use_json_field=True,
+        blank=True,
+        verbose_name="Project Details",
+        max_num=1,
+    )
+
     project_website = models.URLField(
         verbose_name="Project Website",
         null=True,
@@ -142,6 +153,7 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
             ),
             "Settings",
         ),
+        FieldPanel("accordion"),
         FieldPanel("body"),
         FieldPanel("project_website"),
         FieldRowPanel(
@@ -379,7 +391,6 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
     subpage_types = [Project]
 
     def get_child_queryset(self, request, filter_form):
-
         clean_filters = filter_form.cleaned_data
         query_string = clean_filters.pop("q", None)
 
