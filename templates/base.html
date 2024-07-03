@@ -1,6 +1,10 @@
 {% load static wagtailuserbar wagtailcore_tags wagtailimages_tags core_tags %}
 <!DOCTYPE html>
+{% if settings.cdhpages.PurpleMode.purple_mode %}
+<html class="no-js purple-mode" lang="en">
+{% else %}
 <html class="no-js" lang="en">
+{% endif %}
   <head>
     <meta charset="utf-8">
     <title>{% block title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}{% block title_suffix %}{% endblock %}</title>
@@ -32,7 +36,6 @@
     <script defer src="{% static 'dist/main.js' %}"></script><link href="{% static 'dist/styles.css' %}" rel="stylesheet"></head>
 
   </head>
-
   <body class="{% block body_class %}{% endblock %}">
     
     <a class="skip-link" href="#content">

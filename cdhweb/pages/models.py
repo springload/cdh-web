@@ -18,6 +18,7 @@ from wagtail.admin.panels import (
     TabbedInterface,
 )
 from wagtail.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
+from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.documents.models import AbstractDocument, DocumentQuerySet
 from wagtail.embeds.blocks import EmbedBlock
@@ -598,3 +599,15 @@ class DateRange(models.Model):
         # require end date to be greater than start date
         if self.start_date and self.end_date and not self.end_date >= self.start_date:
             raise ValidationError("End date must be after start date")
+
+
+@register_setting(icon="edit")
+class PurpleMode(BaseSiteSetting):
+    purple_mode = models.BooleanField(
+        default=False,
+        help_text="""This will turn the site purple 
+                                      by transforming all shades of cyan on the site into shades of purple""",
+    )
+
+    class Meta:
+        verbose_name = "Purple Site Setting"
