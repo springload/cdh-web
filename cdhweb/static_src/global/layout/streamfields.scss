@@ -18,6 +18,7 @@
             .block--table,
             .block--note,
             .block--paragraph,
+            .block--migrated-content,
             .block--pull-quote,
             .block--accordion:not(:has(> h2)),
             .block--video:not(:has(> h2))
@@ -38,6 +39,7 @@
         .block--accordion,
         .block--table,
         .block--paragraph,
+        .block--migrated-content,
         .block--download,
         .block--cta,
         .block--note,
