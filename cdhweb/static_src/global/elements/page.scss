@@ -10,6 +10,15 @@ html {
       transition-duration: 0.001ms !important;
     }
   }
+
+  &.purple-mode {
+    --color-brand-5: var(--color-brand-alt-5);
+    --color-brand-10: var(--color-brand-alt-10);
+    --color-brand-40: var(--color-brand-alt-40);
+    --color-brand-100: var(--color-brand-alt-100);
+    --color-brand-110: var(--color-brand-alt-110);
+    --color-brand-120: var(--color-brand-alt-120);
+  }
 }
 
 body {
