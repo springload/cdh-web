@@ -64,11 +64,13 @@ class ProjectAccordion(blocks.StructBlock):
         CODE = "code", "Code"
         DATA = "data", "Data"
         DOCUMENTATION = "documentation", "Documentation"
+        ANALYSIS = "analysis", "Analysis"
         RELATED_COURSES = (
             "related_courses_and_course_modules",
             "Related Courses and Course Modules",
         )
         PROJECT_PEER_REVIEW = "project_peer_review", "Project Peer Review"
+        AWARDS = "awards", "Awards"
 
     accordion_items = blocks.ListBlock(
         blocks.StructBlock(
