@@ -24,21 +24,21 @@
         {% endif %}
 
         {% if img %}
-                {# All images must have the same ratio (9:5) for this technique to work properly #}
-                {% image img.image fill-400x222 as img_sm %}
-                {% image img.image fill-500x278 as img_md %}
-                {% image img.image fill-800x444 as img_lg %}
-                {# 655 = Approx viewport size of when tiles may go to 2 cols #}
-                <img 
-                    src="{{ img_lg.url }}" 
-                    srcset="{{ img_sm.url }} 400w,
-                            {{ img_md.url }} 500w,
-                            {{ img_lg.url }} 800w"
-                    sizes="(max-width: 655px) 100vw,
-                            (max-width: 1006px) 45vw,
-                            (max-width: 1500px) 20vw,
-                            15vw"
-                    alt="{{ img.alt }}" />
-            {% endif %}
+            {# All images must have the same ratio (9:5) for this technique to work properly #}
+            {% image img.image fill-400x222 as img_sm %}
+            {% image img.image fill-500x278 as img_md %}
+            {% image img.image fill-800x444 as img_lg %}
+            {# 655 = Approx viewport size of when tiles may go to 2 cols #}
+            <img 
+                src="{{ img_lg.url }}" 
+                srcset="{{ img_sm.url }} 400w,
+                        {{ img_md.url }} 500w,
+                        {{ img_lg.url }} 800w"
+                sizes="(max-width: 655px) 100vw,
+                        (max-width: 1006px) 45vw,
+                        (max-width: 1500px) 20vw,
+                        15vw"
+                alt="{{ img.alt }}" />
+        {% endif %}
     </div>
 </div>
