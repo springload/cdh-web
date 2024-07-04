@@ -38,7 +38,7 @@
                 <ul class="main-nav-desktop__list">
                     {% for item in primary_nav.l1_menu_items %}
                         <li>
-                            <a href="{{ item.link_url }}" class="main-nav-desktop__item">
+                            <a href="{{ item.link_url }}" class="main-nav-desktop__item {% if request.path|starts_with:item.link_url %} active {% endif %}" >
                                 <span>{{ item.title }}</span>
                                 {# Reserve space for dropdown icon, to stop jank when the React version replaces this version. #}
                                 {% if item.l2_items.all %}
