@@ -3,7 +3,12 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from cdhweb.pages.snippets import Footer, PrimaryNavigation, SecondaryNavigation, SiteAlert
+from cdhweb.pages.snippets import (
+    Footer,
+    PrimaryNavigation,
+    SecondaryNavigation,
+    SiteAlert,
+)
 
 register = template.Library()
 
@@ -77,13 +82,21 @@ def _get_primary_nav_items():
     return l1_menu_items
 
 
-@register.simple_tag()
-def primary_nav_dict():
+@register.simple_tag(takes_context=True)
+def primary_nav_dict(context):
     """
     Return the primary navigation data as a dict, for use with the 'json_script' filter.
     """
     primary_nav_items = _get_primary_nav_items()
     l1_menu_item_data = [_l1_item_to_dict(item) for item in primary_nav_items]
+
+    current_path = context["request"].path
+
+    for item in l1_menu_item_data:
+        if current_path.startswith(item["link_url"]):
+            item["is_current"] = True
+        else:
+            item["is_current"] = False
 
     primary_nav_data = {
         "primary_nav": {
@@ -188,3 +201,13 @@ def site_alerts(context):
     )
     data = {"site_alerts": site_alerts, "request": context.get("request")}
     return data
+
+
+@register.filter
+def starts_with(value, arg):
+    """
+    Usage, {% if value|starts_with:"arg" %}
+    """
+    if value:
+        return value.startswith(arg)
+    return None
