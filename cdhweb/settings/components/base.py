@@ -143,7 +143,7 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.request",
                 "django.template.context_processors.tz",
-                # "wagtail.contrib.settings.context_processors.settings",
+                "wagtail.contrib.settings.context_processors.settings",
                 # "wagtailmenus.context_processors.wagtailmenus",
                 "cdhweb.context_extras",
                 "cdhweb.context_processors.template_settings",
@@ -176,6 +176,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.routable_page",
     # required to avoid https://github.com/wagtail/wagtail/issues/1824
     "wagtail.contrib.search_promotions",
+    "wagtail.contrib.settings",
     "wagtail.contrib.typed_table_block",
     "wagtail.embeds",
     "wagtail.sites",
