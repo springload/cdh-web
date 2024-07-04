@@ -53,7 +53,14 @@
   // Outdented components.
   // Tile block title is excluded because it needs to be wrapped in another
   // container to allow the "see all" link to display in line with it.
-  :where(.block--heading, .block--accordion > h2, .block--video > h2) {
+  // (Note: `.block--paragraph > h2` can't happen in the new CMS fields,
+  // but may happen with migrated content.
+  :where(
+      .block--heading,
+      .block--accordion > h2,
+      .block--video > h2,
+      .block--paragraph > h2
+    ) {
     @include md {
       margin-left: calc(-1 * var(--content-outdent));
     }
