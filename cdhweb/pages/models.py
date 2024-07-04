@@ -609,5 +609,7 @@ class PurpleMode(BaseSiteSetting):
                                       by transforming all shades of cyan on the site into shades of purple""",
     )
 
+    panels = [FieldPanel("purple_mode", icon="pick")]
+
     class Meta:
         verbose_name = "Purple Site Setting"
