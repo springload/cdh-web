@@ -23,6 +23,10 @@ def site_footer(context):
         "contact_links", "useful_links", "imprint_links"
     )
 
+    data = {
+        "request": context["request"],
+        "site_search": context["site_search"],
+    }
     if footers.exists():
         contact_links = footers.first().contact_links.all()
         social_media_links = footers.first().social_media_links.all()
@@ -30,17 +34,14 @@ def site_footer(context):
         useful_links = footers.first().useful_links.all()
         imprint_links = footers.first().imprint_links.all()
 
-        data = {
+        data |= {
             "contact_links": contact_links,
             "social_media_links": social_media_links,
             "physical_address": physical_address,
             "useful_links": useful_links,
             "imprint_links": imprint_links,
-            "request": context["request"],
         }
-        return data
-    else:
-        return None
+    return data
 
 
 def _minor_menu_item_to_dict(item):
