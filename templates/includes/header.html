@@ -38,7 +38,12 @@
                 <ul class="main-nav-desktop__list">
                     {% for item in primary_nav.l1_menu_items %}
                         <li>
-                            <a href="{{ item.link_url }}" class="main-nav-desktop__item {% if request.path|starts_with:item.link_url %} active {% endif %}" >
+                            <a href="{{ item.link_url }}" 
+                                class="main-nav-desktop__item 
+                                    {% if request.path|starts_with:item.link_url %}
+                                        main-nav-desktop__item--current-section
+                                    {% endif %}
+                            ">
                                 <span>{{ item.title }}</span>
                                 {# Reserve space for dropdown icon, to stop jank when the React version replaces this version. #}
                                 {% if item.l2_items.all %}
@@ -48,7 +53,12 @@
                         </li>
                     {% endfor %}
                     <li>
-                        <a href="{% url 'search' %}" class="main-nav-desktop__item">
+                        <a href="{% url 'search' %}" 
+                            class="main-nav-desktop__item
+                            {% if request.path|starts_with:'/search/' %}
+                                main-nav-desktop__item--current-section
+                            {% endif %}
+                        ">
                             <span>Search</span>
                             {% include 'includes/svg.html' with sprite="two-tone" svg="search" classes="main-nav-desktop__search-icon" %}
                         </a>

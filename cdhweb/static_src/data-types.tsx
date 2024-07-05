@@ -25,6 +25,7 @@ export type MainNavItemPrimary = {
   link_url: string;
   l2_items: NavItem[];
   isSearch?: boolean;
+  is_current: boolean;
 };
 
 export type NavItem = {
