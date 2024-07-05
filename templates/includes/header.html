@@ -43,7 +43,7 @@
                                     {% if request.path|starts_with:item.link_url %}
                                         main-nav-desktop__item--current-section
                                     {% endif %}
-                            ">
+                            ">  
                                 <span>{{ item.title }}</span>
                                 {# Reserve space for dropdown icon, to stop jank when the React version replaces this version. #}
                                 {% if item.l2_items.all %}
@@ -53,12 +53,13 @@
                         </li>
                     {% endfor %}
                     <li>
-                        <a href="{% url 'search' %}" 
+                        {% url 'search' as search_url %}
+                        <a href="{{ search_url }}" 
                             class="main-nav-desktop__item
-                            {% if request.path|starts_with:'/search/' %}
+                            {% if request.path|starts_with:search_url %}
                                 main-nav-desktop__item--current-section
                             {% endif %}
-                        ">
+                        ">   
                             <span>Search</span>
                             {% include 'includes/svg.html' with sprite="two-tone" svg="search" classes="main-nav-desktop__search-icon" %}
                         </a>
