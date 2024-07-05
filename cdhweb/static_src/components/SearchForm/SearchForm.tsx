@@ -28,6 +28,7 @@ const SearchForm = ({ searchUrl, extraClasses }: Props): JSX.Element => {
               type="radio"
               name="filter"
               id={`${uniqueId}_everything`}
+              value="everything"
               checked
             />
             <label htmlFor={`${uniqueId}_everything`}>Everything</label>
@@ -35,20 +36,13 @@ const SearchForm = ({ searchUrl, extraClasses }: Props): JSX.Element => {
         </div>
         <div className="search-form__radio">
           <div className="radio">
-            <input type="radio" name="filter" id={`${uniqueId}_people`} />
+            <input
+              type="radio"
+              name="filter"
+              id={`${uniqueId}_people`}
+              value="people"
+            />
             <label htmlFor={`${uniqueId}_people`}>People</label>
-          </div>
-        </div>
-        <div className="search-form__radio">
-          <div className="radio">
-            <input type="radio" name="filter" id={`${uniqueId}_projects`} />
-            <label htmlFor={`${uniqueId}_projects`}>Projects</label>
-          </div>
-        </div>
-        <div className="search-form__radio">
-          <div className="radio">
-            <input type="radio" name="filter" id={`${uniqueId}_events`} />
-            <label htmlFor={`${uniqueId}_events`}>Events</label>
           </div>
         </div>
         <div className="search-form__radio">
@@ -57,8 +51,31 @@ const SearchForm = ({ searchUrl, extraClasses }: Props): JSX.Element => {
               type="radio"
               name="filter"
               id={`${uniqueId}_blogs-and-news"`}
+              value="updates"
             />
             <label htmlFor={`${uniqueId}_blogs-and-news"`}>Blogs & news</label>
+          </div>
+        </div>
+        <div className="search-form__radio">
+          <div className="radio">
+            <input
+              type="radio"
+              name="filter"
+              id={`${uniqueId}_projects`}
+              value="projects"
+            />
+            <label htmlFor={`${uniqueId}_projects`}>Projects</label>
+          </div>
+        </div>
+        <div className="search-form__radio">
+          <div className="radio">
+            <input
+              type="radio"
+              name="filter"
+              id={`${uniqueId}_events`}
+              value="events"
+            />
+            <label htmlFor={`${uniqueId}_events`}>Events</label>
           </div>
         </div>
       </fieldset>
