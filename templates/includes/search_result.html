@@ -2,9 +2,8 @@
 {# Single search result on site search page #}
 
 {% spaceless %}
-{% autoescape off %}
 <li class="{{ page.get_url|url_to_icon }}">
-    
+
     {# Show relevant icon. Falls back to "doc" icon #}
     {% comment %}
         TODO: would prefer to do this conditional:
@@ -15,7 +14,7 @@
         {% include 'includes/svg.html' with sprite="two-tone" svg=page.get_url|url_to_icon %}
     {% else %}
         {% include 'includes/svg.html' with sprite="two-tone" svg="doc" %}
-    {% endif %} 
+    {% endif %}
     <div>
         <h3>
             <a href="{% pageurl page %}">{{ page.title }}</a>
@@ -29,5 +28,4 @@
         </p>
     </div>
 </li>
-{% endautoescape %}
 {% endspaceless %}

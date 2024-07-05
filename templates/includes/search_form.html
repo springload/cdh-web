@@ -1,6 +1,6 @@
 {% load core_tags %}
 
-{% comment %} 
+{% comment %}
   This form will appear in more than one place on the page (main nav (though that's a tsx version), footer, and on the search page).
   So `uniqueID` is used to prefix IDs (and their `for`s), so we don't get duplicate IDs in the markup.
 {% endcomment %}
@@ -12,40 +12,14 @@
   </div>
   <fieldset class="search-form__filters">
     <legend class="sr-only">Filter search results by</legend>
-    <div class="radio">
-      <div class="search-form__radio">
-        <input type="radio" name="filter" id="{{ uniqueID }}_everything" checked />
-        <label for="{{ uniqueID }}_everything">Everything</label>
-        {% include 'includes/svg.html' with sprite="two-tone" svg="doc" %}
+    {% for filter_option in site_search.filter_choices %}
+      <div class="radio">
+        <div class="search-form__radio">
+          <input type="radio" name="filter" value="{{ filter_option.value }}"  id="{{ uniqueID }}_{{ filter_option.value }}" {% if form.filter.value == filter_option.value %}checked{% endif %}/>
+          <label for="{{ uniqueID }}_{{ filter_option.value }}">{{ filter_option.label }}</label>
+          {% include 'includes/svg.html' with sprite="two-tone" svg=filter_option.icon %}
+        </div>
       </div>
-    </div>
-    <div class="radio">
-      <div class="search-form__radio">
-        <input type="radio" name="filter" id="{{ uniqueID }}_people" />
-        <label for="{{ uniqueID }}_people">People</label>
-        {% include 'includes/svg.html' with sprite="two-tone" svg="person" %}
-      </div>
-    </div>
-    <div class="radio">
-      <div class="search-form__radio">
-        <input type="radio" name="filter" id="{{ uniqueID }}_projects" />
-        <label for="{{ uniqueID }}_projects">Projects</label>
-        {% include 'includes/svg.html' with sprite="two-tone" svg="folder" %}
-      </div>
-    </div>
-    <div class="radio">
-      <div class="search-form__radio">
-        <input type="radio" name="filter" id="{{ uniqueID }}_events" />
-        <label for="{{ uniqueID }}_events">Events</label>
-        {% include 'includes/svg.html' with sprite="two-tone" svg="cal" %}
-      </div>
-    </div>
-    <div class="radio">
-      <div class="search-form__radio">
-        <input type="radio" name="filter" id="{{ uniqueID }}_blogs-and-news" />
-        <label for="{{ uniqueID }}_blogs-and-news">Blogs & news</label>
-        {% include 'includes/svg.html' with sprite="two-tone" svg="blog" %}
-      </div>
-    </div>
+    {% endfor %}
   </fieldset>
 </form>
