@@ -62,7 +62,6 @@ def _l1_item_to_dict(l1_item):
     l1_item_data = {
         "title": l1_item.title,
         "overview": l1_item.overview,
-        "section_link_title": l1_item.section_link_title,
         "link_url": l1_item.link_url,
         "l2_items": l2_item_data,
     }
