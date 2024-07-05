@@ -266,7 +266,12 @@ class BasePage(Page):
         use_json_field=True,
     )
 
-    attachments = StreamField(AttachmentBlock, blank=True, use_json_field=True)
+    attachments = StreamField(
+        AttachmentBlock,
+        blank=True,
+        use_json_field=True,
+        help_text="This block exists to help with data migration. It will be deleted when content loading is complete.",
+    )
 
     short_title = models.CharField(
         verbose_name="Short title",
