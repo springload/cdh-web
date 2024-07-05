@@ -81,7 +81,7 @@ STANDARD_BLOCKS = [
     ("cta_block", CTABlock()),
     ("accordion_block", AccordionBlock()),
     ("video_block", Video()),
-    ("embed", HostedVideo()),
+    ("hosted_video", HostedVideo()),
     ("pull_quote", PullQuote()),
     ("note", Note()),
     ("image", ImageBlock()),
@@ -92,6 +92,7 @@ STANDARD_BLOCKS = [
     ("tile_block", StandardTileBlock()),
     ("article_tile_block", ArticleTileBlock()),
     ("event_tile_block", EventTileBlock()),
+    ("embed", EmbedBlock(help_text=EMBED_HELP))
 ]
 
 
