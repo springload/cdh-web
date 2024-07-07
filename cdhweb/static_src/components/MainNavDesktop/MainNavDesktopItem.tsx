@@ -93,8 +93,7 @@ const DesktopMenuItem = ({
           <button
             className={cx('main-nav-desktop__item', {
               'main-nav-desktop__item--open': isOpen,
-              // If/when we get isCurrentSection working (BED TODO)
-              // 'main-nav-desktop__item--current-section': isCurrentSection,
+              'main-nav-desktop__item--current-section': item.is_current,
             })}
             onClick={onClick}
             aria-controls={`${uniqueA11yId}_desktop`}
@@ -154,7 +153,12 @@ const DesktopMenuItem = ({
           )}
         </>
       ) : (
-        <a href={item.link_url} className="main-nav-desktop__item">
+        <a
+          href={item.link_url}
+          className={cx('main-nav-desktop__item', {
+            'main-nav-desktop__item--current-section': item.is_current,
+          })}
+        >
           <span>{item.title}</span>
         </a>
       )}

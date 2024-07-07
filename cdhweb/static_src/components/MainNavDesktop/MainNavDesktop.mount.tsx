@@ -22,13 +22,14 @@ const initComponent: InitComponent = (componentEl) => {
   const primaryNavDataSimplified: MainNavDataPrimarySimplified =
     primaryNavData.primary_nav_data.primary_nav.l1_menu_items;
 
-  const searchUrl = componentEl.getAttribute('data-search-url');
+  const searchUrl = componentEl.getAttribute('data-search-url') || '/search';
 
   const root = createRoot(componentEl);
   root.render(
     <MainNavDesktop
       primaryNavData={primaryNavDataSimplified}
-      searchUrl={searchUrl || '/search'}
+      searchUrl={searchUrl}
+      isSearchPage={window.location.pathname === searchUrl}
     />,
   );
 

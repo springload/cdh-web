@@ -131,8 +131,10 @@
       border-bottom-color: var(--color-brand-120);
     }
   }
+}
 
-  // TODO current section, something similar to above
+.main-nav-desktop__item--current-section {
+  border-color: var(--color-brand-40);
 }
 
 .main-nav-desktop__dropdown-icon {

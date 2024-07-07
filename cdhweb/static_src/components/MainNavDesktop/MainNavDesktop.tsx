@@ -5,11 +5,13 @@ import { MouseEvent, createRef, useEffect, useRef, useState } from 'react';
 type DesktopMenuDataType = {
   primaryNavData: MainNavDataPrimarySimplified;
   searchUrl: string;
+  isSearchPage: boolean;
 };
 
 const DesktopMenu = ({
   primaryNavData,
   searchUrl,
+  isSearchPage,
 }: DesktopMenuDataType): JSX.Element => {
   const [currentOpenIndex, setCurrentOpenIndex] = useState(-1);
 
@@ -22,6 +24,7 @@ const DesktopMenu = ({
       overview: 'Search our website for people, projects, events or blogs.',
       l2_items: [],
       link_url: searchUrl,
+      is_current: isSearchPage,
     },
   ];
 
@@ -120,8 +123,6 @@ const DesktopMenu = ({
   return (
     <ul className="main-nav-desktop__list">
       {navDataPlusSearch.map((item, i) => (
-        // BED TODO! We'll need a isCurrentPage/isCurrentSection thing added to
-        // the data blob, to highlight the current menu item.
         <DesktopMenuItem
           key={i}
           item={item}
