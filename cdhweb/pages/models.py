@@ -30,8 +30,6 @@ from wagtail.search import index
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.models import register_snippet
 from wagtailcodeblock.blocks import CodeBlock
-from wagtailmenus.models import AbstractLinkPage
-from wagtailmenus.panels import linkpage_tab
 
 from cdhweb.pages import snippets  # needed for import order
 
@@ -237,19 +235,18 @@ class PagePreviewDescriptionMixin(models.Model):
         return striptags(self.get_description())
 
 
-class LinkPage(AbstractLinkPage):
+class LinkPage(Page):
     """Link page for controlling appearance in menus of non-Page content."""
 
     # NOTE these pages can have slugs, but the slug isn't editable in the admin
     # by default. We override the editing interface to introduce a "promote"
     # panel as with other Page models containing the form field for the slug.
     # see: https://github.com/rkhleics/wagtailmenus/blob/master/wagtailmenus/panels.py#L79-L93
-    edit_handler = TabbedInterface(
-        [
-            linkpage_tab,
-            ObjectList((MultiFieldPanel((FieldPanel("slug"),)),), heading="Promote"),
-        ]
-    )
+    # edit_handler = TabbedInterface(
+    #     [
+    #         ObjectList((MultiFieldPanel((FieldPanel("slug"),)),), heading="Promote"),
+    #     ]
+    # )
     search_fields = Page.search_fields
 
     is_creatable = False
@@ -434,24 +431,6 @@ class HomePage(HomePageHeroMixin, Page):
             }
         )
         return context
-
-
-@register_snippet
-class PageIntro(models.Model):
-    """Snippet for optional page intro text on for pages generated from
-    django views not managed by wagtail"""
-
-    page = models.OneToOneField(LinkPage, on_delete=models.CASCADE)
-    #: intro text
-    paragraph = RichTextField(features=PARAGRAPH_FEATURES)
-
-    panels = [
-        FieldPanel("page"),
-        FieldPanel("paragraph"),
-    ]
-
-    def __str__(self):
-        return self.page.title
 
 
 class DisplayUrlMixin(models.Model):
