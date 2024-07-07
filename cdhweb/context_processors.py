@@ -1,5 +1,6 @@
 from django.conf import settings
 from wagtail.models import Site
+from django.conf.urls.static import static
 
 from cdhweb.pages.utils import absolutize_url
 
@@ -14,14 +15,15 @@ def template_settings(request):
     if "purple-mode" in feature_flags:
         default_preview_img = "img/alt-modes/purple/cdhlogo_square.png"
     else:
-        default_preview_img = "img/cdhlogo_square.jpg"
+        default_preview_img = "images/cdhlogo_square.jpg"
 
     context_extras = {
         "SHOW_TEST_WARNING": getattr(settings, "SHOW_TEST_WARNING", False),
         "site": Site.find_for_request(request),
-        "default_preview_image": absolutize_url(
-            "".join([settings.STATIC_URL, default_preview_img])
+        "default_preview_image": request.build_absolute_uri(
+            static(default_preview_img)
         ),
+        # try using template tag import static tag and use here instead of join django utils static
         # Include analytics based on settings.DEBUG or override in settings.py
         # Defaults to opposite of settings.DEBUG
         "INCLUDE_ANALYTICS": getattr(settings, "INCLUDE_ANALYTICS", not settings.DEBUG),
