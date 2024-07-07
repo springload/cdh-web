@@ -51,7 +51,6 @@ class TestLandingPage(WagtailPageTestCase):
                 {
                     "title": "Engage",
                     "slug": "engage",
-                    "tagline": "Consult, collaborate, and work with us",
                     "body": streamfield(
                         [
                             ("paragraph", rich_text("engage page text")),

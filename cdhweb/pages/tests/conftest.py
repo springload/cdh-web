@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from wagtail.models import Page, Site
+from wagtail.images.models import Image
 
 from cdhweb.pages.models import ContentPage, ExternalAttachment, HomePage, LandingPage
 from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
@@ -28,9 +29,12 @@ def make_wagtail_site():
 def make_homepage(site):
     """Create a test homepage and set it as the root of the Wagtail site."""
     root = Page.objects.get(title="Root")
+    image = Image(height=1, width=1)
+    image.save()
     home = HomePage(
         title="home",
         slug="",
+        hero_image=image,
         body=json.dumps(
             [{"type": "paragraph", "value": "<p>content of the home page</p>"}]
         ),
@@ -47,7 +51,6 @@ def make_landing_page(homepage):
     landing = LandingPage(
         title="landing",
         slug="landing",
-        tagline="tagline",
         body=json.dumps(
             [{"type": "paragraph", "value": "<p>content of the landing page</p>"}]
         ),

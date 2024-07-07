@@ -243,7 +243,7 @@ class TestPersonQuerySet(TestCase):
         root.add_child(instance=home)
         root.save()
         link = ProjectsLandingPageArchived(
-            title="projects", slug="projects", tagline="let's collaborate"
+            title="projects", slug="projects",
         )
         home.add_child(instance=link)
         home.save()

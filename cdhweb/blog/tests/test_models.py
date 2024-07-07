@@ -5,6 +5,7 @@ class TestAuthor:
     def test_str(self, article):
         """author should be identified by person and post"""
         author = article.authors.first()
+        print(author)
         assert (
             str(author)
             == 'Staffer on "We wrote an article together, and it got published on the CDH we…" (March 4, 2019)'

@@ -154,11 +154,6 @@ class TestLandingPage:
         response = client.get(landing_page.relative_url(site))
         assertContains(response, "<p>content of the landing page</p>")
 
-    def test_tagline(self, client, site, landing_page):
-        """landingpage tagline should display"""
-        response = client.get(landing_page.relative_url(site))
-        assertContains(response, "tagline")
-
     @pytest.mark.skip("todo")
     def test_header_image(self):
         pass

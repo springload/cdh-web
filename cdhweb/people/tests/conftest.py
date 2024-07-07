@@ -33,7 +33,7 @@ def create_person_with_position(
 def make_people_landing_page(homepage):
     """Create a test people landing page underneath the homepage."""
     landing = PeopleLandingPageArchived(
-        title="people", slug="people", tagline="cdh people"
+        title="people", slug="people",
     )
     homepage.add_child(instance=landing)
     homepage.save()

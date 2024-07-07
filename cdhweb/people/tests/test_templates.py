@@ -23,7 +23,7 @@ class TestProfile(TestCase):
         home = HomePage(title="home", slug="")
         root.add_child(instance=home)
         root.save()
-        lp = PeopleLandingPageArchived(title="people", slug="people", tagline="people")
+        lp = PeopleLandingPageArchived(title="people", slug="people")
         home.add_child(instance=lp)
         home.save()
         site = Site.objects.first()
