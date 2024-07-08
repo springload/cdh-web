@@ -21,7 +21,6 @@ from wagtail.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.documents.models import AbstractDocument, DocumentQuerySet
-from wagtail.embeds.blocks import EmbedBlock
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.models import Image
@@ -37,6 +36,7 @@ from .blocks.accordion_block import AccordionBlock
 from .blocks.article_index_block import ArticleTileBlock
 from .blocks.cdh_hosted_video import HostedVideo
 from .blocks.download_block import DownloadBlock
+from .blocks.embed_block import EmbedBlock
 from .blocks.event_index_block import EventTileBlock
 from .blocks.feature_block import FeatureBlock
 from .blocks.image_block import ImageBlock
@@ -71,15 +71,13 @@ PARAGRAPH_FEATURES = [
 ALT_TEXT_HELP = """Alternative text for visually impaired users to
 briefly communicate the intended message of the image in this context."""
 
-EMBED_HELP = """This should be used for videos from Princeton's Media Central. Copy the "oEmbed URL" from the "Share" menu"""
-
 STANDARD_BLOCKS = [
     ("paragraph", RichText()),
     ("download_block", DownloadBlock()),
     ("cta_block", CTABlock()),
     ("accordion_block", AccordionBlock()),
     ("video_block", Video()),
-    ("embed", HostedVideo()),
+    ("cdh_hosted_video", HostedVideo()),
     ("pull_quote", PullQuote()),
     ("note", Note()),
     ("image", ImageBlock()),
@@ -90,6 +88,7 @@ STANDARD_BLOCKS = [
     ("tile_block", StandardTileBlock()),
     ("article_tile_block", ArticleTileBlock()),
     ("event_tile_block", EventTileBlock()),
+    ("embed", EmbedBlock()),
 ]
 
 
@@ -318,6 +317,7 @@ class ContentPage(BasePage, StandardHeroMixin, JumplinksMixin, SidebarNavigation
 
     content_panels = StandardHeroMixin.content_panels + [
         FieldPanel("body"),
+        FieldPanel("attachments"),
     ]
 
     search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
