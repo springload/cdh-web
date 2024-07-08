@@ -21,7 +21,7 @@ class ProjectFiltersForm(forms.Form):
         empty_label="--Select--",
         required=False,
         blank=True,
-        label="Field of study"
+        label="Field of Study"
     )
     role = forms.ModelChoiceField(
         ProjectRole.objects.all(),
