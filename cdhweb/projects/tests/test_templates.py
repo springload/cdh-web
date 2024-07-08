@@ -120,22 +120,6 @@ class TestProjectLists:
         response = client.get(reverse("projects:working-groups"))
         assertNotContains(response, "<h2>Past Projects</h2>")
 
-    def test_page_intro(self, client, projects_landing_page):
-        """project list pages should display an intro snippet if set"""
-        # create link page for project list
-        sponsored_projects = LinkPage(
-            title="Sponsored Projects", link_url="projects/sponsored"
-        )
-        projects_landing_page.add_child(instance=sponsored_projects)
-        # create a snippet for the sponsored projects page
-        PageIntro.objects.create(
-            page=sponsored_projects, paragraph="<i>test content</i>"
-        )
-
-        # visit and check that it renders
-        response = client.get(reverse("projects:sponsored"))
-        assertContains(response, "<i>test content</i>")
-
     def test_project_card(self, client, projects):
         """project list pages should display cards for each project"""
         # one project card for each staff/postdoc project

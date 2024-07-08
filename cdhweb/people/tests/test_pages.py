@@ -125,7 +125,7 @@ class TestProfilePage(WagtailPageTestCase):
 class TestPageIntro:
     def test_str(self):
         root = Page.objects.get(title="Root")
-        link_page = LinkPage(title="Students", link_url="people/students")
+        link_page = LinkPage(title="Students")
         root.add_child(instance=link_page)
         intro = PageIntro.objects.create(
             page=link_page, paragraph="<p>We have great students</p>"

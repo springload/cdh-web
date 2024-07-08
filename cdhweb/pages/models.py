@@ -21,7 +21,6 @@ from wagtail.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.documents.models import AbstractDocument, DocumentQuerySet
-from wagtail.embeds.blocks import EmbedBlock
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.models import Image
@@ -30,8 +29,6 @@ from wagtail.search import index
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.models import register_snippet
 from wagtailcodeblock.blocks import CodeBlock
-from wagtailmenus.models import AbstractLinkPage
-from wagtailmenus.panels import linkpage_tab
 
 from cdhweb.pages import snippets  # needed for import order
 
@@ -39,6 +36,7 @@ from .blocks.accordion_block import AccordionBlock
 from .blocks.article_index_block import ArticleTileBlock
 from .blocks.cdh_hosted_video import HostedVideo
 from .blocks.download_block import DownloadBlock
+from .blocks.embed_block import EmbedBlock
 from .blocks.event_index_block import EventTileBlock
 from .blocks.feature_block import FeatureBlock
 from .blocks.image_block import ImageBlock
@@ -73,15 +71,13 @@ PARAGRAPH_FEATURES = [
 ALT_TEXT_HELP = """Alternative text for visually impaired users to
 briefly communicate the intended message of the image in this context."""
 
-EMBED_HELP = """This should be used for videos from Princeton's Media Central. Copy the "oEmbed URL" from the "Share" menu"""
-
 STANDARD_BLOCKS = [
     ("paragraph", RichText()),
     ("download_block", DownloadBlock()),
     ("cta_block", CTABlock()),
     ("accordion_block", AccordionBlock()),
     ("video_block", Video()),
-    ("embed", HostedVideo()),
+    ("cdh_hosted_video", HostedVideo()),
     ("pull_quote", PullQuote()),
     ("note", Note()),
     ("image", ImageBlock()),
@@ -92,6 +88,7 @@ STANDARD_BLOCKS = [
     ("tile_block", StandardTileBlock()),
     ("article_tile_block", ArticleTileBlock()),
     ("event_tile_block", EventTileBlock()),
+    ("embed", EmbedBlock()),
 ]
 
 
@@ -237,19 +234,18 @@ class PagePreviewDescriptionMixin(models.Model):
         return striptags(self.get_description())
 
 
-class LinkPage(AbstractLinkPage):
+class LinkPage(Page):
     """Link page for controlling appearance in menus of non-Page content."""
 
     # NOTE these pages can have slugs, but the slug isn't editable in the admin
     # by default. We override the editing interface to introduce a "promote"
     # panel as with other Page models containing the form field for the slug.
     # see: https://github.com/rkhleics/wagtailmenus/blob/master/wagtailmenus/panels.py#L79-L93
-    edit_handler = TabbedInterface(
-        [
-            linkpage_tab,
-            ObjectList((MultiFieldPanel((FieldPanel("slug"),)),), heading="Promote"),
-        ]
-    )
+    # edit_handler = TabbedInterface(
+    #     [
+    #         ObjectList((MultiFieldPanel((FieldPanel("slug"),)),), heading="Promote"),
+    #     ]
+    # )
     search_fields = Page.search_fields
 
     is_creatable = False
@@ -266,7 +262,12 @@ class BasePage(Page):
         use_json_field=True,
     )
 
-    attachments = StreamField(AttachmentBlock, blank=True, use_json_field=True)
+    attachments = StreamField(
+        AttachmentBlock,
+        blank=True,
+        use_json_field=True,
+        help_text="This block exists to help with data migration. It will be deleted when content loading is complete.",
+    )
 
     short_title = models.CharField(
         verbose_name="Short title",
@@ -316,6 +317,7 @@ class ContentPage(BasePage, StandardHeroMixin, JumplinksMixin, SidebarNavigation
 
     content_panels = StandardHeroMixin.content_panels + [
         FieldPanel("body"),
+        FieldPanel("attachments"),
     ]
 
     search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
@@ -429,24 +431,6 @@ class HomePage(HomePageHeroMixin, Page):
             }
         )
         return context
-
-
-@register_snippet
-class PageIntro(models.Model):
-    """Snippet for optional page intro text on for pages generated from
-    django views not managed by wagtail"""
-
-    page = models.OneToOneField(LinkPage, on_delete=models.CASCADE)
-    #: intro text
-    paragraph = RichTextField(features=PARAGRAPH_FEATURES)
-
-    panels = [
-        FieldPanel("page"),
-        FieldPanel("paragraph"),
-    ]
-
-    def __str__(self):
-        return self.page.title
 
 
 class DisplayUrlMixin(models.Model):

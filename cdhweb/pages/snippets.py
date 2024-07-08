@@ -9,7 +9,6 @@ from wagtail.models import Orderable
 from wagtail.snippets.models import register_snippet
 
 
-
 class Level2MenuItem(Orderable, ClusterableModel):
     """
     Represents a 'second-level' menu item.
@@ -68,12 +67,6 @@ class Level1MenuItem(Orderable, ClusterableModel):
         blank=True,
         null=False,
     )
-    section_link_title = models.CharField(
-        max_length=60,
-        verbose_name="Section link title",
-        blank=True,
-        null=False,
-    )
     section_link = StreamField(
         [
             ("page", blocks.PageChooserBlock()),
@@ -85,7 +78,6 @@ class Level1MenuItem(Orderable, ClusterableModel):
     panels = [
         FieldPanel("title"),
         FieldPanel("overview"),
-        FieldPanel("section_link_title"),
         FieldPanel("section_link"),
         InlinePanel("l2_items", label="Second-level menu items", max_num=20),
     ]
@@ -348,6 +340,7 @@ class SiteAlert(models.Model):
         FieldPanel("display_until"),
         FieldPanel("dismissable"),
     ]
+
     def __str__(self):
         if self.title:
             return self.title
@@ -370,7 +363,7 @@ class SiteAlert(models.Model):
             raise ValidationError(errors)
 
         return super().clean()
-    
+
     @property
     def alert_id(self):
         return f"alert_{self.id}"

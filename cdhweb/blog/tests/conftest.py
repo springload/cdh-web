@@ -12,7 +12,7 @@ EST = zoneinfo.ZoneInfo("America/New_York")
 
 def make_blog_link_page(homepage):
     """Create a test blog link page underneath the homepage."""
-    link = BlogLinkPageArchived(title="updates", link_url="updates")
+    link = BlogLinkPageArchived(title="updates")
     homepage.add_child(instance=link)
     homepage.save()
     return link
