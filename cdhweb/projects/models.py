@@ -392,7 +392,6 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
 
     def get_child_queryset(self, request, filter_form):
         clean_filters = filter_form.cleaned_data
-        print(clean_filters)
         query_string = clean_filters.pop("q", None)
 
         # It's not currently possible to filter by
@@ -407,7 +406,6 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
         # map *directly* to Project columns and only apply
         # the ones with a value
         to_apply = {k: v for k, v in clean_filters.items() if v}
-        print(to_apply)
         children = children.filter(**to_apply)
 
         if query_string:
