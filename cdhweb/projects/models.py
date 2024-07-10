@@ -1,6 +1,7 @@
+from django import forms
 from django.db import models
 from django.utils import timezone
-from modelcluster.fields import ParentalKey
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from modelcluster.models import ClusterableModel
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
@@ -112,25 +113,20 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         Person, through="Membership", related_name="members"
     )
 
-    method = models.ForeignKey(
+    method = ParentalManyToManyField(
         "ProjectMethod",
-        on_delete=models.PROTECT,
         related_name="projects",
-        null=True,
         blank=True,
     )
-    field = models.ForeignKey(
+
+    field = ParentalManyToManyField(
         "ProjectField",
-        on_delete=models.PROTECT,
         related_name="projects",
-        null=True,
         blank=True,
     )
-    role = models.ForeignKey(
+    role = ParentalManyToManyField(
         "ProjectRole",
-        on_delete=models.PROTECT,
         related_name="projects",
-        null=True,
         blank=True,
     )
 
@@ -157,7 +153,11 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         FieldPanel("body"),
         FieldPanel("project_website"),
         FieldRowPanel(
-            [FieldPanel("method"), FieldPanel("field"), FieldPanel("role")],
+            [
+                FieldPanel("method", widget=forms.CheckboxSelectMultiple),
+                FieldPanel("field", widget=forms.CheckboxSelectMultiple),
+                FieldPanel("role", widget=forms.CheckboxSelectMultiple),
+            ],
             "Filter fields",
         ),
         InlinePanel("related_links", label="Links"),
@@ -392,6 +392,7 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
 
     def get_child_queryset(self, request, filter_form):
         clean_filters = filter_form.cleaned_data
+        print(clean_filters)
         query_string = clean_filters.pop("q", None)
 
         # It's not currently possible to filter by
@@ -406,6 +407,7 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
         # map *directly* to Project columns and only apply
         # the ones with a value
         to_apply = {k: v for k, v in clean_filters.items() if v}
+        print(to_apply)
         children = children.filter(**to_apply)
 
         if query_string:
