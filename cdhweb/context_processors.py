@@ -1,6 +1,6 @@
 from django.conf import settings
+from django.templatetags.static import static
 from wagtail.models import Site
-from django.conf.urls.static import static
 
 from cdhweb.pages.utils import absolutize_url
 
