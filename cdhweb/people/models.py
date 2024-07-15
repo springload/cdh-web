@@ -807,7 +807,7 @@ class PeopleLandingPage(StandardHeroMixin, Page):
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
 
-        tiles = self.get_children().live()
+        tiles = self.get_children().not_type(Profile).live().public().specific()
         context["tiles"] = tiles
 
         return context
