@@ -675,6 +675,14 @@ class PeopleCategoryPage(BaseLandingPage, SidebarNavigationMixin, RoutablePageMi
         }
 
         people = category_mapping[self.category]()
+        people = people.prefetch_related(
+            "image",
+            "image__renditions",
+            "profile",
+            "positions",
+            "positions__title",
+            "profile__image",
+        )
 
         for person in people:
             person.position = person.get_position_for_tile(self.category)
