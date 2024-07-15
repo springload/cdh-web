@@ -15,7 +15,13 @@
     {% for filter_option in site_search.filter_choices %}
       <div class="radio">
         <div class="search-form__radio">
-          <input type="radio" name="filter" value="{{ filter_option.value }}"  id="{{ uniqueID }}_{{ filter_option.value }}" {% if form.filter.value == filter_option.value %}checked{% endif %}/>
+          <input type="radio" 
+            name="filter" 
+            value="{{ filter_option.value }}" 
+            id="{{ uniqueID }}_{{ filter_option.value }}" 
+            {% if form.filter.value == filter_option.value %}checked{% endif %}
+            {% if filter_option.value == 'everything' and not form.filter.value %}checked{% endif %}
+          />
           <label for="{{ uniqueID }}_{{ filter_option.value }}">{{ filter_option.label }}</label>
           {% include 'includes/svg.html' with sprite="two-tone" svg=filter_option.icon %}
         </div>
