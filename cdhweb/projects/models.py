@@ -391,13 +391,14 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
     subpage_types = [Project]
 
     def get_child_queryset(self, request, filter_form):
-        clean_filters = filter_form.cleaned_data
+        # Sometimes we pass the empty form, which isn't cleanable
+        clean_filters = getattr(filter_form, "cleaned_data", {})
         query_string = clean_filters.pop("q", None)
 
         # It's not currently possible to filter by
         # RelatedFields, so because current-ness is part of
-        # Grants we need to apply this later
-        current_filter = clean_filters.pop("current")
+        # Grants we need to apply this later, defaults True
+        current_filter = clean_filters.pop("current", True)
 
         # Use a Project queryset so we can apply type-specific filters
         children = Project.objects.child_of(self).public().live()
@@ -427,7 +428,10 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
 
         context = super().get_context(request)
         form_args = request.GET.dict()
-        form = ProjectFiltersForm(form_args)
+        if form_args:
+            form = ProjectFiltersForm(form_args)
+        else:
+            form = ProjectFiltersForm()
 
         form.is_valid()
         child_queryset = self.get_child_queryset(request, form)
@@ -442,6 +446,10 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
         ):
             context["featured_project"] = self.featured_project
             child_queryset = child_queryset.exclude(pk=self.featured_project.pk)
+
+        child_queryset = child_queryset.prefetch_related(
+            "members", "method", "field", "role", "hero_image", "hero_image__renditions"
+        )
 
         context["results"] = child_queryset
         context["filter_form"] = form
