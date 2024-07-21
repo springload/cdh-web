@@ -1,3 +1,5 @@
+import itertools
+
 from django import forms
 from django.db import models
 from django.utils import timezone
@@ -278,6 +280,14 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         elif self.website_url or self.cdh_built:
             urls[0]["priority"] = 0.6
         return urls
+
+    def display_tags(self):
+        return sorted(
+            str(t)
+            for t in itertools.chain(
+                self.method.all(), self.field.all(), self.role.all()
+            )
+        )
 
 
 class GrantType(models.Model):
