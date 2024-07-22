@@ -1,7 +1,15 @@
 from datetime import datetime, timedelta
 
 from cdhweb.pages.models import RelatedLinkType
-from cdhweb.projects.models import GrantType, Project, ProjectRelatedLink, Role
+from cdhweb.projects.models import (
+    GrantType,
+    Project,
+    ProjectField,
+    ProjectMethod,
+    ProjectRelatedLink,
+    ProjectRole,
+    Role,
+)
 
 
 class TestGrantType:
@@ -140,3 +148,35 @@ class TestProjectRelatedLink:
         # https
         res.url = "https://%s" % base_url
         assert res.display_url == base_url
+
+
+class TestProjectDisplayTags:
+    def test_no_values(self, derrida):
+        assert derrida.display_tags() == []
+
+    def test_just_role(self, derrida):
+        role = ProjectRole(role="test role")
+        role.save()
+        derrida.role.add(role)
+        assert derrida.display_tags() == ["test role"]
+
+    def test_all_relations(self, derrida):
+        role1 = ProjectRole(role="test role 1")
+        role2 = ProjectRole(role="test role 2")
+        method = ProjectMethod(method="test method")
+        field = ProjectField(field="test field")
+        role1.save()
+        role2.save()
+        method.save()
+        field.save()
+
+        derrida.role.add(role1)
+        derrida.role.add(role2)
+        derrida.method.add(method)
+        derrida.field.add(field)
+        assert derrida.display_tags() == [
+            "test field",
+            "test method",
+            "test role 1",
+            "test role 2",
+        ]

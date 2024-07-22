@@ -1,3 +1,5 @@
+import itertools
+
 from django import forms
 from django.db import models
 from django.utils import timezone
@@ -278,6 +280,24 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         elif self.website_url or self.cdh_built:
             urls[0]["priority"] = 0.6
         return urls
+
+    def display_tags(self):
+        """
+        Get role, method and field values as tag-y objects
+
+        The method/field/role fields are used for filtering
+        the projects in the search, but CDH have also
+        requested that they be shown the same way tags are
+        for many other types of object -- This function
+        delivers them in a (template-equivalent) manner so
+        they can be displayed
+        """
+        return sorted(
+            str(t)
+            for t in itertools.chain(
+                self.method.all(), self.field.all(), self.role.all()
+            )
+        )
 
 
 class GrantType(models.Model):

@@ -560,6 +560,7 @@ class Profile(BasePage):
     content_panels = Page.content_panels + [
         FieldRowPanel((FieldPanel("person"), FieldPanel("image")), "Person"),
         FieldPanel("education"),
+        FieldPanel("tags"),
         FieldPanel("body"),
         FieldPanel("attachments"),
     ]
@@ -567,19 +568,15 @@ class Profile(BasePage):
     parent_page_types = ["people.PeopleLandingPageArchived", "people.PeopleLandingPage"]
     subpage_types = []
 
-    promote_panels = (
-        [
-            MultiFieldPanel(
-                [
-                    FieldPanel("short_title"),
-                    FieldPanel("feed_image"),
-                ],
-                "Share Page",
-            ),
-        ]
-        + BasePage.promote_panels
-        + [FieldPanel("tags")]
-    )
+    promote_panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("short_title"),
+                FieldPanel("feed_image"),
+            ],
+            "Share Page",
+        ),
+    ] + BasePage.promote_panels
 
     # index fields
     search_fields = BasePage.search_fields + [index.SearchField("education")]

@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from wagtail.models import Page, Site
+from wagtail_factories import ImageFactory
 
 from cdhweb.pages.models import ContentPage, ExternalAttachment, HomePage, LandingPage
 from cdhweb.pages.views import LastModifiedListMixin, LastModifiedMixin
@@ -34,6 +35,7 @@ def make_homepage(site):
         body=json.dumps(
             [{"type": "paragraph", "value": "<p>content of the home page</p>"}]
         ),
+        hero_image=ImageFactory(),
     )
     root.add_child(instance=home)
     root.save()
