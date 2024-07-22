@@ -282,6 +282,16 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         return urls
 
     def display_tags(self):
+        """
+        Get role, method and field values as tag-y objects
+
+        The method/field/role fields are used for filtering
+        the projects in the search, but CDH have also
+        requested that they be shown the same way tags are
+        for many other types of object -- This function
+        delivers them in a (template-equivalent) manner so
+        they can be displayed
+        """
         return sorted(
             str(t)
             for t in itertools.chain(

@@ -4,6 +4,7 @@ from datetime import timezone as tz
 
 import pytest
 from django.utils import timezone
+from wagtail_factories import ImageFactory
 
 from cdhweb.people.models import Person
 from cdhweb.projects.models import (
@@ -34,9 +35,7 @@ def add_project_member(project, role, start_date=None, end_date=None, **person_o
 
 def make_projects_landing_page(homepage):
     """create a test projects landing page underneath the homepage"""
-    plp = ProjectsLandingPageArchived(
-        title="projects", slug="projects", tagline="let's do some stuff"
-    )
+    plp = ProjectsLandingPageArchived(title="projects", slug="projects")
     homepage.add_child(instance=plp)
     homepage.save()
     return plp

@@ -53,8 +53,7 @@ RUN --mount=type=cache,target=/var/lib/apt/lists \
     netcat
 
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip3 install -r /app/requirements/dev.txt \
-    npm install
+    pip3 install -r /app/requirements/dev.txt
 
 # No COPY here as the local directory is volume-mounted in docker-compose
 

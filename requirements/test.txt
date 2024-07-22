@@ -10,3 +10,4 @@ wheel
 django-dbml
 #git+https://github.com/thatbudakguy/django-dbml@patch-1#egg=django-dbml
 percy-selenium
+wagtail-factories~=4.2.1
