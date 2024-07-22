@@ -11,7 +11,7 @@ from wagtail.test.utils import WagtailPageTestCase
 from wagtail.test.utils.form_data import rich_text
 
 from cdhweb.blog.models import Author, BlogPost
-from cdhweb.pages.models import LinkPage, PageIntro
+from cdhweb.pages.models import LinkPage
 from cdhweb.people.models import PeopleLandingPageArchived, Person, Profile
 
 
@@ -119,16 +119,3 @@ class TestProfilePage(WagtailPageTestCase):
     def test_child_pages(self):
         """no allowed children"""
         self.assertAllowedSubpageTypes(Profile, [])
-
-
-@pytest.mark.django_db
-class TestPageIntro:
-    def test_str(self):
-        root = Page.objects.get(title="Root")
-        link_page = LinkPage(title="Students")
-        root.add_child(instance=link_page)
-        intro = PageIntro.objects.create(
-            page=link_page, paragraph="<p>We have great students</p>"
-        )
-
-        assert str(intro) == link_page.title
