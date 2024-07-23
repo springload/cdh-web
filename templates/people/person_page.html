@@ -20,7 +20,7 @@
                     </div>
                     <div class="tiles__list">
                         {% for project in recent_projects %}
-                            {% include 'cdhpages/blocks/tile.html' with internal_page=project tile_type='internal_page_tile' %}
+                            {% include 'cdhpages/blocks/tile.html' with internal_page=project tile_type='internal_page_tile' has_component_title=True %}
                         {% endfor %}
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                     </div>
                     <div class="tiles__list">
                         {% for event in recent_events %}
-                            {% include 'cdhpages/blocks/tile.html' with internal_page=event tile_type='internal_page_tile' %}
+                            {% include 'cdhpages/blocks/tile.html' with internal_page=event tile_type='internal_page_tile' has_component_title=True %}
                         {% endfor %}
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                     </div>
                     <div class="tiles__list">
                         {% for post in recent_posts %}
-                            {% include 'cdhpages/blocks/tile.html' with internal_page=post tile_type='internal_page_tile' %}
+                            {% include 'cdhpages/blocks/tile.html' with internal_page=post tile_type='internal_page_tile' has_component_title=True %}
                         {% endfor %}
                     </div>
                 </div>
