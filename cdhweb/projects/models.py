@@ -441,6 +441,7 @@ class ProjectsLandingPage(StandardHeroMixin, Page):
             # making the results into a queryset (above)
             children = children.current()
 
+        children = children.order_by("title")
         return children
 
     def get_context(self, request, year=None, month=None):
