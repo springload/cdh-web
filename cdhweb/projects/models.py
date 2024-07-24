@@ -295,7 +295,8 @@ class Project(BasePage, ClusterableModel, StandardHeroMixin):
         return sorted(
             str(t)
             for t in itertools.chain(
-                self.method.all(), self.field.all(), self.role.all()
+                self.method.all(),
+                self.field.all(),
             )
         )
 
