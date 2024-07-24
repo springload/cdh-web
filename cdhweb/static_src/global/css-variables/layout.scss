@@ -19,22 +19,18 @@
 
   @include sm {
     --standard-gap: 24px;
-    --page-gutter: 32px;
+    --page-gutter: 24px;
   }
   @include md {
-    --page-gutter: 40px;
     --streamfield-space-xs: 24px;
     --streamfield-space-sm: 40px;
     --streamfield-space-lg: 80px;
     --content-outdent: 72px;
   }
   @include lg {
-    --standard-gap: 32px;
     --streamfield-space-lg: 104px;
   }
   @include xl {
-    --standard-gap: 48px;
-    --page-gutter: 64px;
     --content-outdent: 104px;
   }
   @include xxl {
