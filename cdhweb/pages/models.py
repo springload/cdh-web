@@ -349,6 +349,12 @@ class BaseLandingPage(BasePage, StandardHeroMixin):
 
     search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
 
+    def get_context(self, request):
+        ctx = super().get_context(request)
+
+        ctx["children"] = self.get_children().live().public().filter(show_in_menus=True)
+        return ctx
+
     class Meta:
         abstract = True
 

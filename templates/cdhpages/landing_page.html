@@ -12,9 +12,16 @@
             page-layout--with-sidenav
         {% else %}
             page-layout--without-sidenav
-        {% endif %} 
+        {% endif %}
     ">
         <div class="page-layout__main-content">
+
+            <div class="tiles__list">
+                {% for child in children %}
+                    {% include 'cdhpages/blocks/tile.html' with internal_page=child tile_type="internal_page_tile" has_component_title=False %}
+                {% endfor %}
+            </div>
+
             <div class="streamfields-wrapper">
                 {% for block in page.body %}
                     {% include_block block %}
