@@ -1,18 +1,5 @@
-from django.core.exceptions import ValidationError
 from wagtail import blocks
 from wagtail.documents.blocks import DocumentChooserBlock
-
-
-class LimitedDocumentChooserBlock(DocumentChooserBlock):
-    def clean(self, value):
-        document = super().clean(value)
-        max_file_size = 5 * 1024 * 1024  # 5 MB
-
-        # Check if the file size exceeds the limit
-        if document.file_size > max_file_size:
-            raise ValidationError("File size exceeds the limit of 5 MB.")
-
-        return document
 
 
 class FileBlock(blocks.StructBlock):
@@ -22,7 +9,7 @@ class FileBlock(blocks.StructBlock):
         required=False,
     )
 
-    file = LimitedDocumentChooserBlock(
+    file = DocumentChooserBlock(
         verbose_name="Document",
         required=True,
     )
