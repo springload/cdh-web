@@ -17,11 +17,15 @@
         <div class="page-layout__main-content">
 
             <div class="streamfields-wrapper">
-                <div class="tiles__list">
-                    {% for child in children %}
-                        {% include 'cdhpages/blocks/tile.html' with internal_page=child tile_type="internal_page_tile" has_component_title=False %}
-                    {% endfor %}
-                </div>    
+                {% if children %}
+                    <div class="block block--tiles">
+                        <div class="tiles__list">
+                            {% for child in children %}
+                                {% include 'cdhpages/blocks/tile.html' with internal_page=child tile_type="internal_page_tile" has_component_title=False %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
 
                 {% for block in page.body %}
                     {% include_block block %}
