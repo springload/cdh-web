@@ -18,10 +18,12 @@
         <div class="page-layout__main-content">
             <div class="streamfields-wrapper">
                 {% if people %}
-                    <div class="tiles__list">
-                        {% for person in people %}
-                            {% include 'cdhpages/blocks/person_tile.html' %}
-                        {% endfor %}
+                    <div class="block block--tiles">
+                        <div class="tiles__list">
+                            {% for person in people %}
+                                {% include 'cdhpages/blocks/person_tile.html' %}
+                            {% endfor %}
+                        </div>
                     </div>
                 {% endif %}
 
