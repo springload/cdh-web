@@ -29,9 +29,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip3 install -r docker/requirements.txt && \
     pip3 install -r requirements/prod.txt
 
-
-
-
 RUN adduser --system www -u 1000 && chown -R www /app
 
 

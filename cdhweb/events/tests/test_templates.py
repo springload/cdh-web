@@ -3,8 +3,6 @@ from django.urls import reverse
 from django.utils.timezone import localtime
 from pytest_django.asserts import assertContains, assertNotContains
 
-from cdhweb.pages.models import PageIntro
-
 
 class TestEventDetailTemplate:
     def test_event_title(self, client, workshop):
