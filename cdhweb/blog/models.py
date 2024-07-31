@@ -1,20 +1,15 @@
-from datetime import date
-
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models.fields.related import RelatedField
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.utils.dateformat import format
 from django.utils.functional import cached_property
-from django.utils.text import Truncator
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.models import TaggedItemBase
-from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
-from wagtail.contrib.routable_page.models import RoutablePageMixin, path, re_path
+from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
+from wagtail.contrib.routable_page.models import RoutablePageMixin, path
 from wagtail.fields import RichTextField
 from wagtail.models import Orderable, Page, PageManager, PageQuerySet
 from wagtail.search import index
@@ -189,25 +184,36 @@ class BlogPost(BasePage, ClusterableModel):
         """Comma-separated list of author names."""
         return ", ".join(str(author.person) for author in self.authors.all())
 
-    def get_url_parts(self, *args, **kwargs):
+    def get_url_parts(self, request, *args, **kwargs):
         """Custom blog post URLs of the form /updates/2014/03/01/my-post."""
-        url_parts = super().get_url_parts(*args, **kwargs)
+        url_parts = super().get_url_parts(request, *args, **kwargs)
         # NOTE evidently these can sometimes be None; unclear why – perhaps it
         # gets called in a context where the request is unavailable. Seems to
         # happen immediately on page creation; the creation still succeeds.
         if url_parts and self.first_published_at:
-            site_id, root_url, _ = url_parts
-            page_path = self.get_parent().specific.reverse_subpage(
+            site_id, root_url, _remainder = url_parts
+            parent = self.get_parent().specific
+
+            # If for some reason we don't have a bloglanding-style parent, just
+            # use `super()`
+            if not hasattr(parent, "reverse_subpage"):
+                return url_parts
+
+            # These dates need to be in DEFAULT_TIMEZONE, rather than UTC,
+            # otherwise the dates don't match up with the generated URLs (in
+            # `BlogPage.get_url_parts`)
+            path_date = timezone.localtime(self.first_published_at)
+            page_path = parent.reverse_subpage(
                 "dated_child",
                 kwargs={
-                    "year": self.first_published_at.year,
+                    "year": path_date.year,
                     # force two-digit month and day
-                    "month": "%02d" % self.first_published_at.month,
-                    "day": "%02d" % self.first_published_at.day,
+                    "month": "%02d" % path_date.month,
+                    "day": "%02d" % path_date.day,
                     "slug": self.slug,
                 },
             )
-            return site_id, root_url, page_path
+            return site_id, root_url, parent.get_url(request) + page_path
 
     def get_sitemap_urls(self, request):
         """Override sitemap listings to add priority for featured posts."""
