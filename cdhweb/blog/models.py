@@ -258,6 +258,8 @@ class BlogLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
         else:
             posts = self.get_latest_posts()
 
+        posts = posts.prefetch_related("image", "image__renditions")
+
         page_number = request.GET.get("page") or 1
         paginator = Paginator(posts, self.page_size)
         page = paginator.page(page_number)
