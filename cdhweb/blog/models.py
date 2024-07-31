@@ -233,7 +233,7 @@ class BlogLinkPageArchived(LinkPage):
 class BlogLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
     """Container page that defines where Event pages can be created."""
 
-    page_size = 15
+    page_size = 12
     template_name = "blog/blog_landing_page.html"
 
     content_panels = StandardHeroMixinNoImage.content_panels
