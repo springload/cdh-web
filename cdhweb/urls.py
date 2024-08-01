@@ -19,6 +19,7 @@ from cdhweb.events.sitemaps import EventListSitemap
 from cdhweb.pages.views import OpenSearchDescriptionView, SiteSearchView
 from cdhweb.people.sitemaps import PeopleListSitemap
 from cdhweb.projects.sitemaps import ProjectListSitemap
+from cdhweb.events.views import EventIcalView
 
 admin.autodiscover()
 
@@ -68,6 +69,11 @@ urlpatterns = [
         sitemap_views.sitemap,
         {"sitemaps": sitemaps},
         name="django.contrib.sitemaps.views.sitemap",
+    ),
+    re_path(
+        r"^events/(?P<year>\d{4})/(?P<month>\d{2})/(?P<slug>[\w-]+).ics$",
+        EventIcalView.as_view(),
+        name="event-ical",
     ),
     # wagtail paths
     path("cms/", include(wagtailadmin_urls)),
