@@ -10,25 +10,16 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.contrib.sitemaps import Sitemap
 from wagtail.contrib.sitemaps import views as sitemap_views
 from wagtail.documents import urls as wagtaildocs_urls
-from wagtail.models import Page
 from wagtailautocomplete.urls.admin import urlpatterns as autocomplete_admin_urls
 
-from cdhweb.blog.sitemaps import BlogListSitemap
 from cdhweb.context_processors import favicon_path
-from cdhweb.events.sitemaps import EventListSitemap
 from cdhweb.pages.views import OpenSearchDescriptionView, SiteSearchView
-from cdhweb.people.sitemaps import PeopleListSitemap
-from cdhweb.projects.sitemaps import ProjectListSitemap
 
 admin.autodiscover()
 
 # sitemap configuration for sections of the site
 sitemaps = {
     "pages": Sitemap,  # wagtail content pages
-    "people": PeopleListSitemap,
-    "projects": ProjectListSitemap,
-    "events": EventListSitemap,
-    "blog": BlogListSitemap,
 }
 
 
