@@ -8,12 +8,15 @@
         <p class="event-hero__date">
             {# Display date differently depending on if it spans multiple days #}
             {% if self.start_time.date == self.end_time.date %}
-                <time datetime="{{ self.start_time|date:"c" }}">{{ self.start_time|date:"M d g:i a" }}</time> – 
-                <time datetime="{{ self.end_time|date:"c" }}">{{ self.end_time|date:"g:i a" }}</time>
+                <time datetime="{{ self.start_time|date:'c' }}">{{ self.start_time|date:"M d g:i a" }}</time> – 
+                <time datetime="{{ self.end_time|date:'c' }}">{{ self.end_time|date:"g:i a" }}</time>
             {% else %}
-                <time datetime="{{ self.start_time|date:"c" }}">{{ self.start_time|date:"M d g:i a" }}</time> – 
-                <time datetime="{{ self.end_time|date:"c" }}">{{ self.end_time|date:"M d g:i a" }}</time>
+                <time datetime="{{ self.start_time|date:'c' }}">{{ self.start_time|date:"M d g:i a" }}</time> – 
+                <time datetime="{{ self.end_time|date:'c' }}">{{ self.end_time|date:"M d g:i a" }}</time>
             {% endif %}
+        </p>
+        <p class="event-hero__add-to-calendar">
+            <a href="{{ self.get_ical_url }}">Add to calendar</a>
         </p>
 
         {# Much of this schema is ported over from the old event template #}
