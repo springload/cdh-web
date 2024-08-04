@@ -14,7 +14,7 @@
                 <h2 class="sr-only">Authors</h2>
                 <ul>
                     {% for author in page.authors.all %}
-                        <li>{{ author.person }}</li>
+                        <li><a href="{{ author.person.profile_url }}">{{ author.person }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
