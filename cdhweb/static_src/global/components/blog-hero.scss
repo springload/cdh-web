@@ -114,6 +114,12 @@ Blog hero. Similar to standard hero. Key differences:
   @include xl {
     font-size: px2rem(20);
   }
+
+  :where(ul) {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
 .blog-hero__description {
