@@ -90,6 +90,11 @@ Event hero. Similar to standard hero. Key differences:
   margin: 16px 0 0;
 }
 
+.event-hero__add-to-calendar {
+  margin: 4px 0 16px;
+  font-size: px2rem(14);
+}
+
 .event-hero__location {
   font-weight: bold;
   margin: 8px 0 0;

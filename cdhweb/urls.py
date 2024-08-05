@@ -14,6 +14,7 @@ from wagtailautocomplete.urls.admin import urlpatterns as autocomplete_admin_url
 
 from cdhweb.context_processors import favicon_path
 from cdhweb.pages.views import OpenSearchDescriptionView, SiteSearchView
+from cdhweb.events.views import EventIcalView
 
 admin.autodiscover()
 
@@ -59,6 +60,11 @@ urlpatterns = [
         sitemap_views.sitemap,
         {"sitemaps": sitemaps},
         name="django.contrib.sitemaps.views.sitemap",
+    ),
+    re_path(
+        r"^events/(?P<year>\d{4})/(?P<month>\d{2})/(?P<slug>[\w-]+).ics$",
+        EventIcalView.as_view(),
+        name="event-ical",
     ),
     # wagtail paths
     path("cms/", include(wagtailadmin_urls)),
