@@ -4,12 +4,10 @@
 {% block page-title %}Error{% endblock %}
 
 {% block main %}
-<article class="error-page">
-    <h1>{% block error-code %}{% endblock %}</h1>
-    <p>{% block message %}{% endblock %}</p>
-    {% block error-image %}
-    <img src="{% static 'img/cdh-logo-assets/CDH_logo_warped.svg' %}" alt="warped version of CDH logo">
-    {% endblock %}
-</article>
-
+<div class="content-width grid-standard page-layout page-layout--without-sidenav error-page__content">
+    <div class="page-layout__main-content">
+        <h1>Error {% block error-code %}{% endblock %}</h1>
+        <p class="error-page__blurb">{% block message %}{% endblock %}</p>
+    </div>
+</div>
 {% endblock %}
