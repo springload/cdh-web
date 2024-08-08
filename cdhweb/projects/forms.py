@@ -28,7 +28,7 @@ class ProjectFiltersForm(forms.Form):
         empty_label="--Select--",
         required=False,
         blank=True,
-        label="Role",
+        label="Project Lead",
     )
     current = forms.BooleanField(required=False, initial=True)
     cdh_built = forms.BooleanField(required=False, label="Built by CDH")

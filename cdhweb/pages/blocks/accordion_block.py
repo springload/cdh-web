@@ -64,7 +64,7 @@ class ProjectAccordion(blocks.StructBlock):
         CODE = "code", "Code"
         DATA = "data", "Data"
         DOCUMENTATION = "documentation", "Documentation"
-        ANALYSIS = "analysis", "Analysis"
+        PUBLICATIONS_AND_PRESENTATIONS = "publications_and_presentations", "Publications and Presentations"
         RELATED_COURSES = (
             "related_courses_and_course_modules",
             "Related Courses and Course Modules",
