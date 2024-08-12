@@ -89,6 +89,7 @@ STANDARD_BLOCKS = [
     ("article_tile_block", ArticleTileBlock()),
     ("event_tile_block", EventTileBlock()),
     ("embed", EmbedBlock()),
+    ("code", CodeBlock())
 ]
 
 
