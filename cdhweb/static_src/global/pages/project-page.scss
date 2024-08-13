@@ -86,3 +86,15 @@ the right of the content (when unstacked).
     margin-block-start: 24px;
   }
 }
+
+.project-page__side-content-item-same-role {
+  & + .project-page__side-content-item {
+    margin-block-start: 24px;
+  }
+}
+
+.project-page__side-content-item {
+  & + .project-page__side-content-item-same-role {
+    margin-block-start: 0px;
+  }
+}
