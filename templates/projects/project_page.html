@@ -40,8 +40,12 @@
                     <h2>Team</h2>
 
                     {% for membership in page.current_memberships %}
-                        <div class="project-page__side-content-item">
-                            <h3>{{ membership.role }}</h3>
+                        {% ifchanged membership.role %}
+                            <div class="project-page__side-content-item">
+                        {% else %}
+                            <div class="project-page__side-content-item--same-role">
+                        {% endifchanged %}
+                            {% ifchanged %}<h3>{{ membership.role }}</h3>{% endifchanged %}
                             <div>
                                 {% include 'includes/project_membership.html' with member=membership.person %}
                             </div>
