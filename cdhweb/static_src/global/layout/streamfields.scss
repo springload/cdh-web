@@ -21,7 +21,8 @@
             .block--migrated-content,
             .block--pull-quote,
             .block--accordion:not(:has(> h2)),
-            .block--video:not(:has(> h2))
+            .block--video:not(:has(> h2)),
+            .code-toolbar
           )
       ) {
       margin-block-start: var(--streamfield-space-sm);
