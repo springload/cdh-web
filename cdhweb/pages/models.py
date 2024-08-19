@@ -11,19 +11,14 @@ from django.utils.functional import cached_property
 from springkit.blocks import CTABlock, JumplinkableH2Block
 from springkit.models.mixins import JumplinksMixin
 from taggit.managers import TaggableManager
-from wagtail.admin.panels import (
-    FieldPanel,
-    MultiFieldPanel,
-    ObjectList,
-    TabbedInterface,
-)
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.documents.models import AbstractDocument, DocumentQuerySet
+from wagtail.embeds.blocks import EmbedBlock
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock
-from wagtail.images.models import Image
 from wagtail.models import CollectionMember, Page
 from wagtail.search import index
 from wagtail.snippets.blocks import SnippetChooserBlock
@@ -36,7 +31,6 @@ from .blocks.accordion_block import AccordionBlock
 from .blocks.article_index_block import ArticleTileBlock
 from .blocks.cdh_hosted_video import HostedVideo
 from .blocks.download_block import DownloadBlock
-from .blocks.embed_block import EmbedBlock
 from .blocks.event_index_block import EventTileBlock
 from .blocks.feature_block import FeatureBlock
 from .blocks.image_block import ImageBlock
@@ -88,8 +82,8 @@ STANDARD_BLOCKS = [
     ("tile_block", StandardTileBlock()),
     ("article_tile_block", ArticleTileBlock()),
     ("event_tile_block", EventTileBlock()),
-    ("embed", EmbedBlock()),
-    ("code", CodeBlock())
+    ("embed", EmbedBlock(icon="plus-inverse")),
+    ("code", CodeBlock()),
 ]
 
 
