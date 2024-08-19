@@ -63,9 +63,9 @@
                     <button type="submit" class="sk-btn sk-btn--secondary" aria-label="Apply filters. Note: page will reload.">
                         Submit
                     </button>
-                    <a href="{{ request.path }}" class="sk-btn sk-btn--link-style" aria-label="Clear filters. Note: page will reload.">
+                    <a href="{{ request.path }}?current=False" class="sk-btn sk-btn--link-style" aria-label="Clear filters. Note: page will reload.">
                         {% include 'includes/svg.html' with sprite="two-tone" svg="x" %}
-                        Reset
+                        Clear All
                     </a>
                 </div>
             </div>
