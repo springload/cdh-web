@@ -1,6 +1,9 @@
+from typing import Any
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.views.generic.detail import DetailView
+from django.views.generic.base import RedirectView
+from django.shortcuts import get_object_or_404
 
 from cdhweb.blog.models import BlogPost
 
@@ -62,11 +65,9 @@ class AtomBlogPostFeed(RssBlogPostFeed):
     feed_type = Atom1Feed
     subtitle = RssBlogPostFeed.description
 
-class BlogPostRedirectView(DetailView):
-
-    def get_object(self):
-        slug = self.kwargs["slug"]
-        return BlogPost.objects.live().filter(slug=slug).first()
+class BlogPostRedirectView(RedirectView):
+    pattern_name = "blog-detail"
     
-    def get(self, request, *args, **kwargs):
-        return self.get_object().serve(request)
+    def get_redirect_url(self, *args, **kwargs):
+        post = get_object_or_404(BlogPost, slug=kwargs["slug"])
+        return post.url

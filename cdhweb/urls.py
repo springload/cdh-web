@@ -70,8 +70,8 @@ urlpatterns = [
     # wagtail paths
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-    re_path(r"updates/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<slug>[\w-]+)", BlogPostRedirectView.as_view(), name='updates-redirect-with-date'),
-    path("updates/<slug>/", BlogPostRedirectView.as_view(), name='updates-redirect'),
+    re_path(r"updates/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<slug>[\w-]+)", BlogPostRedirectView.as_view(), name='blog-detail'),
+    path("updates/<slug>/", BlogPostRedirectView.as_view(), name='blog-detail'),
 ]
 
 if settings.DEBUG:
