@@ -8,7 +8,7 @@ class RssBlogPostFeed(Feed):
     """Blog post RSS feed"""
 
     title = "Center for Digital Humanities @ Princeton University Updates"
-    link = "/updates/"
+    link = "/blog/"  # Not technically correct, but currently best-match
     description = "Updates and news on work from the Center for Digital Humanities @ Princeton University"
 
     def items(self):
@@ -21,7 +21,7 @@ class RssBlogPostFeed(Feed):
 
     def item_description(self, item):
         """blog post description, for feed content"""
-        return item.get_description()
+        return item.feeds_description
 
     def item_link(self, item):
         """absolute link to blog post"""
