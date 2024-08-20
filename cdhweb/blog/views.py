@@ -1,5 +1,6 @@
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
+from django.views.generic.detail import DetailView
 
 from cdhweb.blog.models import BlogPost
 
@@ -60,3 +61,12 @@ class AtomBlogPostFeed(RssBlogPostFeed):
 
     feed_type = Atom1Feed
     subtitle = RssBlogPostFeed.description
+
+class BlogPostRedirectView(DetailView):
+
+    def get_object(self):
+        slug = self.kwargs["slug"]
+        return BlogPost.objects.live().filter(slug=slug).first()
+    
+    def get(self, request, *args, **kwargs):
+        return self.get_object().serve(request)
