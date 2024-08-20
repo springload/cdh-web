@@ -67,6 +67,7 @@ class AtomBlogPostFeed(RssBlogPostFeed):
 
 class BlogPostRedirectView(RedirectView):
     pattern_name = "blog-detail"
+    permanent = True
     
     def get_redirect_url(self, *args, **kwargs):
         post = get_object_or_404(BlogPost, slug=kwargs["slug"])
