@@ -17,7 +17,7 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
-from wagtail.contrib.routable_page.models import RoutablePageMixin, path
+from wagtail.contrib.routable_page.models import RoutablePageMixin, path, re_path
 from wagtail.fields import RichTextField
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
@@ -433,9 +433,9 @@ class EventsLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
         context["date_list"] = self.get_semester_date_list()
         return context
 
-    @path("<semester>-<int:year>/", name="by-semester")
+    @re_path(r"^(?P<semester>spring|summer|fall)-(?P<year>\d{4})", name="by-semester")
     def by_semester(self, request, semester=None, year=None):
-        context = self.get_context(request, semester=semester, year=year)
+        context = self.get_context(request, semester=semester, year=int(year))
         return self.render(request, context_overrides=context)
 
     @path("<int:year>/<int:month>/<slug:slug>/", name="dated_child")
@@ -464,7 +464,7 @@ class EventsLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
             start_date = datetime.date(year, 9, 1)
             end_date = datetime.date(year, 12, 31)
         else:
-            raise ValueError("Invalid semester")
+            raise ValueError(f"Invalid semester: {semester}")
 
         child_pages = self.get_children().live().type(Event)
         # Filter events based on start_time within the semester range
