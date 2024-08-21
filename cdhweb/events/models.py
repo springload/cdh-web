@@ -433,7 +433,7 @@ class EventsLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
         context["date_list"] = self.get_semester_date_list()
         return context
 
-    @re_path(r"^(?P<semester>spring|summer|fall)-(?P<year>\d{4})", name="by-semester")
+    @re_path(r"^(?P<semester>spring|summer|fall)-(?P<year>\d{4})/", name="by-semester")
     def by_semester(self, request, semester=None, year=None):
         context = self.get_context(request, semester=semester, year=int(year))
         return self.render(request, context_overrides=context)
