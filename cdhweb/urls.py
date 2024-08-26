@@ -15,7 +15,7 @@ from wagtailautocomplete.urls.admin import urlpatterns as autocomplete_admin_url
 from cdhweb.context_processors import favicon_path
 from cdhweb.pages.views import OpenSearchDescriptionView, SiteSearchView
 from cdhweb.events.views import EventIcalView
-from cdhweb.blog.views import BlogPostRedirectView
+from cdhweb.blog.views import BlogPostRedirectView, RssBlogPostFeed, AtomBlogPostFeed
 
 admin.autodiscover()
 
@@ -70,6 +70,8 @@ urlpatterns = [
     # wagtail paths
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
+    path("updates/rss/", RssBlogPostFeed(), name="rss"),
+    path("updates/atom/", AtomBlogPostFeed(), name="atom"),
     re_path(r"updates/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<slug>[\w-]+)", BlogPostRedirectView.as_view(), name='blog-detail'),
     path("updates/<slug>/", BlogPostRedirectView.as_view(), name='blog-detail'),
 ]
