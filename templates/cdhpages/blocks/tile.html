@@ -36,11 +36,11 @@
                     {% with end_month=internal_page.specific.end_time|date:"M" %}
                         <div class="tile__event-date">
                             {% if start_day == end_day and start_month == end_month %}
-                                {{ start_day }} {{ start_month }} {{ internal_page.specific.start_time|time:"g:iA" }}–{{ internal_page.specific.end_time|time:"g:iA" }}
+                                {{ start_month }} {{ start_day }} {{ internal_page.specific.start_time|time:"g:iA" }}–{{ internal_page.specific.end_time|time:"g:iA" }}
                             {% elif start_month == end_month %}
-                                {{ start_day }}–{{ end_day }} {{ start_month }}
+                                {{ start_month }} {{ start_day }}–{{ end_day }} 
                             {% else %}
-                                {{ start_day }} {{ start_month }}–{{ end_day }} {{ end_month }}
+                                {{ start_month }} {{ start_day }}–{{ end_month }} {{ end_day }} 
                             {% endif %}
                         </div>
                     {% endwith %}
