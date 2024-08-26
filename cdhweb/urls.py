@@ -41,7 +41,6 @@ urlpatterns = [
     path("_500/", lambda _: 1 / 0),  # for testing 500 error page
     # main apps
     path("people/", include("cdhweb.people.urls", namespace="people")),
-    path("blog/", include("cdhweb.blog.urls", namespace="blog")),
     path("projects/", include("cdhweb.projects.urls", namespace="projects")),
     # search
     path("search/", SiteSearchView.as_view(), name="search"),
