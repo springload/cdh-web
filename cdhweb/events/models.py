@@ -300,24 +300,31 @@ class Event(BasePage, ClusterableModel):
         if not self.type:
             raise ValidationError("Event must specify a type.")
 
-    # def get_url_parts(self, *args, **kwargs):
-    #     """Custom event page URLs of the form /events/2014/03/my-event."""
-    #     url_parts = super().get_url_parts(*args, **kwargs)
-    #     # NOTE evidently this can sometimes be None; unclear why – perhaps it
-    #     # gets called in a context where the request is unavailable? Only
-    #     # happens in QA, not locally.
-    #     if url_parts:
-    #         site_id, root_url, _ = url_parts
-    #         page_path = reverse(
-    #             "events:detail",
-    #             kwargs={
-    #                 "year": self.start_time.year,
-    #                 # force two-digit month
-    #                 "month": "%02d" % self.start_time.month,
-    #                 "slug": self.slug,
-    #             },
-    #         )
-    #         return site_id, root_url, page_path
+    def get_url_parts(self, request, *args, **kwargs):
+        """Custom event page URLs of the form /events/2014/03/my-event."""
+        url_parts = super().get_url_parts(request, *args, **kwargs)
+        # NOTE evidently this can sometimes be None; unclear why – perhaps it
+        # gets called in a context where the request is unavailable? Only
+        # happens in QA, not locally.
+        if url_parts:
+            site_id, root_url, _remainder = url_parts
+            parent = self.get_parent().specific
+
+            # If for some reason we don't have a eventlanding-style parent, just
+            # use `super()`
+            if not hasattr(parent, "reverse_subpage"):
+                return url_parts
+            
+            page_path = parent.reverse_subpage(
+                "dated_child",
+                kwargs={
+                    "year": self.start_time.year,
+                    # force two-digit month
+                    "month": "%02d" % self.start_time.month,
+                    "slug": self.slug,
+                },
+            )
+            return site_id, root_url, parent.get_url(request) + page_path
 
     def get_ical_url(self):
         """URL to download this event as a .ics (iCal) file."""
@@ -466,7 +473,7 @@ class EventsLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
         else:
             raise ValueError(f"Invalid semester: {semester}")
 
-        child_pages = self.get_children().live().type(Event)
+        child_pages = self.get_children().live().specific().type(Event)
         # Filter events based on start_time within the semester range
         return child_pages.filter(
             event__start_time__gte=start_date, event__start_time__lte=end_date
@@ -475,7 +482,7 @@ class EventsLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
     def get_upcoming_events(self):
         current_datetime = timezone.now()
 
-        child_pages = self.get_children().live().type(Event)
+        child_pages = self.get_children().live().specific().type(Event)
 
         # Fetch upcoming events among the child pages
         return child_pages.filter(event__start_time__gte=current_datetime).order_by(
