@@ -5,7 +5,7 @@
 
 {% block content %}
 {% with desc=message|default:"We can't seem to find the page you're looking for." %}
-{% with image_src='images/cdh_404.jpeg' %}
+{% with image_src='images/cdh_404.webp' %}
     {% include 'includes/error_hero.html' with title='Error 404' description=desc image_src=image_src %}
 {% endwith %}
 {% endwith %}

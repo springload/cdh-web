@@ -5,7 +5,7 @@
 
 {% block content %}
 {% with desc=message|default:"Something went wrong. Please try reloading the page, or return to home" %}
-{% with image_src='images/cdh_500.jpeg' %}
+{% with image_src='images/cdh_500.webp' %}
     {% include 'includes/error_hero.html' with title='Error 500' description=desc %}
 {% endwith %}
 {% endwith %}
