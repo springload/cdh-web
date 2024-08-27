@@ -1,23 +1,12 @@
-{% load static wagtailuserbar wagtailcore_tags wagtailimages_tags %}
-<!DOCTYPE html>
-<html class="no-js" lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Error 500</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends 'error_base.html' %}
+{% load static wagtailcore_tags %}
+{# defaults to 404, but pass error code and message for alternate use #}
+{% firstof page_title 'Not Found' as title %}
 
-    <script type="text/javascript"> window.staticRoot = "{% static 'dist/' %}"; </script>
-
-  </head>
-  <body class="{% block body_class %}{% endblock %}">
-
-    <div class="grid-full error-page-content">
-      <h1>Error 500</h1>
-      <p>Something went wrong. Please try reloading the page, or <a href="/">return to home</a>.</p>
-    </div>
-
-    {% if SENTRY_DSN_FED %}
-      <script>Raven.config('{{ SENTRY_DSN_FED }}').install()</script>
-    {% endif %}
-  </body>
-</html>
+{% block content %}
+{% with desc=message|default:"Something went wrong. Please try reloading the page, or return to home" %}
+{% with image_src='images/cdh_500.jpeg' %}
+    {% include 'includes/error_hero.html' with title='Error 500' description=desc %}
+{% endwith %}
+{% endwith %}
+{% endblock %}

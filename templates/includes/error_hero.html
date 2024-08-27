@@ -1,0 +1,18 @@
+{% load static wagtailcore_tags wagtailimages_tags l10n %}
+
+<div class="standard-hero content-width grid-standard">
+    
+    <h1 class="standard-hero__title">{{ title }}</h1>
+    <div class="standard-hero__description">
+        {% if description %}
+            {{ description | richtext }}
+        {% endif %}
+    </div>
+
+        <picture class="standard-hero__img">
+            <img
+                src="{% static image_src %}"
+                alt=""
+            />
+        </picture>
+</div>

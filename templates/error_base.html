@@ -4,10 +4,9 @@
 {% block page-title %}Error{% endblock %}
 
 {% block main %}
-<div class="content-width grid-standard page-layout page-layout--without-sidenav error-page__content">
-    <div class="page-layout__main-content">
-        <h1>Error {% block error-code %}{% endblock %}</h1>
-        <p class="error-page__blurb">{% block message %}{% endblock %}</p>
-    </div>
-</div>
+
+        {% block content %}
+        
+        {% endblock %}
+        
 {% endblock %}

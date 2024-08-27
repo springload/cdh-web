@@ -1,7 +1,12 @@
 {% extends 'error_base.html' %}
-{% load static %}
+{% load static wagtailcore_tags %}
 {# defaults to 404, but pass error code and message for alternate use #}
-{% block page-title %}{{ page_title|default:'Not Found' }}{% endblock %}
+{% firstof page_title 'Not Found' as title %}
 
-{% block error-code %}{{ error_code|default:'404' }}{% endblock %}
-{% block message %}{{ message|default:"We can’t seem to find the page you’re looking for." }}{% endblock %}
+{% block content %}
+{% with desc=message|default:"We can't seem to find the page you're looking for." %}
+{% with image_src='images/cdh_404.jpeg' %}
+    {% include 'includes/error_hero.html' with title='Error 404' description=desc image_src=image_src %}
+{% endwith %}
+{% endwith %}
+{% endblock %}
