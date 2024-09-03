@@ -10,7 +10,12 @@ from wagtail.fields import RichTextField
 from wagtail.models import Page
 from wagtail.search import index
 
-from .utils import LengthOverrideWidget
+from .utils import (
+    LengthOverrideWidget,
+    absolutize_url,
+    get_default_preview_img_url,
+    get_first_of,
+)
 
 
 class HomePageHeroMixin(models.Model):
@@ -158,3 +163,17 @@ class SidebarNavigationMixin(models.Model):
 
     class Meta:
         abstract = True
+
+
+class OpenGraphMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    @cached_property
+    def og_image_url(self):
+        image = get_first_of(self, "feed_image", "image")
+        if not image:
+            return get_default_preview_img_url()
+
+        rendition = image.get_rendition("fill-1200x627")
+        return absolutize_url(rendition.url)

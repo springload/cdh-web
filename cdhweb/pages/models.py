@@ -3,17 +3,15 @@ from urllib.parse import urlparse, urlunparse
 
 import bleach
 from django.apps import apps
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
-from django.utils.functional import cached_property
 from springkit.blocks import CTABlock, JumplinkableH2Block
 from springkit.models.mixins import JumplinksMixin
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
-from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
+from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.documents.models import AbstractDocument, DocumentQuerySet
 from wagtail.embeds.blocks import EmbedBlock
@@ -25,7 +23,7 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.models import register_snippet
 from wagtailcodeblock.blocks import CodeBlock
 
-from cdhweb.pages import snippets  # needed for import order
+from cdhweb.pages import snippets  # noqa needed for import order
 
 from .blocks.accordion_block import AccordionBlock
 from .blocks.article_index_block import ArticleTileBlock
@@ -42,7 +40,12 @@ from .blocks.rich_text import RichTextBlock as RichText
 from .blocks.table_block import TableBlock
 from .blocks.tile_block import StandardTileBlock
 from .blocks.video_block import Video
-from .mixin import HomePageHeroMixin, SidebarNavigationMixin, StandardHeroMixin
+from .mixin import (
+    HomePageHeroMixin,
+    OpenGraphMixin,
+    SidebarNavigationMixin,
+    StandardHeroMixin,
+)
 
 #: common features for paragraph text
 PARAGRAPH_FEATURES = [
@@ -246,7 +249,7 @@ class LinkPage(Page):
     is_creatable = False
 
 
-class BasePage(Page):
+class BasePage(OpenGraphMixin, Page):
     """Abstract Page class from which all Wagtail page types are derived."""
 
     body = StreamField(
@@ -587,11 +590,14 @@ class DateRange(models.Model):
 
 
 @register_setting(icon="edit")
-class PurpleMode(BaseSiteSetting):
+class PurpleMode(BaseGenericSetting):
     purple_mode = models.BooleanField(
         default=False,
-        help_text="""This will turn the site purple 
-                                      by transforming all shades of cyan on the site into shades of purple""",
+        help_text="""
+            This will turn the site purple by transforming
+            all shades of cyan on the site into shades of
+            purple
+        """,
     )
 
     panels = [FieldPanel("purple_mode", icon="pick")]
