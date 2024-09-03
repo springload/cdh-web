@@ -74,7 +74,6 @@ class SiteSearchView(ListView, FormMixin):
         form = self.get_form()
 
         if not form.is_valid():
-            print(form.errors)
             return queryset.none()
 
         # get keyword query; support filters & phrase matching with double quotes
