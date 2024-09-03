@@ -5,15 +5,14 @@ from django.db import models
 from django.utils import timezone
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from modelcluster.models import ClusterableModel
-from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
-from wagtail.fields import RichTextField, StreamField
+from wagtail.fields import StreamField
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
 from cdhweb.pages.blocks.accordion_block import ProjectAccordion
-from cdhweb.pages.mixin import StandardHeroMixin
+from cdhweb.pages.mixin import OpenGraphMixin, StandardHeroMixin
 from cdhweb.pages.models import BasePage, DateRange, LandingPage, LinkPage, RelatedLink
 from cdhweb.people.models import Person
 
@@ -80,7 +79,7 @@ class ProjectQuerySet(PageQuerySet):
 ProjectManager = PageManager.from_queryset(ProjectQuerySet)
 
 
-class Project(BasePage, ClusterableModel, StandardHeroMixin):
+class Project(BasePage, OpenGraphMixin, ClusterableModel, StandardHeroMixin):
     """Page type for a CDH sponsored project or working group."""
 
     template = "projects/project_page.html"

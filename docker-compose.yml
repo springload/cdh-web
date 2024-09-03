@@ -42,7 +42,7 @@ services:
         volumes:
             - "./docker/database:/docker-entrypoint-initdb.d/:ro"
         environment:
-            WAGTAIL_SITE_HOSTNAME: "${SITE_HOSTNAME}"
+            WAGTAIL_SITE_HOSTNAME: "cdh.dev.springload.nz"
             WAGTAIL_SITE_PORT: "443"
             POSTGRES_DB: "cdhweb"
             POSTGRES_USER: "cdhweb"
