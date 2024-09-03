@@ -171,7 +171,7 @@ class OpenGraphMixin(models.Model):
 
     @cached_property
     def og_image_url(self):
-        image = get_first_of(self, "feed_image", "image")
+        image = get_first_of(self, "feed_image", "image", "hero_image")
         if not image:
             return get_default_preview_img_url()
 
