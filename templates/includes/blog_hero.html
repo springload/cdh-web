@@ -14,7 +14,7 @@
                 <h2 class="sr-only">Authors</h2>
                 <ul>
                     {% for author in page.authors.all %}
-                        <li><a href="{{ author.person.profile_url }}">{{ author.person }}</a></li>
+                        <li>{% if author.person.profile_url %}<a href="{{ author.person.profile_url }}">{{ author.person }}</a>{% else %}{{ author.person }}{% endif %}</li>
                     {% endfor %}
                 </ul>
             </div>
