@@ -1,5 +1,6 @@
 {% load wagtailcore_tags core_tags static %}
 
+{% if request %}{# skip for 500 error template #}
 {% primary_nav_dict as primary_dict %}
 {{ primary_dict | json_script:"navigation-data-primary" }}
 {% primary_navigation as primary_nav %}
@@ -7,6 +8,7 @@
 {% secondary_nav_dict as secondary_dict %}
 {{ secondary_dict | json_script:"navigation-data-secondary" }}
 {% secondary_navigation as secondary_nav %}
+{% endif %}
 
 <header class="header">
     {% site_alerts %}
