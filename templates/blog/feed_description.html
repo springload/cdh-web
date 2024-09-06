@@ -1,0 +1,4 @@
+{% load wagtailcore_tags %}
+{% for block in obj.body %}
+    {% include_block block %}
+{% endfor %}
