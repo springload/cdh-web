@@ -23,12 +23,13 @@ class EventTileBlock(ArticleTileBlock):
 
         current_datetime = timezone.now()
 
+        # NOTE: possible to use EventQuerySet here with .upcoming() filter?
         child_pages = (
             value.get("landing_page")
             .get_children()
             .live()
             .public()
-            .filter(event__start_time__gt=current_datetime)  # only show upcoming events
+            .filter(event__end_time__gt=current_datetime)  # only show upcoming events
             .order_by("event__start_time")  # Sort by date ascending
             .specific()
         )
