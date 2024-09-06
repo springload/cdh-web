@@ -8,13 +8,40 @@
     </a>
   {% endif %}
 
-  {# just display all pages for now, no ellipses #}
   {% for number in page_obj.paginator.page_range %}
-    <a href="?{% url_replace 'page' number %}" 
-      class="pagination__item {% if number == page_obj.number %}pagination__item--current{% endif %}"
-      >
-      {{ number }}
-    </a>
+
+      {#  always display current page, marked as active #}
+      {% if number == page_obj.number %}
+          <a title="page {{number}}" class="pagination__item pagination__item--current" href="?{% url_replace 'page' number %}">{{ number }}</a>
+
+      {# for current page 1 or 2, display first 5 #}
+      {% elif page_obj.number <= 2  and number <= 5 %}
+          <a title="page {{number}}" class="pagination__item" href="?{% url_replace 'page' number %}">{{ number }}</a>
+
+      {# for current page last or next to last, display last 5 pages #}
+      {% elif page_obj.number|add:1 >= page_obj.paginator.num_pages and number >= page_obj.paginator.num_pages|add:-4 %}
+          <a title="page {{number}}" class="pagination__item" href="?{% url_replace 'page' number %}">{{ number }}</a>
+
+      {# display the two numbers before and after the current page #}
+      {% elif page_obj.number|add:2 >= number and page_obj.number|add:-2 <= number %}
+          <a title="page {{number}}" class="pagination__item" href="?{% url_replace 'page' number %}">{{ number }}</a>
+
+      {# always display the first page (not current page) #}
+      {% elif forloop.first %}
+          <a title="page {{number}}" class="pagination__item" href="?{% url_replace 'page' number %}">{{ number }}</a>
+          {# if there is a gap between 1 and group around current page #}
+          {% if page_obj.number > 4 and page_obj.paginator.num_pages > 6 %}
+          <span>...</span>
+          {% endif %}
+
+      {# always display last page (not current, not around current page) #}
+      {% elif forloop.last %}
+          {# indicate if there is a gap between current and last #}
+          {% if page_obj.number|add:3 < number and number > 6 %}
+          <span>...</span>
+          {% endif %}
+          <a title="page {{number}}" class="pagination__item" href="?{% url_replace 'page' number %}">{{ number }}</a>
+      {% endif%}
   {% endfor %}
 
   {% if page_obj.has_next %}
