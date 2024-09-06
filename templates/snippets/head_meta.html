@@ -1,5 +1,5 @@
 {% load static cdh_tags %}
-{% firstof preview_image page.get_url|url_to_icon_path default_preview_image as meta_preview_image %}
+{% firstof preview_image page.og_image_url default_preview_image as meta_preview_image_url %}
 {% firstof page_title page.seo_title page.title as meta_title %}
 {% autoescape off %}
 {% firstof page.get_plaintext_description page_intro.paragraph as meta_description %}
@@ -7,13 +7,12 @@
 {% autoescape on %}
 {# html metadata #}
 {% if page.tags.exists %}<meta name="keywords" content="{{ page.tags.all|join:', ' }}"/>{% endif %}
-{% if meta_description %}<meta name="description" content="{{ meta_description|striptags }}"/>{% endif %}
-{# determine preview image: specified by page, cdh icon based on url, or default image #}
+<meta name="description" content="{% firstof self.search_description self.intro|default:''|striptags self.body_excerpt|default:''|striptags|truncatewords:40 self.title %}">
 {# open graph metadata #}
 <meta property="og:title" content="{{ meta_title }}" />
 <meta property="og:type" content="{{ opengraph_type|default:'website' }}" />
 <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-<meta property="og:image" content="{{ meta_preview_image }}" />
+<meta property="og:image" content="{{ meta_preview_image_url }}" />
 {% if meta_description %}<meta property="og:description" content="{{ meta_description|striptags }}"/>{% endif %}
 <meta property="og:site_name" content="{{ site.root_page.seo_title }}"/>
 {# twitter card #}
@@ -21,5 +20,11 @@
 <meta name="twitter:site" content="@PrincetonDH" />
 <meta name="twitter:title" content="{{ meta_title }}"/>
 {% if meta_description %}<meta name="twitter:description" content="{{ meta_description|striptags }}"/>{% endif %}
-<meta name="twitter:image" content="{% firstof twitter_image meta_preview_image %}" />
+<meta name="twitter:image" content="{% firstof twitter_image meta_preview_image_url %}" />
 {% endautoescape %}
+
+{# include syndication link on all pages for now #}
+<link rel="alternate" type="application/rss+xml" href="{% url 'rss' %}"
+    title="Updates – CDH@Princeton"/>
+<link rel="alternate" type="application/atom+xml" href="{% url 'atom' %}"
+    title="Updates – CDH@Princeton"/>

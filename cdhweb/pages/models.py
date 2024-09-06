@@ -3,31 +3,49 @@ from urllib.parse import urlparse, urlunparse
 
 import bleach
 from django.apps import apps
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import striptags, truncatechars_html
+from springkit.blocks import CTABlock, JumplinkableH2Block
+from springkit.models.mixins import JumplinksMixin
 from taggit.managers import TaggableManager
-from wagtail.admin.panels import (
-    FieldPanel,
-    MultiFieldPanel,
-    ObjectList,
-    TabbedInterface,
-)
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.blocks import RichTextBlock, StreamBlock, StructBlock, TextBlock
+from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.documents.models import AbstractDocument, DocumentQuerySet
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock
-from wagtail.images.models import Image
 from wagtail.models import CollectionMember, Page
 from wagtail.search import index
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.models import register_snippet
 from wagtailcodeblock.blocks import CodeBlock
-from wagtailmenus.models import AbstractLinkPage
-from wagtailmenus.panels import linkpage_tab
+
+from cdhweb.pages import snippets  # noqa needed for import order
+
+from .blocks.accordion_block import AccordionBlock
+from .blocks.article_index_block import ArticleTileBlock
+from .blocks.cdh_hosted_video import HostedVideo
+from .blocks.download_block import DownloadBlock
+from .blocks.event_index_block import EventTileBlock
+from .blocks.feature_block import FeatureBlock
+from .blocks.image_block import ImageBlock
+from .blocks.migrated import MigratedBlock
+from .blocks.newsletter import NewsletterBlock
+from .blocks.note import Note
+from .blocks.pull_quote import PullQuote
+from .blocks.rich_text import RichTextBlock as RichText
+from .blocks.table_block import TableBlock
+from .blocks.tile_block import StandardTileBlock
+from .blocks.video_block import Video
+from .mixin import (
+    HomePageHeroMixin,
+    OpenGraphMixin,
+    SidebarNavigationMixin,
+    StandardHeroMixin,
+)
 
 #: common features for paragraph text
 PARAGRAPH_FEATURES = [
@@ -49,6 +67,27 @@ PARAGRAPH_FEATURES = [
 #: help text for image alternative text
 ALT_TEXT_HELP = """Alternative text for visually impaired users to
 briefly communicate the intended message of the image in this context."""
+
+STANDARD_BLOCKS = [
+    ("paragraph", RichText()),
+    ("download_block", DownloadBlock()),
+    ("cta_block", CTABlock()),
+    ("accordion_block", AccordionBlock()),
+    ("video_block", Video()),
+    ("cdh_hosted_video", HostedVideo()),
+    ("pull_quote", PullQuote()),
+    ("note", Note()),
+    ("image", ImageBlock()),
+    ("feature", FeatureBlock()),
+    ("table", TableBlock()),
+    ("newsletter", NewsletterBlock()),
+    ("heading", JumplinkableH2Block()),
+    ("tile_block", StandardTileBlock()),
+    ("article_tile_block", ArticleTileBlock()),
+    ("event_tile_block", EventTileBlock()),
+    ("embed", EmbedBlock(icon="plus-inverse")),
+    ("code", CodeBlock()),
+]
 
 
 class CaptionedImageBlock(StructBlock):
@@ -104,17 +143,22 @@ class BodyContentBlock(StreamBlock):
     # PARAGRAPH_FEATURES because in some places you shouldn't be allowed to make
     # an h2 or it would conflict with LinkableSections. In those cases, define
     # RichTextField(features=PARAGRAPH_FEATURES) to get everything except h2.
-    paragraph = RichTextBlock(features=["h2"] + PARAGRAPH_FEATURES)
+    paragraph = RichTextBlock(
+        features=["h2"] + PARAGRAPH_FEATURES, template="text-content.html"
+    )
     image = CaptionedImageBlock()
     svg_image = SVGImageBlock()
     embed = EmbedBlock(help_text=EMBED_HELP)
     #: used to hold content migrated from mezzanine via a "kitchen-sink"
     #: approach; enable all supported wagtail features.
     #: Should NOT be used when creating new pages.
-    migrated = RichTextBlock(
-        features=PARAGRAPH_FEATURES + ["image", "embed"], icon="warning"
-    )
+    # migrated = RichTextBlock(
+    #     features=PARAGRAPH_FEATURES + ["image", "embed"],
+    #     icon="warning",
+    #     template="text-content.html",
+    # )
     code = CodeBlock(label="Code")
+    # cta = CTABlock()
 
 
 class AttachmentBlock(StreamBlock):
@@ -188,88 +232,176 @@ class PagePreviewDescriptionMixin(models.Model):
         return striptags(self.get_description())
 
 
-class LinkPage(AbstractLinkPage):
+class LinkPage(Page):
     """Link page for controlling appearance in menus of non-Page content."""
 
     # NOTE these pages can have slugs, but the slug isn't editable in the admin
     # by default. We override the editing interface to introduce a "promote"
     # panel as with other Page models containing the form field for the slug.
     # see: https://github.com/rkhleics/wagtailmenus/blob/master/wagtailmenus/panels.py#L79-L93
-    edit_handler = TabbedInterface(
-        [
-            linkpage_tab,
-            ObjectList((MultiFieldPanel((FieldPanel("slug"),)),), heading="Promote"),
-        ]
-    )
+    # edit_handler = TabbedInterface(
+    #     [
+    #         ObjectList((MultiFieldPanel((FieldPanel("slug"),)),), heading="Promote"),
+    #     ]
+    # )
     search_fields = Page.search_fields
 
+    is_creatable = False
 
-class BasePage(Page):
+
+class BasePage(OpenGraphMixin, Page):
     """Abstract Page class from which all Wagtail page types are derived."""
 
-    #: main page text
-    body = StreamField(BodyContentBlock, blank=True, use_json_field=True)
-    #: relationship to uploaded documents and external links
-    attachments = StreamField(AttachmentBlock, blank=True, use_json_field=True)
-    # index body content to make it searchable
-    search_fields = Page.search_fields + [index.SearchField("body")]
+    body = StreamField(
+        STANDARD_BLOCKS + [("migrated", MigratedBlock())],
+        blank=True,
+        help_text="Put content for the body of the page here. Start with using the + button.",
+        verbose_name="Page content",
+        use_json_field=True,
+    )
 
-    class Meta:
-        abstract = True
+    attachments = StreamField(
+        AttachmentBlock,
+        blank=True,
+        use_json_field=True,
+        help_text="This block exists to help with data migration. It will be deleted when content loading is complete.",
+    )
 
+    short_title = models.CharField(
+        verbose_name="Short title",
+        max_length=80,
+        blank=True,
+        default="",
+        help_text=("Displayed on tiles, breadcrumbs etc., not on page itself. "),
+    )
 
-class ContentPage(BasePage, PagePreviewDescriptionMixin):
-    """Basic content page model."""
+    short_description = models.TextField(
+        verbose_name="Short description",
+        max_length=130,
+        null=False,
+        blank=True,
+        help_text=(
+            "A short description of the content for promotional or navigation "
+            "purposes. Displayed on tiles, not on page itself."
+        ),
+    )
 
-    content_panels = Page.content_panels + [
-        FieldPanel("description"),
-        FieldPanel("body"),
-        FieldPanel("attachments"),
-    ]
-
-    # index description in addition to body content
-    search_fields = BasePage.search_fields + [index.SearchField("description")]
-
-    parent_page_types = [
-        "HomePage",
-        "LandingPage",
-        "ContentPage",
-        "events.EventsLinkPage",
-    ]
-    subpage_types = ["ContentPage"]
-
-
-class LandingPage(BasePage):
-    """Page type that aggregates and displays multiple ContentPages."""
-
-    #: short sentence overlaid on the header image
-    tagline = models.CharField(max_length=255)
-    #: image that will be used for the header
-    header_image = models.ForeignKey(
+    feed_image = models.ForeignKey(
         "wagtailimages.image",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name="+",
-    )  # no reverse relationship
+    )
 
     content_panels = Page.content_panels + [
-        FieldPanel("tagline"),
-        FieldPanel("header_image"),
         FieldPanel("body"),
     ]
 
-    parent_page_types = ["HomePage"]
-    subpage_types = ["ContentPage"]
+    search_fields = Page.search_fields + [index.SearchField("body")]
+    settings_panels = Page.settings_panels
+    promote_panels = Page.promote_panels
+
+    @property
+    def page_type(self):
+        return type(self).__name__
+
+    class Meta:
+        abstract = True
 
 
-class HomePage(BasePage):
+class ContentPage(BasePage, StandardHeroMixin, JumplinksMixin, SidebarNavigationMixin):
+    """Basic content page model."""
+
+    content_panels = StandardHeroMixin.content_panels + [
+        FieldPanel("body"),
+        FieldPanel("attachments"),
+    ]
+
+    search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
+    settings_panels = (
+        BasePage.settings_panels
+        + JumplinksMixin.settings_panels
+        + SidebarNavigationMixin.settings_panels
+    )
+    promote_panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("short_title"),
+                FieldPanel("short_description"),
+                FieldPanel("feed_image"),
+            ],
+            "Share Page",
+        ),
+    ] + BasePage.promote_panels
+
+    subpage_types = ["ContentPage"]  # TODO
+
+
+class BaseLandingPage(BasePage, StandardHeroMixin):
+    """Page type that aggregates and displays multiple ContentPages."""
+
+    content_panels = StandardHeroMixin.content_panels + [
+        FieldPanel("body"),
+    ]
+
+    search_fields = StandardHeroMixin.search_fields + [index.SearchField("body")]
+
+    def get_context(self, request):
+        ctx = super().get_context(request)
+
+        ctx["children"] = self.get_children().live().public().filter(show_in_menus=True)
+        return ctx
+
+    class Meta:
+        abstract = True
+
+
+class LandingPage(BaseLandingPage, SidebarNavigationMixin):
+    """Page type that aggregates and displays multiple ContentPages."""
+
+    settings_panels = (
+        BaseLandingPage.settings_panels + SidebarNavigationMixin.settings_panels
+    )
+
+    subpage_types = [
+        "ContentPage",
+        "people.PeopleLandingPage",
+        "projects.ProjectsLandingPage",
+        "events.EventsLandingPage",
+        "blog.BlogLandingPage",
+        "LandingPage",
+    ]
+
+    class Meta:
+        verbose_name = "Section Landing Page"
+
+
+class HomePage(HomePageHeroMixin, Page):
     """A home page that aggregates and displays featured content."""
 
-    content_panels = Page.content_panels + [FieldPanel("body")]
+    body = StreamField(
+        STANDARD_BLOCKS,
+        blank=True,
+        help_text="Put content for the body of the page here. Start with using the + button.",
+        verbose_name="Page content",
+        use_json_field=True,
+    )
 
-    parent_page_types = [Page]  # only root
-    subpage_types = ["LandingPage", "ContentPage", "LinkPage"]
+    max_count = 1
+
+    subpage_types = [
+        "ContentPage",
+        "LinkPage",
+        "people.PeopleLandingPage",
+        "projects.ProjectsLandingPage",
+        "LandingPage",
+        "events.EventsLandingPage",
+        "blog.BlogLandingPage",
+    ]  # TODO
+
+    content_panels = HomePageHeroMixin.content_panels + [FieldPanel("body")]
+    settings_panels = Page.settings_panels
 
     class Meta:
         verbose_name = "Homepage"
@@ -290,10 +422,6 @@ class HomePage(BasePage):
             updates = BlogPost.objects.live().recent()[:3]
         context["updates"] = updates
 
-        # add up to 4 randomly selected highlighted, published projects
-        projects = list(Project.objects.live().highlighted().order_by("?"))
-        context["projects"] = projects[:4]
-
         # add up to 3 upcoming, published events
         context["events"] = Event.objects.live().upcoming()[:3]
 
@@ -307,24 +435,6 @@ class HomePage(BasePage):
             }
         )
         return context
-
-
-@register_snippet
-class PageIntro(models.Model):
-    """Snippet for optional page intro text on for pages generated from
-    django views not managed by wagtail"""
-
-    page = models.OneToOneField(LinkPage, on_delete=models.CASCADE)
-    #: intro text
-    paragraph = RichTextField(features=PARAGRAPH_FEATURES)
-
-    panels = [
-        FieldPanel("page"),
-        FieldPanel("paragraph"),
-    ]
-
-    def __str__(self):
-        return self.page.title
 
 
 class DisplayUrlMixin(models.Model):
@@ -477,3 +587,20 @@ class DateRange(models.Model):
         # require end date to be greater than start date
         if self.start_date and self.end_date and not self.end_date >= self.start_date:
             raise ValidationError("End date must be after start date")
+
+
+@register_setting(icon="edit")
+class PurpleMode(BaseGenericSetting):
+    purple_mode = models.BooleanField(
+        default=False,
+        help_text="""
+            This will turn the site purple by transforming
+            all shades of cyan on the site into shades of
+            purple
+        """,
+    )
+
+    panels = [FieldPanel("purple_mode", icon="pick")]
+
+    class Meta:
+        verbose_name = "Purple Site Setting"

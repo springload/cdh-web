@@ -1,0 +1,44 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% comment %}
+    BED TODO – is the following accurate?:
+    This should be the same style and markup as `tile.html`. The only reason it's separate
+    is because the person content isn't a page type. It was just a lot simpler to make a new
+    copy of the tile template here than to make tile.html even more complex by supporting non-page content.
+{% endcomment %}
+
+<div class="tile">
+    <div class="tile__text">
+        <a class="tile__link" href="{% if person.profile_url %}{{ person.profile_url }}{% endif %}">
+            <h2>{% firstof person.profile.title person %}</h2>
+        </a>
+        <p>{{ person.position }}</p>
+    </div>
+    <div class="tile__img-wrapper">
+        {% if person.profile.feed_image %}
+            {% image person.profile.feed_image original as img %}
+        {% elif person.profile.hero_image %}
+            {% image internal_page.specific.image original as img %}
+        {% elif person.image %}
+            {% image person.image original as img %}
+        {% endif %}
+
+        {% if img %}
+            {# All images must have the same ratio (9:5) for this technique to work properly #}
+            {% image img.image fill-400x222 as img_sm %}
+            {% image img.image fill-500x278 as img_md %}
+            {% image img.image fill-800x444 as img_lg %}
+            {# 655 = Approx viewport size of when tiles may go to 2 cols #}
+            <img 
+                src="{{ img_lg.url }}" 
+                srcset="{{ img_sm.url }} 400w,
+                        {{ img_md.url }} 500w,
+                        {{ img_lg.url }} 800w"
+                sizes="(max-width: 655px) 100vw,
+                        (max-width: 1006px) 45vw,
+                        (max-width: 1500px) 20vw,
+                        15vw"
+                alt="{{ img.alt }}" />
+        {% endif %}
+    </div>
+</div>

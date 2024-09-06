@@ -1,0 +1,5 @@
+{% with member.profile_url as profile_url %} {# local or external profile, if available #}
+{% with profile_url|yesno:"a,span" as tag %} {# link if we have a url, otherwise span #}
+    <{{ tag }} {% if profile_url %}href="{{ profile_url }}"{% endif %}>{{ member }}</{{ tag }}>
+{% endwith %}
+{% endwith %}

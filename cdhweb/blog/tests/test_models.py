@@ -7,7 +7,7 @@ class TestAuthor:
         author = article.authors.first()
         assert (
             str(author)
-            == 'Staffer on "We wrote an article together, and it got published on the CDH we…" (March 4, 2019)'
+            == "Staffer on We wrote an article together, and it got published on the CDH website"
         )
 
 

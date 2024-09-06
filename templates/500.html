@@ -1,5 +1,12 @@
 {% extends 'error_base.html' %}
-{% block page-title %}Something went wrong{% endblock %}
+{% load static wagtailcore_tags %}
+{# defaults to 404, but pass error code and message for alternate use #}
+{% firstof page_title 'Not Found' as title %}
 
-{% block error-code %}500{% endblock %}
-{% block message %}Uh-oh! Something went wrong...{% endblock %}
+{% block content %}
+{% with desc=message|default:"Something went wrong. Please try reloading the page, or return to home" %}
+{% with image_src='images/cdh_500.webp' %}
+    {% include 'includes/error_hero.html' with title='Error 500' description=desc %}
+{% endwith %}
+{% endwith %}
+{% endblock %}

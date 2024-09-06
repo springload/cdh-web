@@ -1,14 +1,22 @@
 from wagtail_modeladmin.mixins import ThumbnailMixin
 from wagtail_modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
 
-from cdhweb.projects.models import GrantType, Membership, Project, Role
+from cdhweb.projects.models import (
+    GrantType,
+    Membership,
+    Project,
+    ProjectField,
+    ProjectMethod,
+    ProjectRole,
+    Role,
+)
 
 
 class ProjectAdmin(ThumbnailMixin, ModelAdmin):
     model = Project
     menu_label = "Projects"
     menu_icon = "site"
-    list_display = ("admin_thumb", "title", "live", "cdh_built", "highlight")
+    list_display = ("admin_thumb", "title", "live", "cdh_built")
     list_display_add_buttons = "title"
     list_filter = ("grants__grant_type",)
     list_export = (
@@ -16,14 +24,13 @@ class ProjectAdmin(ThumbnailMixin, ModelAdmin):
         "working_group",
         "cdh_built",
         "tags",
-        "short_description",
+        "description",
         "body",
         "website_url",
         "last_published_at",
     )
-    search_fields = ("title", "short_description", "body")
+    search_fields = ("title", "description", "body")
     export_filename = "cdhweb-projects"
-    exclude_from_explorer = True
     thumb_image_field_name = "thumbnail"
     thumb_col_header_text = "thumbnail"
     ordering = ("title",)
@@ -60,11 +67,43 @@ class RoleAdmin(ModelAdmin):
     search_fields = ("title",)
 
 
+class ProjectMethodAdmin(ModelAdmin):
+    model = ProjectMethod
+    menu_icon = "arrow-right"
+    list_display = ["method"]
+    list_editable = ["method"]
+    search_fields = ["method"]
+
+
+class ProjectFieldAdmin(ModelAdmin):
+    model = ProjectField
+    menu_icon = "arrow-right"
+    list_display = ["field"]
+    list_editable = ["field"]
+    search_fields = ["field"]
+
+
+class ProjectRoleAdmin(ModelAdmin):
+    model = ProjectRole
+    menu_icon = "arrow-right"
+    list_display = ["role"]
+    list_editable = ["role"]
+    search_fields = ["role"]
+
+
 class ProjectsGroup(ModelAdminGroup):
     menu_label = "Projects"
     menu_icon = "site"
     menu_order = 210
-    items = (ProjectAdmin, MembershipAdmin, RoleAdmin, GrantTypeAdmin)
+    items = (
+        ProjectAdmin,
+        MembershipAdmin,
+        RoleAdmin,
+        GrantTypeAdmin,
+        ProjectMethodAdmin,
+        ProjectFieldAdmin,
+        ProjectRoleAdmin,
+    )
 
 
 modeladmin_register(ProjectsGroup)

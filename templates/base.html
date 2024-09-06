@@ -1,157 +1,80 @@
-{% load static compress wagtailuserbar wagtailcore_tags wagtailcodeblock_tags %}
+{% load static wagtailuserbar wagtailcore_tags wagtailimages_tags core_tags %}
 <!DOCTYPE html>
-<html lang='en' xmlns:schema="http://schema.org/" prefix="og: http://ogp.me/ns# profile: http://ogp.me/ns/profile#" {% block headattrs %}{% endblock %}>
-<head>
-    <meta charset='UTF-8'/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    {# Include Google Analytics when configured #}
-    {% if GTAGS_ANALYTICS_ID and not request.is_preview %}
-        {% include 'snippets/analytics.html' %}
-    {% endif %}
-    {% block title %}
-    <title>{% block page-title %}{% firstof page_title page.seo_title page.title %}{% endblock %} – CDH@Princeton</title>
-    {% endblock %}
-    <link rel="shortcut icon" href="{{ FAVICON }}">
-    {% include 'snippets/head_meta.html' %}
-    <meta name="google-site-verification" content="pS2kpksxg6JeC90IvA8BHVsFuK_6b7J_vARVLqqu7ck" />
-    {% block extra-head %}{% endblock %}
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
-        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-        crossorigin="anonymous"></script>
-    {% for block in page.body %}
-    {% if block.block_type == "code" %}
-        {% load_prism_css %}
-        {% endif %}
-    {% endfor %}
-    {% compress css %}
-    <link type="text/x-scss" rel="stylesheet" href="{% static 'scss/site.scss' %}" charset="utf-8"/>
-    {# <link rel='stylesheet' type='text/css' href='{% static "css/base-prefixed.css" %}'> #}
-    {% endcompress %}
-    {% compress js %}
-    <script src="{% static 'js/local.js' %}"></script>
-    {% endcompress %}
 
-</head>
-{# any feature flags passed in will be included in body class #}
-<body class="{% block bodyclass %}{% endblock %} {{ FEATURE_FLAGS|join:" " }}">
-    <ul class="skip-links">
-        <li><a href='#maincontent'>Skip to main content</a></li>
-        <li><a href='#footermenu'>Skip to footer</a></li>
-    </ul>
-    <header class="nav">
-        <div class="nav-wrap">
-            <nav class='mobile-nav'>
-                <a href="/" class="home-page">
-                    <img alt="home" src="{% static "img/CDH_logo.svg" %}" />
-                </a>
-                <a class="menu-toggle" name="menu">
-                    <span class="fa fa-bars" aria-label="open main menu"></span>
-                </a>
-                <label class="open" for="{{ site_search.q.id_for_label }}">
-                    <img alt="open site search" src="{% static "img/cdh-icons/search.svg" %}" />
-                </label>
-            </nav>
-            <nav id='mainmenu'>
-                {% include "snippets/primary_navigation.html" %}
-            </nav>
-            <form class="nav search" action="{% url 'search' %}" method="get">
-                <a href="/" class="home-page">
-                    <img alt="home" src="{% static "img/CDH_logo.svg" %}" />
-                </a>
-                {{ site_search.q }}
-                <input type="submit" value="search" class="sr-only">
-                <label class="close">
-                    <span class="fas fa-times" aria-label="close site search"></span>
-                    <input type="reset" class="sr-only">
-                </label>
-            </form>
-        </div>
-    </header>
-    {% include 'snippets/test_banner.html' %}
+<html class="no-js{% if settings.cdhpages.PurpleMode.purple_mode %} purple-mode{% endif %}" lang="en">
 
-    {% block content %}
-        {% block content-header %}
-        {% endblock %}
-    <div id='maincontent'>
-        {% block main %}{% endblock %}
-    </div>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>{% block title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}{% block title_suffix %}{% endblock %} – CDH@Princeton</title>
+    
+    {% include "includes/favicons.html" %}
+    {% include "snippets/head_meta.html" %}
 
-    {# display child pages as attachments if this page has any children #}
-    {# NOTE: child pages are no longer treated as a menu; all published child pages will be shown (with the exception of profile and project pages) #}
-    {% block child-pages %}
-    {% include 'snippets/child_pages.html' with child_pages=page.get_children.live %}
+    <script type="text/javascript"> window.staticRoot = "{% static 'dist/' %}"; </script>
+
+    <script>
+      document.documentElement.classList.remove('no-js');
+      document.documentElement.classList.add('js');
+    </script>
+
+    {% block extra_css %}
+      {# Needed for specific cases #}
     {% endblock %}
 
-    {% if page.attachments %}
-        {% include 'snippets/attachments.html' %}
+    <script defer src="{% static 'dist/main.js' %}"></script>
+    <link href="{% static 'dist/styles.css' %}" rel="stylesheet">
+
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    
+    <a class="skip-link" href="#content">
+      Skip to content
+    </a>
+
+    {% include "includes/header.html" %}
+
+    <main id="content">
+      {% block main %}{% endblock %}
+    </main>
+
+    {% if GOOGLE_TAG_MANAGER %}
+        <!-- Google Tag Manager -->
+        <noscript><iframe src="//www.googletagmanager.com/ns.html?id={{ GOOGLE_TAG_MANAGER }}"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','{{ GOOGLE_TAG_MANAGER }}');</script>
+        <!-- End Google Tag Manager -->
     {% endif %}
-
-        {% block content-footer %}
-        {% endblock %}
-    {% endblock content %}
-
-
-    <footer>
-        {% include 'snippets/subscribe.html' %}
-
-        <section class="footer-menu" id="footermenu">
-            {% include "snippets/footer_menu.html" %}
-        </section>
-
-        <section class="contact" typeof="schema:Organization">
-        {# RDFa markup for organization and address #}
-
-
-            <div class="cdh-info">
-                {# cdh contact #}
-                <div class='contact-info'>
-                    <span property="schema:name">Center for Digital Humanities</span><br />
-                    <span property="schema:address" typeof="schema:PostalAddress">
-                    <span property="schema:streetAddress">Firestone Library Floor B<br />
-                    Princeton University</span><br />
-                    <span property="schema:addressLocality">Princeton</span>, <span property="schema:addressRegion">NJ</span> <span property="schema:postalCode">08544</span><br />
-                    </span>
-
-                    <meta property="schema:alternateName" content="Center for Digital Humanities @ Princeton University" />
-                    <meta property="schema:alternateName" content="CDH @ Princeton University" />
-                    <meta property="schema:url" content="{{ site.root_page.get_full_url }}"/>
-
-                    <meta property="schema:logo" content='{% static "img/CDH_logo.svg" %}' />
-                </div>
-                {# social links #}
-                <div class="social">
-                    <ul>
-                    <li><a href='https://www.facebook.com/princetoncdh/' property="schema:sameAs" title="Facebook"><span class='fab fa-facebook-square fa-2x'
-                        aria-label='CDH Facebook' title="Facebook"></span></a>
-                        <a href='https://twitter.com/PrincetonDH' property="schema:sameAs" title="Twitter"><span class='fab fa-twitter fa-2x' title="Twitter"
-                         aria-label='CDH Twitter'></span></a>
-                        <a href="https://www.instagram.com/princetoncdh/" property="schema:sameAs" title="Instagram">
-                            <span class="fab fa-instagram fa-2x" title="Instagram" aria-label="CDH Instagram"></span></a>
-                        <a href='https://github.com/Princeton-CDH' property="schema:sameAs" title="GitHub">
-                            <span class='fab fa-github fa-2x' title="GitHub"
-                             aria-label='Princeton-CDH GitHub Organization'></span></a>
-                    </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="pu-info">
-                <div class="pulogo">
-                    <img src="{% static 'img/PUsig1-bw-bs.svg' %}" alt="Princeton University"/>
-                </div>
-                <div class="copyright">
-                    &copy;{% now 'Y' %} Trustees of <span property="schema:parentOrganization" typeof="schema:Organization">
-                    <a href="https://www.princeton.edu" property="schema:url"><span property="schema:name">Princeton University</span></a></span>
-                </div>
-                <a class="a11y" href="https://accessibility.princeton.edu/accessibility-assistance">Accessibility Assistance</a>
-                <a class="sw-version" href="https://github.com/Princeton-CDH/cdh-web">v. {{ SW_VERSION }}</a>
-            </div>
-
-        </section>
-
-    </footer>
-
+    {# Feel free to drop the bar if not necessary #}
     {% wagtailuserbar %}
-</body>
 
+    {% block extra_js %}
+      {# Needed for specific cases #}
+    {% endblock %}
+
+    {% if INCLUDE_ANALYTICS %}
+    {% include "snippets/analytics.html" %}
+    {% endif %}
+    {% if GOOGLE_ANALYTICS_KEY %}
+      <!-- Google Analytics -->
+      <script>
+       window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+       ga('create','{{ GOOGLE_ANALYTICS_KEY }}','auto');ga('send','pageview')
+      </script>
+      <script src="https://www.google-analytics.com/analytics.js" async defer></script>
+      <!-- End Google Analytics -->
+    {% endif %}
+    {% if SENTRY_DSN_FED %}
+      <script>Raven.config('{{ SENTRY_DSN_FED }}').install()</script>
+    {% endif %}
+
+    {% if request %}{# skip for 500 error template #}
+    {% site_footer %}
+    {% endif %}
+  </body>
 </html>

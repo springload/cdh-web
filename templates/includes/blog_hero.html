@@ -1,0 +1,77 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+
+<div class="blog-hero content-width grid-standard">
+    
+    <div class="blog-hero__text">
+        <h1>{{ page.title }}</h1>
+    
+        <p class="blog-hero__date">
+            {{ page.first_published_at|date:"j F Y" }}
+        </p>
+
+        {% if page.authors.all %}
+            <div class="blog-hero__authors">
+                <h2 class="sr-only">Authors</h2>
+                <ul>
+                    {% for author in page.authors.all %}
+                        <li>{% if author.person.profile_url %}<a href="{{ author.person.profile_url }}">{{ author.person }}</a>{% else %}{{ author.person }}{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if page.tags.all %}
+            <div class="tag-list">
+                {% for tag in page.tags.all %}
+                    <div class="tag">{{ tag }}</div>    
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+    
+    {% if page.description %}
+        <div class="blog-hero__description">
+            {{ page.description|richtext }}
+        </div>
+    {% endif %}
+
+    {% if page.image %}
+        <figure class="blog-hero__img">
+            {% comment %}    
+                All are cropped to a 16:9 ratio. This differs from design, as discussed.
+                If changing this by image rendition, update aspect-ratio in the CSS instead
+                of via inline style.
+            {% endcomment %}
+
+            {% image page.image fill-1000x563 format-webp as img_base %}
+            {% image page.image fill-1650x928 format-webp as img_sm %}
+
+            <picture>
+                <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
+                <img
+                    src="{{ img_base.url }}" 
+                    alt="{{ page.alt_text|default:img_base.alt }}"
+                    style="aspect-ratio: {{ img_base.width|unlocalize }} / {{ img_base.height|unlocalize }}"
+                />
+            </picture>
+
+            {% if page.caption or page.credit %}
+                <figcaption class="sk-image__text-content">
+                    {% if page.credit %}
+                        <div class="sk-image__credit">
+                            {{ page.credit|richtext }}
+                        </div>
+                    {% endif %}
+                    {% if page.caption %}
+                        <div class="sk-image__caption">
+                            {{ page.caption|richtext }}
+                        </div>
+                    {% endif %}
+                </figcaption>
+            {% endif %}
+        </figure>
+
+    {% endif %}
+    
+</div>

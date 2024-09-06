@@ -1,0 +1,166 @@
+/* 
+Person hero. Similar to standard hero. Key differences:
+- image ratio (TODO – maybe?)
+- text content – person hero has more complex needs
+*/
+
+// has `.grid-standard`
+.person-hero {
+  --title-top-space: 40px;
+
+  margin-block-end: 56px;
+
+  // h = heading/intro: name, job title, other metadata
+  // c = contact info + social links
+
+  // Layout if there is _no_ image:
+  grid-template-areas:
+    'h h h h h h h h h h h h'
+    'c c c c c c c c c c c c';
+
+  @include sm {
+    margin-block-end: 120px;
+  }
+
+  @include md {
+    --title-top-space: 64px;
+
+    grid-template-areas:
+      'h h h h h h h h h h h h'
+      '. c c c c c c c c c c c';
+  }
+  @include lg {
+    --title-top-space: 80px;
+    grid-template-areas:
+      '. h h h h h h h h h h .'
+      '. . c c c c c c c c c .';
+  }
+  @include xl {
+    --title-top-space: 104px;
+    grid-template-areas:
+      '. h h h h h h h h . . .'
+      '. . c c c c c c c . . .';
+  }
+  @include xxl {
+    --title-top-space: 160px;
+    grid-template-areas:
+      '. h h h h h h h h . . .'
+      '. . c c c c c c c . . .';
+  }
+
+  // Different layout if the hero has an image:
+  &:has(img) {
+    grid-template-areas:
+      'i i i i i i i i i i i i'
+      'h h h h h h h h h h h h'
+      'c c c c c c c c c c c c';
+
+    @include md {
+      grid-template-areas:
+        'h h h h h h i i i i i i'
+        '. c c c c c i i i i i i';
+    }
+    @include lg {
+      grid-template-areas:
+        '. h h h h h i i i i i i'
+        '. . c c c c i i i i i i';
+    }
+  }
+}
+
+.person-hero__intro {
+  grid-area: h;
+  font-weight: bold;
+
+  :where(h1) {
+    margin-block-start: var(--title-top-space);
+  }
+  :where(.tag-list) {
+    margin-block-start: 16px;
+  }
+}
+
+.person-hero__job {
+  margin: 16px 0 0;
+  font-size: px2rem(24);
+  line-height: 1.125;
+
+  @include xl {
+    font-size: px2rem(28);
+  }
+}
+
+.person-hero__education {
+  margin-block-start: 16px;
+  font-size: px2rem(15);
+}
+
+.person-hero__contact {
+  grid-area: c;
+  font-size: px2rem(14);
+  line-height: 1.62;
+  margin-block-start: 48px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @include sm {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  @include lg {
+    margin-block-start: 56px;
+  }
+  @include xl {
+    font-size: px2rem(16);
+  }
+}
+
+.person-hero__contact-links {
+  flex: 1 1 px2rem(210);
+
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  :where(li) {
+    margin: 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+}
+
+.person-hero__icon {
+  width: px2rem(24);
+  flex-shrink: 0;
+}
+.person-hero__icon--email {
+  aspect-ratio: 1;
+}
+.person-hero__icon--phone {
+  aspect-ratio: 24 / 36;
+}
+.person-hero__icon--location {
+  aspect-ratio: 1;
+}
+
+.person-hero__img {
+  grid-area: i;
+  @include break-grid;
+
+  @include sm {
+    @include undo-break-grid;
+  }
+  @include md {
+    @include break-grid-right;
+  }
+
+  @include xxxl {
+    @include undo-break-grid;
+  }
+}

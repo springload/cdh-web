@@ -1,6 +1,7 @@
 """
 Django settings for cdhweb.
 """
+
 from pathlib import Path
 
 #########
@@ -33,7 +34,7 @@ STATIC_ROOT = BASE_DIR / STATIC_URL.strip("/")
 # Additional locations of static files
 # Always use forward slashes, even on Windows.
 # Don't forget to use absolute paths, not relative paths.
-STATICFILES_DIRS = [BASE_DIR / "sitemedia"]
+STATICFILES_DIRS = []
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -115,27 +116,9 @@ DATABASES = {
 # Increase file upload size to roughly 50 MB
 FILEBROWSER_MAX_UPLOAD_SIZE = 50000000
 
-# Use local node-sass installed via npm
-COMPRESS_PRECOMPILERS = (("text/x-scss", "node_modules/.bin/sass {infile} {outfile}"),)
-
-# Use local postcss-cli and autoprefixer installed via npm
-COMPRESS_AUTOPREFIXER_BINARY = "node_modules/postcss-cli/bin/postcss"
-
-COMPRESS_CSS_FILTERS = (
-    "compressor.filters.css_default.CssAbsoluteFilter",
-    # NOTE: requires COMPRESS_ENABLED = True when DEBUG is True
-    "django_compressor_autoprefixer.AutoprefixerFilter",
-)
-
-# use content hashing to ensure same url on both servers
-COMPRESS_CSS_HASHING_METHOD = "content"
-
-
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    # other finders..
-    "compressor.finders.CompressorFinder",
 )
 
 # Package/module name to import the root urlpatterns from for the project.
@@ -160,12 +143,12 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.request",
                 "django.template.context_processors.tz",
-                # "wagtail.contrib.settings.context_processors.settings",
+                "wagtail.contrib.settings.context_processors.settings",
                 # "wagtailmenus.context_processors.wagtailmenus",
                 "cdhweb.context_extras",
                 "cdhweb.context_processors.template_settings",
-                "cdhweb.pages.context_processors.page_intro",
                 "cdhweb.pages.context_processors.site_search",
+                "cdhweb.context_processors.show_test_warning",
             ],
         },
     },
@@ -189,8 +172,11 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.routable_page",
     # required to avoid https://github.com/wagtail/wagtail/issues/1824
     "wagtail.contrib.search_promotions",
+    "wagtail.contrib.settings",
+    "wagtail.contrib.typed_table_block",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
@@ -201,16 +187,15 @@ INSTALLED_APPS = [
     "wagtail.admin",
     "wagtail_modeladmin",
     "wagtail",
-    "wagtailmenus",
     "wagtailautocomplete",
     "modelcluster",
     "taggit",
     "adminsortable2",
-    "compressor",
     "fullurl",
     "django_cas_ng",
     "wagtailcodeblock",
     "pucas",
+    "springkit",
     # local apps
     "cdhweb.projects",
     "cdhweb.people",
@@ -279,8 +264,8 @@ CACHES = {
 # https://docs.wagtail.io/en/latest/reference/settings.html#site-name
 WAGTAIL_SITE_NAME = "CDH Website"
 
-# base url to wagtail, for use in notification emails
-WAGTAILADMIN_BASE_URL = "https://cdh.princeton.edu/cms/"
+# wagtail admin base url, for use in notification emails and image full_url
+WAGTAILADMIN_BASE_URL = "https://cdh.princeton.edu"
 
 # Tags are case-sensitive by default. In many cases the reverse is preferable.
 # https://docs.wagtail.io/en/latest/reference/settings.html#case-insensitive-tags
@@ -313,6 +298,16 @@ WAGTAILEMBEDS_FINDERS = [
     {"class": "cdhweb.pages.embed_finders.GlitchHubEmbedFinder"},
 ]
 
+WAGTAILIMAGES_WEBP_QUALITY = 80
+
+WAGTAILIMAGES_FORMAT_CONVERSIONS = {
+    "avif": "avif",
+    "gif": "gif",
+    "bmp": "webp",
+    "jpeg": "webp",
+    "png": "webp",
+    "webp": "webp",
+}
 
 # List of allowed tags in the rich text editor (tinyMCE). We need to add the
 # HTML5 <figcaption>, as it's not included by default.
@@ -451,3 +446,8 @@ WAGTAILEMBEDS_FINDERS = [
 # list of optional features to enable/disable via configuration
 # currently supported: purple-mode
 FEATURE_FLAGS = []
+
+
+# Springkit Settings
+BILINGUAL_HEADINGS = False
+BILINGUAL_LINKS = False

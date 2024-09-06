@@ -5,7 +5,7 @@ import pytest
 from cdhweb.pages.models import RelatedLinkType
 from cdhweb.pages.tests.conftest import to_streamfield_safe
 from cdhweb.people.models import (
-    PeopleLandingPage,
+    PeopleLandingPageArchived,
     Person,
     PersonRelatedLink,
     Position,
@@ -32,7 +32,10 @@ def create_person_with_position(
 
 def make_people_landing_page(homepage):
     """Create a test people landing page underneath the homepage."""
-    landing = PeopleLandingPage(title="people", slug="people", tagline="cdh people")
+    landing = PeopleLandingPageArchived(
+        title="people",
+        slug="people",
+    )
     homepage.add_child(instance=landing)
     homepage.save()
     return landing

@@ -1,0 +1,58 @@
+// .sk-image {
+// }
+
+.sk-image--small {
+  :where(img) {
+    inline-size: 50%;
+    max-inline-size: px2rem(550);
+  }
+  :where(figcaption) {
+    @include xl {
+      inline-size: 50%;
+    }
+  }
+}
+
+.sk-image--medium {
+  :where(img) {
+    inline-size: 85%;
+
+    @include md {
+      inline-size: 75%;
+    }
+  }
+}
+
+.sk-image--large {
+  :where(img) {
+    @include break-grid;
+
+    @include md {
+      @include undo-break-grid;
+      inline-size: calc(var(--content-outdent) + 100%);
+      margin-inline-start: calc(-1 * var(--content-outdent));
+    }
+  }
+}
+
+.sk-image__text-content {
+  --color-link-underline: currentColor;
+  font-size: px2rem(14);
+
+  // The image block itself is wider, to allow images to be wider than captions
+  max-inline-size: var(--reading-max-width);
+
+  @include sm {
+    font-size: px2rem(16);
+  }
+}
+
+.sk-image__credit {
+  color: var(--color-grey-60);
+  margin-block-start: 12px;
+  font-weight: bold;
+}
+
+.sk-image__caption {
+  margin-block-start: 12px;
+}

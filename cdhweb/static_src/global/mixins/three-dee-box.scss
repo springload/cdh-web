@@ -1,0 +1,70 @@
+/**
+    Fancy 3D-lookin' box.
+    - Default look: white content area, teal border/sides (overridable). 
+    - Padding of the content is the responsibility of the component that uses this mixin.
+    - Ditto for any change to the size of border/size by breakpoint.
+*/
+
+@mixin three-dee-box {
+  // "Side" = the chonky 3d side, made from a clip-path'd div absolute-positioned behind the content.
+  // "Border" = the conventional border containing the content.
+  // Note: currently no requirement for the border and the sides to be different colour from each other.
+  --side-size: var(--three-dee-side-size, 18px);
+  --border-width: var(--three-dee-border-width, 8px);
+  --sides-color: var(--three-dee-box-border-color, var(--color-brand-100));
+  --content-bg: var(--three-dee-box-content-bg, var(--color-white));
+
+  // Stop it going off the edge of the page, or looking too asymmetrical, on small screens:
+  width: calc(100% - var(--side-size));
+  border: var(--border-width) solid var(--sides-color);
+
+  // Add extra space below to account for absolute-positioned 3d box.
+  // Note, collapsing margins has been disabled on `.streamfields-wrapper` to make this work.
+  // Not *all* components that use this mixin are streamfield blocks, so override
+  // `margin-block-end` on your component as needed.
+  margin-block-end: var(--side-size);
+
+  @include xl {
+    // Undo capped width now it's likely spaced away from the page edge.
+    width: 100%;
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  // Content area
+  &::before {
+    width: 100%;
+    height: 100%;
+    background-color: var(--content-bg);
+  }
+
+  // 3D-lookin' box (a rectangle with the top-right and bottom-left corners removed)
+  &::after {
+    z-index: -1; // behind white content box
+    width: calc(100% + var(--side-size) + var(--border-width) * 2);
+    height: calc(100% + var(--side-size) + var(--border-width) * 2);
+    background-color: var(--sides-color);
+    top: calc(-1 * var(--border-width));
+    left: calc(-1 * var(--border-width));
+
+    clip-path: polygon(
+      calc(100% - var(--side-size)) 0,
+      100% var(--side-size),
+      100% 100%,
+      var(--side-size) 100%,
+      0 calc(100% - var(--side-size)),
+      0 0
+    );
+  }
+
+  & > * {
+    isolation: isolate;
+    z-index: 1;
+  }
+}

@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
+import datetime
 
 import icalendar
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.fields.related import RelatedField
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
@@ -15,11 +17,15 @@ from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.contrib.routable_page.models import RoutablePageMixin, path, re_path
+from wagtail.fields import RichTextField
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
-from cdhweb.pages.models import BasePage, ContentPage, LinkPage
+from cdhweb.pages.blocks.image_block import UnsizedImageBlock
+from cdhweb.pages.mixin import StandardHeroMixinNoImage
+from cdhweb.pages.models import BasePage, ContentPage, LandingPage, LinkPage
 from cdhweb.people.models import Person
 
 
@@ -83,7 +89,7 @@ class EventQuerySet(PageQuerySet):
         day even if the start time is past."""
         now = timezone.now()
         # construct a datetime based on now but with zero hour/minute/second
-        today = datetime(
+        today = datetime.datetime(
             now.year, now.month, now.day, tzinfo=timezone.get_default_timezone()
         )
         return self.filter(end_time__gte=today).order_by_start()
@@ -93,7 +99,7 @@ class EventQuerySet(PageQuerySet):
         with end date in the past."""
         now = timezone.now()
         # construct a datetime based on now but with zero hour/minute/second
-        today = datetime(
+        today = datetime.datetime(
             now.year, now.month, now.day, tzinfo=timezone.get_default_timezone()
         )
         return self.filter(end_time__lt=today).order_by("-start_time")
@@ -134,12 +140,15 @@ class Speaker(models.Model):
 class Event(BasePage, ClusterableModel):
     """Page type for an event, such as a workshop, lecture, or conference."""
 
+    template = "events/event_page.html"
+
     sponsor = models.CharField(max_length=80, null=True, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     location = models.ForeignKey(
         Location, null=True, blank=True, on_delete=models.SET_NULL
     )
+
     type = models.ForeignKey(EventType, null=True, on_delete=models.SET_NULL)
     attendance = models.PositiveIntegerField(
         null=True,
@@ -160,39 +169,87 @@ class Event(BasePage, ClusterableModel):
         related_name="+",
         help_text="Image for display on event detail page (optional)",
     )
-    thumbnail = models.ForeignKey(
-        "wagtailimages.image",
-        null=True,
+    caption = RichTextField(
+        features=[
+            "italic",
+            "bold",
+            "link",
+        ],
+        help_text="A short caption for the image.",
         blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-        help_text="Image for display on event card (optional)",
+        max_length=180,
+    )
+
+    credit = RichTextField(
+        features=[
+            "italic",
+            "bold",
+            "link",
+        ],
+        help_text="A credit line or attribution for the image.",
+        blank=True,
+        max_length=80,
+    )
+
+    alt_text = models.CharField(
+        help_text="Describe the image for screen readers",
+        blank=True,
+        max_length=80,
     )
     people = models.ManyToManyField(Person, through=Speaker, related_name="events")
     tags = ClusterTaggableManager(through=EventTag, blank=True)
     # TODO attachments (#245)
 
     # can only be created underneath special link page
-    parent_page_types = ["events.EventsLinkPage"]
+    parent_page_types = ["events.EventsLinkPageArchived", "events.EventsLandingPage"]
     # no allowed subpages
     subpage_types = []
 
     # admin edit configuration
     content_panels = Page.content_panels + [
         FieldPanel("type"),
-        FieldRowPanel((FieldPanel("start_time"), FieldPanel("end_time")), "Details"),
-        FieldPanel("location"),
+        MultiFieldPanel(
+            [
+                FieldRowPanel(
+                    (
+                        FieldPanel("start_time"),
+                        FieldPanel("end_time"),
+                        FieldPanel("location"),
+                    ),
+                    "Details",
+                ),
+                InlinePanel("speakers", [AutocompletePanel("person")], label="Speaker"),
+                MultiFieldPanel(
+                    [
+                        FieldPanel("image"),
+                        FieldPanel("caption"),
+                        FieldPanel("credit"),
+                        FieldPanel("alt_text"),
+                    ],
+                    heading="Hero Image",
+                ),
+            ],
+            heading="Event Hero",
+        ),
         FieldPanel("join_url"),
         FieldRowPanel((FieldPanel("sponsor"), FieldPanel("attendance")), "Tracking"),
-        FieldRowPanel((FieldPanel("thumbnail"), FieldPanel("image")), "Images"),
-        MultiFieldPanel(
-            (InlinePanel("speakers", [AutocompletePanel("person")], label="Speaker"),),
-            heading="Speakers",
-        ),
         FieldPanel("body"),
         FieldPanel("attachments"),
     ]
-    promote_panels = Page.promote_panels + [FieldPanel("tags")]
+
+    promote_panels = (
+        [
+            MultiFieldPanel(
+                [
+                    FieldPanel("short_title"),
+                    FieldPanel("feed_image"),
+                ],
+                "Share Page",
+            ),
+        ]
+        + BasePage.promote_panels
+        + [FieldPanel("tags")]
+    )
 
     # custom manager/queryset logic
     objects = EventManager()
@@ -224,6 +281,11 @@ class Event(BasePage, ClusterableModel):
     def __str__(self):
         return " - ".join([self.title, self.start_time.strftime("%b %d, %Y")])
 
+    @cached_property
+    def breadcrumbs(self):
+        ancestors = self.get_ancestors().live().public().specific()
+        return ancestors[1:]  # removing root
+
     @property
     def speaker_list(self):
         """Comma-separated list of speaker names."""
@@ -238,16 +300,23 @@ class Event(BasePage, ClusterableModel):
         if not self.type:
             raise ValidationError("Event must specify a type.")
 
-    def get_url_parts(self, *args, **kwargs):
+    def get_url_parts(self, request, *args, **kwargs):
         """Custom event page URLs of the form /events/2014/03/my-event."""
-        url_parts = super().get_url_parts(*args, **kwargs)
+        url_parts = super().get_url_parts(request, *args, **kwargs)
         # NOTE evidently this can sometimes be None; unclear why – perhaps it
         # gets called in a context where the request is unavailable? Only
         # happens in QA, not locally.
         if url_parts:
-            site_id, root_url, _ = url_parts
-            page_path = reverse(
-                "events:detail",
+            site_id, root_url, _remainder = url_parts
+            parent = self.get_parent().specific
+
+            # If for some reason we don't have a eventlanding-style parent, just
+            # use `super()`
+            if not hasattr(parent, "reverse_subpage"):
+                return url_parts
+
+            page_path = parent.reverse_subpage(
+                "dated_child",
                 kwargs={
                     "year": self.start_time.year,
                     # force two-digit month
@@ -255,12 +324,12 @@ class Event(BasePage, ClusterableModel):
                     "slug": self.slug,
                 },
             )
-            return site_id, root_url, page_path
+            return site_id, root_url, parent.get_url(request) + page_path
 
     def get_ical_url(self):
         """URL to download this event as a .ics (iCal) file."""
         return reverse(
-            "events:ical",
+            "event-ical",
             kwargs={
                 "year": self.start_time.year,
                 # force two-digit month
@@ -333,11 +402,113 @@ class Event(BasePage, ClusterableModel):
         return event
 
 
-class EventsLinkPage(LinkPage):
+class EventsLinkPageArchived(LinkPage):
     """Container page that defines where Event pages can be created."""
+
+    is_creatable = False
 
     # NOTE this page can't be created in the page editor; it is only ever made
     # via a script or the console, since there's only one.
     parent_page_types = []
     # allow content pages to be added under events for special event series
     subpage_types = [Event, LinkPage, ContentPage]
+
+
+class EventsLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
+    """Container page that defines where Event pages can be created."""
+
+    template_name = "events/events_landing_page.html"
+
+    content_panels = StandardHeroMixinNoImage.content_panels
+
+    search_fields = StandardHeroMixinNoImage.search_fields
+
+    settings_panels = Page.settings_panels
+
+    # allow content pages to be added under events for special event series
+    subpage_types = [Event, ContentPage, LandingPage]
+
+    def get_context(self, request, semester=None, year=None):
+        context = super().get_context(request)
+
+        if semester and year:
+            events = self.get_upcoming_events_for_semester(semester=semester, year=year)
+        else:
+            events = self.get_upcoming_events()
+
+        context["events"] = events
+        context["date_list"] = self.get_semester_date_list()
+        return context
+
+    @re_path(r"^(?P<semester>spring|summer|fall)-(?P<year>\d{4})/", name="by-semester")
+    def by_semester(self, request, semester=None, year=None):
+        context = self.get_context(request, semester=semester, year=int(year))
+        return self.render(request, context_overrides=context)
+
+    @path("<int:year>/<int:month>/<slug:slug>/", name="dated_child")
+    def dated_child(self, request, year=None, month=None, slug=None):
+        child = get_object_or_404(
+            self.get_children()
+            .live()
+            .public()
+            .filter(
+                event__start_time__year=year,
+                event__start_time__month=month,
+            ),
+            slug=slug,
+        )
+        return child.specific.serve(request)
+
+    def get_upcoming_events_for_semester(self, semester, year):
+        # Adjust the semester and year to datetime ranges
+        if semester == "spring":
+            start_date = datetime.date(year, 1, 1)
+            end_date = datetime.date(year, 5, 31)
+        elif semester == "summer":
+            start_date = datetime.date(year, 6, 1)
+            end_date = datetime.date(year, 8, 31)
+        elif semester == "fall":
+            start_date = datetime.date(year, 9, 1)
+            end_date = datetime.date(year, 12, 31)
+        else:
+            raise ValueError(f"Invalid semester: {semester}")
+
+        child_pages = self.get_children().live().specific().type(Event)
+        # Filter events based on start_time within the semester range
+        return child_pages.filter(
+            event__start_time__gte=start_date, event__start_time__lte=end_date
+        ).order_by("event__start_time")
+
+    def get_upcoming_events(self):
+        current_datetime = timezone.now()
+
+        child_pages = self.get_children().live().specific().type(Event)
+
+        # Fetch upcoming events among the child pages
+        return child_pages.filter(event__end_time__gte=current_datetime).order_by(
+            "event__start_time"
+        )
+
+    @staticmethod
+    def get_semester(date):
+        """Return the semester a date occurs in as a string."""
+        # determine semester based on the month
+        if date.month <= 5:
+            return "Spring"
+        if date.month <= 8:
+            return "Summer"
+        return "Fall"
+
+    def get_semester_date_list(self):
+        """Get a list of semester labels (semester and year) for published
+        events. Semesters are Spring (through May), Summer (through
+        August), and Fall."""
+        date_list = []
+        dates = Event.objects.live().dates("start_time", "month", order="ASC")
+        for date in dates:
+            # add semester + year to list if not already present
+            sem_date = (self.get_semester(date), date.year)
+            if sem_date not in date_list:
+                date_list.append(sem_date)
+
+        return date_list

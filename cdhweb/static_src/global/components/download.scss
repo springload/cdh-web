@@ -1,0 +1,54 @@
+.download {
+  border: 1px solid var(--color-brand-100);
+  background-color: var(--color-brand-5);
+  font-size: px2rem(18);
+  padding: 24px;
+
+  @include sm {
+    padding: 32px;
+  }
+
+  :where(h2) {
+    font-weight: 900;
+    font-size: px2rem(20);
+    margin-block-end: 8px;
+
+    @include sm {
+      font-size: px2rem(24);
+    }
+  }
+
+  :where(p) {
+    margin-block-end: 16px;
+  }
+
+  :where(ul) {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    :where(a) {
+      text-decoration-line: none;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+
+      // for the file size/format. overridden by link-style mixin for the underlined bit of the link.
+      font-weight: 400;
+    }
+  }
+
+  :where(svg) {
+    flex-shrink: 0;
+    aspect-ratio: 18 / 25;
+    width: 18px;
+    position: relative;
+    top: px2rem(4);
+  }
+}
+
+.download__file-title {
+  @include link-style;
+}

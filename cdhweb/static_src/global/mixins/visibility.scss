@@ -1,0 +1,40 @@
+@mixin visuallyHidden {
+  position: absolute !important;
+  margin: -1px !important;
+  border: 0 !important;
+  padding: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+}
+
+@mixin visuallyHiddenUntilFocused {
+  // needs to be absolute *before* focus, otherwise can appear in the wrong place
+  position: absolute;
+
+  // ensure not obscured, e.g. by project filters
+  z-index: 2;
+
+  background-color: var(--color-white);
+  color: var(--color-black);
+  padding: 4px 8px;
+
+  &:not(:focus) {
+    @include visuallyHidden;
+  }
+}
+
+// Page initially loads with 'no-js' class on the body.
+// As soon as JS loads (via a script in the header),
+// it should replace that class with 'js'
+@mixin no-js-hide {
+  .no-js & {
+    display: none !important;
+  }
+}
+@mixin js-hide {
+  .js & {
+    display: none !important;
+  }
+}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags springkit_tags %}  
+
+{% block body_class %}template-people-landing{% endblock %}
+
+{% block main %}
+    {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
+    {% include 'includes/standard_hero.html' %}
+
+    <div class="content-width grid-standard page-layout page-layout--without-sidenav-wider">
+        <div class="page-layout__main-content">
+
+            {% if tiles %}
+                <div class="tiles__list">
+                    {% for page in tiles %}
+                        {% include 'cdhpages/blocks/tile.html' with internal_page=page tile_type='internal_page_tile' %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

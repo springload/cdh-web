@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path fill="var(--icon-accent-color, #00edff)" d="M64 18H8v38h56V18Z" />
+  <path fill="#fff" d="M56 14H4v34h52V14Z" />
+  <path fill="var(--icon-color, #414042)" d="M58 50H2V12h56v38ZM6 46h48V16H6v30Z" />
+  <path fill="var(--icon-color, #414042)"
+    d="M30 36.433 2.862 17.645l2.276-3.29L30 31.567l24.862-17.212 2.276 3.29L30 36.433Z" />
+</svg>

@@ -1,0 +1,115 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+
+    <div class="tile">
+        <div class="tile__text">
+            <a 
+                class="tile__link"
+                href="{% if tile_type == 'internal_page_tile' %}{{ internal_page.url }}{% else %}{{ tile.value.external_link }}{% endif %}"
+            >
+                <{% if has_component_title %}h3{% else %}h2{% endif %}>
+                    {% if tile_type == 'internal_page_tile' %}
+                        {{ internal_page.specific.short_title|default:internal_page.specific.title }}
+                    {% else %}
+                        {# External tile title #}
+                        {{ tile.value.title }}
+                    {% endif %}
+                </{% if has_component_title %}h3{% else %}h2{% endif %}>
+            </a>
+
+            {# Internal page deets #}
+            {% if tile_type == 'internal_page_tile' %}
+
+                {% if internal_page.specific.page_type == 'BlogPost' %}
+                    <p>{{ internal_page.specific.first_published_at|date:"j F Y" }}</p>
+                    {{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}
+
+                {% elif internal_page.specific.page_type != 'Profile' and internal_page.specific.page_type != 'Event' %}
+                    {{ internal_page.specific.short_description|default:internal_page.specific.description|richtext }}
+
+                {# Extra event-specific deets #}
+                {% elif internal_page.specific.page_type == 'Event' %}
+                    
+                    {# Complex logic to show different formats depending on if the event spans multiple days (or months!) #}
+                    {% with start_day=internal_page.specific.start_time|date:"j" %}
+                    {% with start_month=internal_page.specific.start_time|date:"M" %}
+                    {% with end_day=internal_page.specific.end_time|date:"j" %}
+                    {% with end_month=internal_page.specific.end_time|date:"M" %}
+                        <div class="tile__event-date">
+                            {% if start_day == end_day and start_month == end_month %}
+                                {{ start_month }} {{ start_day }} {{ internal_page.specific.start_time|time:"g:iA" }}–{{ internal_page.specific.end_time|time:"g:iA" }}
+                            {% elif start_month == end_month %}
+                                {{ start_month }} {{ start_day }}–{{ end_day }} 
+                            {% else %}
+                                {{ start_month }} {{ start_day }}–{{ end_month }} {{ end_day }} 
+                            {% endif %}
+                        </div>
+                    {% endwith %}
+                    {% endwith %}
+                    {% endwith %}
+                    {% endwith %}
+
+                    {% if internal_page.specific.speakers %}
+                        {% for speaker in internal_page.specific.speakers.all %}
+                        <div class="tile__event-speaker">{{ speaker.person }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                {% elif internal_page.specific.page_type == 'Profile' %}
+                    </p>{{ internal_page.specific.person.most_recent_title }}</p>
+
+                {% endif %}
+
+            {% else %}
+                {# External tile summary #}
+                <p>{{ tile.value.summary }}</p>
+            {% endif  %}
+        </div>
+
+        {% if internal_page.specific.cdh_built or internal_page.specific.page_type == 'Event' or internal_page.specific.page_type == 'BlogPost' %}
+            <div class="tile__tag">
+                {% if internal_page.specific.cdh_built %}
+                    <div class="tag tag--dark">Built by CDH</div>
+                {% elif internal_page.specific.page_type == 'Event' and internal_page.specific.type %}
+                    <div class="tag tag--dark">{{ internal_page.specific.type }}</div>
+                {% elif internal_page.specific.category  %}
+                    <div class="tag tag--dark">{{ internal_page.specific.category }}</div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="tile__img-wrapper">
+            {% if tile_type == 'internal_page_tile' %}
+                {% if internal_page.specific.feed_image %}
+                    {% image internal_page.specific.feed_image original as img %}
+                {% elif internal_page.specific.hero_image %}
+                    {% image internal_page.specific.hero_image original as img %}
+                {% elif internal_page.specific.image %}
+                    {% image internal_page.specific.image original as img %}
+                {% endif %}
+            {% else %}
+                {% if tile.value.image %}
+                    {% image tile.value.image original as img %}
+                {% endif %}
+            {% endif %}
+
+            {% if img %}
+                {# All images must have the same ratio (9:5) for this technique to work properly #}
+                {% image img.image fill-400x222 as img_sm %}
+                {% image img.image fill-500x278 as img_md %}
+                {% image img.image fill-800x444 as img_lg %}
+                {% image img.image fill-1000x556 as img_xl %}
+                {# 655 = Approx viewport size of when tiles may go to 2 cols #}
+                <img 
+                    src="{{ img_lg.url }}" 
+                    srcset="{{ img_sm.url }} 400w,
+                            {{ img_md.url }} 500w,
+                            {{ img_lg.url }} 800w,
+                            {{ img_xl.url }} 1000w"
+                    sizes="(max-width: 655px) 100vw,
+                            (max-width: 1006px) 45vw,
+                            (max-width: 1500px) 20vw,
+                            15vw"
+                    alt="{{ img.alt }}" />
+            {% endif %}
+        </div>
+    </div>

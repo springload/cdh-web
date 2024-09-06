@@ -1,0 +1,52 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+
+<div class="project-hero content-width grid-standard">
+
+    <div class="project-hero__title">
+        <h1>{{ self.title}}</h1>
+        {% if page.cdh_built %}<div class="tag tag--dark">Built by CDH</div>{% endif %}
+    </div>
+    <div class="project-hero__description">
+        {% if self.description %}
+            {{ self.description | richtext }}
+        {% endif %}
+
+        {% if self.display_tags %}
+            <div class="tag-list">
+                {% for tag in self.display_tags %}
+                    <div class="tag">{{ tag }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if page.website_url %}
+            <a href="{{ page.website_url }}" class="sk-btn sk-btn--secondary">
+                <span>View project website</span>
+                {% include 'includes/svg.html' with sprite="two-tone" svg="external" %}
+            </a>
+        {% endif %}
+    </div>
+
+    {% if self.hero_image %}
+        {% comment %}
+            All are cropped to a 16:9 ratio. This differs from design, as discussed.
+            If changing this by image rendition, update aspect-ratio in the CSS instead
+            of via inline style.
+        {% endcomment %}
+
+        {% image self.hero_image fill-1000x563 as img_base %}
+        {% image self.hero_image fill-1250x703 as img_sm %}
+        {% image self.hero_image fill-1650x928 as img_xl %}
+
+        <picture class="project-hero__img">
+            <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
+            <source srcset="{{ img_xl.url }}" media="(min-width: 1200px)">
+            <img
+                src="{{ img_base.url }}"
+                alt="{{ self.alt_text|default:img_base.alt }}"
+                style="aspect-ratio: {{ img_base.width|unlocalize }} / {{ img_base.height|unlocalize }}"
+            />
+        </picture>
+    {% endif %}
+
+</div>

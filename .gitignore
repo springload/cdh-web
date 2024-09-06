@@ -2,13 +2,17 @@
 local_settings.py
 db.sqlite3
 cdhweb.dbml
+*.sql
 
 # Media ignores
-static
+static/dist
+static/
+myapp/static
 media
 static/CACHE
 sitemedia/fonts
 **/.sass-cache/
+cdhweb/static_src/fonts/**/*.woff2
 
 # Vim stuff
 *.pyc

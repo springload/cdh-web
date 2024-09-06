@@ -1,0 +1,31 @@
+{% load wagtailcore_tags %}
+
+<div class="block block--video">
+    {% if self.heading %}
+        {% include_block self.heading %}
+    {% endif %}
+
+    {% if video_embed_url %}
+        <iframe
+            class="sk-video__iframe"
+            loading="lazy"
+            src="{{ video_embed_url }}"
+            frameborder="0"
+            title="{{ self.accessibility_description }}"
+        ></iframe>
+        {% if self.transcript %}
+            <details class="sk-video__transcript">
+                <summary class="sk-video__transcript-summary">
+                    <span>
+                        Show video transcript
+                    </span>
+                    {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-up" classes="sk-video__transcript-icon sk-video__transcript-icon--chevron-up" %}
+                    {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-down" classes="sk-video__transcript-icon sk-video__transcript-icon--chevron-down" %}
+                </summary>
+                <div class="sk-video__transcript-content">
+                    {{ self.transcript }}
+                </div>
+            </details>
+        {% endif %}
+    {% endif %}
+</div>

@@ -2,8 +2,11 @@ from wagtail.models import Page
 from wagtail.test.utils import WagtailPageTestCase
 from wagtail.test.utils.form_data import nested_form_data, rich_text, streamfield
 
-from cdhweb.events.models import EventsLinkPage
+from cdhweb.blog.models import BlogLandingPage
+from cdhweb.events.models import EventsLandingPage, EventsLinkPageArchived
 from cdhweb.pages.models import ContentPage, HomePage, LandingPage, LinkPage
+from cdhweb.people.models import PeopleLandingPage
+from cdhweb.projects.models import ProjectsLandingPage
 
 
 class TestHomePage(WagtailPageTestCase):
@@ -27,7 +30,10 @@ class TestHomePage(WagtailPageTestCase):
 
     def test_parent_pages(self):
         """only allowed parent page type for homepage should be root"""
-        self.assertAllowedParentPageTypes(HomePage, [Page])
+        self.assertAllowedParentPageTypes(
+            HomePage,
+            [Page, LinkPage],
+        )
 
     def test_subpages(self):
         """allowed subpage types for homepage should be landing and content"""
@@ -37,6 +43,10 @@ class TestHomePage(WagtailPageTestCase):
                 LandingPage,
                 ContentPage,
                 LinkPage,
+                EventsLandingPage,
+                PeopleLandingPage,
+                BlogLandingPage,
+                ProjectsLandingPage,
             ],
         )
 
@@ -62,12 +72,22 @@ class TestLandingPage(WagtailPageTestCase):
         )
 
     def test_parent_pages(self):
-        """only allowed parent of landingpage should be home"""
-        self.assertAllowedParentPageTypes(LandingPage, [HomePage])
+        self.assertAllowedParentPageTypes(
+            LandingPage, [HomePage, LandingPage, EventsLandingPage, Page, LinkPage]
+        )
 
     def test_subpages(self):
-        """only allowed child page of landingpage should be contentpage"""
-        self.assertAllowedSubpageTypes(LandingPage, [ContentPage])
+        self.assertAllowedSubpageTypes(
+            LandingPage,
+            [
+                ContentPage,
+                LandingPage,
+                EventsLandingPage,
+                ProjectsLandingPage,
+                BlogLandingPage,
+                PeopleLandingPage,
+            ],
+        )
 
 
 class TestContentPage(WagtailPageTestCase):
@@ -92,7 +112,17 @@ class TestContentPage(WagtailPageTestCase):
     def test_parent_pages(self):
         """allowed parents for contentpage should be home, landing, content"""
         self.assertAllowedParentPageTypes(
-            ContentPage, [HomePage, LandingPage, ContentPage, EventsLinkPage]
+            ContentPage,
+            [
+                HomePage,
+                LandingPage,
+                ContentPage,
+                EventsLinkPageArchived,
+                Page,
+                EventsLandingPage,
+                LinkPage,
+                BlogLandingPage,
+            ],
         )
 
     def test_subpages(self):

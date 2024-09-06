@@ -1,0 +1,12 @@
+{% load wagtailcore_tags %}
+
+<div class="block block--pull-quote">
+    <figure class="pull-quote">
+        <blockquote>
+            <div class="pull-quote__quote">{{ self.quote|richtext }}</div>
+        </blockquote>
+        {% if self.attribution %}
+            <figcaption class="pull-quote__citation">{{ self.attribution|richtext }}</figcaption>
+        {% endif %}
+    </figure>
+</div>

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block main %}
+    {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
+    {% include 'includes/project_hero.html' %}
+
+    <div class="content-width grid-standard project-page">
+        <div class="project-page__main-content">
+            <div class="streamfields-wrapper">
+                {% for block in page.accordion %}
+                    {% include_block block %}
+                {% endfor %}
+
+                {% for block in page.body %}
+                    {% include_block block %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="project-page__side-content">
+            {% if page.related_links.all %}
+                <div class="project-page__side-content-block">
+                    <h2>Links</h2>
+                    <ul>
+                        {% for link in page.related_links.all %}
+                            {% with link_type=link.type.name %}
+                            <li class="{{ link_type|lower }}">
+                                <a href="{{ link.url }}">
+                                    {{ link_type }}
+                                </a>
+                            </li>
+                            {% endwith %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if page.current_memberships %}
+                <div class="project-page__side-content-block">
+                    <h2>Team</h2>
+
+                    {% for membership in page.current_memberships %}
+                        {% ifchanged membership.role %}
+                            <div class="project-page__side-content-item">
+                        {% else %}
+                            <div class="project-page__side-content-item--same-role">
+                        {% endifchanged %}
+                            {% ifchanged %}<h3>{{ membership.role }}</h3>{% endifchanged %}
+                            <div>
+                                {% include 'includes/project_membership.html' with member=membership.person %}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% if page.alums %}
+                        <div class="project-page__side-content-item">
+                            <h3>Project Alum{{ page.alums|pluralize }}</h3>
+                            {% for member in page.alums %}
+                                <div>
+                                    {% include 'includes/project_membership.html' %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if page.grants.exists %}
+                <div class="project-page__side-content-block">
+                    <h2>Grants</h2>
+                    {% comment %}
+                        FakeQuerySet doesn't support .reverse() so we have to use .all()
+                        with 'reversed' instead of .reverse() when the page is previewed
+                    {% endcomment %}
+                    {% for grant in page.grants.all reversed %}
+                        <div class="project-page__side-content-item">
+                            <h3>{{ grant.years }}</h3>
+                            <p>{{ grant.grant_type }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+{% endblock %}

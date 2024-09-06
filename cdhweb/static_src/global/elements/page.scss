@@ -1,0 +1,37 @@
+@view-transition {
+  navigation: auto;
+}
+
+html {
+  @media screen and (prefers-reduced-motion: reduce), (update: slow) {
+    * {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  &.purple-mode {
+    --color-brand-5: var(--color-brand-alt-5);
+    --color-brand-10: var(--color-brand-alt-10);
+    --color-brand-40: var(--color-brand-alt-40);
+    --color-brand-100: var(--color-brand-alt-100);
+    --color-brand-110: var(--color-brand-alt-110);
+    --color-brand-120: var(--color-brand-alt-120);
+  }
+}
+
+body {
+  color: var(--color-text, var(--color-black));
+  font-family: var(--font-family-primary);
+  font-size: px2rem(20);
+  line-height: var(--base-line-height);
+
+  @include xl {
+    font-size: px2rem(22);
+  }
+}
+
+*:focus-visible {
+  outline-color: var(--focus-ring-color);
+}

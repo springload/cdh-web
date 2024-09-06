@@ -1,0 +1,31 @@
+{% load wagtailcore_tags %}
+
+<div class="block block--tiles">
+  <div class="tiles">
+    {% if self.heading or self.see_more_link.page %}
+      <div class="tiles__title-wrapper">
+        {% if self.heading %}
+            {% include_block self.heading %}
+        {% endif %}
+
+        {% if self.see_more_link %}
+          <a href="{{ self.landing_page.url }}">
+              {{ self.see_more_link }}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if self.description %}
+      <div class="tiles__intro">
+        {{ self.description }}
+      </div>
+    {% endif %}
+
+    <div class="tiles__list">
+        {% for tile in tiles %} 
+          {% include 'cdhpages/blocks/tile.html' with internal_page=tile tile_type='internal_page_tile' has_component_title=self.heading.heading %}
+        {% endfor %}
+    </div>
+  </div>
+</div>

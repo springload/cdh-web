@@ -42,6 +42,9 @@ Pull requests should be made against **develop**.
 Development instructions
 ------------------------
 
+Bare-metal
+~~~~~~~~~~
+
 Initial setup and installation:
 
 - Recommended: create and activate a python 3.9 virtualenv::
@@ -71,6 +74,38 @@ You must add a ``SECRET_KEY`` value in your local settings.
 - Download licensed fonts and install locally under /sitemedia/fonts/
 
 - Install OpenCV dependencies (if necessary) for `wagtail image feature detection <https://docs.wagtail.io/en/stable/advanced_topics/images/feature_detection.html>`_
+
+Docker (Springload)
+~~~~~~~~~~~~~~~~~~~
+
+- Download the **database**, **media dump** and **fonts** from https://drive.google.com/drive/u/0/folders/1B7qObEuO6sYJhVyE23RP8Tf0IbFCLlMf
+- Copy the database dump into `docker/database`
+- Extract the media into `media`
+
+    tar -xvzf path_to_file.tar.gz -C media
+
+- Move the font files into `static_src/fonts`
+- Copy cdhweb/settings/local_settings.py.docker-sample to cdhweb/settings/local_settings.py
+- Run `docker-compose up`
+
+Frontend (Springload)
+~~~~~~~~~~~~~~~~~~~~~
+
+The frontend uses webpack and npm.
+
+First, make sure you're using the correct node version:
+
+  nvm use
+
+If it tells you to install a new version, do so. Then run ``nvm use`` again.
+
+Install dependencies:
+
+  npm install
+
+Then to run the site in development mode locally:
+
+  npm start
 
 Setup pre-commit hooks
 ~~~~~~~~~~~~~~~~~~~~~~

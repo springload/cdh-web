@@ -1,0 +1,120 @@
+/* 
+Event hero. Similar to standard hero. Key differences:
+- image ratio (TODO – maybe?)
+- image has a caption
+- text content – more of it, and it aligns vertically with the h1
+*/
+
+// has `.grid-standard`
+.event-hero {
+  --title-top-space: 40px;
+
+  margin-block-end: 56px;
+
+  // t = text content
+  // i = img + credit
+
+  // Layout if there is _no_ image:
+  grid-template-areas: 't t t t t t t t t t t t';
+
+  @include sm {
+    margin-block-end: 120px;
+  }
+
+  @include md {
+    --title-top-space: 64px;
+  }
+  @include lg {
+    --title-top-space: 80px;
+
+    grid-template-areas: '. t t t t t t t t t t .';
+  }
+  @include xl {
+    --title-top-space: 104px;
+  }
+  @include xxl {
+    --title-top-space: 160px;
+    grid-template-areas: '. t t t t t t t t t . .';
+  }
+
+  // Different layout if the hero has an image:
+  &:has(img) {
+    grid-template-areas:
+      'i i i i i i i i i i i i'
+      't t t t t t t t t t t t';
+
+    @include md {
+      grid-template-areas: 't t t t t t i i i i i i';
+    }
+    @include lg {
+      grid-template-areas: '. t t t t t i i i i i i';
+    }
+  }
+}
+
+.event-hero__text {
+  grid-area: t;
+  font-size: px2rem(16);
+  line-height: 1.125;
+
+  :where(h1) {
+    margin-block-start: var(--title-top-space);
+  }
+
+  :where(ul) {
+    margin-block-start: 16px;
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    @include lg {
+      font-size: px2rem(20);
+    }
+  }
+  :where(li) {
+    margin: 0;
+  }
+  :where(.tag-list) {
+    margin-block-start: 24px;
+
+    @include xl {
+      margin-block-start: 40px;
+    }
+  }
+}
+
+.event-hero__date {
+  font-weight: bold;
+  margin: 16px 0 0;
+}
+
+.event-hero__add-to-calendar {
+  margin: 4px 0 16px;
+  font-size: px2rem(14);
+}
+
+.event-hero__location {
+  font-weight: bold;
+  margin: 8px 0 0;
+}
+
+.event-hero__img {
+  grid-area: i;
+
+  :where(img) {
+    @include break-grid;
+
+    @include sm {
+      @include undo-break-grid;
+    }
+    @include md {
+      @include break-grid-right;
+    }
+
+    @include xxxl {
+      @include undo-break-grid;
+    }
+  }
+}

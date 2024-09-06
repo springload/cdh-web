@@ -1,0 +1,119 @@
+// has `.grid-standard`
+.home-hero {
+  --bg-box-border-width: 8px;
+  --total-border-width: calc(var(--bg-box-border-width) * 2);
+
+  // Spacing around the text inside the box:
+  --bg-box-x-pad: 24px;
+  --bg-box-y-pad: 24px;
+  --space-below-box: 56px;
+
+  --image-overlap: -30px;
+
+  // Needs a big bottom space due to absolute-positioned 3d box shape.
+  margin-block-end: calc(
+    var(--space-below-box) + var(--bg-box-y-pad) + var(--total-border-width)
+  );
+
+  // i = image
+  // c = content
+  grid-template-areas:
+    'i i i i i i i i i i i i'
+    '. c c c c c c c c c . .';
+
+  @include sm {
+    --space-below-box: 80px;
+  }
+
+  @include md {
+    --space-below-box: 104px;
+
+    grid-template-areas:
+      'i i i i i i i i i i i i'
+      '. c c c c c c c . . . .';
+  }
+  @include lg {
+    --bg-box-x-pad: 56px;
+    --bg-box-y-pad: 40px;
+
+    grid-template-areas:
+      'i i i i i i i i i i i i'
+      '. . c c c c c c . . . .';
+  }
+
+  @include xl {
+    grid-template-areas:
+      '. i i i i i i i i i i .'
+      '. . c c c c c . . . . .';
+  }
+
+  @include xxl {
+    --space-below-box: 136px;
+  }
+}
+
+.home-hero__content {
+  grid-area: c;
+  position: relative;
+  transform: translateY(var(--image-overlap));
+}
+
+.home-hero__content-text {
+  position: relative;
+  z-index: 1; // in front of white 3d box
+
+  :where(h1) {
+    margin: 0 0 8px;
+    @include lg {
+      margin-block-end: 16px;
+    }
+  }
+  :where(p) {
+    margin: 0;
+    font-size: px2rem(24);
+    line-height: 1.5;
+  }
+}
+
+// Fancy 3d-lookin' background box.
+// This usage is different to the others because the *text content* is what
+// aligns to the grid, and the 3d box is absolute-positioned around it as a separate element.
+.hero-home__box {
+  position: absolute;
+
+  @include three-dee-box;
+
+  position: absolute;
+  top: 0;
+  width: calc(100% + var(--bg-box-x-pad) * 2);
+  height: calc(100% + var(--bg-box-y-pad) * 2);
+  transform: translate(
+    calc(-1 * var(--bg-box-x-pad)),
+    calc(-1 * var(--bg-box-y-pad))
+  );
+
+  @include md {
+    --three-dee-side-size: 56px;
+  }
+
+  @include xl {
+    // Same as declaration above. Needed to stop mixin setting it to something else.
+    width: calc(100% + var(--bg-box-x-pad) * 2);
+  }
+}
+
+.home-hero__img {
+  grid-area: i;
+  @include break-grid;
+
+  object-fit: cover;
+  height: 312px;
+
+  @include sm {
+    height: 498px;
+  }
+
+  @include xl {
+    @include undo-break-grid;
+  }
+}

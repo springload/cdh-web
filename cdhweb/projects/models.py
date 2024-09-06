@@ -1,23 +1,23 @@
+import itertools
+
+from django import forms
 from django.db import models
 from django.utils import timezone
-from modelcluster.contrib.taggit import ClusterTaggableManager
-from modelcluster.fields import ParentalKey
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from modelcluster.models import ClusterableModel
-from taggit.models import TaggedItemBase
-from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.fields import StreamField
 from wagtail.models import Page, PageManager, PageQuerySet
 from wagtail.search import index
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 
+from cdhweb.pages.blocks.accordion_block import ProjectAccordion
+from cdhweb.pages.mixin import OpenGraphMixin, StandardHeroMixin
 from cdhweb.pages.models import BasePage, DateRange, LandingPage, LinkPage, RelatedLink
 from cdhweb.people.models import Person
 
 
 class ProjectQuerySet(PageQuerySet):
-    def highlighted(self):
-        """return projects that are marked as highlighted"""
-        return self.filter(highlight=True)
-
     def _current_grant_query(self):
         """QuerySet filter to find projects with a current grant,
         based on start date before current date and end date after current
@@ -69,32 +69,36 @@ class ProjectQuerySet(PageQuerySet):
             "-last_start", "title"
         )
 
+    def recent(self):
+        """Order projects by date published."""
+        return self.order_by("-first_published_at")
+
 
 # custom manager for wagtail pages, see:
 # https://docs.wagtail.io/en/stable/topics/pages.html#custom-page-managers
 ProjectManager = PageManager.from_queryset(ProjectQuerySet)
 
 
-class ProjectTag(TaggedItemBase):
-    """Tags for Project pages."""
-
-    content_object = ParentalKey(
-        "projects.Project", on_delete=models.CASCADE, related_name="tagged_items"
-    )
-
-
-class Project(BasePage, ClusterableModel):
+class Project(BasePage, OpenGraphMixin, ClusterableModel, StandardHeroMixin):
     """Page type for a CDH sponsored project or working group."""
 
-    short_description = models.CharField(
-        max_length=255,
+    template = "projects/project_page.html"
+
+    accordion = StreamField(
+        [("accordion", ProjectAccordion(label="Project Accordion"))],
+        use_json_field=True,
         blank=True,
-        help_text="Brief tagline for display on project card in browse view",
+        verbose_name="Project Details",
+        max_num=1,
     )
-    highlight = models.BooleanField(
-        default=False,
-        help_text="Include in randomized project display on the home page.",
+
+    project_website = models.URLField(
+        verbose_name="Project Website",
+        null=True,
+        blank=True,
+        help_text="Project website URL.",
     )
+
     cdh_built = models.BooleanField(
         "CDH Built",
         default=False,
@@ -105,44 +109,58 @@ class Project(BasePage, ClusterableModel):
         default=False,
         help_text="Project is a long-term collaborative group associated with the CDH.",
     )
-    image = models.ForeignKey(
-        "wagtailimages.image",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-        help_text="Image for display on project detail page (optional)",
+
+    members = models.ManyToManyField(
+        Person, through="Membership", related_name="members"
     )
-    thumbnail = models.ForeignKey(
-        "wagtailimages.image",
-        null=True,
+
+    method = ParentalManyToManyField(
+        "ProjectMethod",
+        related_name="projects",
         blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-        help_text="Image for display on project card (optional)",
     )
-    members = models.ManyToManyField(Person, through="Membership")
-    tags = ClusterTaggableManager(through=ProjectTag, blank=True)
+
+    field = ParentalManyToManyField(
+        "ProjectField",
+        related_name="projects",
+        blank=True,
+    )
+    role = ParentalManyToManyField(
+        "ProjectRole",
+        related_name="projects",
+        blank=True,
+    )
+
     # TODO attachments (#245)
 
     # can only be created underneath project landing page
-    parent_page_types = ["projects.ProjectsLandingPage"]
+    parent_page_types = [
+        "projects.ProjectsLandingPageArchived",
+        "projects.ProjectsLandingPage",
+    ]
     # no allowed subpages
     subpage_types = []
 
     # admin edit configuration
-    content_panels = Page.content_panels + [
+    content_panels = StandardHeroMixin.content_panels + [
         FieldRowPanel(
             (
-                FieldPanel("highlight"),
                 FieldPanel("cdh_built"),
                 FieldPanel("working_group"),
             ),
             "Settings",
         ),
-        FieldRowPanel((FieldPanel("thumbnail"), FieldPanel("image")), "Images"),
-        FieldPanel("short_description"),
+        FieldPanel("accordion"),
         FieldPanel("body"),
+        FieldPanel("project_website"),
+        FieldRowPanel(
+            [
+                FieldPanel("method", widget=forms.CheckboxSelectMultiple),
+                FieldPanel("field", widget=forms.CheckboxSelectMultiple),
+                FieldPanel("role", widget=forms.CheckboxSelectMultiple),
+            ],
+            "Filter fields",
+        ),
         InlinePanel("related_links", label="Links"),
         InlinePanel(
             "grants",
@@ -163,14 +181,34 @@ class Project(BasePage, ClusterableModel):
         ),
         FieldPanel("attachments"),
     ]
-    promote_panels = Page.promote_panels + [FieldPanel("tags")]
+    promote_panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("short_title"),
+                FieldPanel("short_description"),
+                FieldPanel("feed_image"),
+            ],
+            "Share Page",
+        ),
+    ] + BasePage.promote_panels
 
     # custom manager/queryset logic
     objects = ProjectManager()
 
     # search fields
-    search_fields = BasePage.search_fields + [
-        index.SearchField("short_description"),
+    search_fields = StandardHeroMixin.search_fields + [
+        index.SearchField("body"),
+        index.FilterField("cdh_built"),
+        index.FilterField("path"),
+        index.FilterField("depth"),
+        index.FilterField("method"),
+        index.FilterField("field"),
+        index.FilterField("role"),
+        # We can't actually filter on these right now, but leave them here in case we can somedays
+        # See: https://docs.wagtail.org/en/v5.2.5/topics/search/indexing.html#filtering-on-index-relatedfields
+        index.RelatedFields(
+            "grants", [index.FilterField("start_date"), index.FilterField("end_date")]
+        ),
         index.RelatedFields(
             "members",
             [
@@ -187,7 +225,9 @@ class Project(BasePage, ClusterableModel):
     def website_url(self):
         """URL for this Project's website, if set"""
         website = self.related_links.filter(type__name="Website").first()
-        if website:
+        if self.project_website:
+            return self.project_website
+        elif website:
             return website.url
 
     def latest_grant(self):
@@ -240,6 +280,25 @@ class Project(BasePage, ClusterableModel):
             urls[0]["priority"] = 0.6
         return urls
 
+    def display_tags(self):
+        """
+        Get role, method and field values as tag-y objects
+
+        The method/field/role fields are used for filtering
+        the projects in the search, but CDH have also
+        requested that they be shown the same way tags are
+        for many other types of object -- This function
+        delivers them in a (template-equivalent) manner so
+        they can be displayed
+        """
+        return sorted(
+            str(t)
+            for t in itertools.chain(
+                self.method.all(),
+                self.field.all(),
+            )
+        )
+
 
 class GrantType(models.Model):
     """Model to track kinds of grants"""
@@ -250,7 +309,7 @@ class GrantType(models.Model):
         return self.grant_type
 
 
-class Grant(DateRange):
+class Grant(index.Indexed, DateRange):
     """A specific grant associated with a project"""
 
     project = ParentalKey(Project, on_delete=models.CASCADE, related_name="grants")
@@ -265,6 +324,11 @@ class Grant(DateRange):
             self.grant_type.grant_type,
             self.years,
         )
+
+    search_fields = [
+        index.FilterField("start_date"),
+        index.FilterField("end_date"),
+    ]
 
 
 class Role(models.Model):
@@ -320,7 +384,7 @@ class ProjectRelatedLink(RelatedLink):
         return "%s – %s (%s)" % (self.project, self.type, self.display_url)
 
 
-class ProjectsLandingPage(LandingPage):
+class ProjectsLandingPageArchived(LandingPage):
     """Container page that defines where Project pages can be created."""
 
     # NOTE this page can't be created in the page editor; it is only ever made
@@ -331,3 +395,123 @@ class ProjectsLandingPage(LandingPage):
     subpage_types = [Project, LinkPage]
     # use the regular landing page template
     template = LandingPage.template
+
+
+class ProjectsLandingPage(StandardHeroMixin, Page):
+    featured_project = models.ForeignKey(
+        "Project", blank=True, null=True, on_delete=models.SET_NULL
+    )
+
+    content_panels = StandardHeroMixin.content_panels + [FieldPanel("featured_project")]
+
+    search_fields = StandardHeroMixin.search_fields
+
+    settings_panels = Page.settings_panels
+
+    subpage_types = [Project]
+
+    def get_child_queryset(self, request, filter_form):
+        # Sometimes we pass the empty form, which isn't cleanable
+        clean_filters = getattr(filter_form, "cleaned_data", {})
+        query_string = clean_filters.pop("q", None)
+
+        # It's not currently possible to filter by
+        # RelatedFields, so because current-ness is part of
+        # Grants we need to apply this later, defaults True
+        current_filter = clean_filters.pop("current", True)
+
+        # Use a Project queryset so we can apply type-specific filters
+        children = Project.objects.child_of(self).public().live()
+
+        # We've engineered the remaining filter options to
+        # map *directly* to Project columns and only apply
+        # the ones with a value
+        to_apply = {k: v for k, v in clean_filters.items() if v}
+        children = children.filter(**to_apply)
+
+        if query_string:
+            children = children.search(query_string).get_queryset()
+
+        if current_filter:
+            # The "current" filter uses relations to
+            # `Grant`s, which aren't able to be filtered
+            # using the Wagtail search backend, as they're
+            # too nested. To dodge this, we instead uses the
+            # existing method on the objects Manager, after
+            # making the results into a queryset (above)
+            children = children.current()
+
+        children = children.order_by("title")
+        return children
+
+    def get_context(self, request, year=None, month=None):
+        from cdhweb.projects.forms import ProjectFiltersForm
+
+        context = super().get_context(request)
+        form_args = request.GET.dict()
+        if form_args:
+            form = ProjectFiltersForm(form_args)
+        else:
+            form = ProjectFiltersForm()
+
+        form.is_valid()
+        child_queryset = self.get_child_queryset(request, form)
+
+        # Exclude featured_project from the results, and add
+        # it to the context note this means the template
+        # should access `featured_project` *NOT*
+        # `self.featured_project`
+        if (
+            self.featured_project
+            and child_queryset.filter(id=self.featured_project_id).exists()
+        ):
+            context["featured_project"] = self.featured_project
+            child_queryset = child_queryset.exclude(pk=self.featured_project.pk)
+
+        child_queryset = child_queryset.prefetch_related(
+            "members", "method", "field", "role", "hero_image", "hero_image__renditions"
+        )
+
+        context["results"] = child_queryset
+        context["filter_form"] = form
+
+        return context
+
+
+class ProjectMethod(models.Model):
+    """
+    Model for project methodologies/approaches
+
+    Used for the projects filter
+    """
+
+    method = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.method
+
+
+class ProjectField(models.Model):
+    """
+    Model for project Fields
+
+    Used for the projects filter
+    """
+
+    field = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.field
+
+
+class ProjectRole(models.Model):
+    """
+    Model for project roles
+
+    Used for the projects filter
+    """
+
+    role = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.role

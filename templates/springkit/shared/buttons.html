@@ -1,0 +1,7 @@
+{% load wagtailcore_tags %}
+<div class="sk-btn-group">
+    {% for button in self %}
+      {% cycle 'primary' 'secondary' as order silent %}
+      {% include_block button  %}
+    {% endfor %}
+</div>

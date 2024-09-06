@@ -1,44 +1,96 @@
-{% load i18n cache %}
-{# display full top-level and secondary navigation in the footer #}
-{# adapted from mezzanine pages/menus/primary.html template #}
+{% load wagtailcore_tags static %}
 
-{% cache 3600 footer %}
-{% with toplevel_pages=site.root_page.get_children.live.in_menu %}
-<ul>
-    {# special case: home & top-level content pages #}
-    <li class='menu-header'>
-        <a class="toggle"><span class="button">+</span></a> {# toggle for mobile menu #}
-        <a href="{{ site.root_page.get_url }}">{{ site.root_page.title }}</a>
-        {% with child_pages=site.root_page.get_children.live.in_menu %}
-            <ul class="submenu">
-                {% include "snippets/footer_secondary_nav.html" with navpages=child_pages content_only=1 %}
+<footer class="footer">
+
+  <div class="content-width">
+    
+    <div class="footer__top grid-standard">
+      <div class="footer__logo">
+        <a href="/" aria-label="The Center for Digital Humanities at Princeton">
+          {% include 'includes/svg.html' with sprite="logo" svg="cdh-logo" %}
+        </a>
+      </div>
+      <div class="footer__search">
+        <h2 class="footer__search-heading footer__heading-text">Search</h2>
+        {% include 'includes/search_form.html' with uniqueID="footer" %}
+      </div>
+    </div>
+
+    <div class="footer__main grid-standard">
+
+      <h2 class="footer__main-heading footer__heading-text">Contact</h2>
+
+      {% if contact_links or social_media_links.all %}
+        <div class="footer__contact">
+          {% if contact_links %}
+          <ul class="footer__link-list">
+              {% for item in contact_links %}
+                <li>{{ item.body|richtext }}</li>
+              {% endfor %}
             </ul>
-        {% endwith %}
-    </li>
-</ul>
-<ul>
-{% for navpage in toplevel_pages %}
-    {% if navpage.landingpage or navpage.linkpage %} {# exclude content pages #}
- {# footer has 6 columns; ul breaks to next column #}
-    {% if not forloop.first and forloop.counter <= 5 %}<ul>{% endif %}
-        <li class='menu-header'>
-            {% with child_pages=navpage.get_children.live.in_menu %}
-            {# set page_branch for submenu if there is one #}
-            {% if child_pages %}
-            <a class="toggle"><span class="button">+</span></a> {# toggle for mobile menu #}
-            {% endif %}
-            <a href="{{ navpage.get_url }}">{{ navpage.title }}</a>
-            {% if child_pages %}
-            <ul class="submenu">
-                {% include "snippets/footer_secondary_nav.html" with navpages=child_pages %}
+          {% endif %}
+
+          {% if social_media_links.all %}
+            <ul class="footer__social-links">
+              {% for link in social_media_links.all %}
+                <li>
+                  <a href="{{ link.url }}" aria-label="{{ link.site }}">
+                    {% include 'includes/svg.html' with sprite="social" svg=link.site %}
+                  </a>
+                </li>
+              {% endfor %}
             </ul>
-            {% endif %}
-            {% endwith %}
-        </li>
-        {% if forloop.counter < 5 %}
-        </ul>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div class="footer__address-and-newsletter">
+        {% if physical_address %}
+          <h2 class="sr-only">Address</h2>
+          <div class="footer__address">{{ physical_address|richtext }}</div>
         {% endif %}
-    {% endif %}
-{% endfor %}
-{% endwith %}
-{% endcache %}
+        <div class="footer__newsletter">
+          {% include 'includes/newsletter_form.html' with is_not_streamfield=True %}
+        </div>
+      </div>
+
+      {% if useful_links.all %}
+        <h2 class="sr-only">Useful links</h2>
+        <ul class="footer__useful-links footer__link-list">
+          {% for item in useful_links.all %}
+            <li>
+              <a href="{{ item.link_url }}">{{ item.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <div class="footer__princeton-logo">
+        <a href="https://www.princeton.edu/" aria-label="Princeton University">
+          {% include 'includes/svg.html' with sprite="logo" svg="princeton-logo" %}
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="footer__imprint">
+    <div class="content-width footer__imprint-content">
+      {% if imprint_links.all %}
+        <ul>
+          {% for item in imprint_links.all %}
+            <li>
+              <a href="{{ item.link_url }}">{{ item.title }}</a>
+            </li>
+          {% endfor %}
+
+        </ul>
+      {% endif %}
+      <span class="footer__copyright">©{% now "Y" %} Trustees of Princeton University
+      </span>
+      <span class="footer__version"><a href="https://github.com/Princeton-CDH/cdh-web">v{{ SW_VERSION }}</a></span>
+    </div>
+  </div>
+
+</footer>

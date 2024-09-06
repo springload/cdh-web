@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags springkit_tags %}
+
+{% block body_class %}template-landing{% endblock %}
+
+{% block main %}
+    {% include 'includes/breadcrumbs.html' with breadcrumbs=page.breadcrumbs current_page=page %}
+    {% include 'includes/standard_hero.html' %}
+
+    <div class="content-width grid-standard page-layout
+        {% if page.sidebar_navigation %}
+            page-layout--with-sidenav
+        {% else %}
+            page-layout--without-sidenav
+        {% endif %}
+    ">
+        <div class="page-layout__main-content">
+
+            <div class="streamfields-wrapper">
+                {% if children %}
+                    <div class="block block--tiles">
+                        <div class="tiles__list">
+                            {% for child in children %}
+                                {% include 'cdhpages/blocks/tile.html' with internal_page=child tile_type="internal_page_tile" has_component_title=False %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% for block in page.body %}
+                    {% include_block block %}
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if page.sidebar_navigation %}
+            <div class="page-layout__sidenav">
+                {% include 'includes/sidenav.html' %}
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
