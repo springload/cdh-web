@@ -20,7 +20,7 @@ EST = zoneinfo.ZoneInfo("America/New_York")
 
 def make_events_link_page(homepage):
     """Create a test events archive page underneath the homepage."""
-    link = EventsLinkPageArchived(title="events", link_url="events")
+    link = EventsLinkPageArchived(title="events")
     homepage.add_child(instance=link)
     homepage.save()
     return link

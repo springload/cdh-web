@@ -58,6 +58,7 @@ def make_article(blog_link_page, staffer, postdoc):
     in_2019 = timezone.datetime(2019, 3, 4, 8, 25, tzinfo=EST).astimezone(tz.utc)
     in_2020 = timezone.datetime(2020, 1, 15, 20, 12, tzinfo=EST).astimezone(tz.utc)
     post = BlogPost(
+        short_title="We wrote an article together for the CDH website",
         title="We wrote an article together, and it got published on the CDH website",
         body=to_streamfield_safe(
             "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>"

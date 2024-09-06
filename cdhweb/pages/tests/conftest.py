@@ -49,7 +49,6 @@ def make_landing_page(homepage):
     landing = LandingPage(
         title="landing",
         slug="landing",
-        tagline="tagline",
         body=json.dumps(
             [{"type": "paragraph", "value": "<p>content of the landing page</p>"}]
         ),
