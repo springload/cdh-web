@@ -84,9 +84,12 @@
               <a href="{{ item.link_url }}">{{ item.title }}</a>
             </li>
           {% endfor %}
+
         </ul>
       {% endif %}
-      <span class="footer__copyright">©{% now "Y" %} Trustees of Princeton University</span>
+      <span class="footer__copyright">©{% now "Y" %} Trustees of Princeton University
+      </span>
+      <span class="footer__version"><a href="https://github.com/Princeton-CDH/cdh-web">v{{ SW_VERSION }}</a></span>
     </div>
   </div>
 

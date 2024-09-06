@@ -269,6 +269,22 @@
   }
 }
 
-.footer__copyright {
+.footer__copyright, .footer__version {
   flex-shrink: 0;
+  align-self: start;
+  @include lg {
+    align-self: end;      
+    text-align: right;
+  }
 }
+
+.footer__copyright  {
+  flex-grow: 1;
+}
+
+.footer__version a {
+  font-weight: normal;
+  text-decoration: none;
+}
+
+

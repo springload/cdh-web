@@ -26,6 +26,7 @@ def site_footer(context):
     data = {
         "request": context["request"],
         "site_search": context["site_search"],
+        "SW_VERSION": context["SW_VERSION"],
     }
     if footers.exists():
         contact_links = footers.first().contact_links.all()
