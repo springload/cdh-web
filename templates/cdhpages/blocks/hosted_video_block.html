@@ -1,0 +1,34 @@
+{% load wagtailcore_tags %}
+
+{% comment %}
+    This template is basically the same as video_block.html, except for the iframe bit – see below.
+{% endcomment %}
+
+<div class="block block--video">
+    {% if self.heading %}
+        {% include_block self.heading %}
+    {% endif %}
+
+    {% comment %}
+        Iframe rendering happens inside this black box. 
+        We don't control the HTML, so can't add the accessibility title="{{ accessibility_description }}"
+        We also can't do anything about the non-unique `id` added to the iframe (pre-Springload legacy issue).
+        We use CSS to override the inline styles like `height`.
+    {% endcomment %}
+    {{ self.video_url }}
+
+    {% if self.transcript %}
+        <details class="sk-video__transcript">
+            <summary class="sk-video__transcript-summary">
+                <span>
+                    Show video transcript
+                </span>
+                {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-up" classes="sk-video__transcript-icon sk-video__transcript-icon--chevron-up" %}
+                {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-down" classes="sk-video__transcript-icon sk-video__transcript-icon--chevron-down" %}
+            </summary>
+            <div class="sk-video__transcript-content">
+                {{ self.transcript }}
+            </div>
+        </details>
+    {% endif %}
+</div>

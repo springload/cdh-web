@@ -1,0 +1,103 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+
+<div class="event-hero content-width grid-standard">
+    
+    <div class="event-hero__text">
+        <h1>{{ self.title}}</h1>
+    
+        <p class="event-hero__date">
+            {# Display date differently depending on if it spans multiple days #}
+            {% if self.start_time.date == self.end_time.date %}
+                <time datetime="{{ self.start_time|date:'c' }}">{{ self.start_time|date:"M d g:i a" }}</time> – 
+                <time datetime="{{ self.end_time|date:'c' }}">{{ self.end_time|date:"g:i a" }}</time>
+            {% else %}
+                <time datetime="{{ self.start_time|date:'c' }}">{{ self.start_time|date:"M d g:i a" }}</time> – 
+                <time datetime="{{ self.end_time|date:'c' }}">{{ self.end_time|date:"M d g:i a" }}</time>
+            {% endif %}
+        </p>
+        <p class="event-hero__add-to-calendar">
+            <a href="{{ self.get_ical_url }}">Add to calendar</a>
+        </p>
+
+        {# Much of this schema is ported over from the old event template #}
+        {% if self.location %}
+            <div
+                class="event-hero__location" 
+                property="schema:location"
+                typeof="{% if self.location.name %}schema:VirtualLocation{% else %}schema:Place{% endif %}"
+            >
+                <span property="schema:name">{{ self.location.name }}</span>
+                {% if not self.location.name == "Virtual" %}
+                    <div 
+                        property="schema:address"
+                        {% if self.location.name == self.location.address %}style="display:none"{% endif %}
+                    >
+                        {{ self.location.address }}
+                    </div>
+                {% elif self.join_url %}
+                    <div property="schema:url" style="display:none">{{ page.join_url }}</div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if page.speakers %}
+            <div>
+                <h2 class="sr-only">Speakers</h2>
+                <ul>
+                    {% for speaker in page.speakers.all %}
+                        <li>{{ speaker.person }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if self.tags.all %}
+            <div class="tag-list">
+                {% for tag in self.tags.all %}
+                    <div class="tag">{{ tag }}</div>    
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {% if self.image %}
+        <figure class="event-hero__img">
+            {% comment %}    
+                All are cropped to a 16:9 ratio. This differs from design, as discussed.
+                If changing this by image rendition, update aspect-ratio in the CSS instead
+                of via inline style.
+            {% endcomment %}
+
+            {% image self.image fill-1000x563 as img_base %}
+            {% image self.image fill-1250x703 as img_sm %}
+            {% image self.image fill-1650x928 as img_xl %}
+
+            <picture>
+                <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
+                <source srcset="{{ img_xl.url }}" media="(min-width: 1200px)">
+                <img
+                    src="{{ img_base.url }}" 
+                    alt="{{ self.alt_text|default:img_base.alt }}"
+                    style="aspect-ratio: {{ img_base.width|unlocalize }} / {{ img_base.height|unlocalize }}"
+                />
+            </picture>
+            
+            {% if self.caption or self.credit %}
+                <figcaption class="sk-image__text-content">
+                    {% if self.credit %}
+                        <div class="sk-image__credit">
+                            {{ self.credit|richtext }}
+                        </div>
+                    {% endif %}
+                    {% if self.caption %}
+                        <div class="sk-image__caption">
+                            {{ self.caption|richtext }}
+                        </div>
+                    {% endif %}
+                </figcaption>
+            {% endif %}
+        </figure>
+            
+    {% endif %}
+    
+</div>

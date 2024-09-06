@@ -1,6 +1,7 @@
 from wagtail_modeladmin.mixins import ThumbnailMixin
 from wagtail_modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
 
+from cdhweb.pages.models import RelatedLinkType
 from cdhweb.people.models import Person, Profile, Title
 
 
@@ -50,14 +51,19 @@ class ProfileAdmin(ThumbnailMixin, ModelAdmin):
     search_fields = ("title", "body")
     ordering = ("title",)
     thumb_image_field_name = "image"
-    exclude_from_explorer = True
+
+
+class LinkTypeAdmin(ModelAdmin):
+    model = RelatedLinkType
+    menu_icon = "link"
+    list_display = ("name", "sort_order")
 
 
 class PeopleGroup(ModelAdminGroup):
     menu_label = "People"
     menu_icon = "group"
     menu_order = 200
-    items = (PersonAdmin, TitleAdmin, ProfileAdmin)
+    items = (PersonAdmin, TitleAdmin, ProfileAdmin, LinkTypeAdmin)
 
 
 modeladmin_register(PeopleGroup)

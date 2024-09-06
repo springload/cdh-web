@@ -1,0 +1,75 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+
+<div class="person-hero content-width grid-standard">
+
+    <div class="person-hero__intro">
+        <h1>{{ self.title}}</h1>
+        {% if person.current_title %}
+            <p class="person-hero__job">{{ person.current_title }}</p>
+        {% endif %}
+        <div class="person-hero__education">{{ page.education|richtext }}</div>
+        {% if self.tags.all %}
+            <div class="tag-list">
+                {% for tag in self.tags.all %}
+                    <div class="tag">{{ tag }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {% if person.email or person.phone_number or person.office_location %}
+        <div class="person-hero__contact">
+            <ul class="person-hero__contact-links">
+                {% if person.email %}
+                    <li>
+                        {% include 'includes/svg.html' with sprite="two-tone" svg="email" classes="person-hero__icon person-hero__icon--email" %}
+                        <a href="mailto:{{ page.person.email }}">
+                            <span>{{ person.email }}</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if person.phone_number %}
+                    <li>
+                        {% include 'includes/svg.html' with sprite="two-tone" svg="phone" classes="person-hero__icon person-hero__icon--phone" %}
+                        <a href="tel:{{ person.phone_number|slugify }}">
+                            <span>{{ person.phone_number }}</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if person.office_location %}
+                    <li>
+                        {% include 'includes/svg.html' with sprite="two-tone" svg="pin" classes="person-hero__icon person-hero__icon--location" %}
+                        <span>{{ person.office_location }}</span>
+                    </li>
+                {% endif %}
+            </ul>
+            <ul class="person-hero__contact-links">
+                {% for link in page.person.related_links.all %}
+                    <li><a href="{{ link.url }}">{{ link.type.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if page.image %}
+        {% comment %}    
+            All are cropped to a 4:3 ratio.
+            If changing this by image rendition, update aspect-ratio in the CSS instead
+            of via inline style.
+        {% endcomment %}
+        {% image page.image fill-1000x750 as img_base %}
+        {% image page.image fill-1250x938 as img_sm %}
+        {% image page.image fill-1650x1238 as img_xl %}
+
+        <picture class="person-hero__img">
+            <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
+            <source srcset="{{ img_xl.url }}" media="(min-width: 1200px)">
+            <img
+                src="{{ img_base.url }}" 
+                alt="{{ page.title }}"
+                style="aspect-ratio: {{ img_base.width|unlocalize }} / {{ img_base.height|unlocalize }}"
+            />
+        </picture>
+    {% endif %}
+    
+</div>

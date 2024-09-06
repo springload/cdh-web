@@ -1,0 +1,29 @@
+{% load wagtailimages_tags wagtailcore_tags %}
+
+<div class="block block--download">
+  <div class="download">
+    {% if self.heading %}
+      <h2>{{ self.heading }}</h2>
+    {% endif %}
+    
+    {% if self.description %}
+      <p>{{ self.description }}</p>
+    {% endif %}
+
+    <ul>
+      {% for file in file_links %}
+        <li>
+          <a href="{{ file.file.url }}" download>
+            {% include 'includes/svg.html' with sprite="two-tone" svg="arrow-down" %}
+            <span>
+              <strong class="download__file-title">
+                {{ file.title }}
+              </strong>
+              ({{ file.file_type }}, {{ file.file_size | filesizeformat }})
+            </span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>

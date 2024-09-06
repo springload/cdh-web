@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+4.0.0-dev1
+-----
+- Redesigned and rebuilt
+- TODO
+
 3.5.3
 -----
 
@@ -30,7 +35,7 @@ Maintenance release: npm package updates
 - updated to django 4.2 and wagtail 5.0
 - updated to python 3.8+ (tested against 3.8-3.11)
 - updated node version 18
-- removed editoria11y v1 integration 
+- removed editoria11y v1 integration
 - removed Percy visual testing workflow
 
 3.4.4
@@ -41,7 +46,7 @@ Maintenance release: npm package updates
 3.4.3
 -----
 
-* Update to include Humanities + Data Science Institute instructors and participants as 
+* Update to include Humanities + Data Science Institute instructors and participants as
 affiliates and student affiliates
 * bugfixes:
   * correct Event ordering on semester archive pages
@@ -401,4 +406,3 @@ Other Content
 Import
 ~~~~~~
 * As an admin, I want an import of content from the previous version of the site so that all the information available on the old site is migrated to the new version.
-

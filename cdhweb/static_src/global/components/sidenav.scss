@@ -1,0 +1,73 @@
+.sidenav {
+  --three-dee-side-size: 18px;
+  --three-dee-border-width: 6px;
+  --pad-x: 14px;
+
+  position: relative;
+
+  padding-inline: var(--pad-x);
+  padding-block: 24px 0;
+
+  @include three-dee-box;
+
+  @include sm {
+    --three-dee-border-width: 8px;
+  }
+  @include xl {
+    max-width: px2rem(222);
+    position: sticky;
+    top: 24px;
+  }
+
+  // Sidenav content styles
+  :where(h2) {
+    font-size: px2rem(18);
+    border-bottom: 1px solid var(--color-brand-100);
+    padding-block-end: 18px;
+    margin: 0;
+    font-weight: bold;
+    line-height: 1.125;
+    isolation: isolate;
+  }
+  :where(ul) {
+    list-style-type: none;
+    padding: 0;
+  }
+  :where(li) {
+    margin: 0;
+  }
+  :where(a) {
+    --sidenav-decorator-color: transparent;
+
+    // for left-hand decoration of current item
+    position: relative;
+
+    display: block;
+    padding-block: 12px;
+    width: fit-content;
+    font-size: px2rem(16);
+    text-decoration-line: none;
+    font-weight: 400;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: var(--three-dee-border-width);
+      background-color: var(--sidenav-decorator-color);
+      height: 100%;
+      left: calc(-1 * var(--pad-x) - var(--three-dee-border-width));
+      top: 0;
+    }
+
+    &:hover {
+      color: currentColor;
+      --sidenav-decorator-color: var(--color-brand-120);
+    }
+
+    &[aria-current='page'] {
+      font-weight: 900;
+      color: currentColor;
+      --sidenav-decorator-color: var(--color-black);
+    }
+  }
+}

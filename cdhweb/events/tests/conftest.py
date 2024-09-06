@@ -5,7 +5,13 @@ from datetime import timezone as tz
 import pytest
 from django.utils import timezone
 
-from cdhweb.events.models import Event, EventsLinkPage, EventType, Location, Speaker
+from cdhweb.events.models import (
+    Event,
+    EventsLinkPageArchived,
+    EventType,
+    Location,
+    Speaker,
+)
 from cdhweb.pages.tests.conftest import to_streamfield_safe
 from cdhweb.people.models import Person
 
@@ -14,7 +20,7 @@ EST = zoneinfo.ZoneInfo("America/New_York")
 
 def make_events_link_page(homepage):
     """Create a test events archive page underneath the homepage."""
-    link = EventsLinkPage(title="events", link_url="events")
+    link = EventsLinkPageArchived(title="events")
     homepage.add_child(instance=link)
     homepage.save()
     return link

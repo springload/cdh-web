@@ -1,0 +1,8 @@
+{% load wagtailcore_tags %}
+
+{# Wrapper for migrated content. #}
+{# This `div` is required to avoid big streamfield-spacing between typographic elements. #}
+{# It also allows us to add some new styling to some of the olf content (e.g. outdented h2) #}
+<div class="block block--migrated-content">
+    {{ value|richtext }}
+</div>

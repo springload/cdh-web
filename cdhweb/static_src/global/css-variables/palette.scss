@@ -1,0 +1,46 @@
+:root {
+  --color-black: black;
+  --color-white: white;
+
+  // Brand
+  --color-brand-5: #f5feff;
+  --color-brand-10: #dffcff;
+  --color-brand-40: #a8f9ff;
+  --color-brand-100: #00edff;
+  --color-brand-110: #04cad9;
+  --color-brand-120: #1fa4ae;
+
+  // Brand alt (purple mode)
+  --color-brand-alt-5: #f3eaff;
+  --color-brand-alt-10: #d5c7e6;
+  --color-brand-alt-40: #c1acdc;
+  --color-brand-alt-100: #9a81ba;
+  --color-brand-alt-110: #735c96;
+  --color-brand-alt-120: #533f73;
+
+  // Secondary
+  --color-red-100: #ed0000;
+
+  --color-grey-5: #f2f2f2;
+  --color-grey-10: #e6e6e6;
+  --color-grey-60: #666;
+  --color-grey-80: #575757;
+  --color-grey-100: #414042;
+  --color-grey-110: #222;
+
+  --color-text: var(--color-grey-100);
+  --color-link-text: currentColor;
+  --color-link-underline: var(--color-brand-100);
+  --color-link-text-hover: var(--color-black);
+
+  --logo-accent-color: var(--color-brand-100);
+  --logo-accent-color-dark: var(--color-brand-120);
+
+  --icon-color: var(--color-grey-100);
+  --icon-color-dark: var(--color-grey-110);
+
+  --icon-accent-color: var(--color-brand-100);
+  --icon-accent-color-dark: var(--color-brand-120);
+
+  --focus-ring-color: var(--color-brand-120);
+}

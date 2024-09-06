@@ -1,6 +1,6 @@
 import os
 
-from cdhweb.settings import BASE_DIR, DATABASES
+from cdhweb.settings import DATABASES
 
 # These settings correspond to the service container settings in the
 # .github/workflow .yml files.
@@ -21,15 +21,6 @@ INCLUDE_ANALYTICS = False
 
 # required for tests when DEBUG = False
 ALLOWED_HOSTS = ["*"]
-
-# configure django-compressor to compress css & javascript
-COMPRESS_ENABLED = True
-
-# compress to the sitemedia folder
-COMPRESS_ROOT = BASE_DIR / "sitemedia"
-
-# run a full compress before e2e/a11y tests to serve statically
-COMPRESS_OFFLINE = True
 
 # override software version to avoid creating visual diffs in display
 SW_VERSION = "CI Build"

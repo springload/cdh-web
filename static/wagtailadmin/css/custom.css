@@ -1,0 +1,4 @@
+/*  Remove extra unneeded "heading" label (without `for`) */
+[data-contentpath='heading'] > .w-field__label:not([for]) {
+  display: none;
+}

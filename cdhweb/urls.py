@@ -10,25 +10,18 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.contrib.sitemaps import Sitemap
 from wagtail.contrib.sitemaps import views as sitemap_views
 from wagtail.documents import urls as wagtaildocs_urls
-from wagtail.models import Page
 from wagtailautocomplete.urls.admin import urlpatterns as autocomplete_admin_urls
 
-from cdhweb.blog.sitemaps import BlogListSitemap
+from cdhweb.blog.views import AtomBlogPostFeed, BlogPostRedirectView, RssBlogPostFeed
 from cdhweb.context_processors import favicon_path
-from cdhweb.events.sitemaps import EventListSitemap
+from cdhweb.events.views import EventIcalView
 from cdhweb.pages.views import OpenSearchDescriptionView, SiteSearchView
-from cdhweb.people.sitemaps import PeopleListSitemap
-from cdhweb.projects.sitemaps import ProjectListSitemap
 
 admin.autodiscover()
 
 # sitemap configuration for sections of the site
 sitemaps = {
     "pages": Sitemap,  # wagtail content pages
-    "people": PeopleListSitemap,
-    "projects": ProjectListSitemap,
-    "events": EventListSitemap,
-    "blog": BlogListSitemap,
 }
 
 
@@ -48,9 +41,6 @@ urlpatterns = [
     path("_500/", lambda _: 1 / 0),  # for testing 500 error page
     # main apps
     path("people/", include("cdhweb.people.urls", namespace="people")),
-    path("updates/", include("cdhweb.blog.urls", namespace="blog")),
-    path("events/", include("cdhweb.events.urls", namespace="event")),
-    path("projects/", include("cdhweb.projects.urls", namespace="projects")),
     # search
     path("search/", SiteSearchView.as_view(), name="search"),
     path(
@@ -60,11 +50,6 @@ urlpatterns = [
     ),
     # CAS login urls
     path("accounts/", include("pucas.cas_urls")),
-    # - all blog urls are now under updates/
-    re_path(
-        r"^blog(?P<blog_url>.*)$",
-        RedirectView.as_view(url="/updates%(blog_url)s", permanent=True),
-    ),
     # sitemaps
     path(
         "sitemap.xml", sitemap_views.index, {"sitemaps": sitemaps}, name="sitemap-index"
@@ -75,18 +60,39 @@ urlpatterns = [
         {"sitemaps": sitemaps},
         name="django.contrib.sitemaps.views.sitemap",
     ),
+    re_path(
+        r"^events/(?P<year>\d{4})/(?P<month>\d{2})/(?P<slug>[\w-]+).ics$",
+        EventIcalView.as_view(),
+        name="event-ical",
+    ),
     # wagtail paths
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-    # let wagtail handle everything else
-    path("", include(wagtail_urls)),
+    path("updates/rss/", RssBlogPostFeed(), name="rss"),
+    path("updates/atom/", AtomBlogPostFeed(), name="atom"),
+    re_path(
+        r"updates/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<slug>[\w-]+)",
+        BlogPostRedirectView.as_view(),
+        name="blog-detail",
+    ),
+    path("updates/<slug>/", BlogPostRedirectView.as_view(), name="blog-detail"),
 ]
 
 if settings.DEBUG:
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
     # serve static files in development - automatically activates in DEBUG; see
     # https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-files-uploaded-by-a-user-during-development
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += staticfiles_urlpatterns()
 
+    # Serve 404 and 500 page templates(seeing as errors are masked with debug)
+    urlpatterns.extend(
+        [
+            path("404/", TemplateView.as_view(template_name="404.html")),
+            path("500/", TemplateView.as_view(template_name="500.html")),
+        ]
+    )
     try:
         import debug_toolbar
 
@@ -94,3 +100,8 @@ if settings.DEBUG:
         urlpatterns.insert(0, path("__debug__/", include(debug_toolbar.urls)))
     except ImportError:
         pass
+
+urlpatterns.append(
+    # let wagtail handle everything else
+    path("", include(wagtail_urls)),
+)

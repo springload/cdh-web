@@ -3,20 +3,29 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Case, DateField, Max, Value, When
+from django.db.models.functions import Greatest
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.functional import cached_property
+from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.managers import TaggableManager
+from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.contrib.routable_page.models import RoutablePageMixin, path, re_path
 from wagtail.fields import RichTextField
 from wagtail.models import Page
 from wagtail.search import index
 
+from cdhweb.pages.mixin import SidebarNavigationMixin, StandardHeroMixin
 from cdhweb.pages.models import (
     PARAGRAPH_FEATURES,
+    BaseLandingPage,
     BasePage,
     DateRange,
     LandingPage,
@@ -254,6 +263,14 @@ class PersonQuerySet(models.QuerySet):
         ).order_by("min_title", "min_start", "last_name")
 
 
+class PersonTag(TaggedItemBase):
+    """Tags for Profile Pages"""
+
+    content_object = ParentalKey(
+        "people.Profile", on_delete=models.CASCADE, related_name="tagged_items"
+    )
+
+
 class Person(ClusterableModel):
     # in cdhweb 2.x this was a proxy model for User;
     # in 3.x it is a distinct model with 1-1 optional relationship to User
@@ -435,6 +452,65 @@ class Person(ClusterableModel):
         if website:
             return website.url
 
+    def get_position_for_tile(self, category):
+        HUM_DATASCI = "Humanities + Data Science Institute"
+        if category in ["staff", "past_staff"]:
+            if self.positions.first():
+                latest_position = self.positions.first()
+                if latest_position.is_current:
+                    return latest_position.title
+                else:
+                    return "%s %s" % (latest_position.years, latest_position.title)
+
+        elif category in ["students", "alumni"]:
+            if self.positions.first():
+                latest_position = self.positions.first()
+                if latest_position.is_current:
+                    return latest_position.title
+                else:
+                    return "%s %s" % (latest_position.years, latest_position.title)
+
+            # if student was a project director, show as grant recipient/fellow
+            elif self.latest_grant:
+                if "Fellow" in self.latest_grant.grant_type.grant_type:
+                    no_ship = self.latest_grant.grant_type.grant_type.split("ship", 1)[
+                        0
+                    ]
+                    return f"{self.latest_grant.years} {no_ship}"
+                else:
+                    # otherwise "X grant recipient"
+                    return f"{self.latest_grant.years} {self.latest_grant.grant_type.grant_type} Grant Recipient"
+
+            elif self.membership_set:
+                # for students on projects, label based on project membership
+                roles = set(
+                    PersonQuerySet.project_roles + PersonQuerySet.affiliate_roles
+                ) - {"Project Director"}
+                for membership in self.membership_set.filter(role__title__in=roles):
+                    # NOTE: it might be better to use memberships for
+                    # project director / grant role as well, but with the new
+                    # data model it's harder to determine what type of grant they were on
+                    label = membership.role.title
+                    # if in humanities data science, use title + role
+                    if membership.project.title == HUM_DATASCI:
+                        return "%s %s" % (HUM_DATASCI, label)
+                    if membership.is_current:
+                        return label
+                    else:
+                        return "%s %s" % (membership.years, label)
+
+        elif category in ["affiliates", "past_affiliates"]:
+            mship = self.membership_set.first()
+            if mship.project.title == HUM_DATASCI:
+                return "%s %s" % (HUM_DATASCI, self.membership_set.first().role.title)
+            elif "Fellow" in self.latest_grant.grant_type.grant_type:
+                no_ship = self.latest_grant.grant_type.grant_type.split("ship", 1)[0]
+                return f"{self.latest_grant.years} {no_ship}"
+            else:
+                return f"{self.latest_grant.years} {self.latest_grant.grant_type.grant_type} Grant Recipient"
+        else:
+            return self.job_title
+
     def autocomplete_label(self):
         """label when chosen with wagtailautocomplete"""
         return str(self)
@@ -461,12 +537,15 @@ def cleanup_profile(sender, **kwargs):
 class Profile(BasePage):
     """Profile page for a Person, managed via wagtail."""
 
+    template = "people/person_page.html"
+
     person = models.OneToOneField(
         Person,
         help_text="Corresponding person for this profile",
         null=True,
         on_delete=models.SET_NULL,
     )
+
     image = models.ForeignKey(
         "wagtailimages.image",
         null=True,
@@ -475,30 +554,51 @@ class Profile(BasePage):
         related_name="+",
     )  # no reverse relationship
     education = RichTextField(features=PARAGRAPH_FEATURES, blank=True)
+    tags = ClusterTaggableManager(through=PersonTag, blank=True)
 
     # admin edit configuration
     content_panels = Page.content_panels + [
         FieldRowPanel((FieldPanel("person"), FieldPanel("image")), "Person"),
         FieldPanel("education"),
+        FieldPanel("tags"),
         FieldPanel("body"),
         FieldPanel("attachments"),
     ]
 
-    parent_page_types = ["people.PeopleLandingPage"]
+    parent_page_types = ["people.PeopleLandingPageArchived", "people.PeopleLandingPage"]
     subpage_types = []
+
+    promote_panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("short_title"),
+                FieldPanel("feed_image"),
+            ],
+            "Share Page",
+        ),
+    ] + BasePage.promote_panels
 
     # index fields
     search_fields = BasePage.search_fields + [index.SearchField("education")]
+
+    @cached_property
+    def breadcrumbs(self):
+        ancestors = self.get_ancestors().live().public().specific()
+        return ancestors[1:]  # removing root
 
     def get_context(self, request):
         """Add recent BlogPosts by this Person to their Profile."""
         context = super().get_context(request)
         # get 3 most recent published posts with this person as author;
+        # get 3 most recent events with this person as a speaker;
+        # get 3 most recent projects with this person as a member;
         # add to context and set open graph metadata
         context.update(
             {
                 "opengraph_type": "profile",
                 "recent_posts": self.person.posts.live().recent()[:3],
+                "recent_events": self.person.events.live().recent()[:3],
+                "recent_projects": self.person.members.live().recent()[:3],
             }
         )
         return context
@@ -515,7 +615,7 @@ class Profile(BasePage):
             raise ValidationError("Profile page must be for existing person.")
 
 
-class PeopleLandingPage(LandingPage):
+class PeopleLandingPageArchived(LandingPage):
     """LandingPage subtype for People that holds Profiles."""
 
     # NOTE this page can't be created in the page editor; it is only ever made
@@ -526,6 +626,204 @@ class PeopleLandingPage(LandingPage):
     subpage_types = [Profile, LinkPage]
     # use the regular landing page template
     template = LandingPage.template
+
+
+class PeopleCategoryPage(BaseLandingPage, SidebarNavigationMixin, RoutablePageMixin):
+    """Landing Page for categeory of people i.e. staff, students, affiliates, executive committee"""
+
+    subpage_types = [Profile]
+
+    template_name = "people/people_category_page.html"
+
+    class PeopleCategories(models.TextChoices):
+        STAFF = "staff", "Staff"
+        PAST_STAFF = "past_staff", "Past Staff"
+        STUDENTS = "students", "Students"
+        ALUMNI = "alumni", "Alumni"
+        AFFILIATES = "affiliates", "Affiliates"
+        PAST_AFFILIATES = "past_affiliates", "Past Affiliates"
+        EXECUTIVE_COMMITTEE = "executive_committee", "Executive Committee"
+        SITS_WITH_EXECUTIVE_COMMITTEE = (
+            "sits_with_executive_committee",
+            "Sits with Executive Committee",
+        )
+        PAST_EXECUTIVE_COMMITTEE = "past executive committee", "Past Executive Committee"
+
+
+    category = models.CharField(
+        choices=PeopleCategories.choices,
+    )
+    content_panels = [FieldPanel("category")] + BaseLandingPage.content_panels
+
+    settings_panels = (
+        BaseLandingPage.settings_panels + SidebarNavigationMixin.settings_panels
+    )
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+
+        category_mapping = {
+            self.PeopleCategories.STAFF: self.get_current_staff,
+            self.PeopleCategories.PAST_STAFF: self.get_past_staff,
+            self.PeopleCategories.STUDENTS: self.get_students,
+            self.PeopleCategories.ALUMNI: self.get_alumni,
+            self.PeopleCategories.AFFILIATES: self.get_affiliates,
+            self.PeopleCategories.PAST_AFFILIATES: self.get_past_affiliates,
+            self.PeopleCategories.EXECUTIVE_COMMITTEE: self.get_executive_committee,
+            self.PeopleCategories.SITS_WITH_EXECUTIVE_COMMITTEE: self.get_sits_with_executive_committee,
+            self.PeopleCategories.PAST_EXECUTIVE_COMMITTEE: self.get_past_executive_committee
+        }
+
+        people = category_mapping[self.category]()
+        people = people.prefetch_related(
+            "image",
+            "image__renditions",
+            "profile",
+            "positions",
+            "positions__title",
+            "profile__image",
+        )
+
+        for person in people:
+            person.position = person.get_position_for_tile(self.category)
+
+        context["people"] = people
+        return context
+
+    def get_current_staff(self):
+        people = (
+            Person.objects.cdh_staff()
+            .not_students()
+            .current_position_nonexec()
+            .order_by_position()
+            .distinct()
+        )
+
+        return people
+
+    def get_past_staff(self):
+        people_queryset = (
+            Person.objects.cdh_staff().not_students().order_by_position().distinct()
+        )
+
+        current = self.get_current_staff()
+        people = people_queryset.exclude(id__in=current.values("id"))
+
+        return people
+
+    def get_students(self):
+        people = (
+            Person.objects.student_affiliates()
+            .grant_years()
+            .project_manager_years()
+            .current()
+            .order_by_position()
+            .distinct()
+        )
+
+        return people
+
+    def get_alumni(self):
+        people_queryset = (
+            Person.objects.student_affiliates()
+            .grant_years()
+            .project_manager_years()
+            .distinct()
+        )
+        people_queryset = people_queryset.annotate(
+            most_recent=Greatest(
+                Case(
+                    When(
+                        membership__end_date__isnull=False,
+                        then=Max("membership__end_date"),
+                    ),
+                    default=Value("1900-01-01", output_field=DateField()),
+                ),
+                Case(
+                    When(
+                        positions__end_date__isnull=False,
+                        then=Max("positions__end_date"),
+                    ),
+                    default=Value("1900-01-01", output_field=DateField()),
+                ),
+            )
+        ).order_by("-most_recent")
+
+        current = self.get_students()
+        people = people_queryset.exclude(id__in=current.values("id"))
+
+        return people
+
+    def get_affiliates(self):
+        people = (
+            Person.objects.affiliates()
+            .grant_years()
+            .current_grant()
+            .order_by("last_name")
+            .distinct()
+        )
+        return people
+
+    def get_past_affiliates(self):
+        current = self.get_affiliates()
+        people_queryset = (
+            Person.objects.affiliates().grant_years().order_by("last_name").distinct()
+        )
+        people = people_queryset.exclude(id__in=current.values("id"))
+        return people
+
+    def get_executive_committee(self):
+        people = (
+            Person.objects.executive_committee()
+            .current_position()
+            .exec_member()
+            .order_by("last_name")
+            .distinct()
+        )
+        return people
+
+    def get_sits_with_executive_committee(self):
+        people = (
+            Person.objects.executive_committee()
+            .current_position()
+            .sits_with_exec()
+            .order_by("last_name")
+            .distinct()
+        )
+        return people
+    
+    def get_past_executive_committee(self):
+        people_queryset = (
+            Person.objects.executive_committee()
+            .exec_member()
+            .order_by("last_name")
+            .distinct()
+        )
+
+        current = self.get_executive_committee()
+        people = people_queryset.exclude(id__in=current.values("id"))
+
+        return people
+
+
+class PeopleLandingPage(StandardHeroMixin, Page):
+    subpage_types = [PeopleCategoryPage]
+
+    template_name = "people/people_landing_page.html"
+
+    content_panels = StandardHeroMixin.content_panels
+
+    search_fields = StandardHeroMixin.search_fields
+
+    settings_panels = Page.settings_panels
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+
+        tiles = self.get_children().not_type(Profile).live().public().specific()
+        context["tiles"] = tiles
+
+        return context
 
 
 class Position(DateRange):

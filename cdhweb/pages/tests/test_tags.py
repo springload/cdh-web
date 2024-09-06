@@ -1,6 +1,6 @@
 import pytest
-from django.contrib.sites.models import Site
 from django.test import RequestFactory
+from wagtail.models import Site
 
 from cdhweb.pages.templatetags import cdh_tags
 
@@ -20,10 +20,12 @@ def test_url_to_icon():
 
 @pytest.mark.django_db
 def test_url_to_icon_path():
-    domain = Site.objects.get_current().domain
-    assert cdh_tags.url_to_icon_path(
-        "/people/staff/"
-    ) == "https://{}/static/img/cdh-icons/png@2X/ppl@2x.png".format(domain)
+    current_site = Site.objects.order_by("is_default_site").first()
+
+    assert (
+        cdh_tags.url_to_icon_path("/people/staff/")
+        == f"{current_site.root_url}/static/img/cdh-icons/png@2X/ppl@2x.png"
+    )
 
 
 def test_startswith():

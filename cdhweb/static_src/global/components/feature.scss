@@ -1,0 +1,63 @@
+.feature {
+  --three-dee-side-size: 18px;
+
+  font-size: px2rem(20);
+  display: grid;
+
+  position: relative;
+  @include three-dee-box;
+
+  @include xl {
+    --three-dee-side-size: 56px;
+    grid-template-columns: repeat(2, 1fr);
+    font-size: px2rem(22);
+  }
+}
+
+.feature__text-content {
+  padding: 24px 16px;
+
+  @include sm {
+    padding: 32px;
+  }
+
+  :where(h2) {
+    font-size: px2rem(24);
+    text-wrap: pretty;
+
+    @include sm {
+      font-size: px2rem(32);
+    }
+    @include xl {
+      font-size: px2rem(36);
+    }
+  }
+  :where(.sk-btn-group) {
+    margin-block-start: 16px;
+
+    @include sm {
+      margin-block-start: 24px;
+    }
+    @include xl {
+      margin-block-start: 40px;
+    }
+  }
+}
+
+.feature__img {
+  order: -1; // on top when stacked
+
+  @include xl {
+    order: unset;
+  }
+
+  :where(img) {
+    object-fit: cover;
+    max-height: 350px;
+
+    @include xl {
+      height: 100%;
+      max-height: unset;
+    }
+  }
+}

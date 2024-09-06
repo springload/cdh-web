@@ -1,0 +1,70 @@
+.streamfields-wrapper {
+  // The flex column layout is to disable collapsing margins.
+  // Usually collapsing margins is fine, but the 3d boxes have absolute-
+  // positioned box overhang. Unfortunately, adding this amount as an extra
+  // margin-bottom on the element that has the 3d box doesn't do anything,
+  // because "collapsing margins" assumes we didn't want that extra space.
+  display: flex;
+  flex-direction: column;
+
+  & > * + * {
+    // Default `lg` space above each streamfield
+    margin-block-start: var(--streamfield-space-lg);
+
+    // Cases where there should be a `sm` space above:
+    &:where(
+        :is(
+            .block--image,
+            .block--table,
+            .block--note,
+            .block--paragraph,
+            .block--migrated-content,
+            .block--pull-quote,
+            .block--accordion:not(:has(> h2)),
+            .block--video:not(:has(> h2)),
+            .code-toolbar
+          )
+      ) {
+      margin-block-start: var(--streamfield-space-sm);
+    }
+
+    // Cases where there should be a `xs` space above:
+    &:where(:is(.block--heading + *)) {
+      margin-block-start: var(--streamfield-space-xs);
+    }
+  }
+
+  & > * {
+    // Cap width of some (most?) streamfield block types
+    &:where(
+        .block--accordion,
+        .block--table,
+        .block--paragraph,
+        .block--migrated-content,
+        .block--download,
+        .block--cta,
+        .block--note,
+        .block--pull-quote,
+        .block--video,
+        .block--newsletter
+      ) {
+      max-inline-size: var(--reading-max-width);
+    }
+  }
+
+  // Outdented components.
+  // Tile block title is excluded because it needs to be wrapped in another
+  // container to allow the "see all" link to display in line with it.
+  // (Note: `.block--paragraph > h2` can't happen in the new CMS fields,
+  // but may happen with migrated content.
+  :where(
+      .block--heading,
+      .block--accordion > h2,
+      .block--video > h2,
+      .block--paragraph > h2
+    ) {
+    @include md {
+      margin-left: calc(-1 * var(--content-outdent));
+    }
+  }
+}

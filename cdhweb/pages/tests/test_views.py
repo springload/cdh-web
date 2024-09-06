@@ -112,7 +112,13 @@ class TestSiteSearchView:
         client.get(reverse("search"), {"q": "test"})
         # should filter to published pages
         mock_page.objects.live.assert_called_once()
+        mock_page.objects.live.return_value.public.assert_called_once()
+        mock_page.objects.live.return_value.public.return_value.search.assert_called_once()
         # should run search for term using OR logic
-        query = mock_page.objects.live.return_value.search.call_args[0][0]
+        query = (
+            mock_page.objects.live.return_value.public.return_value.search.call_args[0][
+                0
+            ]
+        )
         assert query.query_string == "test"
         assert query.operator == "or"

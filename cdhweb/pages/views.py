@@ -7,7 +7,7 @@ from django.views.generic.edit import FormMixin
 from wagtail.models import Page
 from wagtail.search.utils import parse_query_string
 
-from cdhweb.pages.forms import SiteSearchForm
+from cdhweb.pages.forms import SiteSearchFilters, SiteSearchForm
 
 
 class LastModifiedMixin(View):
@@ -70,16 +70,27 @@ class SiteSearchView(ListView, FormMixin):
     template_name = "cdhpages/search.html"
 
     def get_queryset(self):
+        queryset = self.model.objects.live().public()
+        form = self.get_form()
+
+        if not form.is_valid():
+            return queryset.none()
+
         # get keyword query; support filters & phrase matching with double quotes
         # see https://docs.wagtail.io/en/stable/topics/search/searching.html#query-string-parsing
-        q = self.request.GET.get("q", "")
+        q = form.cleaned_data.get("q", "")
         _filters, query = parse_query_string(q)  # not using these filters yet
         query.operator = "or"  # set query operator to OR (default is AND)
+
+        type_filter = form.cleaned_data.get("filter", "")
+        if type_filter:
+            filter_class = SiteSearchFilters(type_filter).model_class()
+            queryset = queryset.type(filter_class)
 
         # execute search; exclude unpublished pages.
         # NOTE results sorted by relevance by default; to override sort the QS
         # first and then pass order_by_relevance=false to .search()
-        return self.model.objects.live().search(query)
+        return queryset.search(query)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

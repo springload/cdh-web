@@ -1,0 +1,31 @@
+{% load core_tags %}
+
+{% comment %}
+  This form will appear in more than one place on the page (main nav (though that's a tsx version), footer, and on the search page).
+  So `uniqueID` is used to prefix IDs (and their `for`s), so we don't get duplicate IDs in the markup.
+{% endcomment %}
+<form class="search-form {{ extra_classes }}" action="{% url 'search' %}">
+  <label class="sr-only" for="search-input_{{ uniqueID }}">Search</label>
+  <div class="text-input-and-button-group">
+    <input type="text" id="search-input_{{ uniqueID }}" name="q" {% if form.q.value %}value="{{ form.q.value }}"{% endif %} />
+    <input type="submit" value="Search" />
+  </div>
+  <fieldset class="search-form__filters">
+    <legend class="sr-only">Filter search results by</legend>
+    {% for filter_option in site_search.filter_choices %}
+      <div class="radio">
+        <div class="search-form__radio">
+          <input type="radio" 
+            name="filter" 
+            value="{{ filter_option.value }}" 
+            id="{{ uniqueID }}_{{ filter_option.value }}" 
+            {% if form.filter.value == filter_option.value %}checked{% endif %}
+            {% if filter_option.value == 'everything' and not form.filter.value %}checked{% endif %}
+          />
+          <label for="{{ uniqueID }}_{{ filter_option.value }}">{{ filter_option.label }}</label>
+          {% include 'includes/svg.html' with sprite="two-tone" svg=filter_option.icon %}
+        </div>
+      </div>
+    {% endfor %}
+  </fieldset>
+</form>

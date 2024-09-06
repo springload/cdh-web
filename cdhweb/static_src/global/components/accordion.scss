@@ -1,0 +1,63 @@
+.sk-accordion {
+  :where(details) {
+    margin: 0;
+    border-block-start: 1px solid var(--color-grey-100);
+
+    &:last-child {
+      border-block-end: 1px solid var(--color-grey-100);
+    }
+
+    // This site uses two-tone icons with a built-in shadow.
+    // That means we can't simply flip the chevron – it needs to
+    // use a distinctly different icon when expanded vs collapsed.
+    .sk-accordion__chevron-up {
+      display: none;
+    }
+
+    &:where([open]) {
+      .sk-accordion__chevron-up {
+        display: block;
+      }
+      .sk-accordion__chevron-down {
+        display: none;
+      }
+    }
+  }
+
+  :where(summary) {
+    cursor: pointer;
+    padding-block: 16px;
+    font-size: px2rem(20);
+    font-weight: 700;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+
+    &::-webkit-details-marker,
+    &::marker {
+      display: none;
+    }
+
+    :where(svg) {
+      flex-shrink: 0;
+    }
+
+    &:hover {
+      color: var(--color-black);
+    }
+  }
+}
+
+.sk-accordion__chevron-up {
+  width: 24px;
+  aspect-ratio: 25/16;
+}
+.sk-accordion__chevron-down {
+  width: 24px;
+  aspect-ratio: 24/16; // yes the viewboxes are different
+}
+
+.sk-accordion__content {
+  padding-block-end: 32px;
+}

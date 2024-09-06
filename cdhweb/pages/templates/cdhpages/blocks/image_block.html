@@ -1,0 +1,65 @@
+{% load wagtailcore_tags wagtailimages_tags l10n %}
+
+{% if self.size == 'small' %}
+    {% image self.image width-500 as img_base %}
+    {% image self.image width-700 as img_sm %}
+    {% image self.image width-750 as img_md %}
+    {% image self.image width-1000 as img_xl %}
+{% elif self.size == 'medium' %}
+    {% image self.image width-750 as img_base %}
+    {% image self.image width-1200 as img_md %}
+    {% image self.image width-1700 as img_xxl %}
+{% else %}
+    {% image self.image width-1000 as img_base %}
+    {% image self.image width-1500 as img_sm %}
+    {% image self.image width-1700 as img_md %}
+    {% image self.image width-2000 as img_xl %}
+    {% image self.image width-2300 as img_xxxl %}
+{% endif %}
+
+<div class="block block--image">
+    <figure class="sk-image sk-image--{{ self.size }}">    
+        {# use full_url for display on site AND in RSS/ATOM feeds #}
+        <picture>
+            {% if img_sm %}
+                <source srcset="{{ img_sm.full_url }}" media="(min-width: 500px)">
+            {% endif %}
+            {% if img_md %}
+                <source srcset="{{ img_md.full_url }}" media="(min-width: 768px)">
+            {% endif %}
+            {% if img_lg %}
+                <source srcset="{{ img_lg.full_url }}" media="(min-width: 1024px)">
+            {% endif %}
+            {% if img_xl %}
+                <source srcset="{{ img_xl.full_url }}" media="(min-width: 1200px)">
+            {% endif %}
+            {% if img_xxl %}
+                <source srcset="{{ img_xxl.full_url }}" media="(min-width: 1440px)">
+            {% endif %}
+            {% if img_xxxl %}
+                <source srcset="{{ img_xxxl.full_url }}" media="(min-width: 1920px)">
+            {% endif %}
+            <img class="sk-image__img"
+                src="{{ img_base.full_url }}"
+                alt="{{ self.alt_text|default:img_base.alt }}"
+                loading="lazy"
+                style="aspect-ratio: {{ img_base.width|unlocalize }} / {{ img_base.height|unlocalize }}"
+            />
+        </picture>
+
+        {% if self.credit or self.caption %}
+            <figcaption class="sk-image__text-content">
+                {% if self.credit %}
+                    <div class="sk-image__credit">
+                        {{ self.credit|richtext }}
+                    </div>
+                {% endif %}
+                {% if self.caption %}
+                    <div class="sk-image__caption">
+                        {{ self.caption|richtext }}
+                    </div>
+                {% endif %}
+            </figcaption>
+        {% endif %}
+    </figure>
+</div>

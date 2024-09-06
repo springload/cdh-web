@@ -1,0 +1,87 @@
+{% load wagtailcore_tags core_tags static %}
+
+{% if request %}{# skip for 500 error template #}
+{% primary_nav_dict as primary_dict %}
+{{ primary_dict | json_script:"navigation-data-primary" }}
+{% primary_navigation as primary_nav %}
+
+{% secondary_nav_dict as secondary_dict %}
+{{ secondary_dict | json_script:"navigation-data-secondary" }}
+{% secondary_navigation as secondary_nav %}
+{% endif %}
+
+<header class="header">
+    {% site_alerts %}
+
+    {% if SHOW_TEST_WARNING %}
+        <div style="background-color: yellow; text-align: center; padding: 10px;">
+            This is a test site.
+        </div>
+    {% endif %}
+
+    <nav class="main-nav-mobile" data-component="main-nav-mobile" aria-label="Main" data-search-url="{% url 'search' %}">
+        {# the following gets swapped out when react component mounts #}
+        <div class="mobile-menu__header">
+            <a href="/" aria-label="The Center for Digital Humanities at Princeton" class="mobile-menu__logo-link">
+                {% include 'includes/svg.html' with sprite="logo" svg="cdh-logo" classes="mobile-menu__header-logo" %}
+            </a>
+        </div>
+    </nav>
+
+    <nav class="main-nav-desktop" aria-label="Main">
+        <div class="content-width grid-standard main-nav-desktop__grid">
+            <a href="/" class="main-nav-desktop__logo-link" aria-label="The Center for Digital Humanities at Princeton">
+                {% include 'includes/svg.html' with sprite="logo" svg="cdh-logo" %}
+            </a>
+
+            {# Desktop react component is only the primary nav links area. Logo and secondary nav is static. #}
+            <div class="main-nav-desktop__primary" data-component="main-nav-desktop" data-search-url="{% url 'search' %}">
+                {# the following gets swapped out when react component mounts #}
+                <ul class="main-nav-desktop__list">
+                    {% for item in primary_nav.l1_menu_items %}
+                        <li>
+                            <a href="{{ item.link_url }}" 
+                                class="main-nav-desktop__item 
+                                    {% if request.path|starts_with:item.link_url %}
+                                        main-nav-desktop__item--current-section
+                                    {% endif %}
+                            ">  
+                                <span>{{ item.title }}</span>
+                                {# Reserve space for dropdown icon, to stop jank when the React version replaces this version. #}
+                                {% if item.l2_items.all %}
+                                    <span class="main-nav-desktop__dropdown-icon"></span>
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    <li>
+                        {% url 'search' as search_url %}
+                        <a href="{{ search_url }}" 
+                            class="main-nav-desktop__item
+                            {% if request.path|starts_with:search_url %}
+                                main-nav-desktop__item--current-section
+                            {% endif %}
+                        ">   
+                            <span>Search</span>
+                            {% include 'includes/svg.html' with sprite="two-tone" svg="search" classes="main-nav-desktop__search-icon" %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <ul class="main-nav-desktop__secondary">
+                {% for item in secondary_nav.secondary_nav_items %}
+                    <li>
+                        <a href="{{ item.link_url }}">{{ item.title }}</a>
+                    </li>
+                {% endfor %}
+                {% if secondary_nav.cta_button %}
+                    <li>
+                        <a href="{{ secondary_nav.cta_button.link_url }}" class="sk-btn sk-btn--secondary main-nav-desktop__cta">{{ secondary_nav.cta_button.title }}</a>
+                    </li>
+                {% endif %}
+            </ul>
+
+        </div>
+    </nav>
+</header>

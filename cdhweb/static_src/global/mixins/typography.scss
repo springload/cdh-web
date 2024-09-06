@@ -1,0 +1,79 @@
+// Mixins for typography
+
+// These mixins are intended to allow you to style (e.g.) an h2 to look like (e.g.) an h3.
+@mixin h1 {
+  font-size: px2rem(36);
+  line-height: 1;
+  font-weight: 900;
+  text-wrap: balance;
+
+  @include md {
+    font-size: px2rem(48);
+  }
+
+  @include xl {
+    font-size: px2rem(56);
+  }
+}
+
+@mixin h2 {
+  font-size: px2rem(32);
+  line-height: 1.125;
+  font-weight: 900;
+
+  @include xl {
+    font-size: px2rem(36);
+  }
+}
+
+@mixin h3 {
+  font-size: px2rem(24);
+  line-height: 1.125;
+  font-weight: 900;
+
+  @include xl {
+    font-size: px2rem(28);
+  }
+}
+
+@mixin h4 {
+  font-size: px2rem(20);
+  line-height: 1.125;
+  font-weight: 900;
+
+  @include xl {
+    font-size: px2rem(24);
+  }
+}
+
+@mixin h5 {
+  font-size: px2rem(20);
+  line-height: 1.125;
+  font-weight: bold;
+
+  @include xl {
+    font-size: px2rem(24);
+  }
+}
+
+@mixin h6 {
+  // Same as h5 for now.
+  @include h5;
+}
+
+// This is a mixin because sometimes we need to make things look like a link which aren't
+// (e.g. disclosure widget, the occasional <button>).
+@mixin link-style {
+  color: var(--color-link-text);
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: var(--color-link-underline);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+  font-weight: bold;
+
+  &:hover {
+    --color-link-underline: var(--color-brand-120);
+    color: var(--color-link-text-hover);
+  }
+}

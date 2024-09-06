@@ -1,0 +1,44 @@
+{% load wagtailcore_tags %}
+
+<div class="content-width grid-standard">
+    <nav aria-label="Breadcrumb" class="breadcrumbs">
+        <ol class="breadcrumbs__list">
+            {# Note, this loop excludes the current page. So we manually append that to the end. #}
+            {% for page in breadcrumbs %}
+                <li class="breadcrumbs__item 
+                    {% if forloop.revcounter == 1 %}
+                        breadcrumbs__item--parent
+                    {% endif %}
+                ">
+                    <a href="{{ page.url }}" class="breadcrumbs__link
+                        {% if forloop.revcounter == 1 %}
+                            breadcrumbs__link--parent
+                        {% endif %}
+                    ">
+                        {% if forloop.revcounter == 1 %}
+                            {% include 'includes/svg.html' with sprite="two-tone" svg="chevron-left" classes="breadcrumbs__back-icon" %}
+                        {% endif %}
+                        {% if forloop.counter == 1 %}
+                            Home
+                        {% else %}
+                            {% if page.short_title %}
+                                {{ page.short_title }}
+                            {% else %}
+                                {{ page.title }}
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                    <span class="breadcrumbs__separator" aria-hidden="true"> / </span>
+                </li>
+            {% endfor %}
+            
+            <li class="breadcrumbs__item breadcrumbs__item--current-page">
+                {% if current_page.short_title %}
+                    {{ current_page.short_title }}
+                {% else %}
+                    {{ current_page.title }}
+                {% endif %}
+            </li>
+        </ol>
+    </nav>
+</div>

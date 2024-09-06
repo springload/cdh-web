@@ -1,8 +1,6 @@
 Django>=4.2,<5.1
 pillow>=9.1.0
 wagtail>=5.2,<6.0
-django-compressor
-django-compressor-autoprefixer
 psycopg2-binary
 django-admin-sortable2
 # wagtail 4.2 requires taggit<5.0
@@ -20,3 +18,6 @@ wagtail-autocomplete
 wagtailcodeblock
 wagtail_modeladmin>=1.0,<2.0
 django-split-settings
+
+# Springkit
+springkit_wagtail-dev.zip

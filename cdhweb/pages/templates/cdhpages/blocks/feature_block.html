@@ -1,0 +1,29 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+{% image self.image width-400 as img_base %}
+
+<div class="block block--feature">
+  <div class="feature">
+      <div class="feature__text-content">
+        <h2>{{ self.heading }}</h2>
+        {{ self.feature_text|richtext }}
+        {% if self.cta_buttons %}
+          {% include_block self.cta_buttons %}
+        {% endif %}
+      </div>
+
+      {% image self.image width-750 as img_base %}
+      {% image self.image width-1200 as img_sm %}
+      {% image self.image width-1400 as img_md %}
+
+      {# use full_url for display on site AND in RSS/ATOM feeds #}
+      <picture class="feature__img">
+        <source srcset="{{ img_sm.full_url }}" media="(min-width: 500px)">
+        <source srcset="{{ img_md.full_url }}" media="(min-width: 768px)">
+        <img 
+          src="{{ img_base.full_url }}"
+          alt="{{ self.alt_text|default:img_base.alt }}"
+          loading="lazy"
+      />
+    </picture>
+  </div>
+</div>

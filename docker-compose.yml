@@ -1,0 +1,60 @@
+version: "3.7"
+
+services:
+    application:
+        restart: on-failure
+        build:
+            context: .
+            dockerfile: docker/application/Dockerfile
+            target: app-dev
+        volumes:
+            - ".:/app"
+        ports:
+            - "${PORT_PREFIX:-561}80:8000"
+        environment:
+            VIRTUAL_HOST: "cdh.dev.springload.nz"
+            VIRTUAL_PORT: 8000
+            VIRTUAL_MEDIA_DOMAIN: # Change me once set up
+        entrypoint: ["wait-for", "database:5432", "--"]
+        command:
+            [
+                "/usr/local/bin/gunicorn",
+                "--config",
+                "/app/docker/gunicorn.py",
+                "--reload",
+                "cdhweb.wsgi",
+            ]
+        depends_on:
+            - database
+            - cache
+        networks:
+            default:
+                aliases:
+                    - "cdh.dev.springload.nz"
+            nginx-proxy:
+
+    database:
+        restart: on-failure
+        image: postgres:16-alpine
+        platform: linux/x86_64
+        ports:
+            - "${PORT_PREFIX:-561}32:5432" # default 56132
+        volumes:
+            - "./docker/database:/docker-entrypoint-initdb.d/:ro"
+        environment:
+            WAGTAIL_SITE_HOSTNAME: "cdh.dev.springload.nz"
+            WAGTAIL_SITE_PORT: "443"
+            POSTGRES_DB: "cdhweb"
+            POSTGRES_USER: "cdhweb"
+            POSTGRES_PASSWORD: "cdhweb"
+
+    cache:
+        restart: on-failure
+        image: redis:5-alpine
+        platform: linux/x86_64
+        ports:
+            - "${PORT_PREFIX:-561}79:6379"
+
+networks:
+    nginx-proxy:
+        external: true

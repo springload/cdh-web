@@ -8,6 +8,7 @@ from cdhweb.projects.models import (
     Project,
     ProjectRelatedLink,
     ProjectsLandingPage,
+    ProjectsLandingPageArchived,
 )
 
 
@@ -94,18 +95,20 @@ class TestProject:
 class TestProjectPage(WagtailPageTestCase):
     def test_parent_pages(self):
         """project can only be created under projects link page"""
-        self.assertAllowedParentPageTypes(Project, [ProjectsLandingPage])
+        self.assertAllowedParentPageTypes(
+            Project, [ProjectsLandingPageArchived, ProjectsLandingPage]
+        )
 
     def test_subpages(self):
         """project page can't have children"""
         self.assertAllowedSubpageTypes(Project, [])
 
 
-class TestProjectsLandingPage(WagtailPageTestCase):
+class TestProjectsLandingPageArchived(WagtailPageTestCase):
     def test_parentpage_types(self):
         """projects link page should not be creatable in admin"""
-        self.assertAllowedParentPageTypes(ProjectsLandingPage, [])
+        self.assertAllowedParentPageTypes(ProjectsLandingPageArchived, [])
 
     def test_subpage_types(self):
         """projects link page only allowed child is project page"""
-        self.assertAllowedSubpageTypes(ProjectsLandingPage, [Project, LinkPage])
+        self.assertAllowedSubpageTypes(ProjectsLandingPageArchived, [Project, LinkPage])
