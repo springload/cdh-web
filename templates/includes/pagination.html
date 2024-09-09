@@ -12,7 +12,8 @@
   {% for number in page_obj.paginator.page_range %}
     <a href="?{% url_replace 'page' number %}" 
       class="pagination__item {% if number == page_obj.number %}pagination__item--current{% endif %}"
-      >
+      {% if number == page_obj.number %}aria-current="page"{% endif %}
+    >
       {{ number }}
     </a>
   {% endfor %}
