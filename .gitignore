@@ -6,6 +6,7 @@ cdhweb.dbml
 
 # Media ignores
 static/dist
+static/
 myapp/static
 media
 static/CACHE

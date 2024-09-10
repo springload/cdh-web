@@ -31,15 +31,8 @@ class TestProjectDetail:
             project=derrida, type=website, url="https://derridas-margins.princeton.edu"
         )
 
-        # should display "Project Website" as well as full URL inside link
         response = client.get(derrida.get_url())
         assertContains(response, '<a href="%s">' % derrida_site.url)
-        assertContains(response, "<span>Project Website</span>", html=True)
-        assertContains(
-            response,
-            '<span class="url">%s</span>' % derrida_site.display_url,
-            html=True,
-        )
 
     def test_contributors(self, client, derrida):
         """project detail page should display current project team and alums"""
@@ -66,11 +59,12 @@ class TestProjectDetail:
         dcg = derrida.grants.get(grant_type__grant_type="Dataset Curation")
         rpg = derrida.grants.get(grant_type__grant_type="Research Partnership")
 
-        # should display with years
+        # should display label and years
         response = client.get(derrida.get_url())
-        assertContains(response, "CDH Grant History")
-        assertContains(response, "%s Dataset Curation" % dcg.years)
-        assertContains(response, "%s Research Partnership" % rpg.years)
+        assertContains(response, "Dataset Curation")
+        assertContains(response, dcg.years)
+        assertContains(response, "Research Partnership")
+        assertContains(response, rpg.years)
 
     def test_long_description(self, client, derrida):
         """project detail page should display long description (body) if set"""
@@ -81,56 +75,3 @@ class TestProjectDetail:
         # should display with rich text
         response = client.get(derrida.get_url())
         assertContains(response, "<b>About Derrida</b>", html=True)
-
-
-class TestProjectLists:
-    def test_page_titles(self, client, projects):
-        """project list pages should show title and past title as headings"""
-        # sponsored projects (none currently past)
-        response = client.get(reverse("projects:sponsored"))
-        assertContains(response, "<h1>Sponsored Projects</h1>")
-        assertNotContains(response, "<h2>Past Projects</h2>")
-
-        # staff & postdoc projects (none currently past)
-        response = client.get(reverse("projects:staff"))
-        assertContains(response, "<h1>Staff Projects</h1>")
-        assertNotContains(response, "<h2>Past Projects</h2>")
-
-        # working groups (no past shown)
-        response = client.get(reverse("projects:working-groups"))
-        assertContains(response, "<h1>DH Working Groups</h1>")
-        assertNotContains(response, "<h2>Past Projects</h2>")
-
-        # make all projects past: delete all grants except latest; end yesterday
-        for _, project in projects.items():
-            grant = project.latest_grant()
-            project.grants.exclude(pk=grant.pk).delete()
-            grant.end_date = date.today() - timedelta(days=1)
-            grant.save()
-
-        # sponsored projects, past section should display
-        response = client.get(reverse("projects:sponsored"))
-        assertContains(response, "<h2>Past Projects</h2>")
-
-        # staff & postdoc projects, past section should display
-        response = client.get(reverse("projects:staff"))
-        assertContains(response, "<h2>Past Projects</h2>")
-
-        # working groups should never be past, even if grant is
-        response = client.get(reverse("projects:working-groups"))
-        assertNotContains(response, "<h2>Past Projects</h2>")
-
-    def test_project_card(self, client, projects):
-        """project list pages should display cards for each project"""
-        # one project card for each staff/postdoc project
-        response = client.get(reverse("projects:staff"))
-        assertTemplateUsed("projects/snippets/project_card.html")
-        assertContains(response, '<div class="card project', count=2)
-
-        # card contains link to project page, title, and short description
-        assertContains(response, '<a href="%s">' % projects["pliny"].get_url())
-        assertContains(response, '<a href="%s">' % projects["ocampo"].get_url())
-        assertContains(response, "<h2>%s</h2>" % projects["pliny"].title)
-        assertContains(response, "<h2>%s</h2>" % projects["ocampo"].title)
-        assertContains(response, "<p>%s</p>" % projects["pliny"].short_description)
-        assertContains(response, "<p>%s</p>" % projects["ocampo"].short_description)

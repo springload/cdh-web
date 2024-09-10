@@ -25,7 +25,6 @@ class TestRole:
 
 
 class TestProjectQuerySet:
-
     def test_current(self, derrida):
         """should query projects with current grant"""
         # derrida latest grant ends today; should be current
@@ -158,7 +157,8 @@ class TestProjectDisplayTags:
         role = ProjectRole(role="test role")
         role.save()
         derrida.role.add(role)
-        assert derrida.display_tags() == ["test role"]
+        # should display method and field but not role
+        assert derrida.display_tags() == []
 
     def test_all_relations(self, derrida):
         role1 = ProjectRole(role="test role 1")
@@ -177,6 +177,4 @@ class TestProjectDisplayTags:
         assert derrida.display_tags() == [
             "test field",
             "test method",
-            "test role 1",
-            "test role 2",
         ]

@@ -19,27 +19,28 @@
 
 <div class="block block--image">
     <figure class="sk-image sk-image--{{ self.size }}">    
+        {# use full_url for display on site AND in RSS/ATOM feeds #}
         <picture>
             {% if img_sm %}
-                <source srcset="{{ img_sm.url }}" media="(min-width: 500px)">
+                <source srcset="{{ img_sm.full_url }}" media="(min-width: 500px)">
             {% endif %}
             {% if img_md %}
-                <source srcset="{{ img_md.url }}" media="(min-width: 768px)">
+                <source srcset="{{ img_md.full_url }}" media="(min-width: 768px)">
             {% endif %}
             {% if img_lg %}
-                <source srcset="{{ img_lg.url }}" media="(min-width: 1024px)">
+                <source srcset="{{ img_lg.full_url }}" media="(min-width: 1024px)">
             {% endif %}
             {% if img_xl %}
-                <source srcset="{{ img_xl.url }}" media="(min-width: 1200px)">
+                <source srcset="{{ img_xl.full_url }}" media="(min-width: 1200px)">
             {% endif %}
             {% if img_xxl %}
-                <source srcset="{{ img_xxl.url }}" media="(min-width: 1440px)">
+                <source srcset="{{ img_xxl.full_url }}" media="(min-width: 1440px)">
             {% endif %}
             {% if img_xxxl %}
-                <source srcset="{{ img_xxxl.url }}" media="(min-width: 1920px)">
+                <source srcset="{{ img_xxxl.full_url }}" media="(min-width: 1920px)">
             {% endif %}
             <img class="sk-image__img"
-                src="{{ img_base.url }}" 
+                src="{{ img_base.full_url }}"
                 alt="{{ self.alt_text|default:img_base.alt }}"
                 loading="lazy"
                 style="aspect-ratio: {{ img_base.width|unlocalize }} / {{ img_base.height|unlocalize }}"

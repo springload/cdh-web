@@ -57,6 +57,9 @@
       {# Needed for specific cases #}
     {% endblock %}
 
+    {% if INCLUDE_ANALYTICS %}
+    {% include "snippets/analytics.html" %}
+    {% endif %}
     {% if GOOGLE_ANALYTICS_KEY %}
       <!-- Google Analytics -->
       <script>
@@ -70,6 +73,8 @@
       <script>Raven.config('{{ SENTRY_DSN_FED }}').install()</script>
     {% endif %}
 
+    {% if request %}{# skip for 500 error template #}
     {% site_footer %}
+    {% endif %}
   </body>
 </html>

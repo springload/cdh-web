@@ -1,11 +1,10 @@
 import bleach
-
 from django.core.paginator import Paginator
 from django.db import models
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
@@ -225,30 +224,6 @@ class BlogPost(BasePage, ClusterableModel):
         if self.featured:
             urls[0]["priority"] = 0.6  # default is 0.5; slight increase
         return urls
-
-    @cached_property
-    def feeds_description(self):
-        """
-        Plaintext description for RSS and Atom feeds
-
-        Short description, then description, then looks for
-        the first paragraph of the text
-        """
-        if self.short_description.strip():
-            return self.short_description.strip()
-
-        description = bleach.clean(self.description, tags=[], strip=True)
-        # Fall back to the first block of the page if
-        # there's no description, once the HTML is removed
-        if not description:
-            # Iterate over blocks and use content from first paragraph content
-            for block in self.body:
-                if block.block_type == "paragraph":
-                    # Return the very first block
-                    description = block
-                    return bleach.clean(description, tags=[], strip=True)
-
-        return ""  # We're really out of ideas, prevent a "None"
 
 
 class BlogLinkPageArchived(LinkPage):

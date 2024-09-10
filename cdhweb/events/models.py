@@ -314,7 +314,7 @@ class Event(BasePage, ClusterableModel):
             # use `super()`
             if not hasattr(parent, "reverse_subpage"):
                 return url_parts
-            
+
             page_path = parent.reverse_subpage(
                 "dated_child",
                 kwargs={
@@ -485,7 +485,7 @@ class EventsLandingPage(StandardHeroMixinNoImage, RoutablePageMixin, Page):
         child_pages = self.get_children().live().specific().type(Event)
 
         # Fetch upcoming events among the child pages
-        return child_pages.filter(event__start_time__gte=current_datetime).order_by(
+        return child_pages.filter(event__end_time__gte=current_datetime).order_by(
             "event__start_time"
         )
 

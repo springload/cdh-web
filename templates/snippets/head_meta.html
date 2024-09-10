@@ -22,3 +22,9 @@
 {% if meta_description %}<meta name="twitter:description" content="{{ meta_description|striptags }}"/>{% endif %}
 <meta name="twitter:image" content="{% firstof twitter_image meta_preview_image_url %}" />
 {% endautoescape %}
+
+{# include syndication link on all pages for now #}
+<link rel="alternate" type="application/rss+xml" href="{% url 'rss' %}"
+    title="Updates – CDH@Princeton"/>
+<link rel="alternate" type="application/atom+xml" href="{% url 'atom' %}"
+    title="Updates – CDH@Princeton"/>
