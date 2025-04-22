@@ -19,21 +19,21 @@ def site_footer(context):
     Returns the site footer data.
     """
     # Get footer items
-    footers = Footer.objects.prefetch_related(
+    footer = Footer.objects.prefetch_related(
         "contact_links", "useful_links", "imprint_links"
-    )
+    ).first()
 
     data = {
         "request": context["request"],
         "site_search": context["site_search"],
         "SW_VERSION": context["SW_VERSION"],
     }
-    if footers.exists():
-        contact_links = footers.first().contact_links.all()
-        social_media_links = footers.first().social_media_links.all()
-        physical_address = footers.first().address
-        useful_links = footers.first().useful_links.all()
-        imprint_links = footers.first().imprint_links.all()
+    if footer:
+        contact_links = footer.contact_links.all()
+        social_media_links = footer.social_media_links.all()
+        physical_address = footer.address
+        useful_links = footer.useful_links.all()
+        imprint_links = footer.imprint_links.all()
 
         data |= {
             "contact_links": contact_links,
@@ -77,9 +77,9 @@ def _get_primary_nav_items():
     l1_menu_items = []
     primary_nav = PrimaryNavigation.objects.prefetch_related(
         "l1_items", "l1_items__l2_items"
-    )
-    if primary_nav.exists():
-        l1_menu_items = primary_nav.first().l1_items.all()
+    ).first()
+    if primary_nav:
+        l1_menu_items = primary_nav.l1_items.all()
     return l1_menu_items
 
 
@@ -132,9 +132,9 @@ def _get_secondary_nav_items():
     Get secondary nav items
     """
     items = []
-    secondary_nav = SecondaryNavigation.objects.prefetch_related("items")
-    if secondary_nav.exists():
-        items = secondary_nav.first().items.all()
+    secondary_nav = SecondaryNavigation.objects.prefetch_related("items").first()
+    if secondary_nav:
+        items = secondary_nav.items.all()
 
     return items
 
@@ -143,10 +143,10 @@ def _get_secondary_nav_cta_button():
     """
     Get secondary nav cta button
     """
-    secondary_nav = SecondaryNavigation.objects.prefetch_related("cta_button")
+    secondary_nav = SecondaryNavigation.objects.prefetch_related("cta_button").first()
 
-    if secondary_nav.exists():
-        return secondary_nav.first().cta_button.all()
+    if secondary_nav:
+        return secondary_nav.cta_button.all()
     return []
 
 
@@ -158,9 +158,9 @@ def primary_navigation():
     l1_menu_items = []
     main_menu = PrimaryNavigation.objects.prefetch_related(
         "l1_items", "l1_items__l2_items"
-    )
-    if main_menu.exists():
-        l1_menu_items = main_menu.first().l1_items.all()
+    ).first()
+    if main_menu:
+        l1_menu_items = main_menu.l1_items.all()
 
         data = {
             "l1_menu_items": l1_menu_items,
@@ -177,10 +177,12 @@ def secondary_navigation():
     """
 
     items = []
-    secondary_menu = SecondaryNavigation.objects.prefetch_related("items", "cta_button")
-    if secondary_menu.exists():
-        items = secondary_menu.first().items.all()
-        cta_button = secondary_menu.first().cta_button.first()
+    secondary_menu = SecondaryNavigation.objects.prefetch_related(
+        "items", "cta_button"
+    ).first()
+    if secondary_menu:
+        items = secondary_menu.items.all()
+        cta_button = secondary_menu.cta_button.first()
 
         data = {
             "secondary_nav_items": items,
