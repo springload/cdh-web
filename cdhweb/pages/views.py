@@ -100,8 +100,6 @@ class SiteSearchView(ListView, FormMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print("**********")
-        print(context)
 
         # Get the HomePage for breadcrumbs
         from cdhweb.pages.models import HomePage
