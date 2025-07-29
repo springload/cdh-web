@@ -21,7 +21,7 @@ class TestProjectDetail:
 
         # should display link type and create a link using URL
         response = client.get(derrida.get_url())
-        assertContains(response, '<a href="%s"><span>GitHub</span>' % derrida_gh.url, html=True)
+        assertContains(response, '<a href="%s">GitHub</a>' % derrida_gh.url, html=True)
 
     def test_website_url(self, client, derrida):
         """project detail page should display website url if set"""
