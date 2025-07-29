@@ -93,9 +93,19 @@ Event hero. Similar to standard hero. Key differences:
   margin: 16px 0 0;
 }
 
-.event-hero__add-to-calendar {
-  margin: 4px 0 16px;
-  font-size: fn.rem(14);
+.event-hero__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-block-start: 24px;
+
+  @include mx.sm {
+    flex-direction: row;
+  }
+
+  @include mx.xl {
+    margin-block-start: 40px;
+  }
 }
 
 .event-hero__location {
